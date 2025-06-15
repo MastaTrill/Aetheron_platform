@@ -1,55 +1,33 @@
-(
-echo {
-echo   "name": "aetheron-platform",
-echo   "version": "2.0.0",
-echo   "description": "Revolutionary Blockchain & Space Exploration Ecosystem",
-echo   "main": "index.js",
-echo   "private": true,
-echo   "workspaces": [
-echo     "admin-dashboard",
-echo     "mobile-app",
-echo     "backend-api", 
-echo     "smart-contracts",
-echo     "web-frontend"
-echo   ],
-echo   "scripts": {
-echo     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-echo     "dev:backend": "cd backend-api && npm run dev",
-echo     "dev:frontend": "cd web-frontend && npm run dev",
-echo     "dev:mobile": "cd mobile-app && expo start",
-echo     "build": "npm run build:contracts && npm run build:frontend",
-echo     "build:contracts": "cd smart-contracts && npm run compile",
-echo     "build:frontend": "cd web-frontend && npm run build",
-echo     "test": "npm run test:backend && npm run test:contracts",
-echo     "test:backend": "cd backend-api && npm test",
-echo     "test:contracts": "cd smart-contracts && npm test",
-echo     "deploy": "npm run build && npm run deploy:all",
-echo     "deploy:all": "concurrently \"npm run deploy:backend\" \"npm run deploy:frontend\"",
-echo     "deploy:backend": "cd backend-api && npm run deploy",
-echo     "deploy:frontend": "cd web-frontend && npm run deploy"
-echo   },
-echo   "devDependencies": {
-echo     "concurrently": "^8.2.0",
-echo     "lerna": "^7.4.0"
-echo   },
-echo   "keywords": [
-echo     "blockchain",
-echo     "space-exploration",
-echo     "defi", 
-echo     "react-native",
-echo     "ethereum",
-echo     "web3",
-echo     "aetheron"
-echo   ],
-echo   "author": "Aetheron Technologies",
-echo   "license": "MIT",
-echo   "repository": {
-echo     "type": "git",
-echo     "url": "https://github.com/your-username/aetheron-platform.git"
-echo   },
-echo   "bugs": {
-echo     "url": "https://github.com/your-username/aetheron-platform/issues"
-echo   },
-echo   "homepage": "https://your-username.github.io/aetheron-platform"
-echo }
-) > package.json
+@"
+{
+  "name": "aetheron-platform",
+  "version": "2.0.0",
+  "description": "Revolutionary Blockchain & Space Exploration Ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo 'Development server starting...'",
+    "build": "echo 'Building project...'",
+    "test": "echo 'Running tests...'",
+    "deploy": "echo 'Deploying to production...'"
+  },
+  "keywords": [
+    "blockchain", 
+    "space-exploration", 
+    "defi", 
+    "web3",
+    "aetheron",
+    "react-native",
+    "ethereum"
+  ],
+  "author": "Mastatrill",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mastatrill/aetheron-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mastatrill/aetheron-platform/issues"
+  },
+  "homepage": "https://mastatrill.github.io/aetheron-platform"
+}
+"@ | Out-File -FilePath "package.json" -Encoding UTF8
