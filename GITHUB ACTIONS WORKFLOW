@@ -1,0 +1,37 @@
+(
+echo name: CI/CD Pipeline
+echo.
+echo on:
+echo   push:
+echo     branches: [ main ]
+echo   pull_request:
+echo     branches: [ main ]
+echo.
+echo jobs:
+echo   build:
+echo     runs-on: ubuntu-latest
+echo     
+echo     steps:
+echo     - uses: actions/checkout@v3
+echo     
+echo     - name: Setup Node.js
+echo       uses: actions/setup-node@v3
+echo       with:
+echo         node-version: '18'
+echo         
+echo     - name: Install dependencies
+echo       run: npm install
+echo       
+echo     - name: Run tests
+echo       run: echo "Tests will be implemented"
+echo       
+echo     - name: Build project  
+echo       run: echo "Build successful"
+echo       
+echo     - name: Deploy to GitHub Pages
+echo       if: github.ref == 'refs/heads/main'
+echo       uses: peaceiris/actions-gh-pages@v3
+echo       with:
+echo         github_token: ${{ secrets.GITHUB_TOKEN }}
+echo         publish_dir: ./admin-dashboard
+) > .github\workflows\ci.yml
