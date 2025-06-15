@@ -1,0 +1,110 @@
+(
+echo # Dependencies
+echo node_modules/
+echo /npm-debug.log*
+echo /yarn-debug.log*
+echo /yarn-error.log*
+echo.
+echo # Production builds
+echo /build
+echo /dist
+echo /out
+echo /.next
+echo.
+echo # Environment variables
+echo .env
+echo .env.local
+echo .env.development.local
+echo .env.test.local
+echo .env.production.local
+echo.
+echo # IDE files
+echo .vscode/
+echo .idea/
+echo *.swp
+echo *.swo
+echo *~
+echo.
+echo # OS generated files
+echo .DS_Store
+echo .DS_Store?
+echo ._*
+echo .Spotlight-V100
+echo .Trashes
+echo ehthumbs.db
+echo Thumbs.db
+echo.
+echo # Logs
+echo logs
+echo *.log
+echo npm-debug.log*
+echo yarn-debug.log*
+echo yarn-error.log*
+echo.
+echo # Runtime data
+echo pids
+echo *.pid
+echo *.seed
+echo *.pid.lock
+echo.
+echo # Coverage directory used by tools like istanbul
+echo coverage/
+echo *.lcov
+echo.
+echo # nyc test coverage
+echo .nyc_output
+echo.
+echo # Dependency directories
+echo node_modules/
+echo jspm_packages/
+echo.
+echo # Optional npm cache directory
+echo .npm
+echo.
+echo # Optional eslint cache
+echo .eslintcache
+echo.
+echo # Microbundle cache
+echo .rpt2_cache/
+echo .rts2_cache_cjs/
+echo .rts2_cache_es/
+echo .rts2_cache_umd/
+echo.
+echo # Optional REPL history
+echo .node_repl_history
+echo.
+echo # Output of 'npm pack'
+echo *.tgz
+echo.
+echo # Yarn Integrity file
+echo .yarn-integrity
+echo.
+echo # dotenv environment variables file
+echo .env
+echo .env.test
+echo.
+echo # parcel-bundler cache
+echo .cache
+echo .parcel-cache
+echo.
+echo # Stores VSCode versions used for testing VSCode extensions
+echo .vscode-test
+echo.
+echo # Blockchain specific
+echo cache/
+echo artifacts/
+echo typechain/
+echo typechain-types/
+echo.
+echo # Hardhat files
+echo cache
+echo artifacts
+echo.
+echo # Mobile specific
+echo .expo/
+echo .expo-shared/
+echo.
+echo # Temporary folders
+echo tmp/
+echo temp/
+) > .gitignore
