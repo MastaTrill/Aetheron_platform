@@ -1,18 +1,20 @@
-echo "🎉 AETHERON PLATFORM STRUCTURE CREATED SUCCESSFULLY!"
+@echo off
+echo 🎉 AETHERON PLATFORM STRUCTURE CREATED SUCCESSFULLY!
 echo.
-echo "📁 Directory Structure:"
+echo 📁 Directory Structure:
 tree /f /a
 echo.
-echo "📊 File Count:"
+echo 📊 File Count:
 dir /s /-c | find "File(s)"
 echo.
-echo "✅ Ready for GitHub Upload!"
+echo ✅ Ready for GitHub Upload!
 echo.
-echo "🚀 Next Steps:"
-echo "1. Go to https://github.com/new"
-echo "2. Create repository: aetheron-platform"  
-echo "3. Run: git remote add origin https://github.com/YOUR-USERNAME/aetheron-platform.git"
-echo "4. Run: git push -u origin main"
-echo "5. Enable GitHub Pages in repository settings"
+echo 🚀 Next Steps:
+echo 1. Go to https://github.com/new
+echo 2. Create repository: aetheron-platform
+echo 3. Run: git remote add origin https://github.com/YOUR-USERNAME/aetheron-platform.git
+echo 4. Run: git push -u origin main
+echo 5. Enable GitHub Pages in repository settings
 echo.
-echo "🌌 Your Aetheron Platform is ready for launch!"
+echo 🌌 Your Aetheron Platform is ready for launch!
+pause
