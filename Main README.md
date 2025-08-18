@@ -1,4 +1,3 @@
-@"
 # 🌌 Aetheron Platform
 
 > Revolutionary Blockchain & Space Exploration Ecosystem
@@ -8,12 +7,14 @@
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/Mastatrill/aetheron-platform)
 
 ## 🚀 **Live Demo**
-- 🌐 **Admin Dashboard**: https://mastatrill.github.io/aetheron-platform
+
+- 🌐 **Admin Dashboard**: <https://mastatrill.github.io/aetheron-platform>
 - 📱 **Mobile App**: Coming soon to App Store & Google Play
 - 📖 **Documentation**: Complete guides and API reference
-- 🔗 **GitHub Repository**: https://github.com/Mastatrill/aetheron-platform
+- 🔗 **GitHub Repository**: <https://github.com/Mastatrill/aetheron-platform>
 
 ## 🎯 **Features**
+
 - 🎯 **Mission Control** - Participate in space exploration missions
 - 💰 **AETH Token** - Native cryptocurrency with staking rewards
 - 📱 **Mobile App** - iOS/Android cross-platform application
@@ -24,24 +25,28 @@
 ## 🛠️ **Technology Stack**
 
 ### **Frontend**
+
 - React Native (Mobile)
 - React.js/Next.js (Web)
 - TypeScript
 - CSS3/SCSS
 
 ### **Backend**
+
 - Node.js/Express.js
 - MongoDB/PostgreSQL
 - JWT Authentication
 - WebSocket (Real-time)
 
 ### **Blockchain**
+
 - Solidity Smart Contracts
 - Hardhat Development Framework
 - Polygon/Ethereum Networks
 - Web3.js Integration
 
 ### **DevOps**
+
 - Docker Containerization
 - Kubernetes Orchestration
 - GitHub Actions CI/CD
@@ -49,7 +54,7 @@
 
 ## 📁 **Project Structure**
 
-```
+```text
 aetheron-platform/
 ├── admin-dashboard/     # Web admin interface
 ├── mobile-app/         # React Native mobile app
@@ -66,6 +71,7 @@ aetheron-platform/
 ## 🚀 **Quick Start**
 
 ### **Prerequisites**
+
 - Node.js 18+
 - npm/yarn
 - Git
@@ -74,32 +80,35 @@ aetheron-platform/
 ### **Installation**
 
 1. **Clone the repository**
-```bash
-git clone https://github.com/Mastatrill/aetheron-platform.git
-cd aetheron-platform
-```
+
+    ```bash
+    git clone https://github.com/Mastatrill/aetheron-platform.git
+    cd aetheron-platform
+    ```
 
 2. **Install dependencies**
-```bash
-npm install
-```
+
+    ```bash
+    npm install
+    ```
 
 3. **Start development servers**
-```bash
-# Backend API
-cd backend-api && npm run dev
 
-# Web Frontend
-cd web-frontend && npm run dev
+    ```bash
+    # Backend API
+    cd backend-api && npm run dev
 
-# Mobile App
-cd mobile-app && expo start
-```
+    # Web Frontend
+    cd web-frontend && npm run dev
+
+    # Mobile App
+    cd mobile-app && expo start
+    ```
 
 ## 📊 **Live Links**
 
-- 🌐 **GitHub Repository**: https://github.com/Mastatrill/aetheron-platform
-- 🌐 **Live Demo**: https://mastatrill.github.io/aetheron-platform
+- 🌐 **GitHub Repository**: <https://github.com/Mastatrill/aetheron-platform>
+- 🌐 **Live Demo**: <https://mastatrill.github.io/aetheron-platform>
 - 📱 **Mobile App**: Coming soon to App Store & Google Play
 - 📖 **Documentation**: Available in repository
 
@@ -120,13 +129,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 **Contact**
 
 - **GitHub**: [@Mastatrill](https://github.com/Mastatrill)
-- **Repository**: https://github.com/Mastatrill/aetheron-platform
-- **Website**: https://mastatrill.github.io/aetheron-platform
-- **Email**: contact@aetheron.space
+- **Repository**: <https://github.com/Mastatrill/aetheron-platform>
+- **Website**: <https://mastatrill.github.io/aetheron-platform>
+- **Email**: [contact@aetheron.space](mailto:contact@aetheron.space)
 
 ---
 
 **⭐ Star us on GitHub if you like this project!**
 
 **Created by [Mastatrill](https://github.com/Mastatrill) - Building the future of space exploration! 🌌🚀**
-"@ | Out-File -FilePath "README.md" -Encoding UTF8
