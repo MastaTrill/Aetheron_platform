@@ -64,55 +64,9 @@ aetheron-platform/
 └── tools/             # Development utilities
 ```
 
-## 🚀 **Quick Start**
-
-### **Prerequisites**
-- Node.js 18+
-- npm/yarn
-- Git
-- Docker (optional)
-
-### **Installation**
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/Mastatrill/aetheron-platform.git
-cd aetheron-platform
-```
-
-2. **Install dependencies**
-```bash
-npm install
-```
-
-3. **Start development servers**
-```bash
-# Backend API
-cd backend-api && npm run dev
-
-# Web Frontend
-cd web-frontend && npm run dev
-
-# Mobile App
-cd mobile-app && expo start
-```
-
-## 📊 **Live Links**
-
-- 🌐 **GitHub Repository**: https://github.com/Mastatrill/aetheron-platform
-- 🌐 **Live Demo**: https://mastatrill.github.io/aetheron-platform
 - 📱 **Mobile App**: Coming soon to App Store & Google Play
 - 📖 **Documentation**: Available in repository
 
-## 🤝 **Contributing**
-
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📄 **License**
 
