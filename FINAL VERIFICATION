@@ -41,7 +41,7 @@ echo.
 echo 🚀 Next Steps:
 echo 1. Go to https://github.com/new
 echo 2. Create repository: aetheron-platform
-echo 3. Run: git remote add origin https://github.com/MastaTrill/aetheron-platform.git
+echo 3. Run: git remote add origin https://github.com/YOUR-USERNAME/aetheron-platform.git
 echo 4. Run: git push -u origin main
 echo 5. Enable GitHub Pages in repository settings
 echo.
