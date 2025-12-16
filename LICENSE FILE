@@ -1,3 +1,5 @@
+REM This script generates an MIT LICENSE file in the current directory.
+REM Usage: Run this script to create a LICENSE file.
 (
 echo MIT License
 echo.
