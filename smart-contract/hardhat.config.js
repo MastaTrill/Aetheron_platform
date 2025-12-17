@@ -1,14 +1,3 @@
-require("@nomicfoundation/hardhat-toolbox");
-
-module.exports = {
-  solidity: "0.8.20",
-  networks: {
-    mumbai: {  // Polygon testnet
-      url: "https://rpc-mumbai.maticvigil.com",
-      accounts: [process.env.PRIVATE_KEY || "your_private_key_here"] // Use env var for security
-    }
-  },
-  etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY
-  }
-};
+// Example
+const AETH_TOKEN_ADDRESS = "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784";
+const STAKING_CONTRACT_ADDRESS = "0x8a3ad49656bd07981c9cfc7ad826a808847c3452";
