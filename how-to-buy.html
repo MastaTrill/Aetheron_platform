@@ -25,6 +25,7 @@
             max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
@@ -196,6 +197,15 @@
                 margin-top: 10px;
             }
         }
+        
+        /* Utility Classes */
+        .small-text { font-size: 0.9rem; }
+        .mt-10 { margin-top: 10px; }
+        .mt-15 { margin-top: 15px; }
+        .instruction-list { margin-left: 20px; margin-top: 10px; }
+        .opacity-07 { opacity: 0.7; }
+        .faq-title { margin-bottom: 20px; text-align: center; }
+        .warning-centered { margin-top: 40px; text-align: center; }
     </style>
 </head>
 <body>
@@ -210,8 +220,8 @@
             </div>
             <div class="step-content">
                 <p>MetaMask is a crypto wallet that lets you interact with blockchain apps. It's available as a browser extension and mobile app.</p>
-                <a href="https://metamask.io/download/" target="_blank" class="btn">Download MetaMask</a>
-                <p style="margin-top: 10px; font-size: 0.9rem;">
+                <a href="https://metamask.io/download/" target="_blank" rel="noopener" class="btn">Download MetaMask</a>
+                <p class="small-text mt-10">
                     📱 Available for Chrome, Firefox, Brave, Edge, iOS, and Android
                 </p>
             </div>
@@ -231,7 +241,7 @@
                     <strong>Currency Symbol:</strong> POL<br>
                     <strong>Block Explorer:</strong> https://polygonscan.com
                 </div>
-                <p style="margin-top: 10px; font-size: 0.9rem;">
+                <p class="small-text mt-10">
                     💡 Or use the quick add button in MetaMask settings → Networks → Add Network → Polygon
                 </p>
             </div>
@@ -244,10 +254,10 @@
             </div>
             <div class="step-content">
                 <p>You need POL tokens to buy AETH and pay for gas fees. Buy POL on any major exchange:</p>
-                <a href="https://www.coinbase.com/" target="_blank" class="btn">Coinbase</a>
-                <a href="https://www.binance.com/" target="_blank" class="btn">Binance</a>
-                <a href="https://www.kraken.com/" target="_blank" class="btn">Kraken</a>
-                <p style="margin-top: 15px; font-size: 0.9rem;">
+                <a href="https://www.coinbase.com/" target="_blank" rel="noopener" class="btn">Coinbase</a>
+                <a href="https://www.binance.com/" target="_blank" rel="noopener" class="btn">Binance</a>
+                <a href="https://www.kraken.com/" target="_blank" rel="noopener" class="btn">Kraken</a>
+                <p class="small-text mt-15">
                     💰 Recommended: Start with at least $50 worth of POL<br>
                     ⛽ Gas fees on Polygon are very low (usually under $0.01)
                 </p>
@@ -261,7 +271,7 @@
             </div>
             <div class="step-content">
                 <p>Transfer your POL from the exchange to your MetaMask wallet:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
+                <ol class="instruction-list">
                     <li>Open MetaMask and copy your wallet address</li>
                     <li>Go to your exchange and select "Withdraw" for POL/MATIC</li>
                     <li>Paste your MetaMask address</li>
@@ -281,11 +291,11 @@
             </div>
             <div class="step-content">
                 <p>Now you're ready to buy AETH! Click the button below to go to QuickSwap:</p>
-                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn btn-primary">
+                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" rel="noopener" class="btn btn-primary">
                     🚀 Buy AETH Now on QuickSwap
                 </a>
-                <p style="margin-top: 15px;">Steps on QuickSwap:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
+                <p class="mt-15">Steps on QuickSwap:</p>
+                <ol class="instruction-list">
                     <li>Click "Connect Wallet" and select MetaMask</li>
                     <li>The AETH token should already be selected (check the address below)</li>
                     <li>Enter the amount of POL you want to swap</li>
@@ -303,7 +313,7 @@
             </div>
             <div class="step-content">
                 <p>To see your AETH balance in MetaMask, add the token manually:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
+                <ol class="instruction-list">
                     <li>Open MetaMask</li>
                     <li>Click "Import tokens" at the bottom</li>
                     <li>Paste the AETH contract address (below)</li>
@@ -312,7 +322,7 @@
                 </ol>
                 <div class="contract-box" onclick="copyToClipboard('0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e')">
                     0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-                    <br><small style="opacity: 0.7;">Click to copy contract address</small>
+                    <br><small class="opacity-07">Click to copy contract address</small>
                 </div>
             </div>
         </div>
@@ -324,11 +334,11 @@
             </div>
             <div class="step-content">
                 <p>Now that you own AETH, stake it to earn passive income:</p>
-                <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" class="btn btn-primary">
+                <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" rel="noopener" class="btn btn-primary">
                     Open Aetheron Dashboard
                 </a>
-                <p style="margin-top: 15px;">Staking options:</p>
-                <ul style="margin-left: 20px; margin-top: 10px;">
+                <p class="mt-15">Staking options:</p>
+                <ul class="instruction-list">
                     <li>🟢 <strong>Flexible Pool:</strong> 5% APY - Withdraw anytime</li>
                     <li>🟡 <strong>30-Day Lock:</strong> 12% APY - Locked for 30 days</li>
                     <li>🔴 <strong>90-Day Lock:</strong> 25% APY - Locked for 90 days</li>
@@ -338,14 +348,14 @@
 
         <div class="quick-links">
             <h3>📌 Quick Links</h3>
-            <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn btn-primary">Buy AETH</a>
-            <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" class="btn">Dashboard</a>
-            <a href="https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn">View Contract</a>
-            <a href="https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank" class="btn">Live Chart</a>
+            <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" rel="noopener" class="btn btn-primary">Buy AETH</a>
+            <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" rel="noopener" class="btn">Dashboard</a>
+            <a href="https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" rel="noopener" class="btn">View Contract</a>
+            <a href="https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank" rel="noopener" class="btn">Live Chart</a>
         </div>
 
         <div class="faq">
-            <h2 style="margin-bottom: 20px; text-align: center;">❓ Frequently Asked Questions</h2>
+            <h2 class="faq-title">❓ Frequently Asked Questions</h2>
             
             <div class="faq-item">
                 <div class="faq-question">How much does it cost to buy AETH?</div>
@@ -390,7 +400,7 @@
             </div>
         </div>
 
-        <div class="warning" style="margin-top: 40px; text-align: center;">
+        <div class="warning warning-centered">
             <strong>⚠️ Investment Warning</strong><br>
             Cryptocurrency investments carry risk. Only invest what you can afford to lose. Always do your own research (DYOR). This is not financial advice.
         </div>

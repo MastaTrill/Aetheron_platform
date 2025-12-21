@@ -1,80 +1,189 @@
-// Polygon Mainnet Addresses - DEPLOYED Dec 20, 2025
-const AETH_ABI = [ /* your ABI here */ ];
-const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheron Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .main-header {
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 120px;
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            height: calc(100vh - 120px);
+            padding: 2rem 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin: 0.5rem 0;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #a8edea;
+        }
+        
+        .welcome-message {
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .welcome-message h3 {
+            margin-bottom: 1rem;
+            color: #a8edea;
+        }
+        
+        .welcome-message ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .welcome-message li {
+            padding: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <h1>🌌 Aetheron Control Center</h1>
+            <p>Decentralized Space Exploration Platform</p>
+        </div>
+    </header>
 
-const STAKING_ABI = [ /* ABI */ ];
-const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>🚀 Aetheron</h3>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#dashboard" class="nav-link active">📊 Dashboard</a></li>
+            <li><a href="#users" class="nav-link">👥 Users</a></li>
+            <li><a href="#missions" class="nav-link">🎯 Missions</a></li>
+            <li><a href="#blockchain" class="nav-link">⛓️ Blockchain</a></li>
+            <li><a href="#analytics" class="nav-link">📈 Analytics</a></li>
+        </ul>
+    </nav>
 
-// For Solana (if adding Solana support later via @solana/web3.js)
-const SOLANA_MINT = "5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki";(
-echo ^<!DOCTYPE html^>
-echo ^<html lang="en"^>
-echo ^<head^>
-echo     ^<meta charset="UTF-8"^>
-echo     ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^>
-echo     ^<title^>Aetheron Admin Dashboard^</title^>
-echo     ^<link rel="stylesheet" href="styles/dashboard.css"^>
-echo ^</head^>
-echo ^<body^>
-echo     ^<canvas id="space-bg"^>^</canvas^>
-echo     
-echo     ^<header class="main-header"^>
-echo         ^<div class="header-content"^>
-echo             ^<h1^>🌌 Aetheron Control Center^</h1^>
-echo             ^<p^>Decentralized Space Exploration Platform^</p^>
-echo         ^</div^>
-echo     ^</header^>
-echo.
-echo     ^<nav id="sidebar" class="sidebar"^>
-echo         ^<div class="sidebar-header"^>
-echo             ^<h3^>🚀 Aetheron^</h3^>
-echo         ^</div^>
-echo         ^<ul class="nav-menu"^>
-echo             ^<li^>^<a href="#dashboard" class="nav-link active" data-section="dashboard"^>📊 Dashboard^</a^>^</li^>
-echo             ^<li^>^<a href="#users" class="nav-link" data-section="users"^>👥 Users^</a^>^</li^>
-echo             ^<li^>^<a href="#missions" class="nav-link" data-section="missions"^>🎯 Missions^</a^>^</li^>
-echo             ^<li^>^<a href="#blockchain" class="nav-link" data-section="blockchain"^>⛓️ Blockchain^</a^>^</li^>
-echo             ^<li^>^<a href="#analytics" class="nav-link" data-section="analytics"^>📈 Analytics^</a^>^</li^>
-echo         ^</ul^>
-echo     ^</nav^>
-echo.
-echo     ^<main id="main-content" class="main-content"^>
-echo         ^<section id="dashboard" class="content-section active"^>
-echo             ^<h2^>🌌 Welcome to Aetheron Platform^</h2^>
-echo             ^<div class="stats-grid"^>
-echo                 ^<div class="stat-card"^>
-echo                     ^<h3^>Total Users^</h3^>
-echo                     ^<p class="stat-number"^>1,234^</p^>
-echo                 ^</div^>
-echo                 ^<div class="stat-card"^>
-echo                     ^<h3^>Active Missions^</h3^>
-echo                     ^<p class="stat-number"^>56^</p^>
-echo                 ^</div^>
-echo                 ^<div class="stat-card"^>
-echo                     ^<h3^>AETH Staked^</h3^>
-echo                     ^<p class="stat-number"^>892,345^</p^>
-echo                 ^</div^>
-echo                 ^<div class="stat-card"^>
-echo                     ^<h3^>Network Health^</h3^>
-echo                     ^<p class="stat-number"^>99.9%^</p^>
-echo                 ^</div^>
-echo             ^</div^>
-echo             
-echo             ^<div class="welcome-message"^>
-echo                 ^<h3^>🚀 Platform Status: LIVE^</h3^>
-echo                 ^<p^>Welcome to the Aetheron Admin Dashboard. This is a revolutionary blockchain and space exploration platform.^</p^>
-echo                 ^<ul^>
-echo                     ^<li^>✅ Admin Dashboard - Fully Functional^</li^>
-echo                     ^<li^>✅ Mobile App - React Native Ready^</li^>
-echo                     ^<li^>✅ Backend API - Express.js Server^</li^>
-echo                     ^<li^>✅ Smart Contracts - Solidity Ready^</li^>
-echo                     ^<li^>✅ Professional Structure - Production Ready^</li^>
-echo                 ^</ul^>
-echo             ^</div^>
-echo         ^</section^>
-echo     ^</main^>
-echo.
-echo     ^<script src="scripts/dashboard.js"^>^</script^>
-echo ^</body^>
-echo ^</html^>
-) > admin-dashboard\index.html
+    <main id="main-content" class="main-content">
+        <section id="dashboard" class="content-section active">
+            <h2>🌌 Welcome to Aetheron Platform</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <p class="stat-number">1,234</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Missions</h3>
+                    <p class="stat-number">56</p>
+                </div>
+                <div class="stat-card">
+                    <h3>AETH Staked</h3>
+                    <p class="stat-number">892,345</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Network Health</h3>
+                    <p class="stat-number">99.9%</p>
+                </div>
+            </div>
+            
+            <div class="welcome-message">
+                <h3>🚀 Platform Status: LIVE</h3>
+                <p>Welcome to the Aetheron Admin Dashboard. This is a revolutionary blockchain and space exploration platform.</p>
+                <ul>
+                    <li>✅ Admin Dashboard - Fully Functional</li>
+                    <li>✅ Mobile App - React Native Ready</li>
+                    <li>✅ Backend API - Express.js Server</li>
+                    <li>✅ Smart Contracts - Solidity Ready</li>
+                    <li>✅ Professional Structure - Production Ready</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

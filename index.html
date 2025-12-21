@@ -53,6 +53,7 @@
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
@@ -95,6 +96,7 @@
             font-size: 3rem;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
@@ -260,6 +262,7 @@
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
@@ -495,6 +498,44 @@
             color: rgba(255,255,255,0.8);
             margin-top: 4rem;
         }
+        
+        /* Utility Classes */
+        .mb-0 { margin-bottom: 0; }
+        .mb-05 { margin-bottom: 0.5rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .mt-05 { margin-top: 0.5rem; }
+        .mt-1 { margin-top: 1rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-gray { color: #6b7280; }
+        .text-white { color: white; }
+        .fw-600 { font-weight: 600; }
+        .fw-700 { font-weight: 700; }
+        .font-mono { font-family: 'Courier New', monospace; }
+        .d-grid { display: grid; }
+        .grid-2 { grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .w-full { width: 100%; }
+        .word-break { word-break: break-all; }
+        .font-08 { font-size: 0.8em; }
+        .wallet-icon { font-size: 4rem; color: var(--primary); margin-bottom: 1rem; }
+        .metamask-status { padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+        .pool-apy-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .info-grid { display: grid; gap: 1rem; }
+        .contract-address { font-family: monospace; font-size: 0.75rem; word-break: break-all; background: #f3f4f6; padding: 0.5rem; border-radius: 6px; }
+        .tax-structure { background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 1rem; border-radius: 8px; }
+        .calc-label { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block; }
+        .calc-input { padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; }
+        .calc-select { padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; }
+        .tx-icon { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
+        .loading-md { width: 40px; height: 40px; }
+        .empty-icon { font-size: 3rem; color: #9ca3af; margin-bottom: 1rem; }
+        .admin-title { color: var(--danger); }
+        .flex-1 { flex: 1; }
+        .footer-link { color: rgba(255,255,255,0.8); margin: 0 1rem; }
+        .paragraph-spacing { margin: 1rem 0; }
+        .info-label { margin-bottom: 0.25rem; }
     </style>
 </head>
 <body>
@@ -562,19 +603,19 @@
             <!-- Left Column - Wallet & Staking -->
             <div>
                 <!-- Wallet Section -->
-                <div class="card" style="margin-bottom: 2rem;">
+                <div class="card mb-2">
                     <div class="card-header">
                         <h2 class="card-title">Your Wallet</h2>
                     </div>
                     
                     <div id="walletNotConnected" class="wallet-section">
-                        <i class="fas fa-wallet" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <i class="fas fa-wallet wallet-icon"></i>
                         <h3>Connect Your Wallet</h3>
-                        <p style="color: #6b7280; margin: 1rem 0;">Connect your MetaMask browser extension to start using Aetheron Platform</p>
-                        <div id="metamaskStatus" style="padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p class="text-gray paragraph-spacing">Connect your MetaMask browser extension to start using Aetheron Platform</p>
+                        <div id="metamaskStatus" class="metamask-status">
                             <i class="fas fa-spinner fa-spin"></i> Checking for MetaMask...
                         </div>
-                        <button class="btn btn-outline" onclick="recheckMetaMask()" style="margin-top: 0.5rem;">
+                        <button class="btn btn-outline mt-05" onclick="recheckMetaMask()">
                             <i class="fas fa-sync-alt"></i> Refresh Detection
                         </button>
                     </div>
@@ -582,8 +623,8 @@
                     <div id="walletConnected" class="hidden">
                         <div class="wallet-connected">
                             <div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">Connected Wallet</div>
-                                <div id="walletAddress" style="font-weight: 600; font-family: monospace;"></div>
+                                <div class="text-sm text-gray">Connected Wallet</div>
+                                <div id="walletAddress" class="fw-600 font-mono"></div>
                             </div>
                             <button class="btn btn-outline" onclick="disconnectWallet()">
                                 <i class="fas fa-sign-out-alt"></i> Disconnect
@@ -591,12 +632,12 @@
                         </div>
                         
                         <div class="balance-display">
-                            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Your AETH Balance</div>
+                            <div class="text-sm text-gray mb-05">Your AETH Balance</div>
                             <div class="amount" id="userBalance">0.00</div>
-                            <div style="color: #6b7280; margin-top: 0.5rem;" id="userBalanceUSD">$0.00 USD</div>
+                            <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div class="d-grid grid-2 mt-1">
                             <button class="btn btn-primary" onclick="window.open('https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
                                 <i class="fas fa-shopping-cart"></i> Buy AETH
                             </button>
@@ -611,7 +652,7 @@
                 <div class="card" id="staking">
                     <div class="card-header">
                         <h2 class="card-title">Staking Pools</h2>
-                        <span style="color: #6b7280; font-size: 0.875rem;">Earn up to 25% APY</span>
+                        <span class="text-gray text-sm">Earn up to 25% APY</span>
                     </div>
                     
                     <div id="stakingAlert" class="alert alert-error hidden"></div>
@@ -623,7 +664,7 @@
                             <div class="pool-header">
                                 <div>
                                     <div class="pool-duration">30 Days</div>
-                                    <div style="font-size: 0.875rem; color: #6b7280;">Short-term staking</div>
+                                    <div class="text-sm text-gray">Short-term staking</div>
                                 </div>
                                 <div class="pool-apy">5% APY</div>
                             </div>
@@ -644,7 +685,7 @@
                             <div class="pool-header">
                                 <div>
                                     <div class="pool-duration">90 Days</div>
-                                    <div style="font-size: 0.875rem; color: #6b7280;">Medium-term staking</div>
+                                    <div class="text-sm text-gray">Medium-term staking</div>
                                 </div>
                                 <div class="pool-apy">12% APY</div>
                             </div>
@@ -665,9 +706,9 @@
                             <div class="pool-header">
                                 <div>
                                     <div class="pool-duration">180 Days</div>
-                                    <div style="font-size: 0.875rem; color: #6b7280;">Long-term staking</div>
+                                    <div class="text-sm text-gray">Long-term staking</div>
                                 </div>
-                                <div class="pool-apy" style="background: linear-gradient(135deg, #f59e0b, #d97706);">25% APY</div>
+                                <div class="pool-apy pool-apy-orange">25% APY</div>
                             </div>
                             <div class="pool-details">
                                 <div><i class="fas fa-clock"></i> Lock: 180 days</div>
@@ -687,78 +728,78 @@
             <!-- Right Column - Quick Links & Info -->
             <div>
                 <!-- Quick Links -->
-                <div class="card" style="margin-bottom: 2rem;">
+                <div class="card mb-2">
                     <div class="card-header">
                         <h2 class="card-title">Quick Links</h2>
                     </div>
                     
                     <div class="quick-links">
-                        <a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="quick-link">
+                        <a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" rel="noopener" class="quick-link">
                             <div class="icon"><i class="fas fa-search"></i></div>
                             <div>
-                                <div style="font-weight: 600;">View Contract</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">PolygonScan</div>
+                                <div class="fw-600">View Contract</div>
+                                <div class="text-sm text-gray">PolygonScan</div>
                             </div>
                         </a>
                         
-                        <a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank" class="quick-link">
+                        <a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank" rel="noopener" class="quick-link">
                             <div class="icon"><i class="fas fa-chart-area"></i></div>
                             <div>
-                                <div style="font-weight: 600;">Live Chart</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">DexTools</div>
+                                <div class="fw-600">Live Chart</div>
+                                <div class="text-sm text-gray">DexTools</div>
                             </div>
                         </a>
                         
-                        <a href="https://quickswap.exchange/#/pool" target="_blank" class="quick-link">
+                        <a href="https://quickswap.exchange/#/pool" target="_blank" rel="noopener" class="quick-link">
                             <div class="icon"><i class="fas fa-water"></i></div>
                             <div>
-                                <div style="font-weight: 600;">Liquidity Pool</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">QuickSwap</div>
+                                <div class="fw-600">Liquidity Pool</div>
+                                <div class="text-sm text-gray">QuickSwap</div>
                             </div>
                         </a>
                         
-                        <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="quick-link">
+                        <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" rel="noopener" class="quick-link">
                             <div class="icon"><i class="fas fa-exchange-alt"></i></div>
                             <div>
-                                <div style="font-weight: 600;">Trade AETH</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">Buy/Sell</div>
+                                <div class="fw-600">Trade AETH</div>
+                                <div class="text-sm text-gray">Buy/Sell</div>
                             </div>
                         </a>
                     </div>
                 </div>
 
                 <!-- Token Info -->
-                <div class="card" style="margin-bottom: 2rem;">
+                <div class="card mb-2">
                     <div class="card-header">
                         <h2 class="card-title">Token Info</h2>
                     </div>
                     
-                    <div style="display: grid; gap: 1rem;">
+                    <div class="info-grid">
                         <div>
-                            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Contract Address</div>
-                            <div style="font-family: monospace; font-size: 0.75rem; word-break: break-all; background: #f3f4f6; padding: 0.5rem; border-radius: 6px;">
+                            <div class="text-sm text-gray info-label">Contract Address</div>
+                            <div class="contract-address">
                                 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
                             </div>
                         </div>
                         
                         <div>
-                            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Total Supply</div>
-                            <div style="font-weight: 600;">1,000,000,000 AETH</div>
+                            <div class="text-sm text-gray info-label">Total Supply</div>
+                            <div class="fw-600">1,000,000,000 AETH</div>
                         </div>
                         
                         <div>
-                            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Network</div>
-                            <div style="font-weight: 600;">Polygon Mainnet</div>
+                            <div class="text-sm text-gray info-label">Network</div>
+                            <div class="fw-600">Polygon Mainnet</div>
                         </div>
                         
                         <div>
-                            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Decimals</div>
-                            <div style="font-weight: 600;">18</div>
+                            <div class="text-sm text-gray info-label">Decimals</div>
+                            <div class="fw-600">18</div>
                         </div>
                         
-                        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Tax Structure</div>
-                            <div style="font-size: 0.875rem; color: #6b7280;">
+                        <div class="tax-structure mt-1">
+                            <div class="fw-600 mb-05">Tax Structure</div>
+                            <div class="text-sm text-gray">
                                 • Buy: 3% → Treasury<br>
                                 • Sell: 5% → Treasury<br>
                                 • Tax-free for staking
@@ -768,32 +809,32 @@
                 </div>
 
                 <!-- Rewards Calculator -->
-                <div class="card" style="margin-bottom: 2rem;">
+                <div class="card mb-2">
                     <div class="card-header">
                         <h2 class="card-title">Rewards Calculator</h2>
                     </div>
                     
                     <div>
-                        <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block;">Amount to Stake</label>
+                        <label class="calc-label">Amount to Stake</label>
                         <div class="calculator-input">
-                            <input type="number" id="calcAmount" placeholder="Enter AETH amount" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px;">
-                            <select id="calcPool" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white;">
+                            <input type="number" id="calcAmount" placeholder="Enter AETH amount" class="calc-input">
+                            <select id="calcPool" class="calc-select" aria-label="Select staking pool">
                                 <option value="0">30 Days (5% APY)</option>
                                 <option value="1">90 Days (12% APY)</option>
                                 <option value="2">180 Days (25% APY)</option>
                             </select>
                         </div>
                         
-                        <button class="btn btn-primary" onclick="calculateRewards()" style="width: 100%;">
+                        <button class="btn btn-primary w-full" onclick="calculateRewards()">
                             <i class="fas fa-calculator"></i> Calculate Rewards
                         </button>
                         
                         <div id="calcResult" class="hidden">
                             <div class="calculator-result">
-                                <div style="font-size: 0.875rem; color: #6b7280;">Estimated Rewards</div>
+                                <div class="text-sm text-gray">Estimated Rewards</div>
                                 <div class="big-number" id="rewardAmount">0 AETH</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">
-                                    Total Return: <span id="totalReturn" style="font-weight: 600;">0 AETH</span>
+                                <div class="text-sm text-gray">
+                                    Total Return: <span id="totalReturn" class="fw-600">0 AETH</span>
                                 </div>
                             </div>
                         </div>
@@ -803,7 +844,7 @@
         </div>
 
         <!-- Transaction History -->
-        <div class="card" style="margin-bottom: 2rem;">
+        <div class="card mb-2">
             <div class="card-header">
                 <h2 class="card-title">Recent Transactions</h2>
                 <button class="btn btn-outline" onclick="refreshTransactions()">
@@ -812,19 +853,19 @@
             </div>
             
             <div id="txNotConnected" class="wallet-section">
-                <i class="fas fa-receipt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
-                <p style="color: #6b7280;">Connect your wallet to view transaction history</p>
+                <i class="fas fa-receipt tx-icon"></i>
+                <p class="text-gray">Connect your wallet to view transaction history</p>
             </div>
             
             <div id="txConnected" class="hidden">
                 <div id="txLoading" class="wallet-section hidden">
-                    <div class="loading" style="width: 40px; height: 40px;"></div>
-                    <p style="margin-top: 1rem; color: #6b7280;">Loading transactions...</p>
+                    <div class="loading loading-md"></div>
+                    <p class="mt-1 text-gray">Loading transactions...</p>
                 </div>
                 
                 <div id="txEmpty" class="wallet-section hidden">
-                    <i class="fas fa-inbox" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                    <p style="color: #6b7280;">No transactions yet</p>
+                    <i class="fas fa-inbox empty-icon"></i>
+                    <p class="text-gray">No transactions yet</p>
                 </div>
                 
                 <div id="txList" class="tx-list"></div>
@@ -832,19 +873,19 @@
         </div>
 
         <!-- Admin Controls (Only visible to contract owner) -->
-        <div id="adminPanel" class="card hidden" style="margin-bottom: 2rem;">
+        <div id="adminPanel" class="card hidden mb-2">
             <div class="card-header">
-                <h2 class="card-title" style="color: var(--danger);">
+                <h2 class="card-title admin-title">
                     <i class="fas fa-shield-alt"></i> Admin Controls
                 </h2>
             </div>
             
             <div class="admin-section">
-                <div style="font-weight: 600; margin-bottom: 1rem;">⚠️ Owner Functions - Use with Caution</div>
+                <div class="fw-600 mb-1">⚠️ Owner Functions - Use with Caution</div>
                 
                 <div class="admin-controls">
                     <div>
-                        <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block;">Update Tax Rates</label>
+                        <label class="calc-label">Update Tax Rates</label>
                         <div class="control-row">
                             <input type="number" id="buyTax" placeholder="Buy Tax %" min="0" max="10">
                             <input type="number" id="sellTax" placeholder="Sell Tax %" min="0" max="10">
@@ -855,19 +896,19 @@
                     </div>
                     
                     <div>
-                        <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block;">Pause/Unpause Trading</label>
+                        <label class="calc-label">Pause/Unpause Trading</label>
                         <div class="control-row">
-                            <button class="btn btn-danger" onclick="pauseTrading()" style="flex: 1;">
+                            <button class="btn btn-danger flex-1" onclick="pauseTrading()">
                                 <i class="fas fa-pause"></i> Pause Trading
                             </button>
-                            <button class="btn btn-success" onclick="unpauseTrading()" style="flex: 1;">
+                            <button class="btn btn-success flex-1" onclick="unpauseTrading()">
                                 <i class="fas fa-play"></i> Resume Trading
                             </button>
                         </div>
                     </div>
                     
                     <div>
-                        <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block;">Withdraw Treasury</label>
+                        <label class="calc-label">Withdraw Treasury</label>
                         <div class="control-row">
                             <input type="text" id="withdrawAddress" placeholder="Recipient Address">
                             <input type="number" id="withdrawAmount" placeholder="Amount">
@@ -878,12 +919,12 @@
                     </div>
                     
                     <div>
-                        <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; display: block;">Emergency Functions</label>
+                        <label class="calc-label">Emergency Functions</label>
                         <div class="control-row">
-                            <button class="btn btn-danger" onclick="emergencyWithdraw()" style="flex: 1;">
+                            <button class="btn btn-danger flex-1" onclick="emergencyWithdraw()">
                                 <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
                             </button>
-                            <button class="btn btn-warning" onclick="rescueTokens()" style="flex: 1;">
+                            <button class="btn btn-warning flex-1" onclick="rescueTokens()">
                                 <i class="fas fa-life-ring"></i> Rescue Tokens
                             </button>
                         </div>
@@ -895,10 +936,10 @@
 
     <footer>
         <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
-        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
-            <a href="#" style="color: rgba(255,255,255,0.8); margin: 0 1rem;">Terms</a>
-            <a href="#" style="color: rgba(255,255,255,0.8); margin: 0 1rem;">Privacy</a>
-            <a href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" style="color: rgba(255,255,255,0.8); margin: 0 1rem;">GitHub</a>
+        <p class="mt-05 text-sm">
+            <a href="#" class="footer-link">Terms</a>
+            <a href="#" class="footer-link">Privacy</a>
+            <a href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener" class="footer-link">GitHub</a>
         </p>
     </footer>
 
