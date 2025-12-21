@@ -142,6 +142,6 @@ Repository: github.com/Mastatrill/aetheron-platform
 
 Website: mastatrill.github.io/aetheron-platform
 
-Email: contact@aetheron.space
+Email: Aetheron.solana@gmail.com
 
-⭐ Star us on GitHub if you like this project!Created by Mastatrill — Building the future of space exploration 🌌🚀
+⭐ Star us on GitHub if you like this project! Created by Mastatrill — Building the future of space exploration 🌌🚀

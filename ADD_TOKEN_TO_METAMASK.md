@@ -35,6 +35,35 @@ Then click the **"Add token to MetaMask"** button on PolygonScan.
 AETH
 ```
 
+#### Decimals
+```
+18
+```
+
+---
+
+# Submit to Public Token Lists
+
+- [Coingecko Token List](https://github.com/coinpaprika/coinpaprika-api-docs/blob/master/public/cryptocurrency/list.md)
+- [Uniswap Token List](https://tokenlists.org/)
+- [1inch Token List](https://github.com/1inch/1inch-token-list)
+- [Quickswap Token List](https://github.com/QuickSwap/quick-tokenlists)
+
+Submit the following info:
+- Token Name: Aetheron
+- Symbol: AETH
+- Decimals: 18
+- Address: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+- Network: Polygon (chainId 137)
+- Logo: (add your logo file or URL)
+
+This will make your token discoverable in wallets and DEXs.
+
+#### Token Symbol
+```
+AETH
+```
+
 #### Token Decimals
 ```
 18

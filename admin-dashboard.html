@@ -4,153 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aetheron Admin Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #fff;
-        }
-        
-        .main-header {
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .header-content h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 120px;
-            width: 250px;
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            height: calc(100vh - 120px);
-            padding: 2rem 0;
-        }
-        
-        .sidebar-header {
-            padding: 0 1.5rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem;
-        }
-        
-        .nav-menu {
-            list-style: none;
-        }
-        
-        .nav-menu li {
-            margin: 0.5rem 0;
-        }
-        
-        .nav-link {
-            display: block;
-            padding: 1rem 1.5rem;
-            color: #fff;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        
-        .nav-link:hover,
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #a8edea;
-        }
-        
-        .welcome-message {
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .welcome-message h3 {
-            margin-bottom: 1rem;
-            color: #a8edea;
-        }
-        
-        .welcome-message ul {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        
-        .welcome-message li {
-            padding: 0.5rem 0;
-            font-size: 1.1rem;
-        }
-    </style>
+    <link rel="stylesheet" href="./admin-dashboard.css">
 </head>
 <body>
-    <header class="main-header">
+    <canvas id="space-bg" class="canvas-bg"></canvas>
+    <header class="header-gradient">
         <div class="header-content">
-            <h1>🌌 Aetheron Control Center</h1>
-            <p>Decentralized Space Exploration Platform</p>
+            <h1 class="orbitron">🌌 Aetheron Control Center</h1>
+            <p class="share-tech">Decentralized Space Exploration Platform</p>
         </div>
     </header>
 
-    <nav id="sidebar" class="sidebar">
+    <nav id="sidebar" class="sidebar-custom">
         <div class="sidebar-header">
-            <h3>🚀 Aetheron</h3>
+            <h3 class="sidebar-title">🚀 Aetheron</h3>
         </div>
         <ul class="nav-menu">
-            <li><a href="#dashboard" class="nav-link active">📊 Dashboard</a></li>
-            <li><a href="#users" class="nav-link">👥 Users</a></li>
-            <li><a href="#missions" class="nav-link">🎯 Missions</a></li>
-            <li><a href="#blockchain" class="nav-link">⛓️ Blockchain</a></li>
-            <li><a href="#analytics" class="nav-link">📈 Analytics</a></li>
+            <li><a href="#dashboard" class="sidebar-link nav-link active">📊 Dashboard</a></li>
+            <li><a href="#users" class="sidebar-link nav-link">👥 Users</a></li>
+            <li><a href="#missions" class="sidebar-link nav-link">🎯 Missions</a></li>
+            <li><a href="#blockchain" class="sidebar-link nav-link">⛓️ Blockchain</a></li>
+            <li><a href="#analytics" class="sidebar-link nav-link">📈 Analytics</a></li>
         </ul>
     </nav>
 
-    <main id="main-content" class="main-content">
+    <main id="main-content" class="main-content main-bg">
+        <nav id="widget-controls" class="widget-controls"></nav>
+        <ul id="feed-list" class="feed-list"></ul>
+        <input id="user-search" placeholder="Search address..." class="user-search">
+        <table id="user-table" class="styled-table"></table>
+        <table id="logs-table" class="styled-table"></table>
+        <div id="plugin-list" class="plugin-list"></div>
+        <form id="plugin-install-form" class="plugin-install-form">
+            <input id="plugin-url" placeholder="Plugin URL or ID" class="plugin-url">
+        </form>
+        <div id="ai-chat" class="ai-chat">
+            <div class="ai-chat-header">
+                <span class="ai-chat-title">Aetheron AI Assistant</span>
+                <button onclick="document.getElementById('ai-chat').style.display='none'" class="ai-chat-close">&times;</button>
+            </div>
+            <div id="ai-holo-container" class="ai-holo-container">
+                <canvas id="ai-holo" width="300" height="220" class="ai-holo"></canvas>
+            </div>
+            <div id="ai-chat-messages" class="ai-chat-messages"></div>
+            <form id="ai-chat-form" class="ai-chat-form">
+                <input id="ai-chat-input" autocomplete="off" placeholder="Ask anything..." class="ai-chat-input">
+            </form>
+        </div>
         <section id="dashboard" class="content-section active">
             <h2>🌌 Welcome to Aetheron Platform</h2>
             <div class="stats-grid">
@@ -184,6 +84,13 @@
                 </ul>
             </div>
         </section>
+            <div id="login-modal" class="login-modal">
+                <form id="login-form" class="login-form">
+                    <h2 class="login-title">Admin Login</h2>
+                    <button type="submit" class="login-btn">Login</button>
+                    <div id="login-error" class="login-error"></div>
+                </form>
+            </div>
     </main>
 </body>
 </html>
