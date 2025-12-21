@@ -9,7 +9,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // Configuration - Update these addresses for your deployment
-  const TEAM_WALLET = "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784";
+  const TEAM_WALLET = "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452";
   const MARKETING_WALLET = "0x8a3ad49656bd07981c9cfc7ad826a808847c3452";
   
   // Deploy Aetheron Token

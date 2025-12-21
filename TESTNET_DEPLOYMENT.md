@@ -43,7 +43,7 @@ Create `.env` file in `smart-contract/` directory:
 
 ```bash
 # Your deployment wallet private key (export from MetaMask)
-PRIVATE_KEY=your_private_key_here
+PRIVATE_KEY= 23c7cf05efd55c56e4bf5b9ac29e3e187436ea8561f8cdf554316bc55536c5b3
 
 # RPC URLs
 MUMBAI_RPC_URL=https://rpc-mumbai.maticvigil.com
@@ -51,7 +51,7 @@ SEPOLIA_RPC_URL=https://rpc.sepolia.org
 
 # Block explorer API keys (for contract verification)
 POLYGONSCAN_API_KEY=your_api_key
-ETHERSCAN_API_KEY=your_api_key
+ETHERSCAN_API_KEY=Z3I7GY96MDGS5AU6FUFF32FA54V8EWXGNB
 
 # Wallet addresses for tax distribution
 TEAM_WALLET=0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784

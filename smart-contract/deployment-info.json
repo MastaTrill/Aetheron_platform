@@ -1,0 +1,27 @@
+{
+  "network": "polygon",
+  "chainId": 137,
+  "timestamp": "2025-12-21T05:28:34.783Z",
+  "deployer": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+  "contracts": {
+    "Aetheron": {
+      "address": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "args": [
+        "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
+        "0x8a3ad49656bd07981c9cfc7ad826a808847c3452"
+      ]
+    },
+    "AetheronStaking": {
+      "address": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638",
+      "args": [
+        "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+      ]
+    }
+  },
+  "configuration": {
+    "teamWallet": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
+    "marketingWallet": "0x8a3ad49656bd07981c9cfc7ad826a808847c3452",
+    "stakingRewards": "150000000000000000000000000"
+  },
+  "gasUsed": "106611165015954183"
+}

@@ -12,11 +12,13 @@
 
 ## Deployed Contracts
 
-### Polygon (or specify network: Mumbai Testnet / Mainnet)
-- AETH Token: `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784`
-  - View on PolygonScan: [Link](https://polygonscan.com/address/0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784) (or mumbai.polygonscan.com for testnet)
-- Staking/Treasury Contract: `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-  - View on PolygonScan: [Link](https://polygonscan.com/address/0x8a3ad49656bd07981c9cfc7ad826a808847c3452)
+### Polygon Mainnet (Chain ID: 137)
+- AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
+  - View on PolygonScan: [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
+- Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
+  - View on PolygonScan: [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
+- Liquidity Pair: `0xd57c5E33ebDC1b565F99d06809debbf86142705D`
+  - View on PolygonScan: [Link](https://polygonscan.com/address/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
 
 ### Solana (if applicable for cross-chain or future features)
 - Solana Mint/Wallet/Program: `5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki`

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheron Platform - Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .wallet-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .connect-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .connected {
+            background: #4CAF50;
+        }
+        
+        .wallet-info {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .wallet-info.active {
+            display: block;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f5f5f5;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .info-value {
+            color: #333;
+            font-family: monospace;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #764ba2;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .pools-list {
+            margin-top: 20px;
+        }
+        
+        .pool-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .pool-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .pool-details {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌌 Aetheron Platform</h1>
+            <p>Decentralized Token & Staking Platform</p>
+        </div>
+        
+        <div class="wallet-section">
+            <button id="connectBtn" class="connect-btn">Connect MetaMask</button>
+            <div id="walletInfo" class="wallet-info">
+                <div class="info-row">
+                    <span class="info-label">Connected Account:</span>
+                    <span class="info-value" id="accountAddress">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ETH Balance:</span>
+                    <span class="info-value" id="ethBalance">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">AETH Balance:</span>
+                    <span class="info-value" id="aethBalance">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <h2>💰 Transfer AETH</h2>
+                <div class="input-group">
+                    <label>Recipient Address:</label>
+                    <input type="text" id="transferTo" placeholder="0x...">
+                </div>
+                <div class="input-group">
+                    <label>Amount (AETH):</label>
+                    <input type="number" id="transferAmount" placeholder="100">
+                </div>
+                <button class="action-btn" onclick="transferTokens()">Transfer</button>
+                <div id="transferStatus" class="status-message"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🎯 Stake AETH</h2>
+                <div class="input-group">
+                    <label>Pool ID:</label>
+                    <input type="number" id="poolId" placeholder="0, 1, or 2" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Amount (AETH):</label>
+                    <input type="number" id="stakeAmount" placeholder="1000">
+                </div>
+                <button class="action-btn" onclick="stakeTokens()">Stake</button>
+                <div id="stakeStatus" class="status-message"></div>
+                
+                <div class="pools-list">
+                    <div class="pool-item">
+                        <h3>Pool 0: Short Term</h3>
+                        <div class="pool-details">
+                            <span>Lock: 30 days</span>
+                            <span>APY: 5%</span>
+                        </div>
+                    </div>
+                    <div class="pool-item">
+                        <h3>Pool 1: Medium Term</h3>
+                        <div class="pool-details">
+                            <span>Lock: 90 days</span>
+                            <span>APY: 12%</span>
+                        </div>
+                    </div>
+                    <div class="pool-item">
+                        <h3>Pool 2: Long Term</h3>
+                        <div class="pool-details">
+                            <span>Lock: 180 days</span>
+                            <span>APY: 25%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Contract Info</h2>
+                <div class="info-row">
+                    <span class="info-label">AETH Token:</span>
+                    <span class="info-value" style="font-size: 0.8em;">0x5FbDB...0aa3</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Staking:</span>
+                    <span class="info-value" style="font-size: 0.8em;">0xe7f17...0512</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Network:</span>
+                    <span class="info-value">Hardhat Local</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Chain ID:</span>
+                    <span class="info-value">1337</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Polygon Mainnet Addresses - DEPLOYED Dec 20, 2025
+        const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+        const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
+        
+        const AETH_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function transfer(address to, uint256 amount) returns (bool)",
+            "function approve(address spender, uint256 amount) returns (bool)",
+            "function decimals() view returns (uint8)"
+        ];
+        
+        const STAKING_ABI = [
+            "function stake(uint256 poolId, uint256 amount)",
+            "function pools(uint256) view returns (uint256, uint256, uint256, bool)"
+        ];
+        
+        let provider, signer, account;
+        let aethContract, stakingContract;
+        
+        // Check MetaMask on page load
+        window.addEventListener('load', checkMetaMask);
+        
+        function checkMetaMask() {
+            if (typeof window.ethereum !== 'undefined') {
+                document.getElementById('connectBtn').style.display = 'block';
+            }
+        }
+        
+        document.getElementById('connectBtn').addEventListener('click', connectWallet);
+        
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('MetaMask not detected! Please:\n1. Install MetaMask extension\n2. Refresh this page\n3. If installed, make sure you\'re using the same browser');
+                window.open('https://metamask.io/download/', '_blank');
+                return;
+            }
+            
+            try {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                account = await signer.getAddress();
+                
+                aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
+                stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+                
+                document.getElementById('connectBtn').textContent = 'Connected ✓';
+                document.getElementById('connectBtn').classList.add('connected');
+                document.getElementById('walletInfo').classList.add('active');
+                document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
+                
+                await updateBalances();
+            } catch (error) {
+                console.error('Error connecting:', error);
+                alert('Failed to connect: ' + error.message);
+            }
+        }
+        
+        async function updateBalances() {
+            try {
+                const ethBalance = await provider.getBalance(account);
+                document.getElementById('ethBalance').textContent = 
+                    parseFloat(ethers.utils.formatEther(ethBalance)).toFixed(4) + ' ETH';
+                
+                const aethBalance = await aethContract.balanceOf(account);
+                document.getElementById('aethBalance').textContent = 
+                    parseFloat(ethers.utils.formatEther(aethBalance)).toFixed(2) + ' AETH';
+            } catch (error) {
+                console.error('Error updating balances:', error);
+            }
+        }
+        
+        async function transferTokens() {
+            const to = document.getElementById('transferTo').value;
+            const amount = document.getElementById('transferAmount').value;
+            const statusEl = document.getElementById('transferStatus');
+            
+            if (!to || !amount) {
+                statusEl.textContent = 'Please fill in all fields';
+                statusEl.className = 'status-message error';
+                return;
+            }
+            
+            try {
+                statusEl.textContent = 'Processing transaction...';
+                statusEl.className = 'status-message';
+                statusEl.style.display = 'block';
+                
+                const tx = await aethContract.transfer(to, ethers.utils.parseEther(amount));
+                await tx.wait();
+                
+                statusEl.textContent = 'Transfer successful!';
+                statusEl.className = 'status-message success';
+                await updateBalances();
+            } catch (error) {
+                console.error('Transfer error:', error);
+                statusEl.textContent = 'Transfer failed: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+        
+        async function stakeTokens() {
+            const poolId = document.getElementById('poolId').value;
+            const amount = document.getElementById('stakeAmount').value;
+            const statusEl = document.getElementById('stakeStatus');
+            
+            if (!amount) {
+                statusEl.textContent = 'Please enter an amount';
+                statusEl.className = 'status-message error';
+                return;
+            }
+            
+            try {
+                statusEl.textContent = 'Approving tokens...';
+                statusEl.className = 'status-message';
+                statusEl.style.display = 'block';
+                
+                const approvalTx = await aethContract.approve(STAKING_ADDRESS, ethers.utils.parseEther(amount));
+                await approvalTx.wait();
+                
+                statusEl.textContent = 'Staking tokens...';
+                
+                const stakeTx = await stakingContract.stake(poolId, ethers.utils.parseEther(amount));
+                await stakeTx.wait();
+                
+                statusEl.textContent = 'Staking successful!';
+                statusEl.className = 'status-message success';
+                await updateBalances();
+            } catch (error) {
+                console.error('Staking error:', error);
+                statusEl.textContent = 'Staking failed: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+    </script>
+</body>
+</html>
