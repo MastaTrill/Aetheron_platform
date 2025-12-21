@@ -23,31 +23,29 @@ async function main() {
     deployer.address // Temporary staking pool address
   );
   
-  await aetheron.deployed();
-  console.log("✅ Aetheron Token deployed to:", aetheron.address);
+  console.log("✅ Aetheron Token deployed to:", await aetheron.getAddress());
   
   // Deploy Staking Contract
   console.log("\n📜 Deploying Aetheron Staking...");
   const AetheronStaking = await ethers.getContractFactory("AetheronStaking");
-  const staking = await AetheronStaking.deploy(aetheron.address);
+  const staking = await AetheronStaking.deploy(await aetheron.getAddress());
   
-  await staking.deployed();
-  console.log("✅ Aetheron Staking deployed to:", staking.address);
+  console.log("✅ Aetheron Staking deployed to:", await staking.getAddress());
   
   // Update staking pool address in token contract
   console.log("\n🔄 Updating staking pool address in token contract...");
   const updateTx = await aetheron.updateWallets(
     TEAM_WALLET,
     MARKETING_WALLET,
-    staking.address
+    await staking.getAddress()
   );
   await updateTx.wait();
   console.log("✅ Staking pool address updated");
   
   // Transfer staking rewards to staking contract
   console.log("\n💰 Transferring tokens to staking contract...");
-  const stakingRewards = ethers.utils.parseEther("150000000"); // 150M tokens for staking rewards
-  const transferTx = await aetheron.transfer(staking.address, stakingRewards);
+  const stakingRewards = ethers.parseEther("150000000"); // 150M tokens for staking rewards
+  const transferTx = await aetheron.transfer(await staking.getAddress(), stakingRewards);
   await transferTx.wait();
   
   // Deposit rewards into staking contract
@@ -58,7 +56,7 @@ async function main() {
   
   // Exclude staking contract from tax
   console.log("\n🔧 Configuring token contract...");
-  const excludeTx = await aetheron.setExcludedFromTax(staking.address, true);
+  const excludeTx = await aetheron.setExcludedFromTax(await staking.getAddress(), true);
   await excludeTx.wait();
   console.log("✅ Staking contract excluded from tax");
   
@@ -67,8 +65,8 @@ async function main() {
   console.log("🎉 DEPLOYMENT COMPLETE!");
   console.log("=".repeat(60));
   console.log("\n📋 Contract Addresses:");
-  console.log("  AETH Token:", aetheron.address);
-  console.log("  Staking Contract:", staking.address);
+  console.log("  AETH Token:", await aetheron.getAddress());
+  console.log("  Staking Contract:", await staking.getAddress());
   console.log("\n💼 Wallets:");
   console.log("  Team Wallet:", TEAM_WALLET);
   console.log("  Marketing Wallet:", MARKETING_WALLET);
@@ -92,8 +90,8 @@ async function main() {
     network: hre.network.name,
     timestamp: new Date().toISOString(),
     contracts: {
-      Aetheron: aetheron.address,
-      AetheronStaking: staking.address
+      Aetheron: await aetheron.getAddress(),
+      AetheronStaking: await staking.getAddress()
     },
     wallets: {
       team: TEAM_WALLET,
