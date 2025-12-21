@@ -1,5 +1,5 @@
 // scripts/deploy.js
-const { ethers } = require("hardhat");
+import { ethers } from "hardhat";
 
 async function main() {
   console.log("🚀 Deploying AetherX token to Polygon...");

@@ -1,0 +1,7 @@
+{
+  "python.pythonPath": "python3",
+  "dbt.projectDir": "./dbt",
+  "dbt.profilesDir": "./dbt/profiles",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2
+}

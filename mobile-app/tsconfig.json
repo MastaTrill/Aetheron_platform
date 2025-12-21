@@ -1,0 +1,29 @@
+{
+  // "extends": "@react-native/typescript-config/tsconfig.json", // Removed: not found
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": ["es2017", "es2019", "es2020"],
+    "jsx": "react-native",
+    "strict": true,
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@screens/*": ["src/screens/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@context/*": ["src/context/*"],
+      "@config/*": ["src/config/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "include": ["src/**/*", "index.js", "App.tsx"],
+  "exclude": ["node_modules", "android", "ios"]
+}

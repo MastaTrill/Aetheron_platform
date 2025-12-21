@@ -5,7 +5,7 @@
 ### Primary Contracts
 
 #### AETH Token
-- **Address:** `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784`
+- **Address:** `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - **Type:** ERC-20 Token
 - **Symbol:** AETH
 - **Name:** Aetheron
@@ -13,11 +13,11 @@
 - **View on PolygonScan:** [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 
 #### Staking Contract
-- **Address:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
+- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - **Type:** Staking Contract
 - **Manages:** AETH token staking rewards
 - **Pools:** 3 (30/90/180 days)
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x8a3ad49656bd07981c9cfc7ad826a808847c3452)
+- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 
 ---
 
