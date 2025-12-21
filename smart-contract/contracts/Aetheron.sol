@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -47,7 +47,7 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
         address _teamWallet,
         address _marketingWallet,
         address _stakingPool
-    ) ERC20("Aetheron", "AETH") {
+    ) ERC20("Aetheron", "AETH") Ownable(msg.sender) {
         require(_teamWallet != address(0), "Invalid team wallet");
         require(_marketingWallet != address(0), "Invalid marketing wallet");
         require(_stakingPool != address(0), "Invalid staking pool");
@@ -126,7 +126,7 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
     /**
      * @dev Override transfer to include tax logic
      */
-    function _transfer(
+    function _update(
         address from,
         address to,
         uint256 amount
@@ -135,7 +135,7 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
         require(tradingEnabled || isExcludedFromTax[from] || isExcludedFromTax[to], "Trading not enabled");
         
         if (isExcludedFromTax[from] || isExcludedFromTax[to] || amount == 0) {
-            super._transfer(from, to, amount);
+            super._update(from, to, amount);
             return;
         }
         
@@ -151,14 +151,14 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
             uint256 marketingTax = (taxAmount * marketingTaxShare) / 100;
             uint256 stakingTax = taxAmount - teamTax - marketingTax;
             
-            super._transfer(from, teamWallet, teamTax);
-            super._transfer(from, marketingWallet, marketingTax);
-            super._transfer(from, stakingPool, stakingTax);
+            super._update(from, teamWallet, teamTax);
+            super._update(from, marketingWallet, marketingTax);
+            super._update(from, stakingPool, stakingTax);
             
             emit TaxCollected(taxAmount, from);
         }
         
-        super._transfer(from, to, amount - taxAmount);
+        super._update(from, to, amount - taxAmount);
     }
     
     /**

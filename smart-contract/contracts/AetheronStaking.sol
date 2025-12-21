@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -45,7 +45,7 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     event RewardClaimed(address indexed user, uint256 indexed stakeId, uint256 reward);
     event RewardDeposited(uint256 amount);
     
-    constructor(address _aetheronToken) {
+    constructor(address _aetheronToken) Ownable(msg.sender) {
         require(_aetheronToken != address(0), "Invalid token address");
         aetheronToken = IERC20(_aetheronToken);
         
