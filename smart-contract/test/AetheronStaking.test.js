@@ -6,8 +6,8 @@ describe("AetheronStaking", function () {
   let aetheron, staking;
   let owner, user1, user2;
   
-  const INITIAL_SUPPLY = ethers.utils.parseEther("1000000");
-  const REWARD_AMOUNT = ethers.utils.parseEther("100000");
+  const INITIAL_SUPPLY = ethers.parseEther("1000000");
+  const REWARD_AMOUNT = ethers.parseEther("100000");
   
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
@@ -15,21 +15,19 @@ describe("AetheronStaking", function () {
     // Deploy token
     const Aetheron = await ethers.getContractFactory("Aetheron");
     aetheron = await Aetheron.deploy(owner.address, owner.address, owner.address);
-    await aetheron.deployed();
     
     // Enable trading
     await aetheron.enableTrading();
     
     // Deploy staking
     const AetheronStaking = await ethers.getContractFactory("AetheronStaking");
-    staking = await AetheronStaking.deploy(aetheron.address);
-    await staking.deployed();
+    staking = await AetheronStaking.deploy(await aetheron.getAddress());
     
     // Setup: transfer tokens to users and deposit rewards
     await aetheron.transfer(user1.address, INITIAL_SUPPLY);
     await aetheron.transfer(user2.address, INITIAL_SUPPLY);
     
-    await aetheron.approve(staking.address, REWARD_AMOUNT);
+    await aetheron.approve(await staking.getAddress(), REWARD_AMOUNT);
     await staking.depositRewards(REWARD_AMOUNT);
   });
   
@@ -44,7 +42,7 @@ describe("AetheronStaking", function () {
     });
     
     it("Should set correct token address", async function () {
-      expect(await staking.aetheronToken()).to.equal(aetheron.address);
+      expect(await staking.aetheronToken()).to.equal(await aetheron.getAddress());
     });
   });
   
@@ -73,10 +71,10 @@ describe("AetheronStaking", function () {
   });
   
   describe("Staking", function () {
-    const stakeAmount = ethers.utils.parseEther("1000");
+    const stakeAmount = ethers.parseEther("1000");
     
     it("Should allow users to stake tokens", async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount);
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       
       await expect(
         staking.connect(user1).stake(0, stakeAmount)
@@ -88,7 +86,7 @@ describe("AetheronStaking", function () {
     
     it("Should not allow staking in inactive pools", async function () {
       await staking.updatePoolStatus(0, false);
-      await aetheron.connect(user1).approve(staking.address, stakeAmount);
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       
       await expect(
         staking.connect(user1).stake(0, stakeAmount)
@@ -102,7 +100,7 @@ describe("AetheronStaking", function () {
     });
     
     it("Should update pool totalStaked", async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount);
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       await staking.connect(user1).stake(0, stakeAmount);
       
       const pool = await staking.pools(0);
@@ -111,10 +109,10 @@ describe("AetheronStaking", function () {
   });
   
   describe("Rewards", function () {
-    const stakeAmount = ethers.utils.parseEther("1000");
+    const stakeAmount = ethers.parseEther("1000");
     
     beforeEach(async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount);
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       await staking.connect(user1).stake(0, stakeAmount); // Pool 0: 30 days, 5% APY
     });
     
@@ -125,9 +123,9 @@ describe("AetheronStaking", function () {
       const reward = await staking.calculateReward(user1.address, 0);
       
       // Expected reward: (1000 * 5% / 365 days) * 30 days ≈ 4.11 AETH
-      const expectedReward = stakeAmount.mul(500).mul(30 * 24 * 60 * 60).div(365 * 24 * 60 * 60 * 10000);
+      const expectedReward = stakeAmount * 500n * BigInt(30 * 24 * 60 * 60) / BigInt(365 * 24 * 60 * 60 * 10000);
       
-      expect(reward).to.be.closeTo(expectedReward, ethers.utils.parseEther("0.01"));
+      expect(reward).to.be.closeTo(expectedReward, ethers.parseEther("0.01"));
     });
     
     it("Should allow users to claim rewards", async function () {
@@ -159,10 +157,10 @@ describe("AetheronStaking", function () {
   });
   
   describe("Unstaking", function () {
-    const stakeAmount = ethers.utils.parseEther("1000");
+    const stakeAmount = ethers.parseEther("1000");
     
     beforeEach(async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount);
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       await staking.connect(user1).stake(0, stakeAmount); // Pool 0: 30 days
     });
     
@@ -182,7 +180,7 @@ describe("AetheronStaking", function () {
       ).to.emit(staking, "Unstaked");
       
       const balanceAfter = await aetheron.balanceOf(user1.address);
-      expect(balanceAfter.sub(balanceBefore)).to.be.gte(stakeAmount);
+      expect(balanceAfter - balanceBefore).to.be.gte(stakeAmount);
     });
     
     it("Should claim rewards when unstaking", async function () {
@@ -193,7 +191,7 @@ describe("AetheronStaking", function () {
       const balanceAfter = await aetheron.balanceOf(user1.address);
       
       // Should receive original stake + rewards
-      expect(balanceAfter.sub(balanceBefore)).to.be.gt(stakeAmount);
+      expect(balanceAfter - balanceBefore).to.be.gt(stakeAmount);
     });
     
     it("Should update totalStaked after unstaking", async function () {
@@ -203,7 +201,7 @@ describe("AetheronStaking", function () {
       await staking.connect(user1).unstake(0);
       const totalAfter = await staking.totalStaked();
       
-      expect(totalBefore.sub(totalAfter)).to.equal(stakeAmount);
+      expect(totalBefore - totalAfter).to.equal(stakeAmount);
     });
     
     it("Should remove stake from user stakes", async function () {
@@ -216,10 +214,10 @@ describe("AetheronStaking", function () {
   });
   
   describe("Multiple Stakes", function () {
-    const stakeAmount = ethers.utils.parseEther("1000");
+    const stakeAmount = ethers.parseEther("1000");
     
     it("Should allow multiple stakes from same user", async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount.mul(3));
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount * 3n);
       
       await staking.connect(user1).stake(0, stakeAmount);
       await staking.connect(user1).stake(1, stakeAmount);
@@ -229,7 +227,7 @@ describe("AetheronStaking", function () {
     });
     
     it("Should track each stake independently", async function () {
-      await aetheron.connect(user1).approve(staking.address, stakeAmount.mul(2));
+      await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount * 2n);
       
       await staking.connect(user1).stake(0, stakeAmount);
       await time.increase(15 * 24 * 60 * 60); // 15 days
@@ -245,15 +243,15 @@ describe("AetheronStaking", function () {
   
   describe("Reward Deposit", function () {
     it("Should allow owner to deposit rewards", async function () {
-      const depositAmount = ethers.utils.parseEther("10000");
+      const depositAmount = ethers.parseEther("10000");
       
-      await aetheron.approve(staking.address, depositAmount);
+      await aetheron.approve(await staking.getAddress(), depositAmount);
       
       await expect(
         staking.depositRewards(depositAmount)
       ).to.emit(staking, "RewardDeposited");
       
-      expect(await staking.rewardBalance()).to.be.gte(REWARD_AMOUNT.add(depositAmount));
+      expect(await staking.rewardBalance()).to.be.gte(REWARD_AMOUNT + depositAmount);
     });
     
     it("Should not allow depositing zero rewards", async function () {
