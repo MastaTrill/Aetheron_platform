@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Buy AETH - Aetheron Platform</title>
+    <meta name="description" content="Step-by-step guide to purchasing AETH tokens on Polygon network via QuickSwap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #a8edea;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            margin-left: 55px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .quick-links {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .quick-links h3 {
+            margin-bottom: 15px;
+        }
+
+        .contract-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .contract-box:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .warning strong {
+            color: #ffc107;
+        }
+
+        .video-placeholder {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 60px;
+            text-align: center;
+            margin: 30px 0;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .video-placeholder p {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .faq {
+            margin-top: 40px;
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #a8edea;
+        }
+
+        .faq-answer {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .step-content {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 How to Buy AETH</h1>
+        <p class="subtitle">Complete beginner's guide to purchasing Aetheron tokens</p>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                Get MetaMask Wallet
+            </div>
+            <div class="step-content">
+                <p>MetaMask is a crypto wallet that lets you interact with blockchain apps. It's available as a browser extension and mobile app.</p>
+                <a href="https://metamask.io/download/" target="_blank" class="btn">Download MetaMask</a>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    📱 Available for Chrome, Firefox, Brave, Edge, iOS, and Android
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                Add Polygon Network
+            </div>
+            <div class="step-content">
+                <p>AETH tokens are on the Polygon network. Add it to MetaMask with these settings:</p>
+                <div class="contract-box" onclick="alert('Network settings - add manually in MetaMask')">
+                    <strong>Network Name:</strong> Polygon Mainnet<br>
+                    <strong>RPC URL:</strong> https://polygon-rpc.com<br>
+                    <strong>Chain ID:</strong> 137<br>
+                    <strong>Currency Symbol:</strong> POL<br>
+                    <strong>Block Explorer:</strong> https://polygonscan.com
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    💡 Or use the quick add button in MetaMask settings → Networks → Add Network → Polygon
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">3</span>
+                Get POL (MATIC) Tokens
+            </div>
+            <div class="step-content">
+                <p>You need POL tokens to buy AETH and pay for gas fees. Buy POL on any major exchange:</p>
+                <a href="https://www.coinbase.com/" target="_blank" class="btn">Coinbase</a>
+                <a href="https://www.binance.com/" target="_blank" class="btn">Binance</a>
+                <a href="https://www.kraken.com/" target="_blank" class="btn">Kraken</a>
+                <p style="margin-top: 15px; font-size: 0.9rem;">
+                    💰 Recommended: Start with at least $50 worth of POL<br>
+                    ⛽ Gas fees on Polygon are very low (usually under $0.01)
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">4</span>
+                Send POL to MetaMask
+            </div>
+            <div class="step-content">
+                <p>Transfer your POL from the exchange to your MetaMask wallet:</p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Open MetaMask and copy your wallet address</li>
+                    <li>Go to your exchange and select "Withdraw" for POL/MATIC</li>
+                    <li>Paste your MetaMask address</li>
+                    <li><strong>IMPORTANT:</strong> Select "Polygon" network (NOT Ethereum!)</li>
+                    <li>Confirm the withdrawal</li>
+                </ol>
+                <div class="warning">
+                    <strong>⚠️ WARNING:</strong> Make sure you select the Polygon network when withdrawing! Using the wrong network will result in lost funds.
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">5</span>
+                Swap POL for AETH on QuickSwap
+            </div>
+            <div class="step-content">
+                <p>Now you're ready to buy AETH! Click the button below to go to QuickSwap:</p>
+                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn btn-primary">
+                    🚀 Buy AETH Now on QuickSwap
+                </a>
+                <p style="margin-top: 15px;">Steps on QuickSwap:</p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Click "Connect Wallet" and select MetaMask</li>
+                    <li>The AETH token should already be selected (check the address below)</li>
+                    <li>Enter the amount of POL you want to swap</li>
+                    <li>Review the rate and click "Swap"</li>
+                    <li>Confirm the transaction in MetaMask</li>
+                    <li>Wait a few seconds - you now own AETH! 🎉</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">6</span>
+                Add AETH to MetaMask (Optional)
+            </div>
+            <div class="step-content">
+                <p>To see your AETH balance in MetaMask, add the token manually:</p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Open MetaMask</li>
+                    <li>Click "Import tokens" at the bottom</li>
+                    <li>Paste the AETH contract address (below)</li>
+                    <li>Token symbol and decimals should auto-fill</li>
+                    <li>Click "Add Custom Token"</li>
+                </ol>
+                <div class="contract-box" onclick="copyToClipboard('0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e')">
+                    0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+                    <br><small style="opacity: 0.7;">Click to copy contract address</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">7</span>
+                Start Staking & Earning Rewards! 💰
+            </div>
+            <div class="step-content">
+                <p>Now that you own AETH, stake it to earn passive income:</p>
+                <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" class="btn btn-primary">
+                    Open Aetheron Dashboard
+                </a>
+                <p style="margin-top: 15px;">Staking options:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>🟢 <strong>Flexible Pool:</strong> 5% APY - Withdraw anytime</li>
+                    <li>🟡 <strong>30-Day Lock:</strong> 12% APY - Locked for 30 days</li>
+                    <li>🔴 <strong>90-Day Lock:</strong> 25% APY - Locked for 90 days</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <h3>📌 Quick Links</h3>
+            <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn btn-primary">Buy AETH</a>
+            <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" class="btn">Dashboard</a>
+            <a href="https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" class="btn">View Contract</a>
+            <a href="https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank" class="btn">Live Chart</a>
+        </div>
+
+        <div class="faq">
+            <h2 style="margin-bottom: 20px; text-align: center;">❓ Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">How much does it cost to buy AETH?</div>
+                <div class="faq-answer">
+                    You can buy any amount you want! Start with as little as $10-$20. Gas fees on Polygon are very low (usually under $0.01 per transaction).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is it safe?</div>
+                <div class="faq-answer">
+                    The AETH smart contract is deployed on Polygon and is fully auditable. You can view the verified source code on PolygonScan. Always DYOR (Do Your Own Research) before investing.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I sell my AETH later?</div>
+                <div class="faq-answer">
+                    Yes! Just go back to QuickSwap and swap AETH for POL. You can sell anytime (except for staked tokens that are locked in pools).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What if I accidentally send POL on Ethereum network instead of Polygon?</div>
+                <div class="faq-answer">
+                    If you send POL/MATIC on the Ethereum network to a Polygon address, your funds will be stuck. Always double-check you're using the Polygon network! Some exchanges offer recovery services, but it can be expensive.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Do I need to pay taxes on crypto?</div>
+                <div class="faq-answer">
+                    In most countries, yes. Crypto transactions are taxable events. Consult with a tax professional in your jurisdiction. Keep records of all your transactions.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How do I join the community?</div>
+                <div class="faq-answer">
+                    Follow us on Twitter [@AetheronToken] and join our Telegram group! Links are on the dashboard.
+                </div>
+            </div>
+        </div>
+
+        <div class="warning" style="margin-top: 40px; text-align: center;">
+            <strong>⚠️ Investment Warning</strong><br>
+            Cryptocurrency investments carry risk. Only invest what you can afford to lose. Always do your own research (DYOR). This is not financial advice.
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Contract address copied to clipboard!\n\n' + text);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                prompt('Copy this address:', text);
+            });
+        }
+    </script>
+</body>
+</html>
