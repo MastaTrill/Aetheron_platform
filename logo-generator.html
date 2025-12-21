@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETH Logo Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .logo-container {
+            margin: 30px auto;
+            background: white;
+            width: 512px;
+            height: 512px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        canvas {
+            border-radius: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        .instructions {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: left;
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .size-buttons {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 AETH Logo Generator</h1>
+    <p>Generate your Aetheron logo in different sizes for all platforms</p>
+
+    <div class="logo-container">
+        <canvas id="logoCanvas"></canvas>
+    </div>
+
+    <div class="size-buttons">
+        <button onclick="generateLogo(200)">200x200 (Standard)</button>
+        <button onclick="generateLogo(256)">256x256 (CoinGecko)</button>
+        <button onclick="generateLogo(512)">512x512 (High Quality)</button>
+    </div>
+
+    <button onclick="downloadLogo()">⬇️ Download Current Logo</button>
+    <button onclick="downloadBanner()">⬇️ Download Twitter Banner</button>
+
+    <div class="instructions">
+        <h3>📋 How to Use:</h3>
+        <ol>
+            <li>Click the size button you need (200x200 is most common)</li>
+            <li>Click "Download Current Logo" to save the PNG file</li>
+            <li>Upload to Twitter, Telegram, listing sites, etc.</li>
+            <li>For Twitter banner, click "Download Twitter Banner"</li>
+        </ol>
+
+        <h3>🎯 Where to Use Each Size:</h3>
+        <ul>
+            <li><strong>200x200:</strong> DexTools, CoinSniper, CoinHunt, Telegram group photo</li>
+            <li><strong>256x256:</strong> CoinGecko, Twitter profile picture</li>
+            <li><strong>512x512:</strong> CoinMarketCap, GitHub, high-quality needs</li>
+        </ul>
+
+        <h3>💡 Tips:</h3>
+        <ul>
+            <li>PNG format with transparent background (automatic)</li>
+            <li>Download all 3 sizes and keep them ready</li>
+            <li>Use the same logo everywhere for brand consistency</li>
+        </ul>
+    </div>
+
+    <script>
+        let currentSize = 256;
+
+        function generateLogo(size) {
+            currentSize = size;
+            const canvas = document.getElementById('logoCanvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // Draw rounded square background
+            const radius = size * 0.15;
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw hexagon shape (representing connectivity/blockchain)
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const hexRadius = size * 0.3;
+            
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.03;
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 6;
+                const x = centerX + hexRadius * Math.cos(angle);
+                const y = centerY + hexRadius * Math.sin(angle);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            // Draw inner circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, hexRadius * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw "AETH" text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.15}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('AETH', centerX, centerY);
+
+            // Draw connecting lines (representing staking/connections)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = size * 0.015;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 6;
+                const x1 = centerX + (hexRadius * 0.6) * Math.cos(angle);
+                const y1 = centerY + (hexRadius * 0.6) * Math.sin(angle);
+                const x2 = centerX + hexRadius * Math.cos(angle);
+                const y2 = centerY + hexRadius * Math.sin(angle);
+                
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            document.querySelector('.logo-container').style.width = size + 'px';
+            document.querySelector('.logo-container').style.height = size + 'px';
+        }
+
+        function downloadLogo() {
+            const canvas = document.getElementById('logoCanvas');
+            const link = document.createElement('a');
+            link.download = `aetheron-logo-${currentSize}x${currentSize}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadBanner() {
+            const bannerCanvas = document.createElement('canvas');
+            bannerCanvas.width = 1500;
+            bannerCanvas.height = 500;
+            const ctx = bannerCanvas.getContext('2d');
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 1500, 500);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1500, 500);
+
+            // Add geometric pattern
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.arc(150 + i * 150, 250, 100, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Draw main text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 120px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('AETHERON', 750, 220);
+
+            // Draw subtitle
+            ctx.font = '40px Arial';
+            ctx.fillText('DeFi Staking Platform on Polygon', 750, 300);
+
+            // Draw features
+            ctx.font = 'bold 30px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('✅ Up to 25% APY', 250, 400);
+            ctx.fillText('✅ Live Dashboard', 600, 400);
+            ctx.fillText('✅ Low Fees', 950, 400);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = 'aetheron-twitter-banner-1500x500.png';
+            link.href = bannerCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate default logo on page load
+        generateLogo(256);
+    </script>
+</body>
+</html>
