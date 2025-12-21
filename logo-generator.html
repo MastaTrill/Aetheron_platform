@@ -114,77 +114,74 @@
             // Clear canvas
             ctx.clearRect(0, 0, size, size);
 
-            // Create gradient background
-            const gradient = ctx.createLinearGradient(0, 0, size, size);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
-            
-            // Draw rounded square background
-            const radius = size * 0.15;
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.moveTo(radius, 0);
-            ctx.lineTo(size - radius, 0);
-            ctx.quadraticCurveTo(size, 0, size, radius);
-            ctx.lineTo(size, size - radius);
-            ctx.quadraticCurveTo(size, size, size - radius, size);
-            ctx.lineTo(radius, size);
-            ctx.quadraticCurveTo(0, size, 0, size - radius);
-            ctx.lineTo(0, radius);
-            ctx.quadraticCurveTo(0, 0, radius, 0);
-            ctx.closePath();
-            ctx.fill();
-
-            // Draw hexagon shape (representing connectivity/blockchain)
+            // Create gradient background circle
             const centerX = size / 2;
             const centerY = size / 2;
-            const hexRadius = size * 0.3;
+            const radius = size / 2;
+
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.7, '#764ba2');
+            gradient.addColorStop(1, '#5a3d7a');
             
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = size * 0.03;
+            // Draw circle background
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i - Math.PI / 6;
-                const x = centerX + hexRadius * Math.cos(angle);
-                const y = centerY + hexRadius * Math.sin(angle);
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            }
-            ctx.closePath();
-            ctx.stroke();
-
-            // Draw inner circle
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, hexRadius * 0.5, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             ctx.fill();
+
+            // Draw stylized "A" letter
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            
+            // Letter A as triangle with cut-out
+            const aHeight = size * 0.5;
+            const aWidth = size * 0.4;
+            const aTop = centerY - aHeight / 2;
+            const aBottom = centerY + aHeight / 2;
+            
+            ctx.lineWidth = size * 0.08;
+            ctx.lineJoin = 'miter';
+            ctx.lineCap = 'round';
+            
+            // Draw A shape
+            ctx.beginPath();
+            // Left line of A
+            ctx.moveTo(centerX - aWidth / 2, aBottom);
+            ctx.lineTo(centerX, aTop);
+            // Right line of A
+            ctx.lineTo(centerX + aWidth / 2, aBottom);
+            ctx.stroke();
+            
+            // Draw horizontal bar of A
+            ctx.beginPath();
+            ctx.moveTo(centerX - aWidth / 3.5, centerY + aHeight * 0.1);
+            ctx.lineTo(centerX + aWidth / 3.5, centerY + aHeight * 0.1);
+            ctx.lineWidth = size * 0.08;
             ctx.stroke();
 
-            // Draw "AETH" text
+            // Add subtle glow effect
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowBlur = size * 0.02;
+            
+            // Draw small "AETH" text at bottom
+            ctx.shadowBlur = 0;
             ctx.fillStyle = 'white';
-            ctx.font = `bold ${size * 0.15}px Arial, sans-serif`;
+            ctx.font = `bold ${size * 0.08}px Arial, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('AETH', centerX, centerY);
+            ctx.fillText('AETH', centerX, aBottom + size * 0.12);
 
-            // Draw connecting lines (representing staking/connections)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            // Add circular accent rings
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = size * 0.015;
-            for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i - Math.PI / 6;
-                const x1 = centerX + (hexRadius * 0.6) * Math.cos(angle);
-                const y1 = centerY + (hexRadius * 0.6) * Math.sin(angle);
-                const x2 = centerX + hexRadius * Math.cos(angle);
-                const y2 = centerY + hexRadius * Math.sin(angle);
-                
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-            }
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.85, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.75, 0, Math.PI * 2);
+            ctx.stroke();
 
             document.querySelector('.logo-container').style.width = size + 'px';
             document.querySelector('.logo-container').style.height = size + 'px';
