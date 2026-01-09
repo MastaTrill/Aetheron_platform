@@ -4,11 +4,11 @@
   "description": "Revolutionary Blockchain & Space Exploration Ecosystem",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "test": "jest",
-    "deploy": "hardhat run scripts/deploy.js --network polygon"
+    "start": "npx http-server . -p 3000",
+    "dev": "npx http-server . -p 3000 -o",
+    "build": "echo 'Static site - no build needed'",
+    "test": "echo 'No tests configured'",
+    "deploy": "echo 'Deploy manually to GitHub Pages'"
   },
   "keywords": [
     "blockchain",

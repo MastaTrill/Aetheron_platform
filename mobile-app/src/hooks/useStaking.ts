@@ -28,11 +28,7 @@ export const useStaking = () => {
 
   useEffect(() => {
     if (provider && isConnected) {
-      const stakingContract = new ethers.Contract(
-        CONTRACTS.STAKING,
-        STAKING_ABI,
-        provider
-      );
+      const stakingContract = new ethers.Contract(CONTRACTS.STAKING, STAKING_ABI, provider);
       setContract(stakingContract);
     }
   }, [provider, isConnected]);
@@ -41,28 +37,30 @@ export const useStaking = () => {
     if (contract && address) {
       fetchStakingInfo();
     }
-  }, [contract, address]);
+  }, [contract, address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchStakingInfo = async () => {
-    if (!contract || !address) return;
-    
+    if (!contract || !address) {
+      return;
+    }
+
     try {
       setIsLoading(true);
-      
+
       const [staked, rewards, total, rate] = await Promise.all([
         contract.getStakedAmount(address),
         contract.getPendingRewards(address),
         contract.totalStaked(),
         contract.rewardRate(),
       ]);
-      
+
       setStakingInfo({
         stakedAmount: staked.toString(),
-        stakedAmountFormatted: parseFloat(ethers.utils.formatEther(staked)).toFixed(2),
+        stakedAmountFormatted: parseFloat(ethers.formatEther(staked)).toFixed(2),
         pendingRewards: rewards.toString(),
-        pendingRewardsFormatted: parseFloat(ethers.utils.formatEther(rewards)).toFixed(6),
-        totalStaked: ethers.utils.formatEther(total),
-        rewardRate: ethers.utils.formatEther(rate),
+        pendingRewardsFormatted: parseFloat(ethers.formatEther(rewards)).toFixed(6),
+        totalStaked: ethers.formatEther(total),
+        rewardRate: ethers.formatEther(rate),
       });
     } catch (error) {
       console.error('Failed to fetch staking info:', error);
@@ -72,16 +70,19 @@ export const useStaking = () => {
   };
 
   const stake = async (amount: string) => {
-    if (!contract || !provider) throw new Error('Not connected');
-    
+    if (!contract || !provider) {
+      throw new Error('Not connected');
+    }
+
     try {
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractWithSigner = contract.connect(signer);
-      const amountWei = ethers.utils.parseEther(amount);
-      
+      const amountWei = ethers.parseEther(amount);
+
+      // @ts-ignore
       const tx = await contractWithSigner.stake(amountWei);
       await tx.wait();
-      
+
       await fetchStakingInfo();
       return tx;
     } catch (error) {
@@ -91,16 +92,19 @@ export const useStaking = () => {
   };
 
   const unstake = async (amount: string) => {
-    if (!contract || !provider) throw new Error('Not connected');
-    
+    if (!contract || !provider) {
+      throw new Error('Not connected');
+    }
+
     try {
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractWithSigner = contract.connect(signer);
-      const amountWei = ethers.utils.parseEther(amount);
-      
+      const amountWei = ethers.parseEther(amount);
+
+      // @ts-ignore
       const tx = await contractWithSigner.unstake(amountWei);
       await tx.wait();
-      
+
       await fetchStakingInfo();
       return tx;
     } catch (error) {
@@ -110,15 +114,18 @@ export const useStaking = () => {
   };
 
   const claimRewards = async () => {
-    if (!contract || !provider) throw new Error('Not connected');
-    
+    if (!contract || !provider) {
+      throw new Error('Not connected');
+    }
+
     try {
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractWithSigner = contract.connect(signer);
-      
+
+      // @ts-ignore
       const tx = await contractWithSigner.claimRewards();
       await tx.wait();
-      
+
       await fetchStakingInfo();
       return tx;
     } catch (error) {

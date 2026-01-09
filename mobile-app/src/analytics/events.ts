@@ -1,7 +1,6 @@
-
 import analytics from '@react-native-firebase/analytics';
 
-type Token = { symbol: string };
+type Token = {symbol: string};
 
 interface SwapEvent {
   fromToken: Token;
@@ -12,7 +11,14 @@ interface SwapEvent {
   hash: string;
 }
 
-export async function logSwapEvent({ fromToken, toToken, amount, minReceived, priceImpact, hash }: SwapEvent) {
+export async function logSwapEvent({
+  fromToken,
+  toToken,
+  amount,
+  minReceived,
+  priceImpact,
+  hash,
+}: SwapEvent) {
   await analytics().logEvent('swap', {
     from_token: fromToken.symbol,
     to_token: toToken.symbol,
@@ -24,5 +30,5 @@ export async function logSwapEvent({ fromToken, toToken, amount, minReceived, pr
 }
 
 export async function logScreenView(screen_name: string) {
-  await analytics().logScreenView({ screen_name, screen_class: screen_name });
+  await analytics().logScreenView({screen_name, screen_class: screen_name});
 }

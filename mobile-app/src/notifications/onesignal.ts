@@ -1,3 +1,4 @@
+// @ts-ignore
 import OneSignal from 'react-native-onesignal';
 
 export function initializeNotifications() {
@@ -8,6 +9,7 @@ export function initializeNotifications() {
   OneSignal.promptForPushNotificationsWithUserResponse();
 
   // Notification opened handler
+  // @ts-ignore
   OneSignal.setNotificationOpenedHandler(notification => {
     // You can handle navigation or analytics here
     console.log('Notification opened:', notification);

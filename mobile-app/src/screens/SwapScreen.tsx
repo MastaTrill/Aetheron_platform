@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Linking, TextInput, ActivityIndicator, Alert } from 'react-native';
-import { Card, Button, TokenSelectModal, ConfirmSwapModal } from '../components';
-import { theme } from '@config/theme';
-import { LINKS } from '@config/contracts';
-import { ethers } from 'ethers';
-import { useWeb3 } from '../context/Web3Context';
-import { TOKEN_LIST } from '../config/tokenlist';
-import { useSwapQuote } from '../hooks/useSwapQuote';
-import { logSwapEvent, logScreenView } from '../analytics/events';
-import { useSwapHistory } from '../hooks/useSwapHistory';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Linking,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import {Card, Button, TokenSelectModal, ConfirmSwapModal} from '../components';
+import {theme} from '@config/theme';
+import {LINKS} from '@config/contracts';
+import {ethers} from 'ethers';
+import {useWeb3} from '../context/Web3Context';
+import {TOKEN_LIST} from '../config/tokenlist';
+import {useSwapQuote} from '../hooks/useSwapQuote';
+import {logSwapEvent, logScreenView} from '../analytics/events';
+import {useSwapHistory} from '../hooks/useSwapHistory';
 
 // Define SwapHistoryItem type for swap history
 type SwapHistoryItem = {
-  from: { symbol: string; address: string };
-  to: { symbol: string; address: string };
+  from: {symbol: string; address: string};
+  to: {symbol: string; address: string};
   amount: string;
   minReceived: string;
   priceImpact: string;
@@ -24,7 +33,7 @@ type SwapHistoryItem = {
 // QuickSwap Router address and ABI (simplified for swapExactETHForTokens)
 const QUICKSWAP_ROUTER = '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff';
 const ROUTER_ABI = [
-  'function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) payable returns (uint[] memory amounts)'
+  'function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) payable returns (uint[] memory amounts)',
 ];
 
 export const SwapScreen: React.FC = () => {
@@ -39,7 +48,7 @@ export const SwapScreen: React.FC = () => {
   };
 
   // In-app swap state
-  const { provider, address } = useWeb3();
+  const {provider, address} = useWeb3();
   const [amount, setAmount] = useState('');
   const [fromToken, setFromToken] = useState(TOKEN_LIST[0]); // default: MATIC
   const [toToken, setToToken] = useState(TOKEN_LIST[1]); // default: AETH
@@ -52,7 +61,7 @@ export const SwapScreen: React.FC = () => {
   // Quote for min received and price impact (pass slippage)
   const quote = useSwapQuote(fromToken, toToken, amount, slippage);
   // Swap history
-  const { history, addSwap } = useSwapHistory() as {
+  const {history, addSwap} = useSwapHistory() as {
     history: SwapHistoryItem[];
     addSwap: (item: SwapHistoryItem) => void;
   };
@@ -63,10 +72,18 @@ export const SwapScreen: React.FC = () => {
   }, []);
 
   const handleSwap = () => {
-    if (!provider || !address) return Alert.alert('Connect your wallet');
-    if (!amount || !fromToken || !toToken) return Alert.alert('Enter amount and select tokens');
-    if (fromToken.address === toToken.address) return Alert.alert('Select different tokens');
-    if (quote.error) return Alert.alert('Swap unavailable', quote.error);
+    if (!provider || !address) {
+      return Alert.alert('Connect your wallet');
+    }
+    if (!amount || !fromToken || !toToken) {
+      return Alert.alert('Enter amount and select tokens');
+    }
+    if (fromToken.address === toToken.address) {
+      return Alert.alert('Select different tokens');
+    }
+    if (quote.error) {
+      return Alert.alert('Swap unavailable', quote.error);
+    }
     setShowConfirm(true);
   };
 
@@ -74,19 +91,21 @@ export const SwapScreen: React.FC = () => {
     setShowConfirm(false);
     setLoading(true);
     try {
-      if (!provider) throw new Error('Provider not available');
-      const signer = provider.getSigner();
+      if (!provider) {
+        throw new Error('Provider not available');
+      }
+      const signer = await provider.getSigner();
       const router = new ethers.Contract(QUICKSWAP_ROUTER, ROUTER_ABI, signer);
       // Support token-to-token swaps (not just MATIC -> token)
       let value = '0';
       let method = 'swapExactETHForTokens';
       let path = [fromToken.address, toToken.address];
       if (fromToken.symbol === 'MATIC') {
-        path = [ethers.constants.AddressZero, toToken.address];
-        value = ethers.utils.parseEther(amount).toString();
+        path = [ethers.ZeroAddress, toToken.address];
+        value = ethers.parseEther(amount).toString();
         method = 'swapExactETHForTokens';
       } else if (toToken.symbol === 'MATIC') {
-        path = [fromToken.address, ethers.constants.AddressZero];
+        path = [fromToken.address, ethers.ZeroAddress];
         method = 'swapExactTokensForETH';
       } else {
         method = 'swapExactTokensForTokens';
@@ -100,29 +119,29 @@ export const SwapScreen: React.FC = () => {
           path,
           address,
           deadline,
-          { value }
+          {value},
         );
       } else if (method === 'swapExactTokensForETH') {
         tx = await router.swapExactTokensForETH(
-          ethers.utils.parseUnits(amount, fromToken.decimals),
+          ethers.parseUnits(amount, fromToken.decimals),
           0,
           path,
           address,
-          deadline
+          deadline,
         );
       } else {
         tx = await router.swapExactTokensForTokens(
-          ethers.utils.parseUnits(amount, fromToken.decimals),
+          ethers.parseUnits(amount, fromToken.decimals),
           0,
           path,
           address,
-          deadline
+          deadline,
         );
       }
       await tx.wait();
       addSwap({
-        from: { symbol: fromToken.symbol, address: fromToken.address },
-        to: { symbol: toToken.symbol, address: toToken.address },
+        from: {symbol: fromToken.symbol, address: fromToken.address},
+        to: {symbol: toToken.symbol, address: toToken.address},
         amount,
         minReceived: quote.minReceived,
         priceImpact: quote.priceImpact,
@@ -156,20 +175,18 @@ export const SwapScreen: React.FC = () => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Card title="🔄 In-App Swap">
-        <Text style={styles.description}>
-          Swap tokens instantly on Polygon using QuickSwap.
-        </Text>
-        <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+        <Text style={styles.description}>Swap tokens instantly on Polygon using QuickSwap.</Text>
+        <View style={{flexDirection: 'row', marginBottom: 12}}>
           <Button
             title={fromToken.symbol}
             onPress={() => setShowFromModal(true)}
-            style={{ flex: 1, marginRight: 8 }}
+            style={{flex: 1, marginRight: 8}}
             variant="secondary"
           />
           <Button
             title={toToken.symbol}
             onPress={() => setShowToModal(true)}
-            style={{ flex: 1, marginLeft: 8 }}
+            style={{flex: 1, marginLeft: 8}}
             variant="secondary"
           />
         </View>
@@ -189,16 +206,28 @@ export const SwapScreen: React.FC = () => {
           onChangeText={setSlippage}
           placeholderTextColor={theme.colors.textSecondary}
         />
-        <View style={{ marginBottom: 8 }}>
-          <Text style={{ color: theme.colors.textSecondary }}>
-            Min received: {quote.loading ? '...' : quote.minReceived ? `${quote.minReceived} ${toToken.symbol}` : '-'}
+        <View style={{marginBottom: 8}}>
+          <Text style={{color: theme.colors.textSecondary}}>
+            Min received:{' '}
+            {quote.loading
+              ? '...'
+              : quote.minReceived
+              ? `${quote.minReceived} ${toToken.symbol}`
+              : '-'}
           </Text>
-          <Text style={{ color: theme.colors.textSecondary }}>
-            Price impact: {quote.loading ? '...' : quote.priceImpact ? `${quote.priceImpact}%` : '-'}
+          <Text style={{color: theme.colors.textSecondary}}>
+            Price impact:{' '}
+            {quote.loading ? '...' : quote.priceImpact ? `${quote.priceImpact}%` : '-'}
           </Text>
-          {quote.error ? <Text style={{ color: theme.colors.error }}>{quote.error}</Text> : null}
+          {quote.error ? <Text style={{color: theme.colors.error}}>{quote.error}</Text> : null}
         </View>
-        <Button title="Swap" onPress={handleSwap} disabled={loading} fullWidth style={styles.button} />
+        <Button
+          title="Swap"
+          onPress={handleSwap}
+          disabled={loading}
+          fullWidth
+          style={styles.button}
+        />
         <ConfirmSwapModal
           visible={showConfirm}
           onConfirm={executeSwap}
@@ -210,19 +239,35 @@ export const SwapScreen: React.FC = () => {
           priceImpact={quote.priceImpact}
           fee={loading ? '...' : 'Estimate (see wallet)'}
         />
-        {loading && <ActivityIndicator style={{ marginTop: 16 }} />}
-        <TokenSelectModal visible={showFromModal} onSelect={setFromToken} onClose={() => setShowFromModal(false)} selected={fromToken.address} />
-        <TokenSelectModal visible={showToModal} onSelect={setToToken} onClose={() => setShowToModal(false)} selected={toToken.address} />
+        {loading && <ActivityIndicator style={{marginTop: 16}} />}
+        <TokenSelectModal
+          visible={showFromModal}
+          onSelect={setFromToken}
+          onClose={() => setShowFromModal(false)}
+          selected={fromToken.address}
+        />
+        <TokenSelectModal
+          visible={showToModal}
+          onSelect={setToToken}
+          onClose={() => setShowToModal(false)}
+          selected={toToken.address}
+        />
       </Card>
       <Card title="🕒 Swap History">
         {history.length === 0 ? (
-          <Text style={{ color: theme.colors.textSecondary }}>No swaps yet.</Text>
+          <Text style={{color: theme.colors.textSecondary}}>No swaps yet.</Text>
         ) : (
           history.map((item, idx) => (
-            <View key={item.hash || idx} style={{ marginBottom: 8 }}>
-              <Text style={{ color: theme.colors.text }}>{item.amount} {item.from.symbol} → {item.minReceived} {item.to.symbol}</Text>
-              <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>{new Date(item.time).toLocaleString()}</Text>
-              <Text style={{ color: theme.colors.primary, fontSize: 12 }}>{item.hash?.slice(0, 10)}...</Text>
+            <View key={item.hash || idx} style={{marginBottom: 8}}>
+              <Text style={{color: theme.colors.text}}>
+                {item.amount} {item.from.symbol} → {item.minReceived} {item.to.symbol}
+              </Text>
+              <Text style={{color: theme.colors.textSecondary, fontSize: 12}}>
+                {new Date(item.time).toLocaleString()}
+              </Text>
+              <Text style={{color: theme.colors.primary, fontSize: 12}}>
+                {item.hash?.slice(0, 10)}...
+              </Text>
             </View>
           ))
         )}
@@ -265,9 +310,7 @@ export const SwapScreen: React.FC = () => {
       <Card title="ℹ️ Trading Tips">
         <View style={styles.tipItem}>
           <Text style={styles.tipNumber}>1.</Text>
-          <Text style={styles.tipText}>
-            Make sure you have enough MATIC for gas fees
-          </Text>
+          <Text style={styles.tipText}>Make sure you have enough MATIC for gas fees</Text>
         </View>
         <View style={styles.tipItem}>
           <Text style={styles.tipNumber}>2.</Text>
@@ -277,15 +320,11 @@ export const SwapScreen: React.FC = () => {
         </View>
         <View style={styles.tipItem}>
           <Text style={styles.tipNumber}>3.</Text>
-          <Text style={styles.tipText}>
-            Always verify the contract address before trading
-          </Text>
+          <Text style={styles.tipText}>Always verify the contract address before trading</Text>
         </View>
         <View style={styles.tipItem}>
           <Text style={styles.tipNumber}>4.</Text>
-          <Text style={styles.tipText}>
-            Check liquidity depth before large trades
-          </Text>
+          <Text style={styles.tipText}>Check liquidity depth before large trades</Text>
         </View>
       </Card>
     </ScrollView>

@@ -1,17 +1,11 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Linking,
-} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, Linking} from 'react-native';
 import {useWeb3} from '@context/Web3Context';
 import {useAetheron} from '@hooks/useAetheron';
 import {useStaking} from '@hooks/useStaking';
-import { Card } from '@components/Card';
-import { Button } from '@components/Button';
-import { LoadingSpinner } from '@components/LoadingSpinner';
+import {Card} from '@components/Card';
+import {Button} from '@components/Button';
+import {LoadingSpinner} from '@components/LoadingSpinner';
 import {theme} from '@config/theme';
 import {LINKS} from '@config/contracts';
 
@@ -31,7 +25,7 @@ export const HomeScreen: React.FC = () => {
           <Text style={styles.logo}>🌌</Text>
           <Text style={styles.title}>Aetheron</Text>
           <Text style={styles.subtitle}>Space Exploration & DeFi Platform</Text>
-          
+
           <Button
             title="Connect Wallet"
             onPress={connect}
@@ -39,7 +33,7 @@ export const HomeScreen: React.FC = () => {
             style={styles.connectButton}
             fullWidth
           />
-          
+
           <Text style={styles.infoText}>
             Connect your wallet to access staking, trading, and more
           </Text>
@@ -78,15 +72,11 @@ export const HomeScreen: React.FC = () => {
           <>
             <View style={styles.stakingRow}>
               <Text style={styles.stakingLabel}>Staked Amount:</Text>
-              <Text style={styles.stakingValue}>
-                {stakingInfo.stakedAmountFormatted} AETH
-              </Text>
+              <Text style={styles.stakingValue}>{stakingInfo.stakedAmountFormatted} AETH</Text>
             </View>
             <View style={styles.stakingRow}>
               <Text style={styles.stakingLabel}>Pending Rewards:</Text>
-              <Text style={styles.stakingValue}>
-                {stakingInfo.pendingRewardsFormatted} AETH
-              </Text>
+              <Text style={styles.stakingValue}>{stakingInfo.pendingRewardsFormatted} AETH</Text>
             </View>
             <View style={styles.stakingRow}>
               <Text style={styles.stakingLabel}>Total Staked:</Text>

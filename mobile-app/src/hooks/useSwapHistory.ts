@@ -1,12 +1,11 @@
-
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SWAP_HISTORY_KEY = 'swap_history';
 
 export type SwapHistoryItem = {
-  from: { symbol: string; address: string };
-  to: { symbol: string; address: string };
+  from: {symbol: string; address: string};
+  to: {symbol: string; address: string};
   amount: string;
   minReceived: string;
   priceImpact: string;
@@ -22,7 +21,9 @@ export function useSwapHistory(): {
 
   useEffect(() => {
     AsyncStorage.getItem(SWAP_HISTORY_KEY).then(data => {
-      if (data) setHistory(JSON.parse(data));
+      if (data) {
+        setHistory(JSON.parse(data));
+      }
     });
   }, []);
 
@@ -32,5 +33,5 @@ export function useSwapHistory(): {
     await AsyncStorage.setItem(SWAP_HISTORY_KEY, JSON.stringify(newHistory));
   };
 
-  return { history, addSwap };
+  return {history, addSwap};
 }

@@ -1,0 +1,52 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f23;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="etherGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#627eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#454a75;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c3e50;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glowEffect2">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg2)"/>
+
+  <!-- Ethereum-style diamond -->
+  <polygon points="256,140 340,256 256,372 172,256" fill="url(#etherGradient)" stroke="#ffffff" stroke-width="2" filter="url(#glowEffect2)"/>
+
+  <!-- Inner diamond -->
+  <polygon points="256,180 300,256 256,332 212,256" fill="none" stroke="#627eea" stroke-width="1" opacity="0.8"/>
+
+  <!-- Energy nodes -->
+  <circle cx="256" cy="140" r="5" fill="#627eea"/>
+  <circle cx="340" cy="256" r="5" fill="#627eea"/>
+  <circle cx="256" cy="372" r="5" fill="#627eea"/>
+  <circle cx="172" cy="256" r="5" fill="#627eea"/>
+
+  <!-- Circuit connections -->
+  <line x1="256" y1="140" x2="340" y2="256" stroke="#627eea" stroke-width="1" opacity="0.7"/>
+  <line x1="340" y1="256" x2="256" y2="372" stroke="#627eea" stroke-width="1" opacity="0.7"/>
+  <line x1="256" y1="372" x2="172" y2="256" stroke="#627eea" stroke-width="1" opacity="0.7"/>
+  <line x1="172" y1="256" x2="256" y2="140" stroke="#627eea" stroke-width="1" opacity="0.7"/>
+
+  <!-- Orbital elements -->
+  <circle cx="256" cy="256" r="100" fill="none" stroke="#627eea" stroke-width="1" opacity="0.3"/>
+  <circle cx="256" cy="256" r="70" fill="none" stroke="#454a75" stroke-width="1" opacity="0.4"/>
+
+  <!-- AETH Text -->
+  <text x="256" y="430" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="44" font-weight="bold" filter="url(#glowEffect2)">AETH</text>
+
+  <!-- Tagline -->
+  <text x="256" y="460" text-anchor="middle" fill="#627eea" font-family="Arial, sans-serif" font-size="16" opacity="0.9">Aetheron</text>
+</svg>
