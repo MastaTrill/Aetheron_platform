@@ -1,8 +1,7 @@
-
-import { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
-import { useWeb3 } from '../context/Web3Context';
-import { CONTRACTS } from '../config/contracts';
+import {useEffect, useState} from 'react';
+import {ethers} from 'ethers';
+import {useWeb3} from '../context/Web3Context';
+import {CONTRACTS} from '../config/contracts';
 
 type Token = {
   address: string;
@@ -28,9 +27,9 @@ export function useSwapQuote(
   fromToken: Token | undefined,
   toToken: Token | undefined,
   amount: string | undefined,
-  slippagePercent?: string | number
+  slippagePercent?: string | number,
 ) {
-  const { provider } = useWeb3();
+  const {provider} = useWeb3();
   const [quote, setQuote] = useState({
     minReceived: '',
     priceImpact: '',
@@ -39,17 +38,17 @@ export function useSwapQuote(
     error: '',
   });
 
-
-
   useEffect(() => {
-    if (!provider || !fromToken || !toToken || !amount) return;
+    if (!provider || !fromToken || !toToken || !amount) {
+      return;
+    }
     // Type guards: fromToken, toToken, and amount are defined here
     async function fetchQuote() {
-      setQuote(q => ({ ...q, loading: true, error: '' }));
+      setQuote(q => ({...q, loading: true, error: ''}));
       try {
         // Defensive: check again inside async
         if (!fromToken || !toToken || !amount) {
-          setQuote(q => ({ ...q, loading: false, error: 'Missing token or amount.' }));
+          setQuote(q => ({...q, loading: false, error: 'Missing token or amount.'}));
           return;
         }
         // For demo: only support AETH/MATIC and USDC/MATIC pairs
@@ -60,15 +59,15 @@ export function useSwapQuote(
         ) {
           pairAddress = CONTRACTS.LIQUIDITY_PAIR;
         } else {
-          setQuote(q => ({ ...q, loading: false, error: 'Pair not supported in demo.' }));
+          setQuote(q => ({...q, loading: false, error: 'Pair not supported in demo.'}));
           return;
         }
         if (!provider) {
-          setQuote(q => ({ ...q, loading: false, error: 'No provider available.' }));
+          setQuote(q => ({...q, loading: false, error: 'No provider available.'}));
           return;
         }
         // fromToken, toToken, and amount are guaranteed to be defined here
-        const pair = new ethers.Contract(pairAddress, PAIR_ABI, provider as ethers.providers.Provider);
+        const pair = new ethers.Contract(pairAddress, PAIR_ABI, provider as ethers.Provider);
         const [reserve0, reserve1] = await pair.getReserves();
         const token0 = await pair.token0();
         // Calculate output using constant product formula
@@ -80,26 +79,29 @@ export function useSwapQuote(
           reserveIn = reserve1;
           reserveOut = reserve0;
         }
-        const amountIn = ethers.utils.parseUnits(amount, fromToken.decimals);
-        const amountInWithFee = amountIn.mul(997);
-        const numerator = amountInWithFee.mul(reserveOut);
-        const denominator = reserveIn.mul(1000).add(amountInWithFee);
-        const amountOut = numerator.div(denominator);
+        const amountIn = ethers.parseUnits(amount, fromToken.decimals);
+        const amountInWithFee = (amountIn * 997n) / 1000n;
+        const numerator = amountInWithFee * reserveOut;
+        const denominator = reserveIn * 1000n + amountInWithFee;
+        const amountOut = numerator / denominator;
         // Price impact (simplified)
-        const priceImpact = amountIn.mul(10000).div(reserveIn).toNumber() / 100;
+        const priceImpact = Number((amountIn * 10000n) / reserveIn) / 100;
 
         // Slippage calculation
         let slippage = 1; // default 1%
         if (slippagePercent !== undefined) {
-          const parsed = typeof slippagePercent === 'string' ? parseFloat(slippagePercent) : slippagePercent;
-          if (!isNaN(parsed) && parsed > 0) slippage = parsed;
+          const parsed =
+            typeof slippagePercent === 'string' ? parseFloat(slippagePercent) : slippagePercent;
+          if (!isNaN(parsed) && parsed > 0) {
+            slippage = parsed;
+          }
         }
-        const minReceivedBN = amountOut.mul(10000 - Math.floor(slippage * 100)).div(10000);
+        const minReceivedBN = (amountOut * BigInt(10000 - Math.floor(slippage * 100))) / 10000n;
 
         setQuote({
-          minReceived: toToken ? ethers.utils.formatUnits(minReceivedBN, toToken.decimals) : '',
+          minReceived: toToken ? ethers.formatUnits(minReceivedBN, toToken.decimals) : '',
           priceImpact: priceImpact.toFixed(2),
-          expectedOut: toToken ? ethers.utils.formatUnits(amountOut, toToken.decimals) : '',
+          expectedOut: toToken ? ethers.formatUnits(amountOut, toToken.decimals) : '',
           loading: false,
           error: '',
         });
@@ -110,7 +112,7 @@ export function useSwapQuote(
         } else if (typeof e === 'string') {
           errorMsg = e;
         }
-        setQuote(q => ({ ...q, loading: false, error: errorMsg }));
+        setQuote(q => ({...q, loading: false, error: errorMsg}));
       }
     }
     fetchQuote();

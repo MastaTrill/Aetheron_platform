@@ -1,0 +1,29 @@
+# Aetheron App Icon Template
+# Create this as a 1024x1024 PNG image
+
+Design Specifications:
+- Size: 1024x1024 pixels
+- Format: PNG with transparent background
+- Style: Modern, space-themed, professional
+
+Color Scheme:
+- Background: Dark space gradient (#0a0a0a to #1a1a2e)
+- Primary: Electric blue (#00ffff)
+- Accent: Neon cyan (#00ff88)
+- Text: White (#ffffff)
+
+Elements to include:
+1. Central rocket/ship silhouette
+2. Star field background
+3. "AETHERON" text in modern font
+4. Subtle blockchain/crypto symbols
+5. Clean, minimal design
+
+Quick Creation Options:
+1. Use Canva (free): Search for "app icon maker"
+2. Use Figma: Import this design
+3. Use online generators: "mobile app icon generator"
+
+Save as: mobile-app/assets/icon-1024.png
+
+After creating, run: ./setup-and-build.ps1

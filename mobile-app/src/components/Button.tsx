@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, ViewStyle, TextStyle, ActivityIndicator} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+  TextStyle,
+  ActivityIndicator,
+} from 'react-native';
 import {theme} from '@config/theme';
 
 interface ButtonProps {
@@ -45,8 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       activeOpacity={0.7}
       accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}
-    >
+      accessibilityState={{disabled: disabled || loading}}>
       {loading ? (
         <ActivityIndicator color={textStyle.color || theme.colors.text} />
       ) : (
@@ -69,7 +75,7 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
-  
+
   // Variants
   primaryButton: {
     backgroundColor: theme.colors.primary,
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
   dangerButton: {
     backgroundColor: theme.colors.error,
   },
-  
+
   // Sizes
   smallButton: {
     paddingHorizontal: theme.spacing.md,
@@ -99,7 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.lg,
   },
-  
+
   // Text styles
   text: {
     fontWeight: '600', // semibold as string is not valid, use '600'

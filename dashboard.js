@@ -1,104 +1,102 @@
-(
-echo // Aetheron Dashboard JavaScript
-echo class AetheronDashboard {
-echo     constructor^(^) {
-echo         this.currentSection = 'dashboard';
-echo         this.init^(^);
-echo     }
-echo.
-echo     init^(^) {
-echo         this.setupEventListeners^(^);
-echo         this.setupSpaceBackground^(^);
-echo         this.loadDashboardData^(^);
-echo         console.log^('🌌 Aetheron Dashboard Initialized!'^);
-echo     }
-echo.
-echo     setupEventListeners^(^) {
-echo         document.querySelectorAll^('.nav-link'^).forEach^(link =^> {
-echo             link.addEventListener^('click', ^(e^) =^> {
-echo                 e.preventDefault^(^);
-echo                 const section = e.target.dataset.section;
-echo                 this.showSection^(section^);
-echo             }^);
-echo         }^);
-echo     }
-echo.
-echo     setupSpaceBackground^(^) {
-echo         const canvas = document.getElementById^('space-bg'^);
-echo         const ctx = canvas.getContext^('2d'^);
-echo         canvas.width = window.innerWidth;
-echo         canvas.height = window.innerHeight;
-echo.
-echo         const stars = [];
-echo         for ^(let i = 0; i ^< 200; i++^) {
-echo             stars.push^({
-echo                 x: Math.random^(^) * canvas.width,
-echo                 y: Math.random^(^) * canvas.height,
-echo                 radius: Math.random^(^) * 2,
-echo                 opacity: Math.random^(^)
-echo             }^);
-echo         }
-echo.
-echo         function animate^(^) {
-echo             ctx.clearRect^(0, 0, canvas.width, canvas.height^);
-echo             ctx.fillStyle = '#0a0a0a';
-echo             ctx.fillRect^(0, 0, canvas.width, canvas.height^);
-echo.
-echo             stars.forEach^(star =^> {
-echo                 ctx.beginPath^(^);
-echo                 ctx.arc^(star.x, star.y, star.radius, 0, Math.PI * 2^);
-echo                 ctx.fillStyle = `rgba^(255, 255, 255, ${star.opacity}^)`;
-echo                 ctx.fill^(^);
-echo                 
-echo                 star.opacity += ^(Math.random^(^) - 0.5^) * 0.02;
-echo                 star.opacity = Math.max^(0, Math.min^(1, star.opacity^)^);
-echo             }^);
-echo.
-echo             requestAnimationFrame^(animate^);
-echo         }
-echo         animate^(^);
-echo     }
-echo.
-echo     showSection^(sectionName^) {
-echo         // Hide all sections
-echo         document.querySelectorAll^('.content-section'^).forEach^(section =^> {
-echo             section.classList.remove^('active'^);
-echo         }^);
-echo.
-echo         // Show selected section
-echo         const targetSection = document.getElementById^(sectionName^);
-echo         if ^(targetSection^) {
-echo             targetSection.classList.add^('active'^);
-echo         }
-echo.
-echo         // Update navigation
-echo         document.querySelectorAll^('.nav-link'^).forEach^(link =^> {
-echo             link.classList.remove^('active'^);
-echo         }^);
-echo         document.querySelector^(`[data-section="${sectionName}"]`^).classList.add^('active'^);
-echo.
-echo         this.currentSection = sectionName;
-echo         console.log^(`Navigated to ${sectionName}`^);
-echo     }
-echo.
-echo     loadDashboardData^(^) {
-echo         // Simulate loading data
-echo         console.log^('Loading dashboard data...'^);
-echo         
-echo         // You can add API calls here
-echo         // fetch^('/api/stats'^).then^(response =^> response.json^(^)^).then^(data =^> { ... }^);
-echo     }
-echo }
-echo.
-echo // Initialize dashboard when DOM is loaded
-echo document.addEventListener^('DOMContentLoaded', ^(^) =^> {
-echo     const dashboard = new AetheronDashboard^(^);
-echo     window.dashboard = dashboard; // Make globally available
-echo }^);
-echo.
-echo // Add some startup animations
-echo window.addEventListener^('load', ^(^) =^> {
-echo     console.log^('🚀 Aetheron Platform Loaded Successfully!'^);
-echo     console.log^('🌌 Welcome to the future of space exploration!'^);
-echo }^);
-) > admin-dashboard\scripts\dashboard.js
+// Aetheron Dashboard JavaScript
+class AetheronDashboard {
+	constructor() {
+		this.currentSection = 'dashboard';
+		this.init();
+	}
+
+	init() {
+		this.setupEventListeners();
+		this.setupSpaceBackground();
+		this.loadDashboardData();
+		console.log('🌌 Aetheron Dashboard Initialized!');
+	}
+
+	setupEventListeners() {
+		document.querySelectorAll('.nav-link').forEach(link => {
+			link.addEventListener('click', (e) => {
+				e.preventDefault();
+				const section = e.target.dataset.section;
+				this.showSection(section);
+			});
+		});
+	}
+
+	setupSpaceBackground() {
+		const canvas = document.getElementById('space-bg');
+		const ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		const stars = [];
+		for (let i = 0; i < 200; i++) {
+			stars.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height,
+				radius: Math.random() * 2,
+				opacity: Math.random()
+			});
+		}
+
+		function animate() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = '#0a0a0a';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			stars.forEach(star => {
+				ctx.beginPath();
+				ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+				ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+				ctx.fill();
+				
+				star.opacity += (Math.random() - 0.5) * 0.02;
+				star.opacity = Math.max(0, Math.min(1, star.opacity));
+			});
+
+			requestAnimationFrame(animate);
+		}
+		animate();
+	}
+
+	showSection(sectionName) {
+		// Hide all sections
+		document.querySelectorAll('.content-section').forEach(section => {
+			section.classList.remove('active');
+		});
+
+		// Show selected section
+		const targetSection = document.getElementById(sectionName);
+		if (targetSection) {
+			targetSection.classList.add('active');
+		}
+
+		// Update navigation
+		document.querySelectorAll('.nav-link').forEach(link => {
+			link.classList.remove('active');
+		});
+		document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+		this.currentSection = sectionName;
+		console.log(`Navigated to ${sectionName}`);
+	}
+
+	loadDashboardData() {
+		// Simulate loading data
+		console.log('Loading dashboard data...');
+		
+		// You can add API calls here
+		// fetch('/api/stats').then(response => response.json()).then(data => { ... });
+	}
+}
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+	const dashboard = new AetheronDashboard();
+	window.dashboard = dashboard; // Make globally available
+});
+
+// Add some startup animations
+window.addEventListener('load', () => {
+	console.log('🚀 Aetheron Platform Loaded Successfully!');
+	console.log('🌌 Welcome to the future of space exploration!');
+});

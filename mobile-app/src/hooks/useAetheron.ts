@@ -24,11 +24,7 @@ export const useAetheron = () => {
 
   useEffect(() => {
     if (provider && isConnected) {
-      const tokenContract = new ethers.Contract(
-        CONTRACTS.AETH_TOKEN,
-        AETH_TOKEN_ABI,
-        provider
-      );
+      const tokenContract = new ethers.Contract(CONTRACTS.AETH_TOKEN, AETH_TOKEN_ABI, provider);
       setContract(tokenContract);
     }
   }, [provider, isConnected]);
@@ -37,16 +33,18 @@ export const useAetheron = () => {
     if (contract && address) {
       fetchBalance();
     }
-  }, [contract, address]);
+  }, [contract, address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchBalance = async () => {
-    if (!contract || !address) return;
-    
+    if (!contract || !address) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       const bal = await contract.balanceOf(address);
-      const formatted = ethers.utils.formatEther(bal);
-      
+      const formatted = ethers.formatEther(bal);
+
       setBalance({
         balance: bal.toString(),
         balanceFormatted: parseFloat(formatted).toFixed(2),
@@ -61,16 +59,19 @@ export const useAetheron = () => {
   };
 
   const transfer = async (to: string, amount: string) => {
-    if (!contract || !provider) throw new Error('Not connected');
-    
+    if (!contract || !provider) {
+      throw new Error('Not connected');
+    }
+
     try {
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractWithSigner = contract.connect(signer);
-      const amountWei = ethers.utils.parseEther(amount);
-      
+      const amountWei = ethers.parseEther(amount);
+
+      // @ts-ignore
       const tx = await contractWithSigner.transfer(to, amountWei);
       await tx.wait();
-      
+
       await fetchBalance();
       return tx;
     } catch (error) {
@@ -80,16 +81,19 @@ export const useAetheron = () => {
   };
 
   const approve = async (spender: string, amount: string) => {
-    if (!contract || !provider) throw new Error('Not connected');
-    
+    if (!contract || !provider) {
+      throw new Error('Not connected');
+    }
+
     try {
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractWithSigner = contract.connect(signer);
-      const amountWei = ethers.utils.parseEther(amount);
-      
+      const amountWei = ethers.parseEther(amount);
+
+      // @ts-ignore
       const tx = await contractWithSigner.approve(spender, amountWei);
       await tx.wait();
-      
+
       return tx;
     } catch (error) {
       console.error('Approval failed:', error);
@@ -98,11 +102,13 @@ export const useAetheron = () => {
   };
 
   const getAllowance = async (spender: string): Promise<string> => {
-    if (!contract || !address) return '0';
-    
+    if (!contract || !address) {
+      return '0';
+    }
+
     try {
       const allowance = await contract.allowance(address, spender);
-      return ethers.utils.formatEther(allowance);
+      return ethers.formatEther(allowance);
     } catch (error) {
       console.error('Failed to get allowance:', error);
       return '0';

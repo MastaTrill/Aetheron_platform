@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import {Text, StyleSheet, ScrollView, Alert} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {useWeb3} from '@context/Web3Context';
 import {useAetheron} from '@hooks/useAetheron';
@@ -45,14 +40,10 @@ export const WalletScreen: React.FC = () => {
   };
 
   const handleDisconnect = () => {
-    Alert.alert(
-      'Disconnect Wallet',
-      'Are you sure you want to disconnect?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Disconnect', onPress: disconnect, style: 'destructive'},
-      ]
-    );
+    Alert.alert('Disconnect Wallet', 'Are you sure you want to disconnect?', [
+      {text: 'Cancel', style: 'cancel'},
+      {text: 'Disconnect', onPress: disconnect, style: 'destructive'},
+    ]);
   };
 
   if (isLoading) {
@@ -108,12 +99,7 @@ export const WalletScreen: React.FC = () => {
 
       {/* Quick Actions */}
       <Card title="⚙️ Settings">
-        <Button
-          title="Disconnect Wallet"
-          onPress={handleDisconnect}
-          variant="danger"
-          fullWidth
-        />
+        <Button title="Disconnect Wallet" onPress={handleDisconnect} variant="danger" fullWidth />
       </Card>
     </ScrollView>
   );

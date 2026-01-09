@@ -1,9 +1,9 @@
 ﻿{
-    "app_name":  "Aetheron",
-    "full_description":  "Aetheron is a next-gen DeFi and space exploration app. Manage your AETH wallet, stake, swap, and track your portfolio on Polygon. Secure, fast, and beautiful.",
-    "website":  "https://mastatrill.github.io/aetheron-platform",
-    "short_description":  "Space Exploration \u0026 DeFi in your pocket.",
-    "support_email":  "support@aetheron.com",
-    "privacy_policy_url":  "https://mastatrill.github.io/aetheron-platform/privacy",
-    "keywords":  "DeFi, crypto, wallet, staking, Polygon, AETH, Web3, space"
+    "app_name": "Aetheron",
+    "full_description": "Aetheron is a next-gen DeFi and space exploration app. Manage your AETH wallet, stake, swap, and track your portfolio on Polygon. Secure, fast, and beautiful.",
+    "website": "https://mastatrill.github.io/aetheron-platform",
+    "short_description": "Space Exploration \u0026 DeFi in your pocket.",
+    "support_email": "support@aetheron.com",
+    "privacy_policy_url": "https://mastatrill.github.io/aetheron-platform/privacy-policy",
+    "keywords": "DeFi, crypto, wallet, staking, Polygon, AETH, Web3, space"
 }

@@ -4,11 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CONTRACTS, WALLETCONNECT_PROJECT_ID} from '@config/contracts';
 // See global.d.ts for module declaration of '@walletconnect/react-native-compat'
 // @ts-ignore
-import { Web3Modal } from '@walletconnect/react-native-compat';
-import { Platform } from 'react-native';
+import {Web3Modal} from '@walletconnect/react-native-compat';
+import {Platform} from 'react-native';
 
 interface Web3ContextType {
-  provider: ethers.providers.Web3Provider | null;
+  provider: ethers.BrowserProvider | null;
   signer: ethers.Signer | null;
   address: string | null;
   chainId: number | null;
@@ -38,13 +38,12 @@ interface Web3ProviderProps {
 }
 
 export const Web3Provider: React.FC<Web3ProviderProps> = ({children}) => {
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-
 
   // WalletConnect v2 integration
   // Removed unused wcSession
@@ -81,18 +80,18 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({children}) => {
       setIsConnecting(true);
       // Use Web3Modal to connect
       const modal = new Web3Modal(web3ModalConfig);
-      const provider = await modal.connect();
-      setWcProvider(provider);
-      setProvider(new ethers.providers.Web3Provider(provider));
-      const signer = new ethers.providers.Web3Provider(provider).getSigner();
-      setSigner(signer);
-      const userAddress = await signer.getAddress();
+      const modalProvider = await modal.connect();
+      setWcProvider(modalProvider);
+      setProvider(new ethers.BrowserProvider(modalProvider));
+      const modalSigner = await new ethers.BrowserProvider(modalProvider).getSigner();
+      setSigner(modalSigner);
+      const userAddress = await modalSigner.getAddress();
       setAddress(userAddress);
       setChainId(CONTRACTS.NETWORK.CHAIN_ID);
       setIsConnected(true);
       await AsyncStorage.setItem('walletAddress', userAddress);
       // Listen for session proposals
-      provider.on('session_proposal', handleSessionProposal);
+      modalProvider.on('session_proposal', handleSessionProposal);
     } catch (error) {
       console.error('WalletConnect connection failed:', error);
       throw error;
@@ -125,7 +124,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({children}) => {
       if (wcProvider && wcProvider.request) {
         await wcProvider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x89' }],
+          params: [{chainId: '0x89'}],
         });
       }
     } catch (error) {
@@ -133,7 +132,6 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({children}) => {
       throw error;
     }
   };
-
 
   const value: Web3ContextType = {
     provider,

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheron Logo Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0d1117;
+      color: #ffffff;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin: 20px 0;
+      padding: 20px;
+      background: #161b22;
+      border-radius: 10px;
+    }
+
+    .instructions {
+      background: #21262d;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .step {
+      margin: 15px 0;
+      padding: 10px;
+      background: #30363d;
+      border-radius: 5px;
+    }
+
+    .highlight {
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+    }
+
+    button:hover {
+      background: #2ea043;
+    }
+
+    .link {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎨 Aetheron Logo Converter</h1>
+  <p>Convert your chosen Ethereum-style logo to PNG format for DexScreener</p>
+
+  <div class="logo-container">
+    <h2>Your Chosen Logo:</h2>
+    <img src="aetheron-logo.svg" alt="Aetheron Logo" style="max-width: 200px; height: auto;">
+    <p><strong>Ethereum-Style Design</strong></p>
+  </div>
+
+  <div class="instructions">
+    <h2>📋 Conversion Steps:</h2>
+
+    <div class="step">
+      <strong>Step 1:</strong> Open <a href="https://cloudconvert.com/svg-to-png" class="link"
+        target="_blank">CloudConvert SVG to PNG</a>
+    </div>
+
+    <div class="step">
+      <strong>Step 2:</strong> Upload <span class="highlight">aetheron-logo.svg</span> from this project folder
+    </div>
+
+    <div class="step">
+      <strong>Step 3:</strong> Set options:
+      <ul>
+        <li>Width: <span class="highlight">512</span> pixels</li>
+        <li>Height: <span class="highlight">512</span> pixels</li>
+        <li>Background: <span class="highlight">Transparent</span></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <strong>Step 4:</strong> Download as <span class="highlight">aetheron-logo.png</span>
+    </div>
+
+    <div class="step">
+      <strong>Step 5:</strong> Save the PNG file in this project folder
+    </div>
+  </div>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <button onclick="openConverter()">🚀 Open CloudConvert</button>
+    <button onclick="openDexScreener()">📊 Open DexScreener Update</button>
+  </div>
+
+  <div class="instructions">
+    <h2>🎯 Next: Update DexScreener</h2>
+    <p>After converting to PNG, go to DexScreener to add your logo and token information.</p>
+
+    <div class="step">
+      <strong>Fill out the form with:</strong>
+      <ul>
+        <li>Token: <span class="highlight">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span></li>
+        <li>Name: <span class="highlight">Aetheron</span></li>
+        <li>Symbol: <span class="highlight">AETH</span></li>
+        <li>Logo: Upload <span class="highlight">aetheron-logo.png</span></li>
+        <li>Description: Use the text from <span class="highlight">DEXSCREENER_UPDATE_GUIDE.md</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function openConverter() {
+      window.open('https://cloudconvert.com/svg-to-png', '_blank');
+    }
+
+    function openDexScreener() {
+      window.open('https://marketplace.dexscreener.com/product/token-info/order?chainId=polygon&tokenAddress=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank');
+    }
+  </script>
+</body>
+
+</html>
