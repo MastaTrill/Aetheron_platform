@@ -143,14 +143,14 @@ class AetheronIntegration {
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const pair = new ethers.Contract(pairAddress, pairABI, provider);
-            
+
             const reserves = await pair.getReserves();
             const token0 = await pair.token0();
-            
+
             // Calculate price based on reserves
-            const price = parseFloat(ethers.formatUnits(reserves[1], 18)) / 
-                         parseFloat(ethers.utils.formatUnits(reserves[0], 18));
-            
+            const price = parseFloat(ethers.formatUnits(reserves[1], 18)) /
+                parseFloat(ethers.utils.formatUnits(reserves[0], 18));
+
             return price;
         } catch (error) {
             console.error('Price fetch error:', error);
@@ -220,7 +220,7 @@ class AetheronIntegration {
         try {
             const totalSupply = await this.contracts.aeth.totalSupply();
             const price = await this.getTokenPrice();
-            
+
             return {
                 totalSupply: ethers.utils.formatUnits(totalSupply, 18),
                 marketCap: parseFloat(ethers.utils.formatUnits(totalSupply, 18)) * price,
