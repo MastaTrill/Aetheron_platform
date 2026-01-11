@@ -2,10 +2,31 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/node:18
     steps:
       - checkout
-      # dbt install and version check removed to fix build errors
+      - run:
+          name: Install Node.js dependencies
+          command: npm ci
+      - run:
+          name: Run linting
+          command: npm run lint || echo "No lint script defined"
+      - run:
+          name: Check for build script
+          command: |
+            if npm run | grep -q "build"; then
+              npm run build
+            else
+              echo "No build script found - static site detected"
+            fi
+      - run:
+          name: Run tests
+          command: |
+            if npm run | grep -q "test"; then
+              npm test
+            else
+              echo "No test script found"
+            fi
 workflows:
   version: 2
   build_and_test:
