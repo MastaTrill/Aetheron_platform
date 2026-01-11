@@ -23,8 +23,8 @@ class AetheronIntegration {
                 throw new Error('MetaMask not installed');
             }
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
 
             // Initialize AETH Token Contract
             const aethABI = [
@@ -61,14 +61,14 @@ class AetheronIntegration {
         try {
             const aethBalance = await this.contracts.aeth.balanceOf(userAddress);
             const decimals = await this.contracts.aeth.decimals();
-            const balance = ethers.utils.formatUnits(aethBalance, decimals);
+            const balance = ethers.formatUnits(aethBalance, decimals);
 
             // Get staked amounts across all pools
             let totalStaked = 0;
             for (let i = 0; i < 3; i++) {
                 try {
                     const stakeInfo = await this.contracts.staking.getStakeInfo(userAddress, i);
-                    totalStaked += parseFloat(ethers.utils.formatUnits(stakeInfo[0], decimals));
+                    totalStaked += parseFloat(ethers.formatUnits(stakeInfo[0], decimals));
                 } catch (e) {
                     // Pool might not exist
                 }
@@ -101,7 +101,7 @@ class AetheronIntegration {
                 pools.push({
                     id: i,
                     ...poolData[i],
-                    totalStaked: ethers.utils.formatUnits(pool[2], 18),
+                    totalStaked: ethers.formatUnits(pool[2], 18),
                     isActive: pool[3]
                 });
             } catch (e) {
@@ -148,7 +148,7 @@ class AetheronIntegration {
             const token0 = await pair.token0();
             
             // Calculate price based on reserves
-            const price = parseFloat(ethers.utils.formatUnits(reserves[1], 18)) / 
+            const price = parseFloat(ethers.formatUnits(reserves[1], 18)) / 
                          parseFloat(ethers.utils.formatUnits(reserves[0], 18));
             
             return price;
@@ -161,7 +161,7 @@ class AetheronIntegration {
     // Transaction History
     async getTransactionHistory(userAddress, limit = 10) {
         try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const provider = new ethers.BrowserProvider(window.ethereum);
             const currentBlock = await provider.getBlockNumber();
             const fromBlock = Math.max(0, currentBlock - 10000); // Last ~10k blocks
 
