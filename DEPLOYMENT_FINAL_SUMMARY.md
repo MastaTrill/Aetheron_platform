@@ -4,11 +4,13 @@
 
 Your Aetheron Platform has been successfully deployed to Polygon Mainnet!
 
-### Contract Addresses:
+### Contract Addresses
+
 - **AETH Token**: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - **Staking Contract**: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 
-### ✅ Verified Status:
+### ✅ Verified Status
+
 - Contracts deployed and functional ✅
 - Trading enabled ✅
 - Token distribution correct ✅
@@ -21,14 +23,16 @@ Your Aetheron Platform has been successfully deployed to Polygon Mainnet!
 
 **This is the ONLY remaining step that requires your action.**
 
-### What You Need:
+### What You Need
+
 1. **MetaMask wallet** connected to Polygon
 2. **USDC tokens** (for pairing with AETH)
 3. **MATIC** (for gas fees)
 
-### QuickSwap Liquidity Setup:
+### QuickSwap Liquidity Setup
 
 1. **Go to QuickSwap**:
+
    ```
    https://quickswap.exchange/#/add/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
    ```
@@ -41,22 +45,25 @@ Your Aetheron Platform has been successfully deployed to Polygon Mainnet!
    - Approve both tokens
    - Click "Supply"
 
-### Recommended Starting Liquidity:
+### Recommended Starting Liquidity
+
 - **Small Launch**: 100 USDC + 100,000 AETH
 - **Medium Launch**: 1,000 USDC + 1,000,000 AETH
 - **Strong Launch**: 10,000 USDC + 10,000,000 AETH
 
 ---
 
-## 📊 After Liquidity is Added:
+## 📊 After Liquidity is Added
 
-### Immediate Actions:
+### Immediate Actions
+
 1. **Verify on DexScreener**: Check price appears
 2. **Test trading**: Buy/sell small amounts
 3. **Update website**: Add "Buy on QuickSwap" buttons
 4. **Social media announcement**: Post launch message
 
-### Launch Checklist:
+### Launch Checklist
+
 - [ ] Add liquidity on QuickSwap
 - [ ] Verify trading works
 - [ ] Update website links
@@ -66,15 +73,15 @@ Your Aetheron Platform has been successfully deployed to Polygon Mainnet!
 
 ---
 
-## 🌐 Your Live Platform:
+## 🌐 Your Live Platform
 
-**Dashboard**: https://mastatrill.github.io/Aetheron_platform/
-**Token Contract**: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-**Staking Contract**: https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638
+**Dashboard**: <https://mastatrill.github.io/Aetheron_platform/>
+**Token Contract**: <https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e>
+**Staking Contract**: <https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638>
 
 ---
 
-## 💰 Token Holdings:
+## 💰 Token Holdings
 
 - **Deployer Wallet**: 640M AETH (for liquidity)
 - **Team Wallet**: 200M AETH
@@ -83,7 +90,7 @@ Your Aetheron Platform has been successfully deployed to Polygon Mainnet!
 
 ---
 
-## 🎉 You're Ready to Launch!
+## 🎉 You're Ready to Launch
 
 **Estimated time to complete liquidity**: 15-30 minutes
 **Cost**: ~$1,000-10,000 for initial liquidity + gas fees
