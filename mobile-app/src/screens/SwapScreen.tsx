@@ -112,8 +112,10 @@ export const SwapScreen: React.FC = () => {
       }
       const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
       // Calculate amountOutMin using slippage from quote
-      if (!quote.minReceived) {
-        throw new Error('Unable to calculate minimum received amount. Please try again.');
+      if (!quote.minReceived || quote.minReceived === '0' || quote.error) {
+        throw new Error(
+          quote.error || 'Unable to calculate minimum received amount. Please try again.',
+        );
       }
       const amountOutMin = ethers.parseUnits(quote.minReceived, toToken.decimals);
       let tx;
