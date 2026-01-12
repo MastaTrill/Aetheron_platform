@@ -138,7 +138,7 @@ async function addLiquidity() {
             aethWei,
             usdcWei,
             (aethWei * 95n) / 100n, // 5% slippage - BigInt arithmetic
-            (usdcWei * 95n) / 100n,
+            (usdcWei * 95n) / 100n, // Note: For more precision, consider using basis points (e.g., 9500n/10000n)
             account,
             deadline
         );

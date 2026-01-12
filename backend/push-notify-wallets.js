@@ -31,7 +31,7 @@ async function sendPushNotification(playerId, title, message) {
 
 async function monitorWallet(address, playerId) {
   let lastBlock = await provider.getBlockNumber();
-  const seenTxs = new Set();
+  const seenTxs = new Map(); // Using Map to track timestamp for LRU eviction
   const MAX_CACHE_SIZE = 1000; // Limit cache size to prevent memory leaks
   
   provider.on('block', async (blockNumber) => {
@@ -43,21 +43,18 @@ async function monitorWallet(address, playerId) {
         const block = await provider.getBlock(i, false); // Get block without full tx details
         if (!block || !block.transactions) continue;
         
-        // Only fetch details for transactions that might be relevant
-        // Note: ethers.js v6 doesn't provide transaction summaries, so we must fetch
-        // full details to check sender/receiver. For production, consider using
-        // event filters or indexed transaction APIs for better performance.
+        // In ethers.js v6, block.transactions contains transaction hashes as strings when prefetchTxs is false
         for (const txHash of block.transactions) {
-          const hash = typeof txHash === 'string' ? txHash : txHash.hash;
-          if (seenTxs.has(hash)) continue;
+          if (seenTxs.has(txHash)) continue;
           
-          // Clean cache if it grows too large
+          // LRU cache eviction: remove oldest entry if cache is full
           if (seenTxs.size >= MAX_CACHE_SIZE) {
-            seenTxs.clear();
+            const oldestKey = seenTxs.keys().next().value;
+            seenTxs.delete(oldestKey);
           }
-          seenTxs.add(hash);
+          seenTxs.set(txHash, Date.now());
           
-          const txDetails = await provider.getTransaction(hash);
+          const txDetails = await provider.getTransaction(txHash);
           if (!txDetails) continue;
           
           // Only send notifications if this wallet is involved
