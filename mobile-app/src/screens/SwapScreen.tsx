@@ -118,13 +118,7 @@ export const SwapScreen: React.FC = () => {
       const amountOutMin = ethers.parseUnits(quote.minReceived, toToken.decimals);
       let tx;
       if (method === 'swapExactETHForTokens') {
-        tx = await router.swapExactETHForTokens(
-          amountOutMin,
-          path,
-          address,
-          deadline,
-          {value},
-        );
+        tx = await router.swapExactETHForTokens(amountOutMin, path, address, deadline, {value});
       } else if (method === 'swapExactTokensForETH') {
         tx = await router.swapExactTokensForETH(
           ethers.parseUnits(amount, fromToken.decimals),
