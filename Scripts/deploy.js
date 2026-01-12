@@ -1,18 +1,23 @@
 // scripts/deploy.js
-import { ethers } from "hardhat";
+import pkg from 'hardhat';
+const { ethers } = pkg;
 
 async function main() {
-  console.log("🚀 Deploying AetherX token to Polygon...");
+  console.log("🚀 Deploying Aetheron token to Polygon...");
 
   // Contract factory
-  const Token = await ethers.getContractFactory("InstantLiquidityToken");
+  const Token = await ethers.getContractFactory("Aetheron");
 
-  // Deploy contract (ERC20Upgradeable may not need constructor args)
-  const token = await Token.deploy("AetherX", "AETHX", ethers.utils.parseUnits("1000000", 18));
+  // Deploy contract with constructor args (teamWallet, marketingWallet, stakingPool)
+  const token = await Token.deploy(
+    "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452", // teamWallet
+    "0x8D3442424F8F6BEEd97496C7E54e056166f96746", // marketingWallet
+    "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82"  // stakingPool
+  );
 
   await token.deployed();
 
-  console.log(`✅ AetherX deployed at: ${token.address}`);
+  console.log(`✅ Aetheron deployed at: ${token.address}`);
 }
 
 // Run deployment

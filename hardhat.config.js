@@ -1,10 +1,12 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
+import "@nomicfoundation/hardhat-toolbox";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
+export default {
   solidity: {
     version: "0.8.20",
     settings: {
@@ -13,6 +15,12 @@ module.exports = {
         runs: 200
       }
     }
+  },
+  paths: {
+    sources: "./smart-contract/contracts",
+    tests: "./smart-contract/test",
+    cache: "./smart-contract/cache",
+    artifacts: "./smart-contract/artifacts"
   },
   networks: {
     polygon: {

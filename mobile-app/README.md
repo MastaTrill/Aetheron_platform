@@ -72,7 +72,7 @@ cd ios && pod install && cd ..
      ```
 
 2. **Contract Addresses** (Already configured for Polygon mainnet):
-   - AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
+   - AETH Token: `0x44F9c15816bCe5d6691448F60DAD50355ABa40b5`
    - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 
 ### Run the App

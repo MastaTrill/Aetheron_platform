@@ -2,7 +2,7 @@
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
 // Contract Addresses
-const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const AETH_ADDRESS = "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 const OWNER_ADDRESS = "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452".toLowerCase();
 const POLYGON_CHAIN_ID = '0x89'; // 137 in hex

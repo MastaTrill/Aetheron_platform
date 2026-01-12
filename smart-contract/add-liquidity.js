@@ -1,13 +1,13 @@
 // add-liquidity.js
-// Script to add liquidity to QuickSwap (Polygon) for Aetheron (AETH) and WMATIC
+// Script to add liquidity to QuickSwap (Polygon) for Aetheron (AETH) and USDC
 // Usage: node add-liquidity.js
 
 const { ethers } = require("ethers");
 require("dotenv").config();
 
 const ROUTER_ADDRESS = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"; // QuickSwap Router
-const AETH_ADDRESS = process.env.AETH_TOKEN_ADDRESS || "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5";
-const WMATIC_ADDRESS = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+const AETH_ADDRESS = process.env.AETH_TOKEN_ADDRESS || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const USDC_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDC on Polygon
 const routerAbi = require("./abis/QuickswapRouter.json");
 const erc20Abi = require("./abis/ERC20.json");
 
@@ -17,42 +17,66 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 async function main() {
   const router = new ethers.Contract(ROUTER_ADDRESS, routerAbi, signer);
   const aeth = new ethers.Contract(AETH_ADDRESS, erc20Abi, signer);
-  const wmatic = new ethers.Contract(WMATIC_ADDRESS, erc20Abi, signer);
+  const usdc = new ethers.Contract(USDC_ADDRESS, erc20Abi, signer);
 
-  // Approve tokens
-  const amountAETH = ethers.parseUnits("100", 18); // Adjust as needed
-  const amountWMATIC = ethers.parseUnits("0.1", 18); // Adjust as needed
+  // Check balances first
+  const aethBalance = await aeth.balanceOf(signer.address);
+  const usdcBalance = await usdc.balanceOf(signer.address);
+  const maticBalance = await provider.getBalance(signer.address);
 
-  console.log("Approving AETH token...");
+  console.log(`Wallet: ${signer.address}`);
+  console.log(`AETH Balance: ${ethers.formatUnits(aethBalance, 18)} AETH`);
+  console.log(`USDC Balance: ${ethers.formatUnits(usdcBalance, 6)} USDC`);
+  console.log(`MATIC Balance: ${ethers.formatEther(maticBalance)} MATIC`);
+
+  // Adjust amounts based on what you want to add
+  const amountAETH = ethers.parseUnits("1000000", 18); // 1M AETH - adjust as needed
+  const amountUSDC = ethers.parseUnits("1000", 6); // 1000 USDC - adjust as needed
+
+  console.log(`\nAdding liquidity:`);
+  console.log(`AETH: ${ethers.formatUnits(amountAETH, 18)} AETH`);
+  console.log(`USDC: ${ethers.formatUnits(amountUSDC, 6)} USDC`);
+
+  // Check if balances are sufficient
+  if (aethBalance < amountAETH) {
+    throw new Error(`Insufficient AETH balance. Have: ${ethers.formatUnits(aethBalance, 18)}, Need: ${ethers.formatUnits(amountAETH, 18)}`);
+  }
+  if (usdcBalance < amountUSDC) {
+    throw new Error(`Insufficient USDC balance. Have: ${ethers.formatUnits(usdcBalance, 6)}, Need: ${ethers.formatUnits(amountUSDC, 6)}`);
+  }
+
+  console.log("\nApproving AETH token...");
   const approveAETH = await aeth.approve(ROUTER_ADDRESS, amountAETH);
   await approveAETH.wait();
-  console.log("AETH approved");
+  console.log("✅ AETH approved");
 
-  console.log("Approving WMATIC token...");
-  const approveWMATIC = await wmatic.approve(ROUTER_ADDRESS, amountWMATIC);
-  await approveWMATIC.wait();
-  console.log("WMATIC approved");
+  console.log("Approving USDC token...");
+  const approveUSDC = await usdc.approve(ROUTER_ADDRESS, amountUSDC);
+  await approveUSDC.wait();
+  console.log("✅ USDC approved");
 
   // Add liquidity
   const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
-  console.log("Adding liquidity to QuickSwap...");
+  console.log("\n🚀 Adding liquidity to QuickSwap...");
   const tx = await router.addLiquidity(
     AETH_ADDRESS,
-    WMATIC_ADDRESS,
+    USDC_ADDRESS,
     amountAETH,
-    amountWMATIC,
-    0,
-    0,
+    amountUSDC,
+    0, // amountAMin
+    0, // amountBMin
     signer.address,
     deadline,
     {
-      gasLimit: 300000,
+      gasLimit: 500000,
       gasPrice: ethers.parseUnits('50', 'gwei')
     }
   );
+
+  console.log("Transaction sent:", tx.hash);
   await tx.wait();
-  console.log("Liquidity added successfully!");
-  console.log("Transaction hash:", tx.hash);
+  console.log("✅ Liquidity added successfully!");
+  console.log("View on PolygonScan:", `https://polygonscan.com/tx/${tx.hash}`);
 }
 
 main().catch(console.error);
