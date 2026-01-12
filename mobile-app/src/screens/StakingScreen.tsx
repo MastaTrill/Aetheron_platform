@@ -50,7 +50,8 @@ export const StakingScreen: React.FC = () => {
       // Approve if needed
       const allowance = await token.allowance(address, CONTRACTS.STAKING);
       const amt = ethers.parseEther(amount);
-      if (allowance.lt(amt)) {
+      // ethers v6 returns BigInt values, so direct comparison works
+      if (allowance < amt) {
         const txApprove = await token.approve(CONTRACTS.STAKING, amt);
         await txApprove.wait();
       }

@@ -1,0 +1,23 @@
+{
+  "name": "aetheron-backend",
+  "version": "1.0.0",
+  "description": "Backend services for Aetheron Platform",
+  "main": "push-notify-wallets.js",
+  "scripts": {
+    "start": "node push-notify-wallets.js",
+    "monitor": "node push-notify-wallets.js"
+  },
+  "keywords": [
+    "aetheron",
+    "blockchain",
+    "notifications",
+    "web3"
+  ],
+  "author": "MastaTrill",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.10.0",
+    "axios": "^1.6.5",
+    "dotenv": "^16.3.1"
+  }
+}

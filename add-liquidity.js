@@ -50,8 +50,8 @@ async function connectWallet() {
         updateStatus('Connecting to MetaMask...');
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         account = accounts[0];
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
         // Check network
         const network = await provider.getNetwork();
         if (network.chainId !== 137) {
@@ -96,9 +96,9 @@ async function updateBalances() {
     const aethBal = await aethContract.balanceOf(account);
     const usdcBal = await usdcContract.balanceOf(account);
     const maticBal = await provider.getBalance(account);
-    document.getElementById('aethBalance').textContent = ethers.utils.formatEther(aethBal) + ' AETH';
-    document.getElementById('usdcBalance').textContent = ethers.utils.formatUnits(usdcBal, 6) + ' USDC';
-    document.getElementById('maticBalance').textContent = ethers.utils.formatEther(maticBal) + ' MATIC';
+    document.getElementById('aethBalance').textContent = ethers.formatEther(aethBal) + ' AETH';
+    document.getElementById('usdcBalance').textContent = ethers.formatUnits(usdcBal, 6) + ' USDC';
+    document.getElementById('maticBalance').textContent = ethers.formatEther(maticBal) + ' MATIC';
 }
 
 async function addLiquidity() {
@@ -109,22 +109,22 @@ async function addLiquidity() {
             alert('Please enter both amounts');
             return;
         }
-        const aethWei = ethers.utils.parseEther(aethAmount);
-        const usdcWei = ethers.utils.parseUnits(usdcAmount, 6);
+        const aethWei = ethers.parseEther(aethAmount);
+        const usdcWei = ethers.parseUnits(usdcAmount, 6);
         document.getElementById('addLiquidityBtn').disabled = true;
         // Step 1: Approve AETH
         updateStatus('Step 1/3: Approving AETH...');
         const aethAllowance = await aethContract.allowance(account, QUICKSWAP_ROUTER);
-        if (aethAllowance.lt(aethWei)) {
-            const approveTx1 = await aethContract.approve(QUICKSWAP_ROUTER, ethers.constants.MaxUint256);
+        if (aethAllowance < aethWei) {
+            const approveTx1 = await aethContract.approve(QUICKSWAP_ROUTER, ethers.MaxUint256);
             await approveTx1.wait();
             updateStatus('AETH approved ✓');
         }
         // Step 2: Approve USDC
         updateStatus('Step 2/3: Approving USDC...');
         const usdcAllowance = await usdcContract.allowance(account, QUICKSWAP_ROUTER);
-        if (usdcAllowance.lt(usdcWei)) {
-            const approveTx2 = await usdcContract.approve(QUICKSWAP_ROUTER, ethers.constants.MaxUint256);
+        if (usdcAllowance < usdcWei) {
+            const approveTx2 = await usdcContract.approve(QUICKSWAP_ROUTER, ethers.MaxUint256);
             await approveTx2.wait();
             updateStatus('USDC approved ✓');
         }
@@ -137,8 +137,8 @@ async function addLiquidity() {
             USDC_ADDRESS,
             aethWei,
             usdcWei,
-            aethWei.mul(95).div(100), // 5% slippage
-            usdcWei.mul(95).div(100),
+            (aethWei * 95n) / 100n, // 5% slippage - BigInt arithmetic
+            (usdcWei * 95n) / 100n, // Note: For more precision, consider using basis points (e.g., 9500n/10000n)
             account,
             deadline
         );
