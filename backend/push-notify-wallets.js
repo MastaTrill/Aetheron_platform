@@ -32,6 +32,7 @@ async function sendPushNotification(playerId, title, message) {
 async function monitorWallet(address, playerId) {
   let lastBlock = await provider.getBlockNumber();
   const seenTxs = new Set();
+  const MAX_CACHE_SIZE = 1000; // Limit cache size to prevent memory leaks
   
   provider.on('block', async (blockNumber) => {
     if (blockNumber <= lastBlock) return;
@@ -39,21 +40,27 @@ async function monitorWallet(address, playerId) {
     // Check transactions in recent blocks
     for (let i = lastBlock + 1; i <= blockNumber; i++) {
       try {
-        const block = await provider.getBlock(i, true);
+        const block = await provider.getBlock(i, false); // Get block without full tx details
         if (!block || !block.transactions) continue;
         
-        for (const tx of block.transactions) {
-          const txHash = typeof tx === 'string' ? tx : tx.hash;
-          if (seenTxs.has(txHash)) continue;
-          seenTxs.add(txHash);
+        // Only fetch details for transactions that might be relevant
+        for (const txHash of block.transactions) {
+          const hash = typeof txHash === 'string' ? txHash : txHash.hash;
+          if (seenTxs.has(hash)) continue;
           
-          const txDetails = typeof tx === 'string' ? await provider.getTransaction(tx) : tx;
+          // Clean cache if it grows too large
+          if (seenTxs.size >= MAX_CACHE_SIZE) {
+            seenTxs.clear();
+          }
+          seenTxs.add(hash);
+          
+          const txDetails = await provider.getTransaction(hash);
           if (!txDetails) continue;
           
+          // Only send notifications if this wallet is involved
           if (txDetails.to && txDetails.to.toLowerCase() === address.toLowerCase()) {
             await sendPushNotification(playerId, 'Incoming Transaction', `You received ${ethers.formatEther(txDetails.value)} MATIC`);
-          }
-          if (txDetails.from && txDetails.from.toLowerCase() === address.toLowerCase()) {
+          } else if (txDetails.from && txDetails.from.toLowerCase() === address.toLowerCase()) {
             await sendPushNotification(playerId, 'Outgoing Transaction', `You sent ${ethers.formatEther(txDetails.value)} MATIC`);
           }
         }
