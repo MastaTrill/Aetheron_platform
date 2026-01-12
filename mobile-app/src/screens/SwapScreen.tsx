@@ -111,11 +111,15 @@ export const SwapScreen: React.FC = () => {
         method = 'swapExactTokensForTokens';
       }
       const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-      // TODO: Calculate amountOutMin using slippage
+      // Calculate amountOutMin using slippage from quote
+      if (!quote.minReceived) {
+        throw new Error('Unable to calculate minimum received amount. Please try again.');
+      }
+      const amountOutMin = ethers.parseUnits(quote.minReceived, toToken.decimals);
       let tx;
       if (method === 'swapExactETHForTokens') {
         tx = await router.swapExactETHForTokens(
-          0, // amountOutMin
+          amountOutMin,
           path,
           address,
           deadline,
@@ -124,7 +128,7 @@ export const SwapScreen: React.FC = () => {
       } else if (method === 'swapExactTokensForETH') {
         tx = await router.swapExactTokensForETH(
           ethers.parseUnits(amount, fromToken.decimals),
-          0,
+          amountOutMin,
           path,
           address,
           deadline,
@@ -132,7 +136,7 @@ export const SwapScreen: React.FC = () => {
       } else {
         tx = await router.swapExactTokensForTokens(
           ethers.parseUnits(amount, fromToken.decimals),
-          0,
+          amountOutMin,
           path,
           address,
           deadline,
