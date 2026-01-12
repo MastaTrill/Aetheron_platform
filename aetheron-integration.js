@@ -141,7 +141,7 @@ class AetheronIntegration {
                 "function token1() view returns (address)"
             ];
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const provider = new ethers.BrowserProvider(window.ethereum);
             const pair = new ethers.Contract(pairAddress, pairABI, provider);
 
             const reserves = await pair.getReserves();
@@ -149,7 +149,7 @@ class AetheronIntegration {
 
             // Calculate price based on reserves
             const price = parseFloat(ethers.formatUnits(reserves[1], 18)) /
-                parseFloat(ethers.utils.formatUnits(reserves[0], 18));
+                parseFloat(ethers.formatUnits(reserves[0], 18));
 
             return price;
         } catch (error) {
@@ -176,7 +176,7 @@ class AetheronIntegration {
                         hash: event.transactionHash,
                         from: event.args[0],
                         to: event.args[1],
-                        amount: ethers.utils.formatUnits(event.args[2], 18),
+                        amount: ethers.formatUnits(event.args[2], 18),
                         timestamp: new Date(block.timestamp * 1000),
                         type: event.args[1].toLowerCase() === userAddress.toLowerCase() ? 'receive' : 'send'
                     };
@@ -222,8 +222,8 @@ class AetheronIntegration {
             const price = await this.getTokenPrice();
 
             return {
-                totalSupply: ethers.utils.formatUnits(totalSupply, 18),
-                marketCap: parseFloat(ethers.utils.formatUnits(totalSupply, 18)) * price,
+                totalSupply: ethers.formatUnits(totalSupply, 18),
+                marketCap: parseFloat(ethers.formatUnits(totalSupply, 18)) * price,
                 price: price,
                 holders: 'Loading...', // Would need to query blockchain or API
                 volume24h: 'Loading...' // Would need DEX API
