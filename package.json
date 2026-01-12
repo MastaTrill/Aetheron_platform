@@ -2,6 +2,7 @@
   "name": "aetheron-platform",
   "version": "2.0.0",
   "description": "Revolutionary Blockchain & Space Exploration Ecosystem",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "npx http-server . -p 3000",
