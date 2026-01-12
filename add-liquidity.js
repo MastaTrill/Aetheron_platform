@@ -137,8 +137,8 @@ async function addLiquidity() {
             USDC_ADDRESS,
             aethWei,
             usdcWei,
-            aethWei * 95n / 100n, // 5% slippage
-            usdcWei * 95n / 100n,
+            (aethWei * 95n) / 100n, // 5% slippage - BigInt arithmetic
+            (usdcWei * 95n) / 100n,
             account,
             deadline
         );

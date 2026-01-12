@@ -44,6 +44,9 @@ async function monitorWallet(address, playerId) {
         if (!block || !block.transactions) continue;
         
         // Only fetch details for transactions that might be relevant
+        // Note: ethers.js v6 doesn't provide transaction summaries, so we must fetch
+        // full details to check sender/receiver. For production, consider using
+        // event filters or indexed transaction APIs for better performance.
         for (const txHash of block.transactions) {
           const hash = typeof txHash === 'string' ? txHash : txHash.hash;
           if (seenTxs.has(hash)) continue;
