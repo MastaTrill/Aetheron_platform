@@ -1,27 +1,27 @@
 {
   "network": "polygon",
   "chainId": 137,
-  "timestamp": "2025-12-21T05:28:34.783Z",
-  "deployer": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+  "timestamp": "2026-01-12T00:22:16.974Z",
+  "deployer": "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82",
   "contracts": {
     "Aetheron": {
-      "address": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "address": "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5",
       "args": [
-        "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
-        "0x8a3ad49656bd07981c9cfc7ad826a808847c3452"
+        "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+        "0x8D3442424F8F6BEEd97496C7E54e056166f96746",
+        "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82"
       ]
     },
     "AetheronStaking": {
-      "address": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638",
+      "address": "0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7",
       "args": [
-        "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+        "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5"
       ]
     }
   },
   "configuration": {
-    "teamWallet": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
-    "marketingWallet": "0x8a3ad49656bd07981c9cfc7ad826a808847c3452",
+    "teamWallet": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+    "marketingWallet": "0x8D3442424F8F6BEEd97496C7E54e056166f96746",
     "stakingRewards": "150000000000000000000000000"
-  },
-  "gasUsed": "106611165015954183"
+  }
 }

@@ -5,67 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aetheron Logo Converter</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #0d1117;
-      color: #ffffff;
-    }
-
-    .logo-container {
-      text-align: center;
-      margin: 20px 0;
-      padding: 20px;
-      background: #161b22;
-      border-radius: 10px;
-    }
-
-    .instructions {
-      background: #21262d;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-    }
-
-    .step {
-      margin: 15px 0;
-      padding: 10px;
-      background: #30363d;
-      border-radius: 5px;
-    }
-
-    .highlight {
-      color: #58a6ff;
-      font-weight: bold;
-    }
-
-    button {
-      background: #238636;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 10px;
-    }
-
-    button:hover {
-      background: #2ea043;
-    }
-
-    .link {
-      color: #58a6ff;
-      text-decoration: none;
-    }
-
-    .link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -74,7 +14,7 @@
 
   <div class="logo-container">
     <h2>Your Chosen Logo:</h2>
-    <img src="aetheron-logo.svg" alt="Aetheron Logo" style="max-width: 200px; height: auto;">
+    <img src="aetheron-logo.svg" alt="Aetheron Logo" class="logo-image">
     <p><strong>Ethereum-Style Design</strong></p>
   </div>
 
@@ -83,7 +23,7 @@
 
     <div class="step">
       <strong>Step 1:</strong> Open <a href="https://cloudconvert.com/svg-to-png" class="link"
-        target="_blank">CloudConvert SVG to PNG</a>
+        target="_blank" rel="noopener">CloudConvert SVG to PNG</a>
     </div>
 
     <div class="step">
@@ -108,9 +48,9 @@
     </div>
   </div>
 
-  <div style="text-align: center; margin: 30px 0;">
-    <button onclick="openConverter()">🚀 Open CloudConvert</button>
-    <button onclick="openDexScreener()">📊 Open DexScreener Update</button>
+  <div class="button-container">
+    <button type="button" onclick="openConverter()">🚀 Open CloudConvert</button>
+    <button type="button" onclick="openDexScreener()">📊 Open DexScreener Update</button>
   </div>
 
   <div class="instructions">

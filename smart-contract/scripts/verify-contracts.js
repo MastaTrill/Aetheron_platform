@@ -8,7 +8,7 @@ async function main() {
   console.log("=".repeat(60) + "\n");
 
   const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
-  
+
   if (!POLYGONSCAN_API_KEY) {
     console.log("⚠️  POLYGONSCAN_API_KEY not found in .env");
     console.log("   Get your API key from: https://polygonscan.com/myapikey");
@@ -16,15 +16,15 @@ async function main() {
   }
 
   const TEAM_WALLET = "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452";
-  const MARKETING_WALLET = "0x8a3ad49656bd07981c9cfc7ad826a808847c3452";
-  const DEPLOYER = "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452";
+  const MARKETING_WALLET = "0x8D3442424F8F6BEEd97496C7E54e056166f96746";
+  const STAKING_POOL = "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82";
 
-  const AETH_TOKEN = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-  const STAKING = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
+  const AETH_TOKEN = "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5";
+  const STAKING = "0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7";
 
   console.log("📋 Contracts to Verify:\n");
   console.log("1. AETH Token:", AETH_TOKEN);
-  console.log("   Constructor Args:", TEAM_WALLET, MARKETING_WALLET, DEPLOYER);
+  console.log("   Constructor Args:", TEAM_WALLET, MARKETING_WALLET, STAKING_POOL);
   console.log("\n2. Staking Contract:", STAKING);
   console.log("   Constructor Args:", AETH_TOKEN);
   console.log("\n" + "=".repeat(60));
@@ -49,9 +49,9 @@ async function main() {
   try {
     // Verify AETH Token
     console.log("1️⃣  Verifying AETH Token...");
-    const aetheronCmd = `npx hardhat verify --network polygon ${AETH_TOKEN} "${TEAM_WALLET}" "${MARKETING_WALLET}" "${DEPLOYER}"`;
+    const aetheronCmd = `npx hardhat verify --network polygon ${AETH_TOKEN} "${TEAM_WALLET}" "${MARKETING_WALLET}" "${STAKING_POOL}"`;
     console.log("   Command:", aetheronCmd);
-    
+
     try {
       const { stdout, stderr } = await execPromise(aetheronCmd);
       console.log(stdout);
@@ -69,7 +69,7 @@ async function main() {
     console.log("2️⃣  Verifying Staking Contract...");
     const stakingCmd = `npx hardhat verify --network polygon ${STAKING} "${AETH_TOKEN}"`;
     console.log("   Command:", stakingCmd);
-    
+
     try {
       const { stdout, stderr } = await execPromise(stakingCmd);
       console.log(stdout);
