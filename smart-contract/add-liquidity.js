@@ -11,7 +11,7 @@ const WMATIC_ADDRESS = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
 const routerAbi = require("./abis/QuickswapRouter.json");
 const erc20Abi = require("./abis/ERC20.json");
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
+const provider = new ethers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 async function main() {
@@ -20,8 +20,8 @@ async function main() {
   const wmatic = new ethers.Contract(WMATIC_ADDRESS, erc20Abi, signer);
 
   // Approve tokens
-  const amountAETH = ethers.utils.parseUnits("1000", 18); // Adjust as needed
-  const amountWMATIC = ethers.utils.parseUnits("10", 18); // Adjust as needed
+  const amountAETH = ethers.parseUnits("1000", 18); // Adjust as needed
+  const amountWMATIC = ethers.parseUnits("10", 18); // Adjust as needed
 
   await aeth.approve(ROUTER_ADDRESS, amountAETH);
   await wmatic.approve(ROUTER_ADDRESS, amountWMATIC);
@@ -33,8 +33,8 @@ async function main() {
     WMATIC_ADDRESS,
     amountAETH,
     amountWMATIC,
-    0,
-    0,
+    (BigInt(amountAETH) * 95n) / 100n, // 5% slippage protection
+    (BigInt(amountWMATIC) * 95n) / 100n, // 5% slippage protection
     signer.address,
     deadline
   );
