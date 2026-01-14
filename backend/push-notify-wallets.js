@@ -13,7 +13,7 @@ const ONESIGNAL_API_KEY = process.env.ONESIGNAL_API_KEY;
 // Map wallet address to OneSignal player/user ID
 const USER_MAP = JSON.parse(process.env.USER_MAP || '{}');
 
-const provider = new ethers.providers.JsonRpcProvider(POLYGON_RPC);
+const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
 async function sendPushNotification(playerId, title, message) {
   await axios.post('https://onesignal.com/api/v1/notifications', {
@@ -37,10 +37,10 @@ async function monitorWallet(address, playerId) {
     const txs = await provider.getHistory(address, blockNumber - 5, blockNumber);
     for (const tx of txs) {
       if (tx.to && tx.to.toLowerCase() === address.toLowerCase()) {
-        await sendPushNotification(playerId, 'Incoming Transaction', `You received ${ethers.utils.formatEther(tx.value)} MATIC`);
+        await sendPushNotification(playerId, 'Incoming Transaction', `You received ${ethers.formatEther(tx.value)} MATIC`);
       }
       if (tx.from && tx.from.toLowerCase() === address.toLowerCase()) {
-        await sendPushNotification(playerId, 'Outgoing Transaction', `You sent ${ethers.utils.formatEther(tx.value)} MATIC`);
+        await sendPushNotification(playerId, 'Outgoing Transaction', `You sent ${ethers.formatEther(tx.value)} MATIC`);
       }
     }
   });

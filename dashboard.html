@@ -341,9 +341,9 @@
             }
             
             try {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
+                provider = new ethers.BrowserProvider(window.ethereum);
                 await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
+                signer = await provider.getSigner();
                 account = await signer.getAddress();
                 
                 aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
@@ -365,11 +365,11 @@
             try {
                 const ethBalance = await provider.getBalance(account);
                 document.getElementById('ethBalance').textContent = 
-                    parseFloat(ethers.utils.formatEther(ethBalance)).toFixed(4) + ' ETH';
+                    parseFloat(ethers.formatEther(ethBalance)).toFixed(4) + ' ETH';
                 
                 const aethBalance = await aethContract.balanceOf(account);
                 document.getElementById('aethBalance').textContent = 
-                    parseFloat(ethers.utils.formatEther(aethBalance)).toFixed(2) + ' AETH';
+                    parseFloat(ethers.formatEther(aethBalance)).toFixed(2) + ' AETH';
             } catch (error) {
                 console.error('Error updating balances:', error);
             }
@@ -391,7 +391,7 @@
                 statusEl.className = 'status-message';
                 statusEl.style.display = 'block';
                 
-                const tx = await aethContract.transfer(to, ethers.utils.parseEther(amount));
+                const tx = await aethContract.transfer(to, ethers.parseEther(amount));
                 await tx.wait();
                 
                 statusEl.textContent = 'Transfer successful!';
@@ -420,12 +420,12 @@
                 statusEl.className = 'status-message';
                 statusEl.style.display = 'block';
                 
-                const approvalTx = await aethContract.approve(STAKING_ADDRESS, ethers.utils.parseEther(amount));
+                const approvalTx = await aethContract.approve(STAKING_ADDRESS, ethers.parseEther(amount));
                 await approvalTx.wait();
                 
                 statusEl.textContent = 'Staking tokens...';
                 
-                const stakeTx = await stakingContract.stake(poolId, ethers.utils.parseEther(amount));
+                const stakeTx = await stakingContract.stake(poolId, ethers.parseEther(amount));
                 await stakeTx.wait();
                 
                 statusEl.textContent = 'Staking successful!';

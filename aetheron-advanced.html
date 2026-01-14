@@ -372,8 +372,8 @@
                 });
                 
                 userAddress = accounts[0];
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
                 
                 // Check if on Polygon network
                 const network = await provider.getNetwork();
