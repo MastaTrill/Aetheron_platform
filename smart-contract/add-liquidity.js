@@ -33,8 +33,8 @@ async function main() {
     WMATIC_ADDRESS,
     amountAETH,
     amountWMATIC,
-    0,
-    0,
+    (BigInt(amountAETH) * 95n) / 100n, // 5% slippage protection
+    (BigInt(amountWMATIC) * 95n) / 100n, // 5% slippage protection
     signer.address,
     deadline
   );

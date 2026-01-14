@@ -115,7 +115,7 @@ async function addLiquidity() {
         // Step 1: Approve AETH
         updateStatus('Step 1/3: Approving AETH...');
         const aethAllowance = await aethContract.allowance(account, QUICKSWAP_ROUTER);
-        if (aethAllowance < aethWei) {
+        if (BigInt(aethAllowance) < BigInt(aethWei)) {
             const approveTx1 = await aethContract.approve(QUICKSWAP_ROUTER, ethers.MaxUint256);
             await approveTx1.wait();
             updateStatus('AETH approved ✓');
@@ -123,7 +123,7 @@ async function addLiquidity() {
         // Step 2: Approve USDC
         updateStatus('Step 2/3: Approving USDC...');
         const usdcAllowance = await usdcContract.allowance(account, QUICKSWAP_ROUTER);
-        if (usdcAllowance < usdcWei) {
+        if (BigInt(usdcAllowance) < BigInt(usdcWei)) {
             const approveTx2 = await usdcContract.approve(QUICKSWAP_ROUTER, ethers.MaxUint256);
             await approveTx2.wait();
             updateStatus('USDC approved ✓');
@@ -137,8 +137,8 @@ async function addLiquidity() {
             USDC_ADDRESS,
             aethWei,
             usdcWei,
-            (aethWei * 95n) / 100n, // 5% slippage
-            (usdcWei * 95n) / 100n,
+            (BigInt(aethWei) * 95n) / 100n, // 5% slippage
+            (BigInt(usdcWei) * 95n) / 100n,
             account,
             deadline
         );
