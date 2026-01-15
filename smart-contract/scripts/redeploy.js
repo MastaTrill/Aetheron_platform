@@ -1,36 +1,56 @@
 const { ethers } = require("hardhat");
 const fs = require("fs");
+require("dotenv").config();
+const { validateOrExit, checkBalance, colors } = require("../utils/validateEnv");
 
 async function main() {
   console.log("\n" + "=".repeat(60));
-  console.log("🚀 AETHERON PLATFORM - FRESH DEPLOYMENT");
+  console.log(colors.bold + colors.cyan + "🚀 AETHERON PLATFORM - FRESH DEPLOYMENT" + colors.reset);
   console.log("=".repeat(60) + "\n");
+
+  // Validate environment variables before proceeding
+  console.log(colors.bold + "🔍 Validating configuration..." + colors.reset);
+  validateOrExit({ requireWallets: true, requireTokenAddress: false });
+  console.log(colors.green + "✅ Configuration validated successfully!\n" + colors.reset);
 
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
-  console.log("📍 Deploying from account:", deployer.address);
+  console.log("📍 Deploying from account:", colors.cyan + deployer.address + colors.reset);
   
   const balance = await ethers.provider.getBalance(deployer.address);
-  console.log("💰 Account balance:", ethers.formatEther(balance), "POL");
+  console.log("💰 Account balance:", colors.cyan + ethers.formatEther(balance) + " POL" + colors.reset);
   
   if (balance === 0n) {
-    console.error("\n❌ ERROR: Deployer account has no POL!");
-    console.log("Please fund your wallet before deploying.");
+    console.error("\n" + colors.red + "❌ ERROR: Deployer account has no POL!" + colors.reset);
+    console.log(colors.yellow + "💡 Solution:" + colors.reset);
+    console.log("   Please fund your wallet before deploying: " + deployer.address);
     process.exit(1);
   }
 
-  // Configuration - Update these addresses
-  const TEAM_WALLET = process.env.TEAM_WALLET || "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452";
-  const MARKETING_WALLET = process.env.MARKETING_WALLET || "0x8a3ad49656bd07981c9cfc7ad826a808847c3452";
+  const minBalance = ethers.parseEther("0.1");
+  if (balance < minBalance) {
+    console.error("\n" + colors.red + "❌ ERROR: Insufficient balance for deployment!" + colors.reset);
+    console.error(colors.red + `   Current: ${ethers.formatEther(balance)} POL` + colors.reset);
+    console.error(colors.red + `   Required: At least 0.1 POL for gas fees` + colors.reset);
+    console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
+    console.log("   Add POL to your deployer wallet: " + deployer.address);
+    process.exit(1);
+  }
+
+  // Configuration - Read from environment variables
+  const TEAM_WALLET = process.env.TEAM_WALLET;
+  const MARKETING_WALLET = process.env.MARKETING_WALLET;
   
   console.log("\n📋 Configuration:");
-  console.log("  Team Wallet:", TEAM_WALLET);
-  console.log("  Marketing Wallet:", MARKETING_WALLET);
+  console.log("  Team Wallet:", colors.cyan + TEAM_WALLET + colors.reset);
+  console.log("  Marketing Wallet:", colors.cyan + MARKETING_WALLET + colors.reset);
   console.log("  Deployer:", deployer.address);
+
+  try {
 
   // Step 1: Deploy Aetheron Token
   console.log("\n" + "-".repeat(60));
-  console.log("Step 1/5: Deploying Aetheron Token Contract...");
+  console.log(colors.bold + "Step 1/5: Deploying Aetheron Token Contract..." + colors.reset);
   console.log("-".repeat(60));
   
   const Aetheron = await ethers.getContractFactory("Aetheron");
@@ -44,11 +64,11 @@ async function main() {
   
   await aetheron.waitForDeployment();
   const aetheronAddress = await aetheron.getAddress();
-  console.log("✅ Aetheron Token deployed to:", aetheronAddress);
+  console.log(colors.green + "✅ Aetheron Token deployed to: " + aetheronAddress + colors.reset);
 
   // Step 2: Deploy Staking Contract
   console.log("\n" + "-".repeat(60));
-  console.log("Step 2/5: Deploying Aetheron Staking Contract...");
+  console.log(colors.bold + "Step 2/5: Deploying Aetheron Staking Contract..." + colors.reset);
   console.log("-".repeat(60));
   
   const AetheronStaking = await ethers.getContractFactory("AetheronStaking");
@@ -56,11 +76,11 @@ async function main() {
   
   await staking.waitForDeployment();
   const stakingAddress = await staking.getAddress();
-  console.log("✅ Aetheron Staking deployed to:", stakingAddress);
+  console.log(colors.green + "✅ Aetheron Staking deployed to: " + stakingAddress + colors.reset);
 
   // Step 3: Update staking pool address in token contract
   console.log("\n" + "-".repeat(60));
-  console.log("Step 3/5: Updating Token Contract Configuration...");
+  console.log(colors.bold + "Step 3/5: Updating Token Contract Configuration..." + colors.reset);
   console.log("-".repeat(60));
   
   console.log("  📝 Updating staking pool address...");
@@ -70,16 +90,16 @@ async function main() {
     stakingAddress
   );
   await updateTx.wait();
-  console.log("  ✅ Staking pool address updated");
+  console.log(colors.green + "  ✅ Staking pool address updated" + colors.reset);
   
   console.log("  📝 Excluding staking contract from tax...");
   const excludeTx = await aetheron.setExcludedFromTax(stakingAddress, true);
   await excludeTx.wait();
-  console.log("  ✅ Staking contract excluded from tax");
+  console.log(colors.green + "  ✅ Staking contract excluded from tax" + colors.reset);
 
   // Step 4: Transfer and setup staking rewards
   console.log("\n" + "-".repeat(60));
-  console.log("Step 4/5: Setting Up Staking Rewards...");
+  console.log(colors.bold + "Step 4/5: Setting Up Staking Rewards..." + colors.reset);
   console.log("-".repeat(60));
   
   const stakingRewards = ethers.parseEther("150000000"); // 150M tokens
@@ -87,16 +107,16 @@ async function main() {
   console.log("  💰 Transferring 150M AETH to staking contract...");
   const transferTx = await aetheron.transfer(stakingAddress, stakingRewards);
   await transferTx.wait();
-  console.log("  ✅ Transfer complete");
+  console.log(colors.green + "  ✅ Transfer complete" + colors.reset);
   
   console.log("  💰 Depositing rewards into staking contract...");
   const depositTx = await staking.depositRewards(stakingRewards);
   await depositTx.wait();
-  console.log("  ✅ Rewards deposited");
+  console.log(colors.green + "  ✅ Rewards deposited" + colors.reset);
 
   // Step 5: Verify deployment
   console.log("\n" + "-".repeat(60));
-  console.log("Step 5/5: Verifying Deployment...");
+  console.log(colors.bold + "Step 5/5: Verifying Deployment..." + colors.reset);
   console.log("-".repeat(60));
   
   const totalSupply = await aetheron.totalSupply();
@@ -119,13 +139,13 @@ async function main() {
 
   // Summary
   console.log("\n" + "=".repeat(60));
-  console.log("🎉 DEPLOYMENT SUCCESSFUL!");
+  console.log(colors.bold + colors.green + "🎉 DEPLOYMENT SUCCESSFUL!" + colors.reset);
   console.log("=".repeat(60));
   
-  console.log("\n📊 DEPLOYMENT SUMMARY:");
+  console.log("\n" + colors.bold + "📊 DEPLOYMENT SUMMARY:" + colors.reset);
   console.log("\n🔗 Contract Addresses:");
-  console.log("  AETH Token:        ", aetheronAddress);
-  console.log("  Staking Contract:  ", stakingAddress);
+  console.log("  AETH Token:        ", colors.cyan + aetheronAddress + colors.reset);
+  console.log("  Staking Contract:  ", colors.cyan + stakingAddress + colors.reset);
   
   console.log("\n💼 Wallet Addresses:");
   console.log("  Team Wallet:       ", TEAM_WALLET);
@@ -149,15 +169,17 @@ async function main() {
   console.log("  Buy Tax:           3%");
   console.log("  Sell Tax:          5%");
   
-  console.log("\n📝 Next Steps:");
+  console.log("\n" + colors.bold + "📝 Next Steps:" + colors.reset);
   console.log("  1. ✅ Contracts deployed and configured");
-  console.log("  2. 🔍 Verify contracts on PolygonScan:");
+  console.log("  2. " + colors.yellow + "Update .env file with AETH_TOKEN_ADDRESS:" + colors.reset);
+  console.log("     AETH_TOKEN_ADDRESS=" + aetheronAddress);
+  console.log("  3. 🔍 Verify contracts on PolygonScan:");
   console.log("     npx hardhat verify --network polygon " + aetheronAddress + ' "' + TEAM_WALLET + '" "' + MARKETING_WALLET + '" "' + stakingAddress + '"');
   console.log("     npx hardhat verify --network polygon " + stakingAddress + ' "' + aetheronAddress + '"');
-  console.log("  3. 🚀 Enable trading (when ready):");
+  console.log("  4. 🚀 Enable trading (when ready):");
   console.log("     Run: node scripts/enable-trading.js");
-  console.log("  4. 💧 Add liquidity to DEX (Uniswap/Quickswap)");
-  console.log("  5. 🌐 Update frontend with contract addresses");
+  console.log("  5. 💧 Add liquidity to DEX (Uniswap/Quickswap)");
+  console.log("  6. 🌐 Update frontend with contract addresses");
   
   console.log("\n🔗 Block Explorer Links:");
   console.log("  Token:   https://polygonscan.com/address/" + aetheronAddress);
@@ -200,6 +222,24 @@ async function main() {
   fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
   console.log("💾 Deployment info saved to:", deploymentPath);
   console.log("");
+  
+  } catch (error) {
+    console.error("\n" + colors.red + "❌ DEPLOYMENT FAILED!" + colors.reset);
+    console.error(colors.red + error.message + colors.reset);
+    
+    if (error.message.includes("insufficient funds")) {
+      console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
+      console.log("   Add more POL to your deployer wallet: " + deployer.address);
+    } else if (error.message.includes("nonce")) {
+      console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
+      console.log("   Wait a few seconds and try again (nonce issue)");
+    } else if (error.message.includes("network")) {
+      console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
+      console.log("   Check your POLYGON_RPC_URL and internet connection");
+    }
+    
+    throw error;
+  }
 }
 
 main()
