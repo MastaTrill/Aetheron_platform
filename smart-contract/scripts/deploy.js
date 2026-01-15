@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat");
 require("dotenv").config();
-const { validateOrExit, checkBalance, colors } = require("../utils/validateEnv");
+const { validateOrExit, validateBalanceOrExit, colors } = require("../utils/validateEnv");
 
 async function main() {
   console.log("\n" + colors.bold + colors.cyan + "🚀 Deploying Aetheron Platform Contracts..." + colors.reset);
@@ -15,27 +15,13 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with account:", colors.cyan + deployer.address + colors.reset);
   
-  // Check balance
+  // Check balance using the new utility
   const balance = await deployer.provider.getBalance(deployer.address);
   const balanceInEther = ethers.formatEther(balance);
   console.log("Account balance:", colors.cyan + balanceInEther + " POL" + colors.reset);
 
-  // Ensure sufficient balance for deployment
-  const minBalance = ethers.parseEther("0.1");
-  if (balance < minBalance) {
-    console.error("\n" + colors.red + "❌ ERROR: Insufficient balance for deployment!" + colors.reset);
-    console.error(colors.red + `   Current: ${balanceInEther} POL` + colors.reset);
-    console.error(colors.red + `   Required: At least 0.1 POL for gas fees` + colors.reset);
-    console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
-    console.log("   1. Add POL to your deployer wallet: " + deployer.address);
-    console.log("   2. You can get POL from exchanges or bridges");
-    console.log("   3. Recommended: Have at least 0.5 POL for deployment\n");
-    process.exit(1);
-  }
-
-  if (balance < ethers.parseEther("0.3")) {
-    console.log(colors.yellow + "⚠️  Warning: Balance is low. Recommended to have at least 0.3 POL for safe deployment." + colors.reset);
-  }
+  // Validate balance is sufficient for deployment
+  await validateBalanceOrExit(deployer.provider, deployer.address, "0.1");
 
   // Read configuration from environment variables
   const TEAM_WALLET = process.env.TEAM_WALLET;

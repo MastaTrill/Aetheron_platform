@@ -33,7 +33,7 @@ function validatePrivateKey(privateKey) {
   }
 
   // Remove 0x prefix for validation
-  const cleanKey = privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey;
+  const keyWithoutPrefix = privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey;
   
   if (!privateKey.startsWith('0x')) {
     return {
@@ -44,7 +44,7 @@ function validatePrivateKey(privateKey) {
     };
   }
 
-  if (cleanKey.length !== 64) {
+  if (keyWithoutPrefix.length !== 64) {
     return {
       valid: false,
       error: `PRIVATE_KEY must be 64 hexadecimal characters (66 total with 0x)\n` +
@@ -52,7 +52,7 @@ function validatePrivateKey(privateKey) {
     };
   }
 
-  if (!/^[0-9a-fA-F]+$/.test(cleanKey)) {
+  if (!/^[0-9a-fA-F]+$/.test(keyWithoutPrefix)) {
     return {
       valid: false,
       error: 'PRIVATE_KEY must contain only hexadecimal characters (0-9, a-f, A-F)'
@@ -333,17 +333,17 @@ function printValidationResults(errors, warnings) {
 }
 
 /**
- * Checks if the deployer wallet has sufficient balance
+ * Checks if wallet has sufficient balance for deployment
  * @param {Object} provider - Ethers provider instance
  * @param {string} address - Wallet address to check
- * @param {string} minBalance - Minimum balance required in POL/ETH (default: "0.1")
- * @returns {Promise<Object>} { sufficient: boolean, balance: string, error: string }
+ * @param {string} minBalanceEther - Minimum balance required in ETH/POL (default: "0.1")
+ * @returns {Promise<Object>} { sufficient: boolean, balance: string, balanceWei: string, error: string }
  */
-async function checkBalance(provider, address, minBalance = "0.1") {
+async function checkDeploymentBalance(provider, address, minBalanceEther = "0.1") {
   try {
     const balance = await provider.getBalance(address);
     const balanceInEther = ethers.formatEther(balance);
-    const minBalanceInWei = ethers.parseEther(minBalance);
+    const minBalanceInWei = ethers.parseEther(minBalanceEther);
     
     return {
       sufficient: balance >= minBalanceInWei,
@@ -357,6 +357,41 @@ async function checkBalance(provider, address, minBalance = "0.1") {
       error: `Failed to check balance: ${error.message}`
     };
   }
+}
+
+/**
+ * Validates balance and prints error with solutions if insufficient
+ * @param {Object} provider - Ethers provider instance  
+ * @param {string} address - Wallet address to check
+ * @param {string} minBalanceEther - Minimum balance required
+ * @returns {Promise<boolean>} true if sufficient, exits process if not
+ */
+async function validateBalanceOrExit(provider, address, minBalanceEther = "0.1") {
+  const balanceCheck = await checkDeploymentBalance(provider, address, minBalanceEther);
+  
+  if (balanceCheck.error) {
+    console.error("\n" + colors.red + "❌ ERROR: Could not check balance!" + colors.reset);
+    console.error(colors.red + balanceCheck.error + colors.reset);
+    process.exit(1);
+  }
+  
+  if (!balanceCheck.sufficient) {
+    console.error("\n" + colors.red + "❌ ERROR: Insufficient balance for deployment!" + colors.reset);
+    console.error(colors.red + `   Current: ${balanceCheck.balance} POL` + colors.reset);
+    console.error(colors.red + `   Required: At least ${minBalanceEther} POL for gas fees` + colors.reset);
+    console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
+    console.log("   1. Add POL to your deployer wallet: " + address);
+    console.log("   2. You can get POL from exchanges or bridges");
+    console.log("   3. Recommended: Have at least 0.5 POL for deployment\n");
+    process.exit(1);
+  }
+  
+  const balanceNum = parseFloat(balanceCheck.balance);
+  if (balanceNum < 0.3) {
+    console.log(colors.yellow + "⚠️  Warning: Balance is low. Recommended to have at least 0.3 POL for safe deployment." + colors.reset);
+  }
+  
+  return true;
 }
 
 /**
@@ -406,7 +441,8 @@ module.exports = {
   validateRpcUrl,
   validateEnvironment,
   validateOrExit,
-  checkBalance,
+  checkBalance: checkDeploymentBalance,
+  validateBalanceOrExit,
   validateRpcConnection,
   printValidationResults,
   colors

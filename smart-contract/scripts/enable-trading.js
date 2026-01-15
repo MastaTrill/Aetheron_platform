@@ -76,9 +76,12 @@ async function main() {
       console.log("   Only the contract owner can enable trading.");
       console.log("   Make sure you're using the deployer's private key in .env");
     } else if (error.message.includes("cannot estimate gas")) {
-      console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
-      console.log("   This might mean trading is already enabled or the contract address is wrong.");
-      console.log("   Verify the AETH_TOKEN_ADDRESS in your .env file.");
+      console.log("\n" + colors.yellow + "💡 Diagnosis steps:" + colors.reset);
+      console.log("   1. Check if trading is already enabled:");
+      console.log("      Run: node scripts/check-trading-status.js");
+      console.log("   2. Verify contract address is correct:");
+      console.log("      Visit: https://polygonscan.com/address/" + AETH_TOKEN_ADDRESS);
+      console.log("   3. If contract doesn't exist, update AETH_TOKEN_ADDRESS in .env");
     } else if (error.message.includes("insufficient funds")) {
       console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
       console.log("   Add more POL to your wallet for gas fees.");
