@@ -4,9 +4,9 @@
   "description": "Revolutionary Blockchain & Space Exploration Ecosystem",
   "main": "index.js",
   "scripts": {
-    "start": "npx http-server . -p 3000",
-    "dev": "npx http-server . -p 3000 -o",
-    "build": "echo 'Static site - no build needed'",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "echo 'No tests configured'",
     "deploy": "echo 'Deploy manually to GitHub Pages'"
   },

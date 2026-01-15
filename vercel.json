@@ -1,7 +1,14 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
   "headers": [
     {
-      "source": "(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "X-Content-Type-Options",
@@ -23,3 +30,4 @@
     }
   ]
 }
+
