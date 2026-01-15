@@ -8,8 +8,11 @@
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
     "build": "echo 'Static site - no build needed'",
-    "test": "echo 'No tests configured'",
-    "deploy": "echo 'Deploy manually to GitHub Pages'"
+    "test": "cd smart-contract && npm test",
+    "test:smart-contract": "cd smart-contract && npm test",
+    "deploy": "echo 'Deploy manually to GitHub Pages'",
+    "hardhat:compile": "npx hardhat compile",
+    "hardhat:test": "npx hardhat test"
   },
   "keywords": [
     "blockchain",
