@@ -1,13 +1,18 @@
+# This workflow is disabled because the project is a static HTML/JS site, not a Next.js app.
+# The correct workflow for deployment is pages.yml which deploys static content to GitHub Pages.
+# 
+# Original Next.js workflow kept here for reference if the project is converted to Next.js in the future.
+
 # Sample workflow for building and deploying a Next.js site to GitHub Pages
 #
 # To get started with Next.js see: https://nextjs.org/docs/getting-started
 #
-name: Deploy Next.js site to Pages
+name: Deploy Next.js site to Pages (DISABLED)
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["DISABLED"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
