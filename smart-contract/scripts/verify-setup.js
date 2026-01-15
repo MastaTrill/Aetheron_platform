@@ -138,7 +138,7 @@ async function verifySetup() {
       
       // Mask sensitive values
       if (varName === 'PRIVATE_KEY') {
-        displayValue = value ? `${value.substring(0, 6)}...${value.substring(value.length - 4)}` : 'not set';
+        displayValue = value ? `${value.substring(0, 4)}...${value.substring(value.length - 4)}` : 'not set';
       } else if (varName.includes('RPC')) {
         displayValue = value ? value.substring(0, 50) + '...' : 'not set';
       }
