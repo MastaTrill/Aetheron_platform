@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 const fs = require("fs");
 require("dotenv").config();
-const { validateOrExit, checkBalance, colors } = require("../utils/validateEnv");
+const { validateOrExit, validateBalanceOrExit, colors } = require("../utils/validateEnv");
 
 async function main() {
   console.log("\n" + "=".repeat(60));
@@ -27,15 +27,8 @@ async function main() {
     process.exit(1);
   }
 
-  const minBalance = ethers.parseEther("0.1");
-  if (balance < minBalance) {
-    console.error("\n" + colors.red + "❌ ERROR: Insufficient balance for deployment!" + colors.reset);
-    console.error(colors.red + `   Current: ${ethers.formatEther(balance)} POL` + colors.reset);
-    console.error(colors.red + `   Required: At least 0.1 POL for gas fees` + colors.reset);
-    console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
-    console.log("   Add POL to your deployer wallet: " + deployer.address);
-    process.exit(1);
-  }
+  // Validate balance is sufficient for deployment
+  await validateBalanceOrExit(ethers.provider, deployer.address, "0.1");
 
   // Configuration - Read from environment variables
   const TEAM_WALLET = process.env.TEAM_WALLET;

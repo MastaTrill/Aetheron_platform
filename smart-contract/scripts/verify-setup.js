@@ -176,10 +176,10 @@ async function verifySetup() {
       } else {
         addResult('Network verification', false, 
           `Wrong network! Expected Chain ID 137 (Polygon), got ${rpcCheck.chainId}\n` +
-          'Update POLYGON_RPC_URL to point to Polygon Mainnet', true);
+          'Update POLYGON_RPC_URL to point to Polygon Mainnet');
         printCheck('Network verification', false, 
           `Wrong network! Expected Chain ID 137 (Polygon), got ${rpcCheck.chainId}\n` +
-          'Update POLYGON_RPC_URL to point to Polygon Mainnet', true);
+          'Update POLYGON_RPC_URL to point to Polygon Mainnet');
       }
     } else {
       addResult('Polygon RPC connection', false, 
