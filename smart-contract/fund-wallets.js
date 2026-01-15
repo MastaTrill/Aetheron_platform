@@ -59,25 +59,26 @@ async function main() {
     // Fund configuration
     const POL_AMOUNT = "1"; // 1 POL per wallet
     const AETH_AMOUNT = "1000"; // 1000 AETH per wallet
+    const WALLET_COUNT = 2; // Number of wallets to fund
 
     const polAmountWei = ethers.parseEther(POL_AMOUNT);
     const aetheronAmountWei = ethers.parseUnits(AETH_AMOUNT, 18);
 
     // Check if sender has enough POL
-    const totalPolNeeded = polAmountWei * 2n; // 2 wallets
+    const totalPolNeeded = polAmountWei * BigInt(WALLET_COUNT);
     if (senderBalance < totalPolNeeded) {
       console.error(colors.red + "❌ ERROR: Insufficient POL balance!" + colors.reset);
       console.error(colors.red + `   Available: ${senderBalanceEth} POL` + colors.reset);
-      console.error(colors.red + `   Needed: ${ethers.formatEther(totalPolNeeded)} POL (for 2 wallets)` + colors.reset);
+      console.error(colors.red + `   Needed: ${ethers.formatEther(totalPolNeeded)} POL (for ${WALLET_COUNT} wallets)` + colors.reset);
       process.exit(1);
     }
 
     // Check if sender has enough AETH
-    const totalAethNeeded = aetheronAmountWei * 2n; // 2 wallets
+    const totalAethNeeded = aetheronAmountWei * BigInt(WALLET_COUNT);
     if (aetheronBalance < totalAethNeeded) {
       console.error(colors.red + "❌ ERROR: Insufficient AETH balance!" + colors.reset);
       console.error(colors.red + `   Available: ${aetheronBalanceFormatted} AETH` + colors.reset);
-      console.error(colors.red + `   Needed: ${AETH_AMOUNT * 2} AETH (for 2 wallets)` + colors.reset);
+      console.error(colors.red + `   Needed: ${AETH_AMOUNT * WALLET_COUNT} AETH (for ${WALLET_COUNT} wallets)` + colors.reset);
       process.exit(1);
     }
 
