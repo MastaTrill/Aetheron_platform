@@ -45,3 +45,4 @@ mobile-app/assets/icon-1024.png
 4. Verify icons appear in `android/app/src/main/res/` folders
 
 **Note**: Without this icon, the app cannot be built or submitted to stores.
+
