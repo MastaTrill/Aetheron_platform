@@ -1,5 +1,4 @@
 {
-  // "extends": "@react-native/typescript-config/tsconfig.json", // Removed: not found
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "target": "esnext",
