@@ -12,6 +12,12 @@
 
 ## Deployed Contracts
 
+### Polygon Mumbai Testnet (Chain ID: 80001)
+- AETH Token: `0x44F9c15816bCe5d6691448F60DAD50355ABa40b5`
+  - View on PolygonScan: [Link](https://mumbai.polygonscan.com/token/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5)
+- Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
+  - View on PolygonScan: [Link](https://mumbai.polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
+
 ### Polygon Mainnet (Chain ID: 137)
 - AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
   - View on PolygonScan: [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
