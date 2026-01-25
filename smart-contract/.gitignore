@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Hardhat files
+cache/
+artifacts/
+typechain-types/
+
+# Environment variables
+.env
+
+# Coverage reports
+coverage/
+coverage.json
+
+# Hardhat
+.hardhat/
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deployment info (keep deployment.json locally, don't commit)
+deployment.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
