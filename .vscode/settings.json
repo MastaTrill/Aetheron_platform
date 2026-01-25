@@ -3,5 +3,6 @@
   "dbt.projectDir": "./dbt",
   "dbt.profilesDir": "./dbt/profiles",
   "editor.formatOnSave": true,
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -35,7 +35,7 @@ function addResult(name, passed, message = '', isWarning = false) {
     message,
     isWarning
   });
-  
+
   if (isWarning) {
     results.warnings++;
   } else if (passed) {
@@ -49,14 +49,14 @@ function addResult(name, passed, message = '', isWarning = false) {
  * Print a check result
  */
 function printCheck(name, passed, message = '', isWarning = false) {
-  const status = passed 
+  const status = passed
     ? `${colors.green}✓ PASS${colors.reset}`
-    : isWarning 
+    : isWarning
       ? `${colors.yellow}⚠ WARN${colors.reset}`
       : `${colors.red}✗ FAIL${colors.reset}`;
-  
+
   console.log(`  ${status}  ${name}`);
-  
+
   if (message) {
     const messageColor = passed ? colors.green : isWarning ? colors.yellow : colors.red;
     const lines = message.split('\n');
@@ -85,10 +85,10 @@ async function verifySetup() {
   const fs = require('fs');
   const envPath = '.env';
   const envExists = fs.existsSync(envPath);
-  
-  addResult('Environment file (.env) exists', envExists, 
+
+  addResult('Environment file (.env) exists', envExists,
     envExists ? 'Found .env file' : 'Create .env file by copying .env.example');
-  printCheck('Environment file (.env) exists', envExists, 
+  printCheck('Environment file (.env) exists', envExists,
     envExists ? 'Found .env file' : 'Create .env file by copying .env.example');
 
   if (!envExists) {
@@ -108,10 +108,10 @@ async function verifySetup() {
   console.log(colors.bold + '🔑 Step 2: Environment Variables Validation' + colors.reset);
   console.log('─'.repeat(70));
 
-  const envValidation = validateEnvironment({ 
+  const envValidation = validateEnvironment({
     requireTokenAddress: false,
     requireWallets: true,
-    silent: true 
+    silent: true
   });
 
   // Check each required variable
@@ -125,7 +125,7 @@ async function verifySetup() {
   requiredVars.forEach(varName => {
     const error = envValidation.errors.find(e => e.field === varName);
     const warning = envValidation.warnings.find(w => w.field === varName);
-    
+
     if (error) {
       addResult(varName, false, error.message);
       printCheck(varName, false, error.message);
@@ -135,14 +135,14 @@ async function verifySetup() {
     } else {
       const value = process.env[varName];
       let displayValue = value;
-      
+
       // Mask sensitive values
       if (varName === 'PRIVATE_KEY') {
         displayValue = value ? `${value.substring(0, 4)}...${value.substring(value.length - 4)}` : 'not set';
       } else if (varName.includes('RPC')) {
         displayValue = value ? value.substring(0, 50) + '...' : 'not set';
       }
-      
+
       addResult(varName, true, `Set to: ${displayValue}`);
       printCheck(varName, true, `Set to: ${displayValue}`);
     }
@@ -158,33 +158,33 @@ async function verifySetup() {
 
   if (process.env.POLYGON_RPC_URL) {
     const rpcCheck = await validateRpcConnection(process.env.POLYGON_RPC_URL);
-    
+
     if (rpcCheck.connected) {
-      addResult('Polygon RPC connection', true, 
+      addResult('Polygon RPC connection', true,
         `Connected to Chain ID: ${rpcCheck.chainId}\n` +
         `Current block: ${rpcCheck.blockNumber}`);
-      printCheck('Polygon RPC connection', true, 
+      printCheck('Polygon RPC connection', true,
         `Connected to Chain ID: ${rpcCheck.chainId}\n` +
         `Current block: ${rpcCheck.blockNumber}`);
 
       // Verify chain ID is Polygon mainnet
       if (rpcCheck.chainId === 137) {
-        addResult('Network verification (Polygon Mainnet)', true, 
+        addResult('Network verification (Polygon Mainnet)', true,
           'Correctly connected to Polygon Mainnet (Chain ID: 137)');
-        printCheck('Network verification (Polygon Mainnet)', true, 
+        printCheck('Network verification (Polygon Mainnet)', true,
           'Correctly connected to Polygon Mainnet (Chain ID: 137)');
       } else {
-        addResult('Network verification', false, 
+        addResult('Network verification', false,
           `Wrong network! Expected Chain ID 137 (Polygon), got ${rpcCheck.chainId}\n` +
           'Update POLYGON_RPC_URL to point to Polygon Mainnet');
-        printCheck('Network verification', false, 
+        printCheck('Network verification', false,
           `Wrong network! Expected Chain ID 137 (Polygon), got ${rpcCheck.chainId}\n` +
           'Update POLYGON_RPC_URL to point to Polygon Mainnet');
       }
     } else {
-      addResult('Polygon RPC connection', false, 
+      addResult('Polygon RPC connection', false,
         `Connection failed: ${rpcCheck.error}`);
-      printCheck('Polygon RPC connection', false, 
+      printCheck('Polygon RPC connection', false,
         `Connection failed: ${rpcCheck.error}`);
     }
   } else {
@@ -210,41 +210,38 @@ async function verifySetup() {
 
       // Check deployer balance
       const balanceCheck = await checkBalance(provider, address, "0.1");
-      
+      let balanceNum = 0;
+
       if (balanceCheck.error) {
         addResult('Deployer wallet balance', false, balanceCheck.error);
         printCheck('Deployer wallet balance', false, balanceCheck.error);
       } else {
-        const balanceNum = parseFloat(balanceCheck.balance);
-        
+        balanceNum = parseFloat(balanceCheck.balance);
+
         if (balanceNum >= 0.5) {
-          addResult('Deployer wallet balance', true, 
+          addResult('Deployer wallet balance', true,
             `${balanceCheck.balance} POL (Excellent ✓)`);
-          printCheck('Deployer wallet balance', true, 
+          printCheck('Deployer wallet balance', true,
             `${balanceCheck.balance} POL (Excellent ✓)`);
         } else if (balanceNum >= 0.1) {
-          addResult('Deployer wallet balance', true, 
+          addResult('Deployer wallet balance', true,
             `${balanceCheck.balance} POL (Sufficient for deployment)`, true);
-          printCheck('Deployer wallet balance', true, 
+          printCheck('Deployer wallet balance', true,
             `${balanceCheck.balance} POL (Sufficient for deployment)`, true);
         } else if (balanceNum > 0) {
-          addResult('Deployer wallet balance', false, 
+          addResult('Deployer wallet balance', false,
             `${balanceCheck.balance} POL (Too low! Need at least 0.1 POL for gas)\n` +
             'Add more POL to your deployer wallet');
-          printCheck('Deployer wallet balance', false, 
+          printCheck('Deployer wallet balance', false,
             `${balanceCheck.balance} POL (Too low! Need at least 0.1 POL for gas)\n` +
             'Add more POL to your deployer wallet');
         } else {
-          addResult('Deployer wallet balance', false, 
-            '0 POL (Empty wallet!)\n' +
-            'Add POL to your deployer wallet before deploying');
-          printCheck('Deployer wallet balance', false, 
-            '0 POL (Empty wallet!)\n' +
-            'Add POL to your deployer wallet before deploying');
+          // Defer decision until after checking AETH balance
         }
       }
 
       // Check if AETH_TOKEN_ADDRESS is set and check token balance
+      let hasAethBalance = false;
       if (process.env.AETH_TOKEN_ADDRESS) {
         try {
           const tokenAddress = process.env.AETH_TOKEN_ADDRESS;
@@ -254,34 +251,53 @@ async function verifySetup() {
             "function decimals() view returns (uint8)"
           ];
           const token = new ethers.Contract(tokenAddress, tokenAbi, provider);
-          
+
           const tokenBalance = await token.balanceOf(address);
           const symbol = await token.symbol();
           const decimals = await token.decimals();
           const formattedBalance = ethers.formatUnits(tokenBalance, decimals);
-          
-          addResult('AETH Token balance', true, 
+
+          hasAethBalance = parseFloat(formattedBalance) > 0;
+
+          addResult('AETH Token balance', true,
             `${formattedBalance} ${symbol}`);
-          printCheck('AETH Token balance', true, 
+          printCheck('AETH Token balance', true,
             `${formattedBalance} ${symbol}`);
         } catch (error) {
-          addResult('AETH Token balance', false, 
+          addResult('AETH Token balance', false,
             `Could not read token: ${error.message}`, true);
-          printCheck('AETH Token balance', false, 
+          printCheck('AETH Token balance', false,
             `Could not read token: ${error.message}`, true);
         }
       }
 
+      // Final decision on POL balance
+      if (!balanceCheck.error && balanceNum === 0) {
+        if (hasAethBalance) {
+          addResult('Deployer wallet balance', true,
+            '0 POL (Contracts already deployed - no gas needed for redeployment)', true);
+          printCheck('Deployer wallet balance', true,
+            '0 POL (Contracts already deployed - no gas needed for redeployment)', true);
+        } else {
+          addResult('Deployer wallet balance', false,
+            '0 POL (Empty wallet!)\n' +
+            'Add POL to your deployer wallet before deploying');
+          printCheck('Deployer wallet balance', false,
+            '0 POL (Empty wallet!)\n' +
+            'Add POL to your deployer wallet before deploying');
+        }
+      }
+
     } catch (error) {
-      addResult('Wallet initialization', false, 
+      addResult('Wallet initialization', false,
         `Failed to initialize wallet: ${error.message}`);
-      printCheck('Wallet initialization', false, 
+      printCheck('Wallet initialization', false,
         `Failed to initialize wallet: ${error.message}`);
     }
   } else {
-    addResult('Wallet balance check', false, 
+    addResult('Wallet balance check', false,
       'Cannot check balance (missing PRIVATE_KEY or POLYGON_RPC_URL)');
-    printCheck('Wallet balance check', false, 
+    printCheck('Wallet balance check', false,
       'Cannot check balance (missing PRIVATE_KEY or POLYGON_RPC_URL)');
   }
 
@@ -338,7 +354,7 @@ function printSummary() {
   if (results.failed === 0) {
     console.log(colors.green + colors.bold + '🎉 ALL CRITICAL CHECKS PASSED!' + colors.reset);
     console.log(colors.green + '   Your environment is properly configured for deployment.' + colors.reset + '\n');
-    
+
     if (results.warnings > 0) {
       console.log(colors.yellow + '⚠️  Note: There are warnings, but you can proceed.' + colors.reset);
       console.log(colors.yellow + '   Review the warnings above and address if necessary.' + colors.reset + '\n');
