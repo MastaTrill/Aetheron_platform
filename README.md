@@ -43,6 +43,15 @@
 
 ---
 
+🔄 Recent Updates (v2.0.0)
+- ✅ **Security Enhancement**: Removed .env from Git history for credential protection
+- ✅ **CI/CD Improvements**: Updated CircleCI config to v2.1 standards
+- ✅ **Smart Contract Testing**: 35/39 tests passing with gas optimization
+- ✅ **Deployment Ready**: Auto-deployment to GitHub Pages and Vercel
+- ✅ **Code Quality**: Clean codebase with proper ignores and structure
+
+---
+
 🛠️ Technology Stack
 
 Frontend
