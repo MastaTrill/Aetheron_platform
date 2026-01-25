@@ -1,0 +1,71 @@
+{
+  "monthly": {
+    "launch": {
+      "paidAds": 3000,
+      "influencers": 2000,
+      "content": 500,
+      "tools": 300,
+      "total": 5800
+    },
+    "growth": {
+      "paidAds": 5000,
+      "influencers": 3000,
+      "content": 1000,
+      "community": 1000,
+      "partnerships": 2000,
+      "tools": 500,
+      "total": 12500
+    },
+    "maintenance": {
+      "paidAds": 2000,
+      "content": 500,
+      "community": 500,
+      "tools": 300,
+      "total": 3300
+    }
+  },
+  "allocation": {
+    "Paid Advertising": "40%",
+    "Influencer Marketing": "25%",
+    "Content Creation": "15%",
+    "Community Management": "10%",
+    "Partnerships": "5%",
+    "Tools & Software": "5%"
+  },
+  "channels": {
+    "google": {
+      "budget": 2000,
+      "target": "DeFi keywords"
+    },
+    "twitter": {
+      "budget": 1500,
+      "target": "Crypto audience"
+    },
+    "youtube": {
+      "budget": 2000,
+      "target": "Educational content"
+    },
+    "discord": {
+      "budget": 500,
+      "target": "Community growth"
+    },
+    "influencers": {
+      "budget": 5000,
+      "target": "Credible promotion"
+    }
+  },
+  "tracking": {
+    "kpis": [
+      "CPA",
+      "CPC",
+      "CTR",
+      "Conversion Rate"
+    ],
+    "tools": [
+      "Google Analytics",
+      "Twitter Analytics",
+      "YouTube Analytics"
+    ],
+    "reporting": "Weekly performance reviews and budget adjustments"
+  }
+}

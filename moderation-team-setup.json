@@ -1,0 +1,129 @@
+{
+  "moderation_team": {
+    "structure": {
+      "admin": {
+        "count": 2,
+        "permissions": [
+          "Administrator",
+          "Manage Server",
+          "Manage Roles",
+          "Manage Channels",
+          "Ban Members",
+          "Kick Members",
+          "Manage Messages",
+          "Mention Everyone",
+          "Mute Members",
+          "Deafen Members",
+          "Move Members"
+        ],
+        "responsibilities": [
+          "Server configuration",
+          "Bot management",
+          "Team coordination",
+          "Emergency response",
+          "Partnership management"
+        ]
+      },
+      "moderator": {
+        "count": 4,
+        "permissions": [
+          "Manage Messages",
+          "Ban Members",
+          "Kick Members",
+          "Mute Members",
+          "Manage Nicknames",
+          "Mention Everyone",
+          "Read Message History"
+        ],
+        "responsibilities": [
+          "Content moderation",
+          "User management",
+          "Channel management",
+          "Event organization",
+          "Community engagement"
+        ]
+      },
+      "community_helper": {
+        "count": 6,
+        "permissions": [
+          "Manage Messages",
+          "Kick Members",
+          "Read Message History"
+        ],
+        "earned_through": "Leveling system (Level 10+)",
+        "responsibilities": [
+          "Basic moderation",
+          "Community support",
+          "Welcome new members",
+          "Answer common questions"
+        ]
+      }
+    },
+    "recruitment": {
+      "requirements": {
+        "minimum": [
+          "Active community member (2+ weeks)",
+          "Good standing (no violations)",
+          "Basic DeFi knowledge",
+          "Helpful attitude"
+        ],
+        "preferred": [
+          "Technical knowledge",
+          "Previous moderation experience",
+          "Multiple language skills",
+          "Community involvement"
+        ]
+      },
+      "application_process": [
+        "Submit application in #mod-applications",
+        "Complete interview with admin team",
+        "Trial period (2 weeks)",
+        "Full promotion upon successful trial"
+      ]
+    },
+    "training": {
+      "required_modules": [
+        "Community Guidelines",
+        "Moderation Tools",
+        "DeFi Basics",
+        "Crisis Management",
+        "Bot Configuration"
+      ],
+      "resources": [
+        "moderation-handbook.md",
+        "bot-commands-guide.md",
+        "crisis-response-protocol.md"
+      ]
+    },
+    "communication": {
+      "channels": [
+        "mod-chat (private)",
+        "mod-logs (private)",
+        "admin-lounge (private)"
+      ],
+      "schedule": {
+        "daily_standup": "9 AM UTC",
+        "weekly_meeting": "Saturday 2 PM UTC",
+        "emergency_response": "24/7 rotation"
+      }
+    }
+  },
+  "telegram_moderation": {
+    "admins": {
+      "count": 2,
+      "permissions": [
+        "Delete messages",
+        "Ban users",
+        "Pin messages",
+        "Add administrators",
+        "Change group info"
+      ]
+    },
+    "moderation_tools": [
+      "Auto-delete spam",
+      "Ban management",
+      "Message filtering",
+      "User verification"
+    ]
+  }
+}

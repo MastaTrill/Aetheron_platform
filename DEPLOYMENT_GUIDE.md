@@ -3,6 +3,7 @@
 ## ⚠️ Current Status
 
 Your contracts were previously deployed to Polygon but appear incomplete:
+
 - **Token Contract:** `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784` (deployed but empty)
 - **Deployer Wallet:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452` (active, ~$1 balance)
 
@@ -28,13 +29,13 @@ TEAM_WALLET=0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784
 MARKETING_WALLET=0x8a3ad49656bd07981c9cfc7ad826a808847c3452
 ```
 
-2. **Get your private key from MetaMask:**
+1. **Get your private key from MetaMask:**
    - Open MetaMask
    - Click the three dots → Account Details → Export Private Key
    - Enter your password and copy the key
    - Paste it in the `.env` file
 
-3. **Fund your deployer wallet:**
+2. **Fund your deployer wallet:**
    - Minimum required: ~5-10 POL (for gas fees)
    - Send POL to: `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
 
@@ -88,11 +89,13 @@ npx hardhat verify --network polygon STAKING_ADDRESS "TOKEN_ADDRESS"
 After everything is verified and ready:
 
 1. Update `.env` with your token address:
+
 ```bash
 AETH_TOKEN_ADDRESS=0xYourNewTokenAddress
 ```
 
-2. Enable trading:
+1. Enable trading:
+
 ```bash
 node scripts/enable-trading.js
 ```
@@ -100,6 +103,7 @@ node scripts/enable-trading.js
 ## 📊 What Gets Deployed
 
 ### Aetheron Token (AETH)
+
 - **Total Supply:** 1,000,000,000 AETH
 - **Distribution:**
   - 50% (500M) → Deployer wallet (for liquidity)
@@ -108,6 +112,7 @@ node scripts/enable-trading.js
   - 15% (150M) → Staking contract
 
 ### Staking Contract
+
 - **3 Pools:**
   - Pool 0: 30 days @ 5% APY
   - Pool 1: 90 days @ 12% APY
@@ -116,10 +121,12 @@ node scripts/enable-trading.js
 ## 🔍 Verify Deployment
 
 Check your addresses on PolygonScan:
+
 - Token: `https://polygonscan.com/address/YOUR_TOKEN_ADDRESS`
 - Staking: `https://polygonscan.com/address/YOUR_STAKING_ADDRESS`
 
 Verify token supply:
+
 - Team balance should be 200M AETH
 - Marketing balance should be 150M AETH
 - Staking contract should have 150M AETH
@@ -152,23 +159,27 @@ Verify token supply:
 ## 🆘 Troubleshooting
 
 ### "Insufficient funds for gas"
+
 - Add more POL to your deployer wallet
 
 ### "Cannot find module '@openzeppelin/contracts'"
+
 - Run `npm install` in the smart-contract folder
 
 ### "Network not found"
+
 - Check your RPC URL in `.env`
 - Try alternative RPC: `https://polygon-rpc.com`
 
 ### Deployment succeeds but tokens not showing
+
 - Check the deployment JSON file for addresses
 - Verify on PolygonScan that transactions went through
 - Check token balances directly on blockchain explorer
 
 ## 📞 Support
 
-- GitHub Issues: https://github.com/MastaTrill/Aetheron_platform/issues
+- GitHub Issues: <https://github.com/MastaTrill/Aetheron_platform/issues>
 - Documentation: Check other `.md` files in this repo
 
 ---

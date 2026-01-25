@@ -1,0 +1,42 @@
+{
+  "name": "Aetheron Liquidity Mining",
+  "duration": "3 months",
+  "totalRewards": 200000000,
+  "phases": {
+    "phase1": {
+      "name": "Launch Boost",
+      "duration": "2 weeks",
+      "rewards": 50000000,
+      "multiplier": 2,
+      "requirements": "Provide liquidity to AETH/MATIC pool",
+      "distribution": "Daily rewards based on LP token holdings"
+    },
+    "phase2": {
+      "name": "Growth Acceleration",
+      "duration": "4 weeks",
+      "rewards": 100000000,
+      "multiplier": 1.5,
+      "requirements": "Maintain liquidity position",
+      "distribution": "Weekly rewards with lock-up bonuses"
+    },
+    "phase3": {
+      "name": "Sustainability Phase",
+      "duration": "6 weeks",
+      "rewards": 50000000,
+      "multiplier": 1,
+      "requirements": "Long-term liquidity commitment",
+      "distribution": "Monthly rewards with vesting"
+    }
+  },
+  "mechanics": {
+    "staking": "LP tokens are staked in rewards contract",
+    "rewards": "AETH tokens distributed pro-rata",
+    "compounding": "Auto-compound option available",
+    "lockups": "Bonus multipliers for longer commitments"
+  },
+  "tracking": {
+    "dashboard": "Real-time rewards tracking",
+    "leaderboard": "Top liquidity providers",
+    "analytics": "Pool health and participation metrics"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "tokenInfo": {
+    "name": "Aetheron",
+    "symbol": "AETH",
+    "contract": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+    "network": "Polygon (MATIC)",
+    "totalSupply": "1000000000",
+    "decimals": 18
+  },
+  "features": [
+    "ERC-20 compliant token",
+    "Built-in tax system (5% buy/sell)",
+    "Trading controls for security",
+    "Multi-pool staking integration",
+    "Cross-chain compatibility"
+  ],
+  "security": [
+    "OpenZeppelin audited contracts",
+    "ReentrancyGuard protection",
+    "Access control mechanisms",
+    "Timestamp security measures",
+    "Blacklist functionality"
+  ],
+  "links": {
+    "website": "https://mastatrill.github.io/aetheron-platform",
+    "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+    "contract": "https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+    "dexScreener": "https://dexscreener.com/polygon/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+    "quickSwap": "https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+  }
+}

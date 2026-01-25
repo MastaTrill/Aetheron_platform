@@ -1,0 +1,76 @@
+{
+  "discord": {
+    "serverName": "Aetheron Community",
+    "categories": [
+      {
+        "name": "📢 Information",
+        "channels": [
+          "announcements",
+          "rules",
+          "faq"
+        ]
+      },
+      {
+        "name": "💬 General",
+        "channels": [
+          "general",
+          "off-topic",
+          "memes"
+        ]
+      },
+      {
+        "name": "💰 DeFi",
+        "channels": [
+          "staking",
+          "trading",
+          "support"
+        ]
+      },
+      {
+        "name": "🔧 Development",
+        "channels": [
+          "development",
+          "feedback",
+          "bug-reports"
+        ]
+      }
+    ],
+    "roles": [
+      "Community Member",
+      "Staking Champion",
+      "Community Helper",
+      "Moderator",
+      "Admin"
+    ],
+    "bots": [
+      "MEE6 (moderation)",
+      "ProBot (welcome messages)",
+      "EPIC RPG (engagement)",
+      "Custom Aetheron bot (stats)"
+    ]
+  },
+  "telegram": {
+    "mainGroup": "@aetheronplatform",
+    "channels": [
+      "@aetheronannouncements",
+      "@aetheronsupport",
+      "@aetherontrading"
+    ]
+  },
+  "moderation": {
+    "rules": [
+      "Be respectful and constructive",
+      "No spam or excessive self-promotion",
+      "DYOR - Do Your Own Research",
+      "No financial advice",
+      "Keep discussions on-topic",
+      "Report issues to moderators"
+    ],
+    "actions": [
+      "Warnings for minor violations",
+      "Temporary mutes for repeated issues",
+      "Permanent bans for severe violations",
+      "Positive reinforcement for helpful members"
+    ]
+  }
+}

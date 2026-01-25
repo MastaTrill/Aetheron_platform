@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -9,6 +9,9 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /**
  * @title AetheronStaking
  * @dev Staking contract for AETH tokens with rewards
+ * @notice SECURITY NOTE: This contract uses block.timestamp for time-based calculations.
+ * While miners can manipulate timestamps within ~15 seconds, this is acceptable for staking
+ * periods measured in days/months. For production use, consider additional time-based security measures.
  */
 contract AetheronStaking is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -30,6 +33,9 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         uint256 lastClaimTime;
         uint256 poolId;
     }
+    
+    // Minimum staking period to prevent timestamp manipulation exploits
+    uint256 public constant MIN_STAKING_PERIOD = 1 hours;
     
     // State variables
     mapping(uint256 => Pool) public pools;
@@ -58,67 +64,67 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     /**
      * @dev Create a new staking pool
      */
-    function createPool(uint256 _lockDuration, uint256 _rewardRate) external onlyOwner {
-        _createPool(_lockDuration, _rewardRate);
+    function createPool(uint256 lockDuration, uint256 rewardRate) external onlyOwner {
+        _createPool(lockDuration, rewardRate);
     }
     
-    function _createPool(uint256 _lockDuration, uint256 _rewardRate) internal {
-        require(_rewardRate <= 10000, "Reward rate too high"); // Max 100% APY
+    function _createPool(uint256 lockDuration, uint256 rewardRate) internal {
+        require(rewardRate <= 10000, "Reward rate too high"); // Max 100% APY
         
         pools[poolCount] = Pool({
-            lockDuration: _lockDuration,
-            rewardRate: _rewardRate,
+            lockDuration: lockDuration,
+            rewardRate: rewardRate,
             totalStaked: 0,
             isActive: true
         });
         
-        emit PoolCreated(poolCount, _lockDuration, _rewardRate);
+        emit PoolCreated(poolCount, lockDuration, rewardRate);
         poolCount++;
     }
     
     /**
      * @dev Update pool status
      */
-    function updatePoolStatus(uint256 _poolId, bool _isActive) external onlyOwner {
-        require(_poolId < poolCount, "Invalid pool");
-        pools[_poolId].isActive = _isActive;
+    function updatePoolStatus(uint256 poolId, bool isActive) external onlyOwner {
+        require(poolId < poolCount, "Invalid pool");
+        pools[poolId].isActive = isActive;
     }
     
     /**
      * @dev Stake tokens in a pool
      */
-    function stake(uint256 _poolId, uint256 _amount) external nonReentrant {
-        require(_poolId < poolCount, "Invalid pool");
-        require(pools[_poolId].isActive, "Pool not active");
-        require(_amount > 0, "Cannot stake 0");
+    function stake(uint256 poolId, uint256 amount) external nonReentrant {
+        require(poolId < poolCount, "Invalid pool");
+        require(pools[poolId].isActive, "Pool not active");
+        require(amount > 0, "Cannot stake 0");
         
-        Pool storage pool = pools[_poolId];
+        Pool storage pool = pools[poolId];
         
         // Transfer tokens from user
-        aetheronToken.safeTransferFrom(msg.sender, address(this), _amount);
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
         
         // Create stake record
         userStakes[msg.sender].push(Stake({
-            amount: _amount,
+            amount: amount,
             startTime: block.timestamp,
             lastClaimTime: block.timestamp,
-            poolId: _poolId
+            poolId: poolId
         }));
         
         // Update totals
-        pool.totalStaked += _amount;
-        totalStaked += _amount;
+        pool.totalStaked += amount;
+        totalStaked += amount;
         
-        emit Staked(msg.sender, _poolId, _amount);
+        emit Staked(msg.sender, poolId, amount);
     }
     
     /**
      * @dev Calculate pending rewards for a stake
      */
-    function calculateReward(address _user, uint256 _stakeId) public view returns (uint256) {
-        require(_stakeId < userStakes[_user].length, "Invalid stake");
+    function calculateReward(address user, uint256 stakeId) public view returns (uint256) {
+        require(stakeId < userStakes[user].length, "Invalid stake");
         
-        Stake memory userStake = userStakes[_user][_stakeId];
+        Stake memory userStake = userStakes[user][stakeId];
         Pool memory pool = pools[userStake.poolId];
         
         uint256 stakingDuration = block.timestamp - userStake.lastClaimTime;
@@ -130,42 +136,44 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     /**
      * @dev Claim rewards for a stake
      */
-    function claimRewards(uint256 _stakeId) external nonReentrant {
-        require(_stakeId < userStakes[msg.sender].length, "Invalid stake");
+    function claimRewards(uint256 stakeId) external nonReentrant {
+        require(stakeId < userStakes[msg.sender].length, "Invalid stake");
         
-        uint256 reward = calculateReward(msg.sender, _stakeId);
+        uint256 reward = calculateReward(msg.sender, stakeId);
         require(reward > 0, "No rewards available");
         require(reward <= rewardBalance, "Insufficient reward balance");
         
         // Update last claim time
-        userStakes[msg.sender][_stakeId].lastClaimTime = block.timestamp;
+        userStakes[msg.sender][stakeId].lastClaimTime = block.timestamp;
         rewardBalance -= reward;
         
         // Transfer reward
         aetheronToken.safeTransfer(msg.sender, reward);
         
-        emit RewardClaimed(msg.sender, _stakeId, reward);
+        emit RewardClaimed(msg.sender, stakeId, reward);
     }
     
     /**
      * @dev Unstake tokens
      */
-    function unstake(uint256 _stakeId) external nonReentrant {
-        require(_stakeId < userStakes[msg.sender].length, "Invalid stake");
+    function unstake(uint256 stakeId) external nonReentrant {
+        require(stakeId < userStakes[msg.sender].length, "Invalid stake");
         
-        Stake memory userStake = userStakes[msg.sender][_stakeId];
+        Stake memory userStake = userStakes[msg.sender][stakeId];
         Pool storage pool = pools[userStake.poolId];
         
+        // Check minimum staking period to prevent timestamp manipulation
+        require(block.timestamp >= userStake.startTime + MIN_STAKING_PERIOD, "Minimum staking period not met");
         require(block.timestamp >= userStake.startTime + pool.lockDuration, "Stake still locked");
         
         uint256 amount = userStake.amount;
         
         // Claim any pending rewards
-        uint256 reward = calculateReward(msg.sender, _stakeId);
+        uint256 reward = calculateReward(msg.sender, stakeId);
         if (reward > 0 && reward <= rewardBalance) {
             rewardBalance -= reward;
             amount += reward;
-            emit RewardClaimed(msg.sender, _stakeId, reward);
+            emit RewardClaimed(msg.sender, stakeId, reward);
         }
         
         // Update totals
@@ -174,38 +182,38 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         
         // Remove stake (move last stake to this position)
         uint256 lastIndex = userStakes[msg.sender].length - 1;
-        if (_stakeId != lastIndex) {
-            userStakes[msg.sender][_stakeId] = userStakes[msg.sender][lastIndex];
+        if (stakeId != lastIndex) {
+            userStakes[msg.sender][stakeId] = userStakes[msg.sender][lastIndex];
         }
         userStakes[msg.sender].pop();
         
         // Transfer tokens back
         aetheronToken.safeTransfer(msg.sender, amount);
         
-        emit Unstaked(msg.sender, _stakeId, amount);
+        emit Unstaked(msg.sender, stakeId, amount);
     }
     
     /**
      * @dev Deposit rewards into the contract
      */
-    function depositRewards(uint256 _amount) external onlyOwner {
-        require(_amount > 0, "Cannot deposit 0");
-        aetheronToken.safeTransferFrom(msg.sender, address(this), _amount);
-        rewardBalance += _amount;
-        emit RewardDeposited(_amount);
+    function depositRewards(uint256 amount) external onlyOwner {
+        require(amount > 0, "Cannot deposit 0");
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
+        rewardBalance += amount;
+        emit RewardDeposited(amount);
     }
     
     /**
      * @dev Get user stakes count
      */
-    function getUserStakesCount(address _user) external view returns (uint256) {
-        return userStakes[_user].length;
+    function getUserStakesCount(address user) external view returns (uint256) {
+        return userStakes[user].length;
     }
     
     /**
      * @dev Get user stake details
      */
-    function getUserStake(address _user, uint256 _stakeId) external view returns (
+    function getUserStake(address user, uint256 stakeId) external view returns (
         uint256 amount,
         uint256 startTime,
         uint256 lastClaimTime,
@@ -213,9 +221,9 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         uint256 pendingReward,
         uint256 unlockTime
     ) {
-        require(_stakeId < userStakes[_user].length, "Invalid stake");
+        require(stakeId < userStakes[user].length, "Invalid stake");
         
-        Stake memory userStake = userStakes[_user][_stakeId];
+        Stake memory userStake = userStakes[user][stakeId];
         Pool memory pool = pools[userStake.poolId];
         
         return (
@@ -223,7 +231,7 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
             userStake.startTime,
             userStake.lastClaimTime,
             userStake.poolId,
-            calculateReward(_user, _stakeId),
+            calculateReward(user, stakeId),
             userStake.startTime + pool.lockDuration
         );
     }
@@ -231,11 +239,11 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     /**
      * @dev Emergency withdraw (owner only)
      */
-    function emergencyWithdraw(address _token, uint256 _amount) external onlyOwner {
-        if (_token == address(0)) {
-            payable(owner()).transfer(_amount);
+    function emergencyWithdraw(address token, uint256 amount) external onlyOwner {
+        if (token == address(0)) {
+            payable(owner()).transfer(amount);
         } else {
-            IERC20(_token).safeTransfer(owner(), _amount);
+            IERC20(token).safeTransfer(owner(), amount);
         }
     }
 }

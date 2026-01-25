@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management - Aetheron Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="risk-management.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>Aetheron Risk Management</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="../analytics/index.html" class="nav-link">
+          <i class="fas fa-chart-line"></i> Analytics
+        </a>
+        <a href="../yield-aggregator/index.html" class="nav-link">
+          <i class="fas fa-coins"></i> Yield
+        </a>
+        <a href="../nft-integration/index.html" class="nav-link">
+          <i class="fas fa-image"></i> NFT
+        </a>
+        <a href="../social-trading/index.html" class="nav-link">
+          <i class="fas fa-users"></i> Social
+        </a>
+        <a href="#dashboard" class="nav-link active">
+          <i class="fas fa-shield-alt"></i> Risk
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Advanced Risk Management</h1>
+      <p>Comprehensive portfolio risk assessment, position sizing, and automated risk management strategies</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value" id="portfolio-risk">12.3%</div>
+          <div class="stat-label">Portfolio Risk</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="max-drawdown">8.7%</div>
+          <div class="stat-label">Max Drawdown</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="sharpe-ratio">1.85</div>
+          <div class="stat-label">Sharpe Ratio</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Dashboard -->
+  <div class="container">
+    <!-- Risk Overview Cards -->
+    <div class="risk-overview">
+      <div class="risk-card">
+        <div class="card-header">
+          <h3><i class="fas fa-chart-pie"></i> Portfolio Risk Profile</h3>
+        </div>
+        <div class="card-content">
+          <canvas id="riskProfileChart"></canvas>
+        </div>
+      </div>
+
+      <div class="risk-card">
+        <div class="card-header">
+          <h3><i class="fas fa-balance-scale"></i> Risk Metrics</h3>
+        </div>
+        <div class="card-content">
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Value at Risk (95%)</div>
+              <div class="metric-value" id="var95">-$2,450</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Expected Shortfall</div>
+              <div class="metric-value" id="expectedShortfall">-$3,120</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Beta</div>
+              <div class="metric-value" id="beta">0.87</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Volatility</div>
+              <div class="metric-value" id="volatility">18.5%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Assessment Tools -->
+    <div class="tools-section">
+      <h2>Risk Assessment Tools</h2>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-header">
+            <i class="fas fa-calculator"></i>
+            <h3>Position Sizer</h3>
+          </div>
+          <div class="tool-content">
+            <div class="input-group">
+              <label>Account Balance ($)</label>
+              <input type="number" id="accountBalance" placeholder="10000">
+            </div>
+            <div class="input-group">
+              <label>Risk per Trade (%)</label>
+              <input type="number" id="riskPerTrade" placeholder="2" step="0.1">
+            </div>
+            <div class="input-group">
+              <label>Entry Price ($)</label>
+              <input type="number" id="entryPrice" placeholder="50">
+            </div>
+            <div class="input-group">
+              <label>Stop Loss ($)</label>
+              <input type="number" id="stopLoss" placeholder="45">
+            </div>
+            <button type="button" class="calculate-btn" onclick="calculatePositionSize()">
+              <i class="fas fa-calculator"></i> Calculate Position
+            </button>
+            <div class="result" id="positionSizeResult"></div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <i class="fas fa-chart-area"></i>
+            <h3>Risk/Reward Calculator</h3>
+          </div>
+          <div class="tool-content">
+            <div class="input-group">
+              <label>Entry Price ($)</label>
+              <input type="number" id="rrEntryPrice" placeholder="50">
+            </div>
+            <div class="input-group">
+              <label>Take Profit ($)</label>
+              <input type="number" id="takeProfit" placeholder="60">
+            </div>
+            <div class="input-group">
+              <label>Stop Loss ($)</label>
+              <input type="number" id="rrStopLoss" placeholder="45">
+            </div>
+            <button type="button" class="calculate-btn" onclick="calculateRiskReward()">
+              <i class="fas fa-balance-scale"></i> Calculate R/R
+            </button>
+            <div class="result" id="riskRewardResult"></div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <i class="fas fa-robot"></i>
+            <h3>Automated Risk Rules</h3>
+          </div>
+          <div class="tool-content">
+            <div class="rule-group">
+              <label class="rule-toggle">
+                <input type="checkbox" id="maxLossRule" checked>
+                <span class="toggle-slider"></span>
+                Max Loss per Trade
+              </label>
+              <input type="number" id="maxLossValue" placeholder="5" step="0.1">
+              <span class="unit">%</span>
+            </div>
+            <div class="rule-group">
+              <label class="rule-toggle">
+                <input type="checkbox" id="maxDrawdownRule" checked>
+                <span class="toggle-slider"></span>
+                Max Portfolio Drawdown
+              </label>
+              <input type="number" id="maxDrawdownValue" placeholder="20" step="0.1">
+              <span class="unit">%</span>
+            </div>
+            <div class="rule-group">
+              <label class="rule-toggle">
+                <input type="checkbox" id="correlationRule" checked>
+                <span class="toggle-slider"></span>
+                Max Correlation Limit
+              </label>
+              <input type="number" id="correlationValue" placeholder="0.7" step="0.1">
+              <span class="unit">coefficient</span>
+            </div>
+            <button type="button" class="apply-btn" onclick="applyRiskRules()">
+              <i class="fas fa-check"></i> Apply Rules
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio Optimization -->
+    <div class="optimization-section">
+      <h2>Portfolio Optimization</h2>
+      <div class="optimization-grid">
+        <div class="optimization-card">
+          <div class="card-header">
+            <h3><i class="fas fa-magic"></i> Efficient Frontier</h3>
+          </div>
+          <div class="card-content">
+            <canvas id="efficientFrontierChart"></canvas>
+          </div>
+        </div>
+
+        <div class="optimization-card">
+          <div class="card-header">
+            <h3><i class="fas fa-sliders-h"></i> Asset Allocation</h3>
+          </div>
+          <div class="card-content">
+            <div class="allocation-controls">
+              <div class="slider-group">
+                <label>Stocks Allocation</label>
+                <input type="range" id="stocksAllocation" min="0" max="100" value="60" title="Stocks Allocation">
+                <span class="allocation-value" id="stocksValue">60%</span>
+              </div>
+              <div class="slider-group">
+                <label>Bonds Allocation</label>
+                <input type="range" id="bondsAllocation" min="0" max="100" value="30" title="Bonds Allocation">
+                <span class="allocation-value" id="bondsValue">30%</span>
+              </div>
+              <div class="slider-group">
+                <label>Crypto Allocation</label>
+                <input type="range" id="cryptoAllocation" min="0" max="100" value="10" title="Crypto Allocation">
+                <span class="allocation-value" id="cryptoValue">10%</span>
+              </div>
+            </div>
+            <button type="button" class="optimize-btn" onclick="optimizePortfolio()">
+              <i class="fas fa-magic"></i> Optimize Portfolio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Alerts & Monitoring -->
+    <div class="alerts-section">
+      <h2>Risk Alerts & Monitoring</h2>
+      <div class="alerts-container">
+        <div class="alert-card warning">
+          <div class="alert-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="alert-content">
+            <h4>High Volatility Alert</h4>
+            <p>AETH token volatility has exceeded 25% threshold</p>
+            <span class="alert-time">2 minutes ago</span>
+          </div>
+        </div>
+
+        <div class="alert-card danger">
+          <div class="alert-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="alert-content">
+            <h4>Drawdown Limit Reached</h4>
+            <p>Portfolio drawdown has reached 15% - consider rebalancing</p>
+            <span class="alert-time">1 hour ago</span>
+          </div>
+        </div>
+
+        <div class="alert-card info">
+          <div class="alert-icon">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="alert-content">
+            <h4>Correlation Warning</h4>
+            <p>ETH and AETH correlation has increased to 0.85</p>
+            <span class="alert-time">3 hours ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Scenarios Analysis -->
+    <div class="scenarios-section">
+      <h2>Stress Testing & Scenarios</h2>
+      <div class="scenarios-grid">
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <h3>Market Crash Scenario</h3>
+            <span class="scenario-probability">Probability: 5%</span>
+          </div>
+          <div class="scenario-content">
+            <div class="scenario-impact">
+              <div class="impact-item">
+                <span class="impact-label">Portfolio Loss:</span>
+                <span class="impact-value loss">-35%</span>
+              </div>
+              <div class="impact-item">
+                <span class="impact-label">Recovery Time:</span>
+                <span class="impact-value">18 months</span>
+              </div>
+            </div>
+            <button type="button" class="scenario-btn" onclick="runScenario('crash')">
+              <i class="fas fa-play"></i> Run Simulation
+            </button>
+          </div>
+        </div>
+
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <h3>Bull Market Scenario</h3>
+            <span class="scenario-probability">Probability: 25%</span>
+          </div>
+          <div class="scenario-content">
+            <div class="scenario-impact">
+              <div class="impact-item">
+                <span class="impact-label">Portfolio Gain:</span>
+                <span class="impact-value gain">+45%</span>
+              </div>
+              <div class="impact-item">
+                <span class="impact-label">Time Horizon:</span>
+                <span class="impact-value">12 months</span>
+              </div>
+            </div>
+            <button type="button" class="scenario-btn" onclick="runScenario('bull')">
+              <i class="fas fa-play"></i> Run Simulation
+            </button>
+          </div>
+        </div>
+
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <h3>DeFi Protocol Failure</h3>
+            <span class="scenario-probability">Probability: 10%</span>
+          </div>
+          <div class="scenario-content">
+            <div class="scenario-impact">
+              <div class="impact-item">
+                <span class="impact-label">Portfolio Loss:</span>
+                <span class="impact-value loss">-15%</span>
+              </div>
+              <div class="impact-item">
+                <span class="impact-label">Affected Assets:</span>
+                <span class="impact-value">3 tokens</span>
+              </div>
+            </div>
+            <button type="button" class="scenario-btn" onclick="runScenario('defi')">
+              <i class="fas fa-play"></i> Run Simulation
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Analyzing risk parameters...</p>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="risk-management.js"></script>
+</body>
+
+</html>
+</content>
+<parameter name="filePath">c:\Users\willi\.vscode\Aetheron_platform\risk-management\index.html

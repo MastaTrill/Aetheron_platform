@@ -32,7 +32,7 @@ function calculatePrice() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('aethAmount').addEventListener('input', calculatePrice);
     document.getElementById('usdcAmount').addEventListener('input', calculatePrice);
     document.getElementById('connectBtn').addEventListener('click', connectWallet);

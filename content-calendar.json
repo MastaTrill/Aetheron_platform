@@ -1,0 +1,46 @@
+{
+  "weekly": [
+    {
+      "day": "Monday",
+      "content": "Market analysis and AETH price update"
+    },
+    {
+      "day": "Tuesday",
+      "content": "Staking pool performance report"
+    },
+    {
+      "day": "Wednesday",
+      "content": "Community spotlight feature"
+    },
+    {
+      "day": "Thursday",
+      "content": "AMA session with team"
+    },
+    {
+      "day": "Friday",
+      "content": "Weekend trading tips and reminders"
+    },
+    {
+      "day": "Saturday",
+      "content": "Fun community activities"
+    },
+    {
+      "day": "Sunday",
+      "content": "Weekly summary and upcoming features"
+    }
+  ],
+  "monthly": [
+    "Trading competition announcement",
+    "Monthly community report",
+    "Feature update preview",
+    "Partnership announcements",
+    "Community voting events"
+  ],
+  "special": [
+    "Platform milestones (100 users, 1000 users, etc.)",
+    "New feature launches",
+    "DEX listing announcements",
+    "Partnership reveals",
+    "Community achievements"
+  ]
+}

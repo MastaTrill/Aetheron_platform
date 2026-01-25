@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -82,31 +82,31 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
     /**
      * @dev Update tax rates
      */
-    function updateTaxRates(uint256 _buyTax, uint256 _sellTax) external onlyOwner {
-        require(_buyTax <= MAX_TAX, "Buy tax too high");
-        require(_sellTax <= MAX_TAX, "Sell tax too high");
-        buyTaxRate = _buyTax;
-        sellTaxRate = _sellTax;
-        emit TaxRatesUpdated(_buyTax, _sellTax);
+    function updateTaxRates(uint256 buyTax, uint256 sellTax) external onlyOwner {
+        require(buyTax <= MAX_TAX, "Buy tax too high");
+        require(sellTax <= MAX_TAX, "Sell tax too high");
+        buyTaxRate = buyTax;
+        sellTaxRate = sellTax;
+        emit TaxRatesUpdated(buyTax, sellTax);
     }
     
     /**
      * @dev Update treasury wallets
      */
     function updateWallets(
-        address _teamWallet,
-        address _marketingWallet,
-        address _stakingPool
+        address newTeamWallet,
+        address newMarketingWallet,
+        address newStakingPool
     ) external onlyOwner {
-        require(_teamWallet != address(0), "Invalid team wallet");
-        require(_marketingWallet != address(0), "Invalid marketing wallet");
-        require(_stakingPool != address(0), "Invalid staking pool");
+        require(newTeamWallet != address(0), "Invalid team wallet");
+        require(newMarketingWallet != address(0), "Invalid marketing wallet");
+        require(newStakingPool != address(0), "Invalid staking pool");
         
-        teamWallet = _teamWallet;
-        marketingWallet = _marketingWallet;
-        stakingPool = _stakingPool;
+        teamWallet = newTeamWallet;
+        marketingWallet = newMarketingWallet;
+        stakingPool = newStakingPool;
         
-        emit WalletsUpdated(_teamWallet, _marketingWallet, _stakingPool);
+        emit WalletsUpdated(newTeamWallet, newMarketingWallet, newStakingPool);
     }
     
     /**

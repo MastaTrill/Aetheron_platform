@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="analytics.js"></script>
+  <link rel="stylesheet" href="analytics.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <div id="test-output">
+    <h1>Analytics Dashboard Test</h1>
+    <div id="status">Loading...</div>
+    <div id="charts-test">
+      <canvas id="performanceChart" width="400" height="200"></canvas>
+      <canvas id="allocationChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // Simple test to check if analytics loads
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM loaded');
+      document.getElementById('status').textContent = 'DOM loaded successfully';
+
+      // Test Chart.js
+      if (typeof Chart !== 'undefined') {
+        console.log('Chart.js loaded');
+        document.getElementById('status').innerHTML += '<br>✅ Chart.js loaded';
+
+        // Test basic chart creation
+        try {
+          const ctx = document.getElementById('performanceChart');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar'],
+              datasets: [{
+                label: 'Test',
+                data: [10, 20, 30]
+              }]
+            }
+          });
+          document.getElementById('status').innerHTML += '<br>✅ Chart created successfully';
+        } catch (error) {
+          document.getElementById('status').innerHTML += '<br>❌ Chart creation failed: ' + error.message;
+        }
+      } else {
+        document.getElementById('status').innerHTML += '<br>❌ Chart.js not loaded';
+      }
+
+      // Test AnalyticsDashboard
+      if (typeof AnalyticsDashboard !== 'undefined') {
+        document.getElementById('status').innerHTML += '<br>✅ AnalyticsDashboard class found';
+        console.log('AnalyticsDashboard class found');
+      } else {
+        document.getElementById('status').innerHTML += '<br>❌ AnalyticsDashboard class not found';
+        console.log('AnalyticsDashboard class not found');
+      }
+    });
+
+    // Error handling
+    window.addEventListener('error', function (e) {
+      document.getElementById('status').innerHTML += '<br>❌ JavaScript Error: ' + e.message;
+      console.error('JavaScript Error:', e);
+    });
+  </script>
+</body>
+
+</html>

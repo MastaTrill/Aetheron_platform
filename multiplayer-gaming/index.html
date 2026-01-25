@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Gaming - Aetheron Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="multiplayer-gaming.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="logo">
+        <i class="fas fa-gamepad"></i>
+        <span>Aetheron Multiplayer</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="../analytics/index.html" class="nav-link">
+          <i class="fas fa-chart-line"></i> Analytics
+        </a>
+        <a href="../yield-aggregator/index.html" class="nav-link">
+          <i class="fas fa-coins"></i> Yield
+        </a>
+        <a href="../nft-integration/index.html" class="nav-link">
+          <i class="fas fa-image"></i> NFT
+        </a>
+        <a href="../social-trading/index.html" class="nav-link">
+          <i class="fas fa-users"></i> Social
+        </a>
+        <a href="../risk-management/index.html" class="nav-link">
+          <i class="fas fa-shield-alt"></i> Risk
+        </a>
+        <a href="#lobby" class="nav-link active">
+          <i class="fas fa-gamepad"></i> Gaming
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Multiplayer Trading Arena</h1>
+      <p>Compete in real-time trading competitions, join tournaments, and climb the leaderboards</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value" id="active-players">1,247</div>
+          <div class="stat-label">Active Players</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="active-games">89</div>
+          <div class="stat-label">Live Games</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="total-prize">Ξ12.5K</div>
+          <div class="stat-label">Prize Pool</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Dashboard -->
+  <div class="container">
+    <!-- Game Modes -->
+    <div class="game-modes">
+      <h2>Choose Your Battle</h2>
+      <div class="modes-grid">
+        <div class="mode-card featured">
+          <div class="mode-header">
+            <i class="fas fa-crown"></i>
+            <h3>Tournament Mode</h3>
+            <span class="badge">Featured</span>
+          </div>
+          <div class="mode-content">
+            <p>Elimination-style tournament with increasing stakes</p>
+            <div class="mode-details">
+              <span><i class="fas fa-users"></i> 64 Players</span>
+              <span><i class="fas fa-clock"></i> 45 min</span>
+              <span><i class="fas fa-trophy"></i> Ξ500 Prize</span>
+            </div>
+            <button class="join-btn" onclick="joinTournament()">
+              <i class="fas fa-play"></i> Join Tournament
+            </button>
+          </div>
+        </div>
+
+        <div class="mode-card">
+          <div class="mode-header">
+            <i class="fas fa-bolt"></i>
+            <h3>Quick Match</h3>
+          </div>
+          <div class="mode-content">
+            <p>Fast-paced 1v1 trading battles</p>
+            <div class="mode-details">
+              <span><i class="fas fa-users"></i> 2 Players</span>
+              <span><i class="fas fa-clock"></i> 10 min</span>
+              <span><i class="fas fa-coins"></i> Ξ50 Entry</span>
+            </div>
+            <button class="join-btn" onclick="quickMatch()">
+              <i class="fas fa-zap"></i> Quick Match
+            </button>
+          </div>
+        </div>
+
+        <div class="mode-card">
+          <div class="mode-header">
+            <i class="fas fa-users"></i>
+            <h3>Team Battle</h3>
+          </div>
+          <div class="mode-content">
+            <p>4v4 team-based trading competition</p>
+            <div class="mode-details">
+              <span><i class="fas fa-users"></i> 8 Players</span>
+              <span><i class="fas fa-clock"></i> 20 min</span>
+              <span><i class="fas fa-trophy"></i> Ξ200 Prize</span>
+            </div>
+            <button class="join-btn" onclick="teamBattle()">
+              <i class="fas fa-user-friends"></i> Find Team
+            </button>
+          </div>
+        </div>
+
+        <div class="mode-card">
+          <div class="mode-header">
+            <i class="fas fa-graduation-cap"></i>
+            <h3>Practice Mode</h3>
+          </div>
+          <div class="mode-content">
+            <p>Risk-free trading simulation</p>
+            <div class="mode-details">
+              <span><i class="fas fa-users"></i> Solo</span>
+              <span><i class="fas fa-clock"></i> Unlimited</span>
+              <span><i class="fas fa-star"></i> Free</span>
+            </div>
+            <button class="join-btn practice" onclick="practiceMode()">
+              <i class="fas fa-play-circle"></i> Practice
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Lobby -->
+    <div class="lobby-section">
+      <h2>Game Lobby</h2>
+      <div class="lobby-controls">
+        <div class="search-filters">
+          <select id="gameModeFilter">
+            <option value="all">All Modes</option>
+            <option value="tournament">Tournament</option>
+            <option value="quick">Quick Match</option>
+            <option value="team">Team Battle</option>
+          </select>
+          <select id="skillFilter">
+            <option value="all">All Levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+            <option value="expert">Expert</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search rooms...">
+        </div>
+        <button class="create-room-btn" onclick="createRoom()">
+          <i class="fas fa-plus"></i> Create Room
+        </button>
+      </div>
+
+      <div class="rooms-list">
+        <div class="room-card live">
+          <div class="room-header">
+            <div class="room-info">
+              <h4>Elite Traders Championship</h4>
+              <span class="room-mode tournament">Tournament</span>
+            </div>
+            <div class="room-status">
+              <span class="live-indicator">LIVE</span>
+              <span class="players">47/64</span>
+            </div>
+          </div>
+          <div class="room-details">
+            <div class="room-stats">
+              <span><i class="fas fa-clock"></i> Round 3/5</span>
+              <span><i class="fas fa-trophy"></i> Ξ500 Prize</span>
+              <span><i class="fas fa-star"></i> Expert</span>
+            </div>
+            <button class="join-room-btn" onclick="joinRoom('elite-traders')">
+              <i class="fas fa-eye"></i> Spectate
+            </button>
+          </div>
+        </div>
+
+        <div class="room-card">
+          <div class="room-header">
+            <div class="room-info">
+              <h4>Quick Trade Showdown</h4>
+              <span class="room-mode quick">Quick Match</span>
+            </div>
+            <div class="room-status">
+              <span class="waiting-indicator">WAITING</span>
+              <span class="players">1/2</span>
+            </div>
+          </div>
+          <div class="room-details">
+            <div class="room-stats">
+              <span><i class="fas fa-clock"></i> 10 min</span>
+              <span><i class="fas fa-coins"></i> Ξ50 Entry</span>
+              <span><i class="fas fa-star"></i> Intermediate</span>
+            </div>
+            <button class="join-room-btn" onclick="joinRoom('quick-showdown')">
+              <i class="fas fa-sign-in-alt"></i> Join
+            </button>
+          </div>
+        </div>
+
+        <div class="room-card">
+          <div class="room-header">
+            <div class="room-info">
+              <h4>Team Alpha vs Team Beta</h4>
+              <span class="room-mode team">Team Battle</span>
+            </div>
+            <div class="room-status">
+              <span class="starting-indicator">STARTING</span>
+              <span class="players">6/8</span>
+            </div>
+          </div>
+          <div class="room-details">
+            <div class="room-stats">
+              <span><i class="fas fa-clock"></i> 20 min</span>
+              <span><i class="fas fa-trophy"></i> Ξ200 Prize</span>
+              <span><i class="fas fa-star"></i> Advanced</span>
+            </div>
+            <button class="join-room-btn" onclick="joinRoom('team-alpha-beta')">
+              <i class="fas fa-users"></i> Join Team
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboards -->
+    <div class="leaderboards-section">
+      <h2>Global Leaderboards</h2>
+      <div class="leaderboards-tabs">
+        <button class="tab-btn active" onclick="switchTab('weekly')">Weekly</button>
+        <button class="tab-btn" onclick="switchTab('monthly')">Monthly</button>
+        <button class="tab-btn" onclick="switchTab('all-time')">All Time</button>
+      </div>
+
+      <div class="leaderboard-container">
+        <div class="leaderboard" id="weekly-leaderboard">
+          <div class="leaderboard-item top-player">
+            <div class="rank">1</div>
+            <div class="player-info">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=TraderKing" alt="Player Avatar"
+                class="player-avatar">
+              <div class="player-details">
+                <div class="player-name">TraderKing</div>
+                <div class="player-stats">+127.5% ROI</div>
+              </div>
+            </div>
+            <div class="player-score">2,450 pts</div>
+          </div>
+
+          <div class="leaderboard-item">
+            <div class="rank">2</div>
+            <div class="player-info">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=CryptoQueen" alt="Player Avatar"
+                class="player-avatar">
+              <div class="player-details">
+                <div class="player-name">CryptoQueen</div>
+                <div class="player-stats">+95.2% ROI</div>
+              </div>
+            </div>
+            <div class="player-score">2,180 pts</div>
+          </div>
+
+          <div class="leaderboard-item">
+            <div class="rank">3</div>
+            <div class="player-info">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DeFiMaster" alt="Player Avatar"
+                class="player-avatar">
+              <div class="player-details">
+                <div class="player-name">DeFiMaster</div>
+                <div class="player-stats">+87.9% ROI</div>
+              </div>
+            </div>
+            <div class="player-score">1,950 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Stats -->
+    <div class="stats-section">
+      <h2>Your Performance</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <i class="fas fa-trophy"></i>
+            <h3>Rank</h3>
+          </div>
+          <div class="stat-value">#247</div>
+          <div class="stat-change positive">↑ 12</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <i class="fas fa-gamepad"></i>
+            <h3>Games Played</h3>
+          </div>
+          <div class="stat-value">156</div>
+          <div class="stat-change positive">+8 this week</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <i class="fas fa-medal"></i>
+            <h3>Win Rate</h3>
+          </div>
+          <div class="stat-value">68%</div>
+          <div class="stat-change positive">+5%</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <i class="fas fa-coins"></i>
+            <h3>Total Earnings</h3>
+          </div>
+          <div class="stat-value">Ξ2.45</div>
+          <div class="stat-change positive">+Ξ0.23</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tournament Schedule -->
+    <div class="tournaments-section">
+      <h2>Upcoming Tournaments</h2>
+      <div class="tournaments-list">
+        <div class="tournament-card">
+          <div class="tournament-header">
+            <h4>Weekly Championship</h4>
+            <span class="tournament-prize">Ξ1,000 Prize Pool</span>
+          </div>
+          <div class="tournament-details">
+            <div class="tournament-info">
+              <span><i class="fas fa-calendar"></i> Saturday 8:00 PM UTC</span>
+              <span><i class="fas fa-users"></i> 128 Players</span>
+              <span><i class="fas fa-clock"></i> 2 hours</span>
+            </div>
+            <button class="register-btn" onclick="registerTournament('weekly-championship')">
+              <i class="fas fa-calendar-plus"></i> Register
+            </button>
+          </div>
+        </div>
+
+        <div class="tournament-card">
+          <div class="tournament-header">
+            <h4>Beginner Friendly</h4>
+            <span class="tournament-prize">Ξ250 Prize Pool</span>
+          </div>
+          <div class="tournament-details">
+            <div class="tournament-info">
+              <span><i class="fas fa-calendar"></i> Sunday 2:00 PM UTC</span>
+              <span><i class="fas fa-users"></i> 32 Players</span>
+              <span><i class="fas fa-clock"></i> 45 min</span>
+            </div>
+            <button class="register-btn" onclick="registerTournament('beginner-friendly')">
+              <i class="fas fa-calendar-plus"></i> Register
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Modal -->
+  <div class="game-modal" id="gameModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="gameTitle">Loading Game...</h3>
+        <button class="close-modal" onclick="closeGameModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="game-interface" id="gameInterface">
+          <!-- Game content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Finding opponents...</p>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="multiplayer-gaming.js"></script>
+</body>
+
+</html>

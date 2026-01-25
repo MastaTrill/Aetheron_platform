@@ -1,5 +1,4 @@
 
-
 @MastaTrill
 
 🌌 Aetheron Platform
@@ -13,12 +12,14 @@
 ## Deployed Contracts
 
 ### Polygon Mumbai Testnet (Chain ID: 80001)
+
 - AETH Token: `0x44F9c15816bCe5d6691448F60DAD50355ABa40b5`
   - View on PolygonScan: [Link](https://mumbai.polygonscan.com/token/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5)
 - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
   - View on PolygonScan: [Link](https://mumbai.polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 
 ### Polygon Mainnet (Chain ID: 137)
+
 - AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
   - View on PolygonScan: [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
@@ -27,11 +28,14 @@
   - View on PolygonScan: [Link](https://polygonscan.com/address/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
 
 ### Solana (if applicable for cross-chain or future features)
+
 - Solana Mint/Wallet/Program: `5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki`
   - View on Solscan: [Link](https://solscan.io/account/5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki)
+
 ---
 
 🚀 Live Demo
+
 - 🌐 Admin Dashboard: mastatrill.github.io/aetheron-platform
 - 📱 Mobile App: Coming soon to App Store & Google Play
 - 📖 Documentation: Complete guides and API reference
@@ -40,6 +44,7 @@
 ---
 
 🎯 Features
+
 - 🎯 Mission Control — Participate in space exploration missions
 - 💰 AETH Token — Native cryptocurrency with staking rewards
 - 📱 Mobile App — iOS/Android cross‑platform application
@@ -50,6 +55,7 @@
 ---
 
 🔄 Recent Updates (v2.0.0)
+
 - ✅ **Security Enhancement**: Removed .env from Git history for credential protection
 - ✅ **CI/CD Improvements**: Updated CircleCI config to v2.1 standards
 - ✅ **Smart Contract Testing**: 35/39 tests passing with gas optimization
@@ -61,24 +67,28 @@
 🛠️ Technology Stack
 
 Frontend
+
 - React Native (Mobile)
 - React.js / Next.js (Web)
 - TypeScript
 - CSS3 / SCSS
 
 Backend
+
 - Node.js / Express.js
 - MongoDB / PostgreSQL
 - JWT Authentication
 - WebSocket (Real‑time)
 
 Blockchain
+
 - Solidity Smart Contracts
 - Hardhat Development Framework
 - Polygon / Ethereum Networks
 - Web3.js Integration
 
 DevOps
+
 - Docker Containerization
 - Kubernetes Orchestration
 - GitHub Actions CI/CD
@@ -110,6 +120,7 @@ GitHub Owner: @Mastatrill
 Keeper’s Lantern Wallet: 0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82
 
 Proof‑of‑Record Constellation
+
 - Herald’s Seal — Tx Hash: 0xb397…c82c94  
 - Steward’s Seal — Tx Hash: 0x8a3a…c3452 (Dec‑16‑2025 09:27:45 AM UTC)  
 - Lantern Seal — Wallet: 0x127C…AF82  
@@ -120,6 +131,7 @@ Proof‑of‑Record Constellation
 ---
 
 🗺️ Roadmap
+
 - ✅ Platform structure created  
 - ✅ Smart contracts drafted (ERC20 upgradeable)  
 - 🔄 Source code verification on BaseScan/Etherscan  
@@ -132,6 +144,7 @@ Proof‑of‑Record Constellation
 
 🤝 Contributing
 We welcome contributions!  
+
 1. Fork the repository  
 2. Create your feature branch (git checkout -b feature/YourFeature)  
 3. Commit changes (git commit -m 'Add new feature')  
@@ -191,6 +204,7 @@ POLYGONSCAN_API_KEY=your_api_key_here
 ```
 
 **⚠️ CRITICAL ERRORS TO AVOID:**
+
 - ❌ Private key without `0x` prefix
 - ❌ Extra spaces in addresses or keys
 - ❌ Using placeholder/example values
@@ -211,6 +225,7 @@ node scripts/verify-setup.js
 ```
 
 The script will check:
+
 - ✓ Environment file exists
 - ✓ All required variables are set and properly formatted
 - ✓ Network connectivity to Polygon RPC
@@ -262,7 +277,7 @@ node scripts/enable-trading.js
 node scripts/add-liquidity.js
 ```
 
-Or manually via QuickSwap interface: https://quickswap.exchange/#/pool
+Or manually via QuickSwap interface: <https://quickswap.exchange/#/pool>
 
 #### 9. Post-Deployment Verification
 
@@ -375,10 +390,11 @@ If you encounter issues not covered in this guide:
 ---
 
 📞 Contact
+
 - GitHub: @Mastatrill  
 - Repository: github.com/Mastatrill/aetheron-platform  
 - Website: mastatrill.github.io/aetheron-platform  
-- Email: contact@aetheron.space  
+- Email: <contact@aetheron.space>  
 
 ---
 
@@ -388,4 +404,4 @@ Created by Mastatrill — Building the future of space exploration 🌌🚀
 
 ---
 
-✨ 
+✨

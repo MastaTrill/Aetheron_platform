@@ -1,0 +1,34 @@
+{
+  "currentPool": {
+    "exchange": "QuickSwap",
+    "pair": "AETH/MATIC",
+    "address": "0xd57c5E33ebDC1b565F99d06809debbf86142705D",
+    "currentLiquidity": "9.5M AETH + 5 MATIC"
+  },
+  "expansionPlan": {
+    "phase1": {
+      "timeframe": "Week 1-2",
+      "goal": "Increase to 50M AETH + 25 MATIC",
+      "incentives": "2x staking rewards for LP providers",
+      "budget": "50M AETH from team allocation"
+    },
+    "phase2": {
+      "timeframe": "Week 3-4",
+      "goal": "Cross-chain pools on Uniswap/BSC",
+      "incentives": "Liquidity mining program",
+      "budget": "100M AETH total incentives"
+    },
+    "phase3": {
+      "timeframe": "Month 2+",
+      "goal": "Advanced pools (Balancer, Curve)",
+      "incentives": "Protocol-owned liquidity",
+      "budget": "200M AETH long-term"
+    }
+  },
+  "metrics": {
+    "targetTVL": "$100K+ across all pools",
+    "targetVolume": "$50K+ daily volume",
+    "impermanentLossProtection": "Insurance fund allocation",
+    "yieldFarming": "Boosted APY for stable pools"
+  }
+}

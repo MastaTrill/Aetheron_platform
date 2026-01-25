@@ -1,0 +1,87 @@
+{
+  "sequences": {
+    "welcome": {
+      "name": "Welcome to Aetheron",
+      "trigger": "Wallet connection",
+      "emails": [
+        {
+          "subject": "Welcome to Aetheron! Your DeFi Journey Starts Here 🚀",
+          "content": "Welcome message with platform overview and getting started guide",
+          "timing": "Immediate"
+        },
+        {
+          "subject": "Your First Steps in DeFi - AETH Staking Guide",
+          "content": "Detailed staking tutorial and pool explanations",
+          "timing": "Day 2"
+        },
+        {
+          "subject": "Aetheron Community - Connect and Grow",
+          "content": "Community introduction and social links",
+          "timing": "Day 7"
+        }
+      ]
+    },
+    "educational": {
+      "name": "DeFi Education Series",
+      "trigger": "Newsletter signup",
+      "emails": [
+        {
+          "subject": "Understanding DeFi: What is Staking?",
+          "content": "Educational content about staking mechanics",
+          "timing": "Weekly"
+        },
+        {
+          "subject": "Aetheron Tokenomics Explained",
+          "content": "Deep dive into AETH token economics",
+          "timing": "Bi-weekly"
+        }
+      ]
+    },
+    "promotional": {
+      "name": "Growth Campaigns",
+      "trigger": "Milestones and events",
+      "emails": [
+        {
+          "subject": "🎉 1,000 Users Milestone - Special Rewards!",
+          "content": "Celebration and bonus incentives",
+          "timing": "Event-based"
+        },
+        {
+          "subject": "New DEX Listing: Trade AETH Everywhere!",
+          "content": "Announcement of new exchange listings",
+          "timing": "Event-based"
+        }
+      ]
+    }
+  },
+  "templates": {
+    "header": "Aetheron - DeFi Made Simple",
+    "footer": "Unsubscribe | Privacy Policy | Contact Us",
+    "branding": {
+      "colors": [
+        "#1a73e8",
+        "#34a853",
+        "#ea4335"
+      ],
+      "logo": "Aetheron logo",
+      "tagline": "Your Gateway to DeFi"
+    }
+  },
+  "automation": {
+    "triggers": [
+      "Wallet connections",
+      "Staking actions",
+      "Community joins"
+    ],
+    "segments": [
+      "New users",
+      "Active stakers",
+      "High volume traders"
+    ],
+    "metrics": [
+      "Open rates",
+      "Click rates",
+      "Conversion rates"
+    ]
+  }
+}

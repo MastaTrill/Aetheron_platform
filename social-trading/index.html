@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Social Trading Network - Connect, share, and compete with fellow traders on Aetheron Platform">
+  <meta name="keywords" content="social trading, cryptocurrency, DeFi, trading signals, portfolio sharing">
+  <meta name="author" content="Aetheron Platform">
+  <title>Social Trading Network - Aetheron Platform</title>
+  <link rel="stylesheet" href="social-trading.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <i class="fas fa-users"></i>
+        <span>Aetheron Social</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="../analytics/index.html" class="nav-link">
+          <i class="fas fa-chart-line"></i> Analytics
+        </a>
+        <a href="../yield-aggregator/index.html" class="nav-link">
+          <i class="fas fa-coins"></i> Yield
+        </a>
+        <a href="../nft-integration/index.html" class="nav-link">
+          <i class="fas fa-gem"></i> NFT
+        </a>
+        <a href="#feed" class="nav-link active">
+          <i class="fas fa-users"></i> Social
+        </a>
+      </div>
+      <div class="nav-wallet">
+        <button class="wallet-btn" id="connectWallet">
+          <i class="fas fa-wallet"></i>
+          <span>Connect Wallet</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="fas fa-users"></i>
+          Social Trading Network
+        </h1>
+        <p class="hero-subtitle">
+          Connect, share, and learn from the best traders in the Aetheron community
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="totalTraders">12.4K</div>
+            <div class="stat-label">Active Traders</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="totalSignals">89.2K</div>
+            <div class="stat-label">Trading Signals</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="avgReturns">+24.7%</div>
+            <div class="stat-label">Avg. Returns</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-tab="feed">
+        <i class="fas fa-stream"></i> Feed
+      </button>
+      <button class="tab-btn" data-tab="discover">
+        <i class="fas fa-compass"></i> Discover
+      </button>
+      <button class="tab-btn" data-tab="competitions">
+        <i class="fas fa-trophy"></i> Competitions
+      </button>
+      <button class="tab-btn" data-tab="leaderboard">
+        <i class="fas fa-crown"></i> Leaderboard
+      </button>
+      <button class="tab-btn" data-tab="profile">
+        <i class="fas fa-user"></i> Profile
+      </button>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- User Profile Card -->
+        <div class="profile-card">
+          <div class="profile-header">
+            <img src="https://via.placeholder.com/60x60/6366f1/ffffff?text=U" alt="Profile" class="profile-avatar">
+            <div class="profile-info">
+              <h3 id="userName">Connect Wallet</h3>
+              <p id="userHandle">@username</p>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <span class="stat-number" id="followingCount">0</span>
+              <span class="stat-label">Following</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" id="followersCount">0</span>
+              <span class="stat-label">Followers</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" id="portfolioValue">$0</span>
+              <span class="stat-label">Portfolio</span>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="action-btn primary" id="sharePortfolio">
+              <i class="fas fa-share"></i> Share Portfolio
+            </button>
+            <button class="action-btn secondary" id="createSignal">
+              <i class="fas fa-plus"></i> Create Signal
+            </button>
+          </div>
+        </div>
+
+        <!-- Trending Topics -->
+        <div class="trending-card">
+          <h3><i class="fas fa-fire"></i> Trending</h3>
+          <div class="trending-list" id="trendingTopics">
+            <!-- Trending topics will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Online Traders -->
+        <div class="online-card">
+          <h3><i class="fas fa-circle"></i> Online Now</h3>
+          <div class="online-list" id="onlineTraders">
+            <!-- Online traders will be populated by JavaScript -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Feed -->
+      <div class="main-feed">
+        <!-- Feed Tab -->
+        <div id="feed" class="tab-content active">
+          <!-- Create Post -->
+          <div class="create-post-card">
+            <form id="postForm">
+              <div class="post-input">
+                <img src="https://via.placeholder.com/40x40/6366f1/ffffff?text=U" alt="Avatar" class="post-avatar">
+                <div class="post-form">
+                  <textarea id="postContent" name="postContent"
+                    placeholder="Share your trading insights, analysis, or market predictions..." rows="3"
+                    maxlength="500" aria-label="Write your post"></textarea>
+                  <div class="post-actions">
+                    <div class="post-attachments">
+                      <button type="button" class="attach-btn" id="attachChart" aria-label="Attach chart">
+                        <i class="fas fa-chart-line"></i> Chart
+                      </button>
+                      <button type="button" class="attach-btn" id="attachNFT" aria-label="Attach NFT">
+                        <i class="fas fa-gem"></i> NFT
+                      </button>
+                      <button type="button" class="attach-btn" id="attachSignal" aria-label="Attach signal">
+                        <i class="fas fa-bullseye"></i> Signal
+                      </button>
+                    </div>
+                    <button type="submit" class="post-btn" id="submitPost" aria-label="Post your message">
+                      <i class="fas fa-paper-plane"></i> Post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Feed Filters -->
+          <div class="feed-filters">
+            <button class="filter-btn active" data-filter="all" aria-label="Show all posts">All Posts</button>
+            <button class="filter-btn" data-filter="signals" aria-label="Show trading signals">Signals</button>
+            <button class="filter-btn" data-filter="analysis" aria-label="Show analysis posts">Analysis</button>
+            <button class="filter-btn" data-filter="following"
+              aria-label="Show posts from followed traders">Following</button>
+            <select class="sort-select" id="feedSort">
+              <option value="latest">Latest</option>
+              <option value="popular">Popular</option>
+              <option value="trending">Trending</option>
+            </select>
+          </div>
+
+          <!-- Posts Feed -->
+          <div class="posts-container" id="postsContainer">
+            <!-- Posts will be populated by JavaScript -->
+          </div>
+
+          <!-- Load More -->
+          <div class="load-more-container">
+            <button class="load-more-btn" id="loadMorePosts">
+              <i class="fas fa-plus"></i> Load More Posts
+            </button>
+          </div>
+        </div>
+
+        <!-- Discover Tab -->
+        <div id="discover" class="tab-content">
+          <div class="discover-header">
+            <h2>Discover Traders</h2>
+            <div class="discover-filters">
+              <input type="text" id="searchTraders" placeholder="Search traders..." class="search-input">
+              <select id="sortTraders" class="sort-select">
+                <option value="followers">Most Followers</option>
+                <option value="returns">Best Returns</option>
+                <option value="signals">Most Signals</option>
+                <option value="recent">Recently Active</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="traders-grid" id="tradersGrid">
+            <!-- Traders will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Competitions Tab -->
+        <div id="competitions" class="tab-content">
+          <div class="competitions-header">
+            <h2>Trading Competitions</h2>
+            <p>Join competitive trading challenges and win prizes</p>
+          </div>
+
+          <div class="competitions-grid" id="competitionsGrid">
+            <!-- Competitions will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div id="leaderboard" class="tab-content">
+          <div class="leaderboard-header">
+            <h2>Trader Leaderboard</h2>
+            <div class="time-filters">
+              <button class="time-btn active" data-period="weekly" aria-label="Show weekly leaderboard">Weekly</button>
+              <button class="time-btn" data-period="monthly" aria-label="Show monthly leaderboard">Monthly</button>
+              <button class="time-btn" data-period="all-time" aria-label="Show all-time leaderboard">All Time</button>
+            </div>
+          </div>
+
+          <div class="leaderboard-container">
+            <div class="leaderboard-tabs">
+              <button class="leader-tab active" data-type="returns" aria-label="Sort by returns">Returns</button>
+              <button class="leader-tab" data-type="signals" aria-label="Sort by signals">Signals</button>
+              <button class="leader-tab" data-type="followers" aria-label="Sort by followers">Followers</button>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboardList">
+              <!-- Leaderboard will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content">
+          <div class="profile-header">
+            <div class="profile-banner">
+              <img src="https://via.placeholder.com/800x200/6366f1/ffffff?text=Banner" alt="Banner"
+                class="banner-image">
+              <button class="edit-banner-btn">
+                <i class="fas fa-camera"></i>
+              </button>
+            </div>
+            <div class="profile-info-section">
+              <img src="https://via.placeholder.com/120x120/6366f1/ffffff?text=U" alt="Avatar"
+                class="profile-avatar-large">
+              <div class="profile-details">
+                <h2 id="profileName">Trader Name</h2>
+                <p id="profileBio">Professional trader specializing in DeFi and NFTs</p>
+                <div class="profile-meta">
+                  <span><i class="fas fa-map-marker-alt"></i> Global</span>
+                  <span><i class="fas fa-calendar"></i> Joined Jan 2024</span>
+                  <span><i class="fas fa-link"></i> aetheron.io</span>
+                </div>
+              </div>
+              <div class="profile-actions">
+                <button class="follow-btn" id="followBtn">
+                  <i class="fas fa-user-plus"></i> Follow
+                </button>
+                <button class="message-btn">
+                  <i class="fas fa-envelope"></i> Message
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="profileTotalReturn">+24.7%</div>
+              <div class="stat-label">Total Return</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="profileWinRate">68%</div>
+              <div class="stat-label">Win Rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="profileSignals">142</div>
+              <div class="stat-label">Signals</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="profileFollowers">1.2K</div>
+              <div class="stat-label">Followers</div>
+            </div>
+          </div>
+
+          <div class="profile-tabs">
+            <button class="profile-tab active" data-section="portfolio">Portfolio</button>
+            <button class="profile-tab" data-section="signals">Signals</button>
+            <button class="profile-tab" data-section="activity">Activity</button>
+          </div>
+
+          <div class="profile-content">
+            <div id="portfolio-section" class="profile-section active">
+              <div class="portfolio-chart">
+                <canvas id="portfolioChart"></canvas>
+              </div>
+              <div class="portfolio-holdings" id="portfolioHoldings">
+                <!-- Holdings will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div id="signals-section" class="profile-section">
+              <div class="signals-list" id="userSignals">
+                <!-- Signals will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div id="activity-section" class="profile-section">
+              <div class="activity-feed" id="userActivity">
+                <!-- Activity will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="right-sidebar">
+        <!-- Market Signals -->
+        <div class="signals-card">
+          <h3><i class="fas fa-bullseye"></i> Hot Signals</h3>
+          <div class="signals-list" id="hotSignals">
+            <!-- Hot signals will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Market Sentiment -->
+        <div class="sentiment-card">
+          <h3><i class="fas fa-chart-pie"></i> Market Sentiment</h3>
+          <canvas id="sentimentChart"></canvas>
+          <div class="sentiment-stats">
+            <div class="sentiment-stat">
+              <span class="bullish">68%</span>
+              <span>Bullish</span>
+            </div>
+            <div class="sentiment-stat">
+              <span class="bearish">32%</span>
+              <span>Bearish</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Trades -->
+        <div class="trades-card">
+          <h3><i class="fas fa-exchange-alt"></i> Recent Trades</h3>
+          <div class="trades-list" id="recentTrades">
+            <!-- Recent trades will be populated by JavaScript -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Post Modal -->
+  <div class="modal" id="postModal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h3>Post Details</h3>
+        <button class="close-modal" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="postModalBody">
+        <!-- Post details will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Signal Modal -->
+  <div class="modal" id="signalModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Trading Signal</h3>
+        <button class="close-modal" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="signal-form" id="signalForm">
+          <div class="form-group">
+            <label for="signalType">Signal Type</label>
+            <select id="signalType" name="signalType" required aria-label="Select signal type">
+              <option value="">Select Signal Type</option>
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+              <option value="hold">Hold</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="asset">Asset</label>
+            <select id="asset" name="asset" required aria-label="Select asset">
+              <option value="">Select Asset</option>
+              <option value="ETH">Ethereum (ETH)</option>
+              <option value="BTC">Bitcoin (BTC)</option>
+              <option value="AETH">Aetheron (AETH)</option>
+              <option value="MATIC">Polygon (MATIC)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="entryPrice">Entry Price</label>
+            <input type="number" id="entryPrice" name="entryPrice" step="0.01" placeholder="0.00" required
+              aria-label="Entry price">
+          </div>
+          <div class="form-group">
+            <label for="takeProfit">Take Profit</label>
+            <input type="number" id="takeProfit" name="takeProfit" step="0.01" placeholder="0.00"
+              aria-label="Take profit price">
+          </div>
+          <div class="form-group">
+            <label for="stopLoss">Stop Loss</label>
+            <input type="number" id="stopLoss" name="stopLoss" step="0.01" placeholder="0.00" required
+              aria-label="Stop loss price">
+          </div>
+          <div class="form-group">
+            <label for="reason">Analysis</label>
+            <textarea id="reason" name="reason" rows="4" placeholder="Explain your analysis..." required
+              aria-label="Trading analysis"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="modal-btn secondary" onclick="closeModal()"
+              aria-label="Cancel signal creation">Cancel</button>
+            <button type="submit" class="modal-btn primary" aria-label="Create trading signal">Create Signal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="social-trading.js"></script>
+</body>
+
+</html>

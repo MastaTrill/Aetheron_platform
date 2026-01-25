@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeFi Yield Aggregator - Aetheron Platform</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="yield-aggregator.js"></script>
+  <link rel="stylesheet" href="yield-aggregator.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="logo">
+        <i class="fas fa-coins"></i>
+        <span>Aetheron Yield</span>
+      </div>
+      <div class="nav-links">
+        <a href="../analytics/" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          Analytics
+        </a>
+        <a href="../" class="nav-link">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <button id="connectWalletBtn" type="button" class="btn btn-outline">
+          <i class="fas fa-wallet"></i>
+          Connect Wallet
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Container -->
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1>
+          <i class="fas fa-seedling"></i>
+          DeFi Yield Aggregator
+        </h1>
+        <p>Discover and optimize your yield farming opportunities across multiple protocols</p>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" type="button" class="btn btn-outline">
+          <i class="fas fa-sync-alt"></i>
+          Refresh
+        </button>
+        <button id="settingsBtn" type="button" class="btn btn-outline">
+          <i class="fas fa-cog"></i>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <section class="stats-grid">
+      <div class="stat-card primary">
+        <div class="icon">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <div class="label">Total TVL</div>
+        <div class="value" id="totalTVL">$0.00B</div>
+        <div class="change positive" id="tvlChange">+0.00%</div>
+      </div>
+
+      <div class="stat-card success">
+        <div class="icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="label">Average APY</div>
+        <div class="value" id="avgAPY">0.00%</div>
+        <div class="change positive" id="apyChange">+0.00%</div>
+      </div>
+
+      <div class="stat-card info">
+        <div class="icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="label">Active Protocols</div>
+        <div class="value" id="activeProtocols">0</div>
+        <div class="change neutral" id="protocolChange">+0</div>
+      </div>
+
+      <div class="stat-card warning">
+        <div class="icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="label">Your Positions</div>
+        <div class="value" id="userPositions">0</div>
+        <div class="change positive" id="positionValue">$0.00</div>
+      </div>
+    </section>
+
+    <!-- Filters and Controls -->
+    <section class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="protocolFilter">Protocol</label>
+          <select id="protocolFilter" class="select-input">
+            <option value="all">All Protocols</option>
+            <option value="aave">Aave</option>
+            <option value="compound">Compound</option>
+            <option value="uniswap">Uniswap</option>
+            <option value="curve">Curve</option>
+            <option value="sushiswap">SushiSwap</option>
+            <option value="pancakeswap">PancakeSwap</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="assetFilter">Asset</label>
+          <select id="assetFilter" class="select-input">
+            <option value="all">All Assets</option>
+            <option value="USDC">USDC</option>
+            <option value="USDT">USDT</option>
+            <option value="DAI">DAI</option>
+            <option value="ETH">ETH</option>
+            <option value="WBTC">WBTC</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="riskFilter">Risk Level</label>
+          <select id="riskFilter" class="select-input">
+            <option value="all">All Risks</option>
+            <option value="low">Low Risk</option>
+            <option value="medium">Medium Risk</option>
+            <option value="high">High Risk</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="minApyFilter">Minimum APY</label>
+          <input type="number" id="minApyFilter" class="select-input" placeholder="0" min="0" step="0.1">
+        </div>
+
+        <div class="filter-group">
+          <label for="sortBy">Sort By</label>
+          <select id="sortBy" class="select-input">
+            <option value="apy">APY (High to Low)</option>
+            <option value="tvl">TVL (High to Low)</option>
+            <option value="risk">Risk (Low to High)</option>
+            <option value="reward">Reward Token</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="searchFilter">Search</label>
+          <input type="text" id="searchFilter" class="select-input" placeholder="Search protocols...">
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Yield Opportunities -->
+      <section class="yield-opportunities">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-seedling"></i>
+              Yield Opportunities
+            </h2>
+            <div class="card-actions">
+              <span id="opportunityCount" class="opportunity-count">0 opportunities</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="opportunitiesList" class="opportunities-list">
+              <!-- Opportunities will be populated by JavaScript -->
+            </div>
+            <div id="emptyState" class="empty-state">
+              <i class="fas fa-search"></i>
+              <h3>No opportunities found</h3>
+              <p>Try adjusting your filters to see more yield opportunities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Protocol Overview -->
+      <section class="protocol-overview">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-building"></i>
+              Protocol Overview
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="protocolChart"></canvas>
+            </div>
+            <div class="protocol-legend" id="protocolLegend"></div>
+          </div>
+        </div>
+
+        <!-- APY Comparison -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-bar"></i>
+              APY Comparison
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="apyChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk Distribution -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-shield-alt"></i>
+              Risk Distribution
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="riskChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- User's Positions -->
+    <section class="user-positions">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-user"></i>
+            Your Positions
+          </h2>
+          <div class="card-actions">
+            <button id="addPositionBtn" type="button" class="btn btn-primary">
+              <i class="fas fa-plus"></i>
+              Add Position
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="positionsList" class="positions-list">
+            <!-- User positions will be populated by JavaScript -->
+          </div>
+          <div id="noPositions" class="empty-state">
+            <i class="fas fa-wallet"></i>
+            <h3>No active positions</h3>
+            <p>Start earning yield by depositing assets into DeFi protocols.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section class="recommendations">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-lightbulb"></i>
+            AI Recommendations
+          </h2>
+        </div>
+        <div class="card-body">
+          <div id="recommendationsList" class="recommendations-list">
+            <!-- Recommendations will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Aetheron Yield Aggregator</h4>
+        <p>Maximize your DeFi yields with intelligent aggregation and risk management.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Supported Protocols</h4>
+        <div class="protocol-links">
+          <a href="#" class="footer-link">Aave</a>
+          <a href="#" class="footer-link">Compound</a>
+          <a href="#" class="footer-link">Uniswap</a>
+          <a href="#" class="footer-link">Curve</a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Resources</h4>
+        <div class="resource-links">
+          <a href="#" class="footer-link">Documentation</a>
+          <a href="#" class="footer-link">Risk Assessment</a>
+          <a href="#" class="footer-link">Yield Calculator</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Aetheron Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Modals -->
+  <div id="positionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Position</h3>
+        <button type="button" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="positionForm">
+          <div class="form-group">
+            <label for="protocolSelect">Protocol</label>
+            <select id="protocolSelect" required>
+              <option value="">Select Protocol</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="assetSelect">Asset</label>
+            <select id="assetSelect" required>
+              <option value="">Select Asset</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="amountInput">Amount</label>
+            <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add Position</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

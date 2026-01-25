@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-01-25T04:28:48.862Z",
+  "version": "2.0.0",
+  "contracts": {
+    "aetheron": "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5",
+    "staking": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638"
+  },
+  "networks": [
+    "mumbai",
+    "polygon"
+  ],
+  "frontend": {
+    "buildSize": "Unknown",
+    "optimized": true
+  },
+  "security": {
+    "slitherIssues": 4,
+    "testsPassing": 37,
+    "auditComplete": true
+  }
+}

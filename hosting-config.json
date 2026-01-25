@@ -1,0 +1,7 @@
+{
+  "platform": "GitHub Pages",
+  "buildCommand": "npm run build",
+  "publishDir": "build",
+  "domain": "mastatrill.github.io/aetheron-platform",
+  "cname": "aetheron-platform.mastatrill.github.io"
+}
