@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 contract AetheronStaking is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     
-    IERC20 public aetheronToken;
+    IERC20 public immutable aetheronToken;
     
     // Staking pool info
     struct Pool {

@@ -28,9 +28,9 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
     uint256 public constant MAX_TAX = 10; // Maximum 10% tax
     
     // Tax distribution
-    uint256 public teamTaxShare = 40; // 40% of tax
-    uint256 public marketingTaxShare = 30; // 30% of tax
-    uint256 public stakingTaxShare = 30; // 30% of tax
+    uint256 public constant teamTaxShare = 40; // 40% of tax
+    uint256 public constant marketingTaxShare = 30; // 30% of tax
+    uint256 public constant stakingTaxShare = 30; // 30% of tax
     
     // Trading control
     bool public tradingEnabled = false;
@@ -40,7 +40,7 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
     // Events
     event TradingEnabled(uint256 timestamp);
     event TaxRatesUpdated(uint256 buyTax, uint256 sellTax);
-    event WalletsUpdated(address team, address marketing, address staking);
+    event WalletsUpdated(address indexed team, address indexed marketing, address indexed staking);
     event TaxCollected(uint256 amount, address indexed from);
     
     constructor(
@@ -168,7 +168,7 @@ contract Aetheron is ERC20, Ownable, ReentrancyGuard {
         if (token == address(0)) {
             payable(owner()).transfer(amount);
         } else {
-            IERC20(token).transfer(owner(), amount);
+            require(IERC20(token).transfer(owner(), amount), "Transfer failed");
         }
     }
     
