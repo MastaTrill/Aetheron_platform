@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Launch</title>
+</head>
+<body>
+    <h1>Marketing Launch Automation</h1>
+    <button id="launchBtn">Launch Marketing Campaign</button>
+    <div id="status"></div>
+
+    <script src="marketing-launch.js"></script>
+    <script>
+        document.getElementById('launchBtn').addEventListener('click', () => {
+            const launcher = new MarketingLauncher();
+            document.getElementById('status').innerText = 'Campaign launched! Check browser tabs for posts.';
+        });
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\willi\.vscode\Aetheron_platform\marketing-launch.html
