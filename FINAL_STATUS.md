@@ -21,14 +21,14 @@
 
 **This CANNOT be automated - requires YOUR wallet and funds:**
 
-1. **Buy Crypto in MetaMask** (Page is open)
+1. **Buy Crypto in Coinbase Wallet** (Open Coinbase Wallet app/website)
    - Buy 5-10 MATIC (~$5-10)
    - Buy $1,000+ USDC
    - Wait 5-15 minutes for arrival
 
 2. **Add Liquidity on QuickSwap**
    - Go to: <https://quickswap.exchange/#/add/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e>
-   - Connect MetaMask
+   - Connect Coinbase Wallet
    - Enter USDC amount
    - Enter AETH amount (e.g., 1,000,000)
    - Approve both tokens
@@ -61,7 +61,7 @@ TOTAL:              ██████████████████░░
 
 ## 🎯 Your Deployment Checklist
 
-- [x] Install MetaMask
+- [x] Install Coinbase Wallet
 - [x] Deploy contracts to Polygon
 - [x] Build dashboard website
 - [x] Fix all code errors
@@ -83,7 +83,7 @@ TOTAL:              ██████████████████░░
 
 - Your private keys (which I don't have access to)
 - Your money (to buy USDC/MATIC)
-- Your MetaMask approval (transaction signing)
+- Your Coinbase Wallet approval (transaction signing)
 
 **These actions can ONLY be done by you, not by AI.**
 
@@ -93,7 +93,7 @@ TOTAL:              ██████████████████░░
 
 **Open Pages Waiting for You:**
 
-1. MetaMask Portfolio (to buy crypto)
+1. Coinbase Wallet (to buy crypto)
 2. QuickSwap (to add liquidity)
 3. DexScreener (to verify after)
 
@@ -137,7 +137,7 @@ TOTAL:              ██████████████████░░
 
 **You need to spend ~15 minutes to:**
 
-1. Buy USDC/MATIC in MetaMask
+1. Buy USDC/MATIC in Coinbase Wallet
 2. Add liquidity on QuickSwap
 
 **Then your token is LIVE and tradeable!**

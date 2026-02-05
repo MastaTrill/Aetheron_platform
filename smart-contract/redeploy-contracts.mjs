@@ -1,8 +1,9 @@
 // redeploy-contracts.js
 // Redeploy Aetheron contracts with proper EOA addresses
 
-const hre = require("hardhat");
-require("dotenv").config();
+import hre from "hardhat";
+import dotenv from "dotenv";
+dotenv.config();
 
 async function main() {
   // Connect to Polygon

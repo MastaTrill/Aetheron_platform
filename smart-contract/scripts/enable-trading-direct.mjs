@@ -1,6 +1,7 @@
-require('dotenv').config();
-const { ethers } = require('ethers');
-const fs = require('fs');
+import dotenv from 'dotenv';
+dotenv.config();
+import { ethers } from 'ethers';
+import fs from 'fs';
 
 async function main() {
   console.log("\n🚀 Enabling Trading for Aetheron Token...\n");
@@ -8,7 +9,7 @@ async function main() {
   // Setup provider and wallet
   const provider = new ethers.JsonRpcProvider(process.env.POLYGON_RPC || 'https://polygon-rpc.com');
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-  
+
   console.log("Using account:", wallet.address);
 
   // Token address from deployment
@@ -40,13 +41,13 @@ async function main() {
   console.log("\n⏳ Enabling trading...");
   const tx = await aetheron.enableTrading();
   console.log("Transaction hash:", tx.hash);
-  
+
   console.log("⏳ Waiting for confirmation...");
   await tx.wait();
-  
+
   // Verify
   const newStatus = await aetheron.tradingEnabled();
-  
+
   console.log("\n" + "=".repeat(50));
   if (newStatus) {
     console.log("🎉 SUCCESS! Trading is now ENABLED!");

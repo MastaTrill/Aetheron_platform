@@ -1,5 +1,7 @@
-const { ethers } = require("hardhat");
-require("dotenv").config();
+import hre from "hardhat";
+const { ethers } = hre;
+import dotenv from "dotenv";
+dotenv.config();
 
 async function main() {
   console.log("\n" + "=".repeat(70));
@@ -51,18 +53,18 @@ async function main() {
       // Try to interact as ERC20 token
       try {
         const tokenContract = new ethers.Contract(address, ERC20_ABI, signer);
-        
+
         const name = await tokenContract.name();
         const symbol = await tokenContract.symbol();
         const decimals = await tokenContract.decimals();
         const totalSupply = await tokenContract.totalSupply();
-        
+
         console.log("\n🪙 ERC-20 Token Information:");
         console.log("  Name:", name);
         console.log("  Symbol:", symbol);
         console.log("  Decimals:", decimals.toString());
         console.log("  Total Supply:", ethers.formatUnits(totalSupply, decimals), symbol);
-        
+
         // Check balance
         const balance = await tokenContract.balanceOf(signer.address);
         console.log("  Your Balance:", ethers.formatUnits(balance, decimals), symbol);
@@ -92,7 +94,7 @@ async function main() {
       const txCount = await ethers.provider.getTransactionCount(address);
       console.log("\n📈 On-chain Stats:");
       console.log("  Transaction Count:", txCount);
-      
+
       // Get balance
       const balance = await ethers.provider.getBalance(address);
       console.log("  POL Balance:", ethers.formatEther(balance), "POL");

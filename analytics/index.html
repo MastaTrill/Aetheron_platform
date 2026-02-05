@@ -16,8 +16,10 @@
   <script
     src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   <script src="analytics.js"></script>
+  <script src="../shared-utils.js"></script>
   <link rel="stylesheet" href="analytics.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../shared-styles.css">
 </head>
 
 <body>
@@ -30,13 +32,19 @@
       </div>
       <div class="nav-links">
         <a href="../index.html" class="nav-link">
-          <i class="fas fa-home"></i> Dashboard
+          <i class="fas fa-home"></i> Home
         </a>
-        <a href="#" class="nav-link active">
-          <i class="fas fa-chart-area"></i> Analytics
+        <a href="../social-trading/index.html" class="nav-link">
+          <i class="fas fa-users"></i> Social Trading
         </a>
-        <a href="http://localhost:3001" target="_blank" class="nav-link">
-          <i class="fas fa-terminal"></i> Syndicate OS
+        <a href="../yield-aggregator/index.html" class="nav-link">
+          <i class="fas fa-coins"></i> Yield
+        </a>
+        <a href="../nft-integration/index.html" class="nav-link">
+          <i class="fas fa-gem"></i> NFT
+        </a>
+        <a href="../dashboard-enhanced.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
         </a>
         <button id="connectBtn" class="btn btn-primary">
           <i class="fas fa-wallet"></i> Connect Wallet

@@ -163,7 +163,7 @@ Join our community and start your DeFi journey today! 💰`,
 • 180 days: 18% APY
 
 **How to Stake:**
-1. Connect MetaMask wallet
+1. Connect your wallet (MetaMask, Coinbase Wallet, etc.)
 2. Visit dashboard
 3. Choose your pool
 4. Stake AETH tokens
@@ -179,10 +179,15 @@ Start earning today at: https://mastatrill.github.io/aetheron-platform`,
   getTutorials() {
     return [
       {
-        title: '🦊 How to Connect MetaMask to Aetheron',
+        title: '🦊 How to Connect Your Wallet to Aetheron',
         content: `**Step-by-step guide to connect your wallet:**
 
-1. **Install MetaMask** (if not already installed)
+**Supported Wallets:** MetaMask, Coinbase Wallet, Trust Wallet, and other Ethereum-compatible wallets
+
+1. **Install a Wallet** (if not already installed)
+   - MetaMask: https://metamask.io/download/
+   - Coinbase Wallet: https://www.coinbase.com/wallet
+
 2. **Add Polygon Network:**
    - Network Name: Polygon Mainnet
    - RPC URL: https://polygon-rpc.com/
@@ -191,7 +196,7 @@ Start earning today at: https://mastatrill.github.io/aetheron-platform`,
 
 3. **Visit Dashboard:** https://mastatrill.github.io/aetheron-platform
 4. **Click "Connect Wallet"**
-5. **Approve connection in MetaMask**
+5. **Approve connection in your wallet**
 
 You're all set! 🎉`,
         tags: ['tutorial', 'wallet', 'beginner']

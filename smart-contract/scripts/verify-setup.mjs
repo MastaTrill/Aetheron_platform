@@ -8,14 +8,16 @@
  * Usage: node scripts/verify-setup.js
  */
 
-require('dotenv').config();
-const { ethers } = require('ethers');
-const {
+import dotenv from 'dotenv';
+dotenv.config();
+import { ethers } from 'ethers';
+import {
   validateEnvironment,
   validateRpcConnection,
   checkBalance,
   colors
-} = require('../utils/validateEnv');
+} from '../utils/validateEnv.mjs';
+import fs from 'fs';
 
 // Test results tracking
 const results = {
@@ -82,7 +84,6 @@ async function verifySetup() {
   console.log(colors.bold + '📋 Step 1: Environment File Check' + colors.reset);
   console.log('─'.repeat(70));
 
-  const fs = require('fs');
   const envPath = '.env';
   const envExists = fs.existsSync(envPath);
 

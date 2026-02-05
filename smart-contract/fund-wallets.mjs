@@ -2,9 +2,11 @@
 // Script to send POL or Aetheron tokens to team and marketing wallets
 // Usage: node fund-wallets.js
 
-const { ethers } = require("ethers");
-require("dotenv").config();
-const { validateOrExit, checkBalance, colors } = require("./utils/validateEnv");
+import { ethers } from "ethers";
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
+import { validateOrExit, checkBalance, colors } from "./utils/validateEnv.mjs";
 
 async function main() {
   console.log("\n" + colors.bold + colors.cyan + "💸 Aetheron Wallet Funding Script" + colors.reset);
@@ -47,7 +49,7 @@ async function main() {
     }
 
     // Load AETH token contract
-    const aetheronAbi = require("./artifacts/contracts/Aetheron.sol/Aetheron.json").abi;
+    const aetheronAbi = JSON.parse(fs.readFileSync("./artifacts/contracts/Aetheron.sol/Aetheron.json", "utf8")).abi;
     const token = new ethers.Contract(AETHERON_ADDRESS, aetheronAbi, signer);
 
     // Check AETH balance

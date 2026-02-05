@@ -1,5 +1,5 @@
-const { ethers } = require("ethers");
-const fs = require('fs');
+import { ethers } from "ethers";
+import fs from 'fs';
 
 async function finalDeploymentCheck() {
   console.log("\n" + "=".repeat(70));

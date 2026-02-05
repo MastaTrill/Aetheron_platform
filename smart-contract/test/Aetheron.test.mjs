@@ -1,6 +1,7 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
-require("@nomicfoundation/hardhat-chai-matchers");
+import { expect } from "chai";
+import hre from "hardhat";
+const { ethers } = hre;
+// import "@nomicfoundation/hardhat-chai-matchers"; // Usually auto-loaded by hardhat-toolbox but if needed explicitly:
 
 describe("Aetheron Token", function () {
   let aetheron;

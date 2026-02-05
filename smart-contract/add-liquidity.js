@@ -2,14 +2,16 @@
 // Script to add liquidity to QuickSwap (Polygon) for Aetheron (AETH) and USDC
 // Usage: node add-liquidity.js
 
-const { ethers } = require("ethers");
-require("dotenv").config();
+import { ethers } from "ethers";
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
 
 const ROUTER_ADDRESS = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"; // QuickSwap Router
 const AETH_ADDRESS = process.env.AETH_TOKEN_ADDRESS || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-const USDC_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDC on Polygon
-const routerAbi = require("./abis/QuickswapRouter.json");
-const erc20Abi = require("./abis/ERC20.json");
+const USDC_ADDRESS = "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5"; // Updated token for liquidity
+const routerAbi = JSON.parse(fs.readFileSync("./abis/QuickswapRouter.json", "utf8"));
+const erc20Abi = JSON.parse(fs.readFileSync("./abis/ERC20.json", "utf8"));
 
 const provider = new ethers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -26,23 +28,23 @@ async function main() {
 
   console.log(`Wallet: ${signer.address}`);
   console.log(`AETH Balance: ${ethers.formatUnits(aethBalance, 18)} AETH`);
-  console.log(`USDC Balance: ${ethers.formatUnits(usdcBalance, 6)} USDC`);
+  console.log(`USDC Balance: ${ethers.formatUnits(usdcBalance, 18)} tokens`);
   console.log(`MATIC Balance: ${ethers.formatEther(maticBalance)} MATIC`);
 
   // Adjust amounts based on what you want to add
   const amountAETH = ethers.parseUnits("1000000", 18); // 1M AETH - adjust as needed
-  const amountUSDC = ethers.parseUnits("1000", 6); // 1000 USDC - adjust as needed
+  const amountUSDC = ethers.parseUnits("1000", 18); // 1000 tokens - adjust as needed (18 decimals)
 
   console.log(`\nAdding liquidity:`);
   console.log(`AETH: ${ethers.formatUnits(amountAETH, 18)} AETH`);
-  console.log(`USDC: ${ethers.formatUnits(amountUSDC, 6)} USDC`);
+  console.log(`USDC: ${ethers.formatUnits(amountUSDC, 18)} tokens`);
 
   // Check if balances are sufficient
   if (aethBalance < amountAETH) {
     throw new Error(`Insufficient AETH balance. Have: ${ethers.formatUnits(aethBalance, 18)}, Need: ${ethers.formatUnits(amountAETH, 18)}`);
   }
   if (usdcBalance < amountUSDC) {
-    throw new Error(`Insufficient USDC balance. Have: ${ethers.formatUnits(usdcBalance, 6)}, Need: ${ethers.formatUnits(amountUSDC, 6)}`);
+    throw new Error(`Insufficient USDC balance. Have: ${ethers.formatUnits(usdcBalance, 18)}, Need: ${ethers.formatUnits(amountUSDC, 18)}`);
   }
 
   console.log("\nApproving AETH token...");

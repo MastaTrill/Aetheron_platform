@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="social-trading.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script
     src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -29,24 +30,24 @@
         <a href="../index.html" class="nav-link">
           <i class="fas fa-home"></i> Home
         </a>
-        <a href="../analytics/index.html" class="nav-link">
-          <i class="fas fa-chart-line"></i> Analytics
-        </a>
         <a href="../yield-aggregator/index.html" class="nav-link">
           <i class="fas fa-coins"></i> Yield
         </a>
         <a href="../nft-integration/index.html" class="nav-link">
           <i class="fas fa-gem"></i> NFT
         </a>
-        <a href="#feed" class="nav-link active">
-          <i class="fas fa-users"></i> Social
+        <a href="../analytics/index.html" class="nav-link">
+          <i class="fas fa-chart-line"></i> Analytics
         </a>
-      </div>
-      <div class="nav-wallet">
-        <button class="wallet-btn" id="connectWallet">
+        <a href="../dashboard-enhanced.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <button type="button" class="wallet-btn" id="connectWallet">
           <i class="fas fa-wallet"></i>
           <span>Connect Wallet</span>
         </button>
+      </div>
+      <div class="nav-wallet">
       </div>
     </div>
   </nav>
@@ -82,19 +83,19 @@
 
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
-      <button class="tab-btn active" data-tab="feed">
+      <button type="button" class="tab-btn active" data-tab="feed">
         <i class="fas fa-stream"></i> Feed
       </button>
-      <button class="tab-btn" data-tab="discover">
+      <button type="button" class="tab-btn" data-tab="discover">
         <i class="fas fa-compass"></i> Discover
       </button>
-      <button class="tab-btn" data-tab="competitions">
+      <button type="button" class="tab-btn" data-tab="competitions">
         <i class="fas fa-trophy"></i> Competitions
       </button>
-      <button class="tab-btn" data-tab="leaderboard">
+      <button type="button" class="tab-btn" data-tab="leaderboard">
         <i class="fas fa-crown"></i> Leaderboard
       </button>
-      <button class="tab-btn" data-tab="profile">
+      <button type="button" class="tab-btn" data-tab="profile">
         <i class="fas fa-user"></i> Profile
       </button>
     </div>
@@ -127,10 +128,10 @@
             </div>
           </div>
           <div class="profile-actions">
-            <button class="action-btn primary" id="sharePortfolio">
+            <button type="button" class="action-btn primary" id="sharePortfolio">
               <i class="fas fa-share"></i> Share Portfolio
             </button>
-            <button class="action-btn secondary" id="createSignal">
+            <button type="button" class="action-btn secondary" id="createSignal">
               <i class="fas fa-plus"></i> Create Signal
             </button>
           </div>
@@ -189,12 +190,12 @@
 
           <!-- Feed Filters -->
           <div class="feed-filters">
-            <button class="filter-btn active" data-filter="all" aria-label="Show all posts">All Posts</button>
-            <button class="filter-btn" data-filter="signals" aria-label="Show trading signals">Signals</button>
-            <button class="filter-btn" data-filter="analysis" aria-label="Show analysis posts">Analysis</button>
-            <button class="filter-btn" data-filter="following"
+            <button type="button" class="filter-btn active" data-filter="all" aria-label="Show all posts">All Posts</button>
+            <button type="button" class="filter-btn" data-filter="signals" aria-label="Show trading signals">Signals</button>
+            <button type="button" class="filter-btn" data-filter="analysis" aria-label="Show analysis posts">Analysis</button>
+            <button type="button" class="filter-btn" data-filter="following"
               aria-label="Show posts from followed traders">Following</button>
-            <select class="sort-select" id="feedSort">
+            <select class="sort-select" id="feedSort" aria-label="Sort feed posts">
               <option value="latest">Latest</option>
               <option value="popular">Popular</option>
               <option value="trending">Trending</option>
@@ -208,7 +209,7 @@
 
           <!-- Load More -->
           <div class="load-more-container">
-            <button class="load-more-btn" id="loadMorePosts">
+            <button type="button" class="load-more-btn" id="loadMorePosts">
               <i class="fas fa-plus"></i> Load More Posts
             </button>
           </div>
@@ -220,7 +221,7 @@
             <h2>Discover Traders</h2>
             <div class="discover-filters">
               <input type="text" id="searchTraders" placeholder="Search traders..." class="search-input">
-              <select id="sortTraders" class="sort-select">
+              <select id="sortTraders" class="sort-select" aria-label="Sort traders by">
                 <option value="followers">Most Followers</option>
                 <option value="returns">Best Returns</option>
                 <option value="signals">Most Signals</option>
@@ -251,17 +252,17 @@
           <div class="leaderboard-header">
             <h2>Trader Leaderboard</h2>
             <div class="time-filters">
-              <button class="time-btn active" data-period="weekly" aria-label="Show weekly leaderboard">Weekly</button>
-              <button class="time-btn" data-period="monthly" aria-label="Show monthly leaderboard">Monthly</button>
-              <button class="time-btn" data-period="all-time" aria-label="Show all-time leaderboard">All Time</button>
+              <button type="button" class="time-btn active" data-period="weekly" aria-label="Show weekly leaderboard">Weekly</button>
+              <button type="button" class="time-btn" data-period="monthly" aria-label="Show monthly leaderboard">Monthly</button>
+              <button type="button" class="time-btn" data-period="all-time" aria-label="Show all-time leaderboard">All Time</button>
             </div>
           </div>
 
           <div class="leaderboard-container">
             <div class="leaderboard-tabs">
-              <button class="leader-tab active" data-type="returns" aria-label="Sort by returns">Returns</button>
-              <button class="leader-tab" data-type="signals" aria-label="Sort by signals">Signals</button>
-              <button class="leader-tab" data-type="followers" aria-label="Sort by followers">Followers</button>
+              <button type="button" class="leader-tab active" data-type="returns" aria-label="Sort by returns">Returns</button>
+              <button type="button" class="leader-tab" data-type="signals" aria-label="Sort by signals">Signals</button>
+              <button type="button" class="leader-tab" data-type="followers" aria-label="Sort by followers">Followers</button>
             </div>
 
             <div class="leaderboard-list" id="leaderboardList">
@@ -276,7 +277,7 @@
             <div class="profile-banner">
               <img src="https://via.placeholder.com/800x200/6366f1/ffffff?text=Banner" alt="Banner"
                 class="banner-image">
-              <button class="edit-banner-btn">
+              <button type="button" class="edit-banner-btn" title="Edit banner">
                 <i class="fas fa-camera"></i>
               </button>
             </div>
@@ -293,10 +294,10 @@
                 </div>
               </div>
               <div class="profile-actions">
-                <button class="follow-btn" id="followBtn">
+                <button type="button" class="follow-btn" id="followBtn">
                   <i class="fas fa-user-plus"></i> Follow
                 </button>
-                <button class="message-btn">
+                <button type="button" class="message-btn">
                   <i class="fas fa-envelope"></i> Message
                 </button>
               </div>
@@ -323,9 +324,9 @@
           </div>
 
           <div class="profile-tabs">
-            <button class="profile-tab active" data-section="portfolio">Portfolio</button>
-            <button class="profile-tab" data-section="signals">Signals</button>
-            <button class="profile-tab" data-section="activity">Activity</button>
+            <button type="button" class="profile-tab active" data-section="portfolio">Portfolio</button>
+            <button type="button" class="profile-tab" data-section="signals">Signals</button>
+            <button type="button" class="profile-tab" data-section="activity">Activity</button>
           </div>
 
           <div class="profile-content">
@@ -395,7 +396,7 @@
     <div class="modal-content large">
       <div class="modal-header">
         <h3>Post Details</h3>
-        <button class="close-modal" onclick="closeModal()">
+        <button type="button" class="close-modal" data-action="closeModal" title="Close modal">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -410,7 +411,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Create Trading Signal</h3>
-        <button class="close-modal" onclick="closeModal()">
+        <button type="button" class="close-modal" data-action="closeModal" title="Close modal">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -456,7 +457,7 @@
               aria-label="Trading analysis"></textarea>
           </div>
           <div class="form-actions">
-            <button type="button" class="modal-btn secondary" onclick="closeModal()"
+            <button type="button" class="modal-btn secondary" data-action="closeModal"
               aria-label="Cancel signal creation">Cancel</button>
             <button type="submit" class="modal-btn primary" aria-label="Create trading signal">Create Signal</button>
           </div>
@@ -477,6 +478,7 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="social-trading.js"></script>
+  <script src="../shared-utils.js"></script>
 </body>
 
 </html>

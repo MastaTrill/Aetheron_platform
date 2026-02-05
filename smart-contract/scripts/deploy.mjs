@@ -1,6 +1,9 @@
-const { ethers } = require("hardhat");
-require("dotenv").config();
-const { validateOrExit, validateBalanceOrExit, colors } = require("../utils/validateEnv");
+import hre from "hardhat";
+const { ethers } = hre;
+import dotenv from "dotenv";
+dotenv.config();
+import { validateOrExit, validateBalanceOrExit, colors } from "../utils/validateEnv.mjs";
+import fs from "fs";
 
 async function main() {
   console.log("\n" + colors.bold + colors.cyan + "🚀 Deploying Aetheron Platform Contracts..." + colors.reset);
@@ -14,7 +17,7 @@ async function main() {
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with account:", colors.cyan + deployer.address + colors.reset);
-  
+
   // Check balance using the new utility
   const balance = await deployer.provider.getBalance(deployer.address);
   const balanceInEther = ethers.formatEther(balance);
@@ -26,38 +29,38 @@ async function main() {
   // Read configuration from environment variables
   const TEAM_WALLET = process.env.TEAM_WALLET;
   const MARKETING_WALLET = process.env.MARKETING_WALLET;
-  
+
   console.log("\n" + colors.bold + "📋 Configuration:" + colors.reset);
   console.log("  Team Wallet:", colors.cyan + TEAM_WALLET + colors.reset);
   console.log("  Marketing Wallet:", colors.cyan + MARKETING_WALLET + colors.reset);
   console.log("");
-  
+
   // Deploy Aetheron Token
   console.log(colors.bold + "📜 Deploying Aetheron Token..." + colors.reset);
-  
+
   try {
     const Aetheron = await ethers.getContractFactory("Aetheron");
-    
+
     // We'll use deployer as staking pool initially, then update after staking contract is deployed
     const aetheron = await Aetheron.deploy(
       TEAM_WALLET,
       MARKETING_WALLET,
       deployer.address // Temporary staking pool address
     );
-    
+
     await aetheron.waitForDeployment();
     const aetheronAddress = await aetheron.getAddress();
     console.log(colors.green + "✅ Aetheron Token deployed to: " + aetheronAddress + colors.reset);
-    
+
     // Deploy Staking Contract
     console.log("\n" + colors.bold + "📜 Deploying Aetheron Staking..." + colors.reset);
     const AetheronStaking = await ethers.getContractFactory("AetheronStaking");
     const staking = await AetheronStaking.deploy(aetheronAddress);
-    
+
     await staking.waitForDeployment();
     const stakingAddress = await staking.getAddress();
     console.log(colors.green + "✅ Aetheron Staking deployed to: " + stakingAddress + colors.reset);
-    
+
     // Update staking pool address in token contract
     console.log("\n" + colors.bold + "🔄 Updating staking pool address in token contract..." + colors.reset);
     const updateTx = await aetheron.updateWallets(
@@ -67,25 +70,19 @@ async function main() {
     );
     await updateTx.wait();
     console.log(colors.green + "✅ Staking pool address updated" + colors.reset);
-    
-    // Transfer staking rewards to staking contract
-    console.log("\n" + colors.bold + "💰 Transferring tokens to staking contract..." + colors.reset);
-    const stakingRewards = ethers.parseEther("150000000"); // 150M tokens for staking rewards
-    const transferTx = await aetheron.transfer(stakingAddress, stakingRewards);
-    await transferTx.wait();
-    
+
     // Deposit rewards into staking contract
     console.log(colors.bold + "💰 Depositing rewards into staking contract..." + colors.reset);
     const depositTx = await staking.depositRewards(stakingRewards);
     await depositTx.wait();
     console.log(colors.green + "✅ Rewards deposited" + colors.reset);
-    
+
     // Exclude staking contract from tax
     console.log("\n" + colors.bold + "🔧 Configuring token contract..." + colors.reset);
     const excludeTx = await aetheron.setExcludedFromTax(stakingAddress, true);
     await excludeTx.wait();
     console.log(colors.green + "✅ Staking contract excluded from tax" + colors.reset);
-    
+
     // Summary
     console.log("\n" + "=".repeat(60));
     console.log(colors.bold + colors.green + "🎉 DEPLOYMENT COMPLETE!" + colors.reset);
@@ -111,9 +108,8 @@ async function main() {
     console.log("  4. Add liquidity to DEX");
     console.log("  5. Update frontend with contract addresses");
     console.log("=".repeat(60) + "\n");
-    
+
     // Save deployment info
-    const fs = require("fs");
     const deploymentInfo = {
       network: hre.network.name,
       timestamp: new Date().toISOString(),
@@ -127,17 +123,17 @@ async function main() {
         deployer: deployer.address
       }
     };
-    
+
     fs.writeFileSync(
       "deployment.json",
       JSON.stringify(deploymentInfo, null, 2)
     );
     console.log("💾 Deployment info saved to deployment.json\n");
-    
+
   } catch (error) {
     console.error("\n" + colors.red + "❌ DEPLOYMENT FAILED!" + colors.reset);
     console.error(colors.red + error.message + colors.reset);
-    
+
     if (error.message.includes("insufficient funds")) {
       console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
       console.log("   Add more POL to your deployer wallet: " + deployer.address);
@@ -148,7 +144,7 @@ async function main() {
       console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
       console.log("   Check your POLYGON_RPC_URL and internet connection");
     }
-    
+
     throw error;
   }
 }

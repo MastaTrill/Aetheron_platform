@@ -17,7 +17,9 @@
     <script src="monitor.js"></script>
     <script src="marketing-launch.js"></script>
     <script src="performance-monitor.js"></script>
+    <script src="shared-utils.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared-styles.css">
     <style>
         * {
             margin: 0;
@@ -26,26 +28,61 @@
         }
 
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
+            --primary: #00D4FF; /* Electric blue */
+            --secondary: #8A2BE2; /* Cosmic purple */
+            --accent: #FF6B35; /* Nebula orange */
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f3f4f6;
+            --dark: #0a0a0a; /* Deep space black */
+            --light: #1a1a2e; /* Dark blue-gray */
+            --text: #ffffff;
+            --card-bg: rgba(26, 26, 46, 0.8);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%),
+                        url('https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=1920&h=1080&fit=crop&crop=center') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
-            color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated starfield background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #eee, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 4s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0% { filter: brightness(0.3); }
+            100% { filter: brightness(0.8); }
         }
 
         .navbar {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(26, 26, 46, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
             padding: 1rem 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -62,7 +99,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -78,7 +115,7 @@
         }
 
         .nav-link {
-            color: var(--dark);
+            color: var(--text);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
@@ -95,17 +132,33 @@
         }
 
         .hero {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             border-radius: 24px;
             padding: 3rem;
             margin-bottom: 2rem;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.1);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.05), rgba(138, 43, 226, 0.05));
+            border-radius: 24px;
+            z-index: -1;
         }
 
         .hero h1 {
             font-size: 3rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -208,10 +261,19 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
         }
 
         .card-header {
@@ -224,7 +286,7 @@
         .card-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .btn {
@@ -407,7 +469,7 @@
 
         @keyframes spin {
             to {
-                transform: rotate(360deg);
+                rotate: 360deg;
             }
         }
 
@@ -631,7 +693,7 @@
             margin-bottom: 1rem;
         }
 
-        .metamask-status {
+        .wallet-status {
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
@@ -718,6 +780,71 @@
         .info-label {
             margin-bottom: 0.25rem;
         }
+        .nav-link-presale {
+            color: var(--primary) !important;
+            font-weight: 800 !important;
+        }
+
+        /* Features Section */
+        .features-section {
+            margin: 3rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: block;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .features-section h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
     </style>
 </head>
 
@@ -730,10 +857,25 @@
                 Aetheron Platform
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-link">Dashboard</a>
+                <a href="dashboard-enhanced.html" class="nav-link">Dashboard</a>
+                <a href="social-trading/index.html" class="nav-link">
+                    <i class="fas fa-users"></i> Social Trading
+                </a>
+                <a href="yield-aggregator/index.html" class="nav-link">
+                    <i class="fas fa-coins"></i> Yield
+                </a>
+                <a href="nft-integration/index.html" class="nav-link">
+                    <i class="fas fa-gem"></i> NFT
+                </a>
+                <a href="analytics/index.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="token-info.html" class="nav-link">
+                    <i class="fas fa-info-circle"></i> Token Info
+                </a>
+                <a href="presale.html" class="nav-link nav-link-presale">🚀 Join Presale</a>
                 <a href="#staking" class="nav-link">Staking</a>
-                <a href="#" class="nav-link">Analytics</a>
-                <button id="connectBtn" class="btn btn-primary">
+                <button id="connectBtn" class="btn btn-primary" type="button">
                     <i class="fas fa-wallet"></i> Connect Wallet
                 </button>
             </div>
@@ -747,6 +889,62 @@
             <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
             <div id="networkAlert" class="alert alert-error hidden">
                 ⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
+            </div>
+        </div>
+
+        <!-- Platform Features -->
+        <div class="features-section">
+            <h2>
+                Complete DeFi Ecosystem
+            </h2>
+            <div class="features-grid">
+                <a href="social-trading/index.html" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Social Trading</h3>
+                    <p>Connect with traders, share signals, and compete in trading competitions</p>
+                </a>
+
+                <a href="yield-aggregator/index.html" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3>Yield Aggregator</h3>
+                    <p>Maximize returns across multiple DeFi protocols with intelligent recommendations</p>
+                </a>
+
+                <a href="nft-integration/index.html" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>NFT Marketplace</h3>
+                    <p>Trade, collect, and showcase NFTs in our integrated marketplace</p>
+                </a>
+
+                <a href="analytics/index.html" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track performance, analyze trends, and make data-driven decisions</p>
+                </a>
+
+                <a href="dashboard-enhanced.html" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>Enhanced Dashboard</h3>
+                    <p>Comprehensive portfolio management with advanced trading tools</p>
+                </a>
+
+                <a href="#staking" class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Staking & Rewards</h3>
+                    <p>Earn passive income by staking AETH tokens with competitive APYs</p>
+                </a>
             </div>
         </div>
 
@@ -794,12 +992,13 @@
                     <div id="walletNotConnected" class="wallet-section">
                         <i class="fas fa-wallet wallet-icon"></i>
                         <h3>Connect Your Wallet</h3>
-                        <p class="text-gray paragraph-spacing">Connect your MetaMask browser extension to start using
+                        <p class="text-gray paragraph-spacing">Connect your Ethereum wallet (MetaMask, Coinbase Wallet,
+                            etc.) to start using
                             Aetheron Platform</p>
-                        <div id="metamaskStatus" class="metamask-status">
-                            <i class="fas fa-spinner fa-spin"></i> Checking for MetaMask...
+                        <div id="walletStatus" class="wallet-status">
+                            <i class="fas fa-spinner fa-spin"></i> Checking for wallet...
                         </div>
-                        <button class="btn btn-outline mt-05" onclick="recheckMetaMask()">
+                        <button class="btn btn-outline mt-05" onclick="recheckWallet()" type="button">
                             <i class="fas fa-sync-alt"></i> Refresh Detection
                         </button>
                     </div>
@@ -810,7 +1009,7 @@
                                 <div class="text-sm text-gray">Connected Wallet</div>
                                 <div id="walletAddress" class="fw-600 font-mono"></div>
                             </div>
-                            <button class="btn btn-outline" onclick="disconnectWallet()">
+                            <button class="btn btn-outline" onclick="disconnectWallet()" type="button">
                                 <i class="fas fa-sign-out-alt"></i> Disconnect
                             </button>
                         </div>
@@ -823,11 +1022,11 @@
 
                         <div class="d-grid grid-2 mt-1">
                             <button class="btn btn-primary"
-                                onclick="window.open('https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
+                                onclick="window.open('https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')" type="button">
                                 <i class="fas fa-shopping-cart"></i> Buy AETH
                             </button>
-                            <button class="btn btn-success" onclick="addTokenToMetaMask()">
-                                <i class="fas fa-plus"></i> Add to MetaMask
+                            <button class="btn btn-success" onclick="addTokenToWallet()" type="button">
+                                <i class="fas fa-plus"></i> Add to Wallet
                             </button>
                         </div>
                     </div>
@@ -859,7 +1058,7 @@
                             </div>
                             <div class="input-group">
                                 <input type="number" id="stakeAmount0" placeholder="Amount to stake" min="100">
-                                <button class="btn btn-primary" onclick="stakeTokens(0)" id="stakeBtn0">
+                                <button class="btn btn-primary" onclick="stakeTokens(0)" id="stakeBtn0" type="button">
                                     <i class="fas fa-lock"></i> Stake
                                 </button>
                             </div>
@@ -880,7 +1079,7 @@
                             </div>
                             <div class="input-group">
                                 <input type="number" id="stakeAmount1" placeholder="Amount to stake" min="500">
-                                <button class="btn btn-primary" onclick="stakeTokens(1)" id="stakeBtn1">
+                                <button class="btn btn-primary" onclick="stakeTokens(1)" id="stakeBtn1" type="button">
                                     <i class="fas fa-lock"></i> Stake
                                 </button>
                             </div>
@@ -901,7 +1100,7 @@
                             </div>
                             <div class="input-group">
                                 <input type="number" id="stakeAmount2" placeholder="Amount to stake" min="1000">
-                                <button class="btn btn-primary" onclick="stakeTokens(2)" id="stakeBtn2">
+                                <button class="btn btn-primary" onclick="stakeTokens(2)" id="stakeBtn2" type="button">
                                     <i class="fas fa-lock"></i> Stake
                                 </button>
                             </div>
@@ -1013,7 +1212,7 @@
                             </select>
                         </div>
 
-                        <button class="btn btn-primary w-full" onclick="calculateRewards()">
+                        <button class="btn btn-primary w-full" onclick="calculateRewards()" type="button">
                             <i class="fas fa-calculator"></i> Calculate Rewards
                         </button>
 
@@ -1035,7 +1234,7 @@
         <div class="card mb-2">
             <div class="card-header">
                 <h2 class="card-title">Recent Transactions</h2>
-                <button class="btn btn-outline" onclick="refreshTransactions()">
+                <button class="btn btn-outline" onclick="refreshTransactions()" type="button">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
@@ -1077,7 +1276,7 @@
                         <div class="control-row">
                             <input type="number" id="buyTax" placeholder="Buy Tax %" min="0" max="10">
                             <input type="number" id="sellTax" placeholder="Sell Tax %" min="0" max="10">
-                            <button class="btn btn-warning" onclick="updateTaxes()">
+                            <button class="btn btn-warning" onclick="updateTaxes()" type="button">
                                 <i class="fas fa-percent"></i> Update
                             </button>
                         </div>
@@ -1086,10 +1285,10 @@
                     <div>
                         <label class="calc-label">Pause/Unpause Trading</label>
                         <div class="control-row">
-                            <button class="btn btn-danger flex-1" onclick="pauseTrading()">
+                            <button class="btn btn-danger flex-1" onclick="pauseTrading()" type="button">
                                 <i class="fas fa-pause"></i> Pause Trading
                             </button>
-                            <button class="btn btn-success flex-1" onclick="unpauseTrading()">
+                            <button class="btn btn-success flex-1" onclick="unpauseTrading()" type="button">
                                 <i class="fas fa-play"></i> Resume Trading
                             </button>
                         </div>
@@ -1100,7 +1299,7 @@
                         <div class="control-row">
                             <input type="text" id="withdrawAddress" placeholder="Recipient Address">
                             <input type="number" id="withdrawAmount" placeholder="Amount">
-                            <button class="btn btn-danger" onclick="withdrawTreasury()">
+                            <button class="btn btn-danger" onclick="withdrawTreasury()" type="button">
                                 <i class="fas fa-wallet"></i> Withdraw
                             </button>
                         </div>
@@ -1109,10 +1308,10 @@
                     <div>
                         <label class="calc-label">Emergency Functions</label>
                         <div class="control-row">
-                            <button class="btn btn-danger flex-1" onclick="emergencyWithdraw()">
+                            <button class="btn btn-danger flex-1" onclick="emergencyWithdraw()" type="button">
                                 <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
                             </button>
-                            <button class="btn btn-warning flex-1" onclick="rescueTokens()">
+                            <button class="btn btn-warning flex-1" onclick="rescueTokens()" type="button">
                                 <i class="fas fa-life-ring"></i> Rescue Tokens
                             </button>
                         </div>

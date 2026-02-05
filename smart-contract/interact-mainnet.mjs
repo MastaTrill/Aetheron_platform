@@ -2,13 +2,14 @@
 // Script to test mint, transfer, stake, and claim on deployed Polygon contracts
 // Usage: node interact-mainnet.js
 
-const { ethers } = require("ethers");
-const fs = require("fs");
-require("dotenv").config();
+import { ethers } from "ethers";
+import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Load ABIs
-const aetheronAbi = require("./artifacts/contracts/Aetheron.sol/Aetheron.json").abi;
-const stakingAbi = require("./artifacts/contracts/AetheronStaking.sol/AetheronStaking.json").abi;
+const aetheronAbi = JSON.parse(fs.readFileSync("./artifacts/contracts/Aetheron.sol/Aetheron.json", "utf8")).abi;
+const stakingAbi = JSON.parse(fs.readFileSync("./artifacts/contracts/AetheronStaking.sol/AetheronStaking.json", "utf8")).abi;
 
 // Addresses from deployment-info.json
 const AETHERON_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";

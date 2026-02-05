@@ -39,8 +39,8 @@ export default {
   },
   etherscan: {
     apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || ""
+      polygon: "YOUR_POLYGONSCAN_API_KEY",
+      polygonMumbai: "YOUR_POLYGONSCAN_API_KEY"
     }
   }
 };

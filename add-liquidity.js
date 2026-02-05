@@ -43,11 +43,11 @@ document.addEventListener('DOMContentLoaded', function () {
 async function connectWallet() {
     try {
         if (typeof window.ethereum === 'undefined') {
-            alert('MetaMask not installed! Please install MetaMask first.');
+            alert('No Ethereum wallet detected! Please install MetaMask or Coinbase Wallet first.');
             window.open('https://metamask.io/download/', '_blank');
             return;
         }
-        updateStatus('Connecting to MetaMask...');
+        updateStatus('Connecting to wallet...');
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         account = accounts[0];
         provider = new ethers.providers.Web3Provider(window.ethereum);

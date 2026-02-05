@@ -4,8 +4,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StatusBar, Text} from 'react-native';
 import {Web3Provider} from './src/context/Web3Context';
-import {HomeScreen, WalletScreen, StakingScreen, SwapScreen} from './src/screens';
-import {ActivityScreen} from './src/screens/ActivityScreen';
+import {
+  HomeScreen,
+  SocialTradingScreen,
+  YieldAggregatorScreen,
+  NFTIntegrationScreen,
+  AnalyticsScreen,
+} from './src/screens';
 import {initializeNotifications} from './src/notifications/onesignal';
 import {theme} from './src/config/theme';
 
@@ -36,47 +41,57 @@ function App(): React.JSX.Element {
             tabBarInactiveTintColor: theme.colors.textSecondary,
           }}>
           <Tab.Screen
-            name="Home"
+            name="Dashboard"
             component={HomeScreen}
             options={{
               tabBarIcon: ({color}) => (
-                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Home Tab">
-                  🏠
+                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Dashboard Tab">
+                  📊
                 </Text>
               ),
-              title: 'Aetheron',
+              title: 'Dashboard',
             }}
           />
           <Tab.Screen
-            name="Wallet"
-            component={WalletScreen}
+            name="Social"
+            component={SocialTradingScreen}
             options={{
               tabBarIcon: ({color}) => (
-                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Wallet Tab">
-                  💼
-                </Text>
-              ),
-            }}
-          />
-          <Tab.Screen name="Activity" component={ActivityScreen} />
-          <Tab.Screen
-            name="Staking"
-            component={StakingScreen}
-            options={{
-              tabBarIcon: ({color}) => (
-                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Staking Tab">
-                  🎯
+                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Social Tab">
+                  👥
                 </Text>
               ),
             }}
           />
           <Tab.Screen
-            name="Swap"
-            component={SwapScreen}
+            name="Yield"
+            component={YieldAggregatorScreen}
             options={{
               tabBarIcon: ({color}) => (
-                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Swap Tab">
-                  🔄
+                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Yield Tab">
+                  📈
+                </Text>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="NFT"
+            component={NFTIntegrationScreen}
+            options={{
+              tabBarIcon: ({color}) => (
+                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="NFT Tab">
+                  🎨
+                </Text>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Analytics"
+            component={AnalyticsScreen}
+            options={{
+              tabBarIcon: ({color}) => (
+                <Text style={{fontSize: 24, color}} accessible accessibilityLabel="Analytics Tab">
+                  📊
                 </Text>
               ),
             }}

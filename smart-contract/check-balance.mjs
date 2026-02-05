@@ -1,10 +1,12 @@
 // check-balance.js
 // Quick script to check MATIC and Aetheron token balance
-const { ethers } = require("ethers");
-require("dotenv").config();
+import { ethers } from "ethers";
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
 
 const AETHERON_ADDRESS = process.env.AETH_TOKEN_ADDRESS || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-const aetheronAbi = require("./artifacts/contracts/Aetheron.sol/Aetheron.json").abi;
+const aetheronAbi = JSON.parse(fs.readFileSync("./artifacts/contracts/Aetheron.sol/Aetheron.json", "utf8")).abi;
 
 if (!process.env.POLYGON_RPC_URL || !process.env.PRIVATE_KEY) {
   throw new Error("Missing POLYGON_RPC_URL or PRIVATE_KEY in .env file");

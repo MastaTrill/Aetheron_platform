@@ -29,6 +29,48 @@ class SocialTrading {
     this.setupCharts();
     this.startRealTimeUpdates();
     this.showTab('feed');
+    this.checkForSharedSignal();
+  }
+
+  checkForSharedSignal() {
+    // Check if there's a shared signal from another feature
+    const sharedSignal = this.getSharedData('sharedSignal');
+    if (sharedSignal) {
+      this.clearSharedData('sharedSignal');
+      this.showSharedSignalModal(sharedSignal);
+    }
+  }
+
+  showSharedSignalModal(signal) {
+    // Pre-fill the signal form with shared data
+    setTimeout(() => {
+      const modal = document.getElementById('signalModal');
+      if (modal) {
+        // Show the signal modal
+        modal.classList.add('active');
+
+        // Pre-fill form fields
+        const typeSelect = document.getElementById('signalType');
+        const assetSelect = document.getElementById('asset');
+        const reasonTextarea = document.getElementById('reason');
+
+        if (typeSelect) typeSelect.value = signal.type || 'buy';
+        if (assetSelect) {
+          // Try to match the asset
+          const options = Array.from(assetSelect.options);
+          const matchingOption = options.find(option =>
+            option.text.toLowerCase().includes(signal.asset.toLowerCase())
+          );
+          if (matchingOption) {
+            assetSelect.value = matchingOption.value;
+          }
+        }
+        if (reasonTextarea) reasonTextarea.value = signal.reason || '';
+
+        // Show success message
+        this.showToast(`Signal shared from ${signal.source || 'another feature'}!`, 'success');
+      }
+    }, 1000); // Delay to ensure DOM is ready
   }
 
   bindEvents() {
@@ -1032,6 +1074,19 @@ class SocialTrading {
         loadMoreBtn.disabled = false;
       }
     }, 2000);
+  }
+
+  // Cross-feature data sharing utilities
+  getSharedData(key) {
+    return JSON.parse(sessionStorage.getItem(key) || 'null');
+  }
+
+  setSharedData(key, data) {
+    sessionStorage.setItem(key, JSON.stringify(data));
+  }
+
+  clearSharedData(key) {
+    sessionStorage.removeItem(key);
   }
 
   // Utility functions

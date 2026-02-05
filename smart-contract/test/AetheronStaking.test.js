@@ -10,7 +10,7 @@ describe("AetheronStaking", function () {
   const INITIAL_SUPPLY = ethers.parseEther("1000000");
   const REWARD_AMOUNT = ethers.parseEther("100000");
 
-  beforeEach(async function () {
+  beforeEach(async () => {
     [owner, user1, user2] = await ethers.getSigners();
 
     // Deploy token
@@ -144,11 +144,13 @@ describe("AetheronStaking", function () {
       expect(balanceAfter).to.be.gt(balanceBefore);
     });
 
-    // it("Should not allow claiming when no rewards", async function () {
-    //   await expect(
-    //     staking.connect(user1).claimRewards(0)
-    //   ).to.be.revertedWith("No rewards available");
-    // });
+    it("Should not allow claiming when no rewards", async function () {
+      const reward = await staking.calculateReward(user1.address, 0);
+      console.log("Calculated reward before claim:", reward.toString());
+      await expect(
+        staking.connect(user1).claimRewards(0)
+      ).to.be.revertedWith("No rewards available");
+    });
 
     it("Should update lastClaimTime after claiming", async function () {
       await time.increase(30 * 24 * 60 * 60);
@@ -167,6 +169,42 @@ describe("AetheronStaking", function () {
     beforeEach(async function () {
       await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
       await staking.connect(user1).stake(0, stakeAmount); // Pool 0: 30 days
+    });
+
+    describe("Emergency Unstaking", function () {
+      const stakeAmount = ethers.parseEther("1000");
+
+      beforeEach(async function () {
+        await aetheron.connect(user1).approve(await staking.getAddress(), stakeAmount);
+        await staking.connect(user1).stake(0, stakeAmount);
+      });
+
+      it("Should allow emergency unstake before lock period", async function () {
+        const balanceBefore = await aetheron.balanceOf(user1.address);
+        await expect(
+          staking.connect(user1).emergencyUnstake(0)
+        ).to.emit(staking, "EmergencyUnstaked");
+        const balanceAfter = await aetheron.balanceOf(user1.address);
+        expect(balanceAfter - balanceBefore).to.equal(stakeAmount);
+      });
+
+      it("Should remove stake from user stakes after emergency unstake", async function () {
+        const before = await staking.getUserStakesCount(user1.address);
+        console.log("Stake count before emergencyUnstake:", before.toString());
+        await staking.connect(user1).emergencyUnstake(0);
+        const after = await staking.getUserStakesCount(user1.address);
+        console.log("Stake count after emergencyUnstake:", after.toString());
+        expect(after).to.equal(1);
+      });
+
+      it("Should not pay rewards on emergency unstake", async function () {
+        await time.increase(30 * 24 * 60 * 60);
+        const balanceBefore = await aetheron.balanceOf(user1.address);
+        await staking.connect(user1).emergencyUnstake(0);
+        const balanceAfter = await aetheron.balanceOf(user1.address);
+        // Should only receive principal, not rewards
+        expect(balanceAfter - balanceBefore).to.equal(stakeAmount);
+      });
     });
 
     it("Should not allow unstaking before lock period", async function () {

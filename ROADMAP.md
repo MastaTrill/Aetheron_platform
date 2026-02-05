@@ -1,6 +1,7 @@
 # 🚀 Aetheron Platform - Development Roadmap
 
 ## ✅ Completed
+
 - ✅ Repository loaded and file naming issues fixed
 - ✅ Smart contracts created (Aetheron Token & Staking)
 - ✅ Test suite implemented
@@ -52,6 +53,7 @@ npm run deploy:local
 - [ ] Create transaction history view
 
 **Files to create:**
+
 - `src/config/contracts.js` - Contract addresses & ABIs
 - `src/hooks/useWeb3.js` - Web3 connection hook
 - `src/hooks/useAetheron.js` - Token interaction hook
@@ -60,12 +62,14 @@ npm run deploy:local
 - `src/components/StakingDashboard.jsx` - Staking UI
 
 #### 2.2 Mobile App (React Native)
+
 - [ ] Set up React Native project structure
 - [ ] Integrate WalletConnect for mobile
 - [ ] Build mobile staking interface
 - [ ] Add push notifications for rewards
 
 ### Phase 3: Testing & Security
+
 **Priority: HIGH**
 
 - [ ] Complete smart contract audit
@@ -75,6 +79,7 @@ npm run deploy:local
 - [ ] Bug bounty program
 
 ### Phase 4: Testnet Deployment
+
 **Priority: MEDIUM**
 
 ```bash
@@ -92,6 +97,7 @@ npm run verify:mumbai -- <CONTRACT_ADDRESS> <ARGS>
 - [ ] Fix any issues found
 
 ### Phase 5: Mainnet Preparation
+
 **Priority: MEDIUM**
 
 - [ ] Final security audit
@@ -101,6 +107,7 @@ npm run verify:mumbai -- <CONTRACT_ADDRESS> <ARGS>
 - [ ] Set up monitoring & alerts
 
 ### Phase 6: Mainnet Launch
+
 **Priority: LOW (Do after all testing)**
 
 ```bash
@@ -120,6 +127,7 @@ npm run verify:polygon -- <CONTRACT_ADDRESS> <ARGS>
 - [ ] Announce launch
 
 ### Phase 7: Marketing & Growth
+
 - [ ] CoinGecko listing
 - [ ] CoinMarketCap listing
 - [ ] Social media campaign
@@ -191,11 +199,13 @@ npm start                     # Start production server
 - ✅ Zero critical security issues
 
 **Frontend:**
+
 - ⏳ Wallet connection success rate >99%
 - ⏳ Transaction success rate >95%
 - ⏳ Page load time <2 seconds
 
 **Platform:**
+
 - ⏳ Total Value Locked (TVL)
 - ⏳ Active stakers
 - ⏳ Daily transactions

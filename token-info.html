@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETH Token Info - Aetheron Platform</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%),
+                        url('https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=1920&h=1080&fit=crop&crop=center') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 1rem 2rem;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .token-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .token-card h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2em;
+        }
+
+        .info-item p {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .tax-breakdown {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .tax-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tax-item:last-child {
+            border-bottom: none;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .security-item {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .security-item.danger {
+            background: var(--danger);
+        }
+
+        .contract-info {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .contract-address {
+            font-family: monospace;
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            word-break: break-all;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .margin-top-1rem {
+            margin-top: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <i class="fas fa-cube"></i> Aetheron Platform
+            </div>
+            <div>
+                <a href="index.html" class="btn btn-outline">Dashboard</a>
+                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" class="btn" target="_blank" rel="noopener">
+                    <i class="fas fa-shopping-cart"></i> Buy AETH
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌌 AETH Token Information</h1>
+            <p>Complete details about the Aetheron token ecosystem</p>
+        </div>
+
+        <div class="token-card">
+            <h2>📊 Token Specifications</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Token Symbol</h3>
+                    <p>AETH</p>
+                </div>
+                <div class="info-item">
+                    <h3>Token Name</h3>
+                    <p>Aetheron</p>
+                </div>
+                <div class="info-item">
+                    <h3>Total Supply</h3>
+                    <p>1,000,000,000 AETH</p>
+                </div>
+                <div class="info-item">
+                    <h3>Network</h3>
+                    <p>Polygon Mainnet</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-card">
+            <h2>💰 Tax Structure</h2>
+            <div class="info-item">
+                <h3>Buy Tax</h3>
+                <p><span class="highlight">5%</span></p>
+                <p>Applied on all purchases to support the ecosystem</p>
+            </div>
+
+            <div class="tax-breakdown">
+                <h3>Tax Distribution</h3>
+                <div class="tax-item">
+                    <span>Liquidity Pool</span>
+                    <span>3%</span>
+                </div>
+                <div class="tax-item">
+                    <span>Marketing & Development</span>
+                    <span>2%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-card">
+            <h2>🛡️ Security Features</h2>
+            <div class="info-item">
+                <h3>Blacklist System</h3>
+                <p><span class="highlight">Enabled</span></p>
+                <p>Malicious addresses can be blacklisted for community protection</p>
+            </div>
+
+            <div class="security-features">
+                <div class="security-item">
+                    <h4>Max Transaction</h4>
+                    <p>1% of total supply</p>
+                </div>
+                <div class="security-item">
+                    <h4>Max Wallet</h4>
+                    <p>2% of total supply</p>
+                </div>
+                <div class="security-item danger">
+                    <h4>Anti-Whale</h4>
+                    <p>Protection Active</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-card">
+            <h2>🔗 Contract Information</h2>
+            <div class="contract-info">
+                <h3>AETH Token Contract</h3>
+                <div class="contract-address">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</div>
+                <div class="margin-top-1rem">
+                    <a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" class="btn btn-outline" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i> View on PolygonScan
+                    </a>
+                    <a href="https://dexscreener.com/polygon/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" class="btn btn-outline" target="_blank" rel="noopener">
+                        <i class="fas fa-chart-line"></i> View on DexScreener
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-card">
+            <h2>🎯 Staking Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Staking Contract</h3>
+                    <p>0x896D9d37A67B0bBf81dde0005975DA7850FFa638</p>
+                    <a href="https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638" class="btn btn-outline" target="_blank" rel="noopener">View Contract</a>
+                </div>
+                <div class="info-item">
+                    <h3>Staking Pools</h3>
+                    <p>3 Pools Available</p>
+                    <p>30/90/180 Days</p>
+                </div>
+                <div class="info-item">
+                    <h3>APY Range</h3>
+                    <p>Up to 25%</p>
+                    <p>Variable rewards</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-card">
+            <h2>🚀 Quick Actions</h2>
+            <div class="text-center">
+                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" class="btn" target="_blank" rel="noopener">
+                    <i class="fas fa-shopping-cart"></i> Buy AETH on QuickSwap
+                </a>
+                <a href="dashboard.html" class="btn btn-outline">
+                    <i class="fas fa-tachometer-alt"></i> Open Dashboard
+                </a>
+                <a href="https://quickswap.exchange/#/add/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" class="btn btn-outline" target="_blank" rel="noopener">
+                    <i class="fas fa-plus"></i> Add Liquidity
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

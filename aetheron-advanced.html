@@ -248,9 +248,14 @@
             <div class="logo">
                 <i class="fas fa-cube"></i> Aetheron Advanced
             </div>
-            <button class="btn btn-primary" id="connectBtn" onclick="connectWallet()">
-                <i class="fas fa-wallet"></i> Connect Wallet
-            </button>
+            <div class="navbar-buttons">
+                <button class="btn btn-primary" onclick="window.open('https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
+                    <i class="fas fa-shopping-cart"></i> Buy AETH
+                </button>
+                <button class="btn btn-primary" id="connectBtn" onclick="connectWallet()">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -361,7 +366,7 @@
 
         async function connectWallet() {
             if (typeof window.ethereum === 'undefined') {
-                alert('MetaMask is not installed! Please install MetaMask to use this application.');
+                alert('No Ethereum wallet detected! Please install MetaMask or Coinbase Wallet to use this application.');
                 window.open('https://metamask.io/download/', '_blank');
                 return;
             }

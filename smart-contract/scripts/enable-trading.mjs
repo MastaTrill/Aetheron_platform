@@ -1,6 +1,8 @@
-const { ethers } = require("hardhat");
-require("dotenv").config();
-const { validateOrExit, colors } = require("../utils/validateEnv");
+import hre from "hardhat";
+const { ethers } = hre;
+import dotenv from "dotenv";
+dotenv.config();
+import { validateOrExit, colors } from "../utils/validateEnv.mjs";
 
 async function main() {
   console.log("\n" + colors.bold + colors.cyan + "🚀 Enabling Trading for Aetheron Token..." + colors.reset);
@@ -42,18 +44,18 @@ async function main() {
     console.log("\n" + colors.bold + "⏳ Enabling trading..." + colors.reset);
     const tx = await aetheron.enableTrading();
     console.log("Transaction hash:", colors.cyan + tx.hash + colors.reset);
-    
+
     console.log("⏳ Waiting for confirmation...");
     await tx.wait();
-    
+
     // Verify
     const newStatus = await aetheron.tradingEnabled();
-    
+
     console.log("\n" + "=".repeat(50));
     if (newStatus) {
       console.log(colors.bold + colors.green + "🎉 SUCCESS! Trading is now ENABLED!" + colors.reset);
       console.log("=".repeat(50) + "\n");
-      
+
       console.log(colors.cyan + "📖 Next steps:" + colors.reset);
       console.log("   1. Add liquidity to DEX (QuickSwap/Uniswap)");
       console.log("   2. Users can now buy and sell AETH tokens");
@@ -62,7 +64,7 @@ async function main() {
     } else {
       console.log(colors.bold + colors.red + "❌ FAILED! Trading is still disabled." + colors.reset);
       console.log("=".repeat(50) + "\n");
-      
+
       console.log(colors.yellow + "💡 Possible reasons:" + colors.reset);
       console.log("   1. You are not the contract owner");
       console.log("   2. Trading was already enabled (check contract)");
@@ -70,7 +72,7 @@ async function main() {
     }
   } catch (error) {
     console.error("\n" + colors.red + "❌ ERROR: " + error.message + colors.reset);
-    
+
     if (error.message.includes("Ownable: caller is not the owner")) {
       console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
       console.log("   Only the contract owner can enable trading.");
@@ -86,7 +88,7 @@ async function main() {
       console.log("\n" + colors.yellow + "💡 Solution:" + colors.reset);
       console.log("   Add more POL to your wallet for gas fees.");
     }
-    
+
     throw error;
   }
 }

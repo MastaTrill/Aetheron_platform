@@ -27,6 +27,69 @@ class YieldAggregator {
     this.startRealTimeUpdates();
   }
 
+  setupEventListeners() {
+    // Share to Social Trading button
+    const shareBtn = document.getElementById('shareToSocialBtn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => this.shareToSocialTrading());
+    }
+
+    // Other event listeners...
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => this.refreshData());
+    }
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => this.openSettings());
+    }
+
+    // Protocol filter
+    const protocolFilter = document.getElementById('protocolFilter');
+    if (protocolFilter) {
+      protocolFilter.addEventListener('change', (e) => {
+        this.filters.protocol = e.target.value;
+        this.applyFilters();
+      });
+    }
+
+    // Risk filter
+    const riskFilter = document.getElementById('riskFilter');
+    if (riskFilter) {
+      riskFilter.addEventListener('change', (e) => {
+        this.filters.risk = e.target.value;
+        this.applyFilters();
+      });
+    }
+
+    // Search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.filters.search = e.target.value.toLowerCase();
+        this.applyFilters();
+      });
+    }
+
+    // Sort select
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        this.sortBy = e.target.value;
+        this.applySorting();
+      });
+    }
+
+    // Position buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('add-position-btn')) {
+        const opportunityId = e.target.dataset.opportunityId;
+        this.addPosition(opportunityId);
+      }
+    });
+  }
+
   showLoading() {
     const overlay = document.createElement('div');
     overlay.className = 'loading-overlay';
@@ -693,6 +756,40 @@ class YieldAggregator {
         alert.remove();
       }
     }, 5000);
+  }
+
+  shareToSocialTrading() {
+    // Create a trading signal from the best yield opportunity
+    const bestOpportunity = this.yieldOpportunities
+      .filter(opp => opp.apy > 20) // High yield opportunities
+      .sort((a, b) => b.apy - a.apy)[0];
+
+    if (!bestOpportunity) {
+      this.showAlert('No high-yield opportunities found to share', 'warning');
+      return;
+    }
+
+    const signal = {
+      type: 'buy',
+      asset: bestOpportunity.asset,
+      entry: 'Market Price',
+      takeProfit: `+${(bestOpportunity.apy / 12).toFixed(1)}% monthly`,
+      stopLoss: 'Market conditions',
+      reason: `High-yield opportunity on ${bestOpportunity.protocol}: ${bestOpportunity.apy.toFixed(2)}% APY with ${bestOpportunity.tvl.toLocaleString()} TVL. ${bestOpportunity.description}`,
+      timestamp: new Date(),
+      source: 'Yield Aggregator'
+    };
+
+    // Use the shared platform utility to share to social trading
+    if (window.aetheronPlatform) {
+      window.aetheronPlatform.shareToSocialTrading(signal);
+    } else {
+      // Fallback if shared utils not loaded
+      sessionStorage.setItem('sharedSignal', JSON.stringify(signal));
+      window.location.href = '../social-trading/index.html';
+    }
+
+    this.showAlert('Yield opportunity shared to Social Trading!', 'success');
   }
 }
 

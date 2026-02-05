@@ -37,29 +37,29 @@ const maxAttempts = 5;
 window.addEventListener('load', async () => {
     await updateStats();
     setInterval(updateStats, 30000); // Update every 30 seconds
-    detectMetaMaskWithRetry();
+    detectWalletWithRetry();
     window.addEventListener('ethereum#initialized', handleEthereumInit, { once: true });
     setTimeout(() => {
         if (!window.ethereum) {
-            console.log('Final check: MetaMask still not detected');
-            checkMetaMaskStatus();
+            console.log('Final check: Wallet still not detected');
+            checkWalletStatus();
         }
     }, 5000);
 });
 
 function handleEthereumInit() {
     console.log('Ethereum initialized event fired');
-    checkMetaMaskStatus();
+    checkWalletStatus();
 }
 
-async function detectMetaMaskWithRetry() {
+async function detectWalletWithRetry() {
     const delays = [500, 1000, 2000, 3000, 4000];
     for (let i = 0; i < delays.length; i++) {
         await new Promise(resolve => setTimeout(resolve, delays[i]));
         console.log(`Detection attempt ${i + 1}/${delays.length}`);
-        const detected = await checkMetaMaskStatus();
+        const detected = await checkWalletStatus();
         if (detected) {
-            console.log('MetaMask detected successfully!');
+            console.log('Wallet detected successfully!');
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                 if (accounts.length > 0) {
@@ -73,70 +73,86 @@ async function detectMetaMaskWithRetry() {
     }
 }
 
-async function checkMetaMaskStatus() {
-    const statusDiv = document.getElementById('metamaskStatus');
-    console.log('Checking MetaMask status...');
+async function checkWalletStatus() {
+    const statusDiv = document.getElementById('walletStatus');
+    console.log('Checking wallet status...');
     console.log('window.ethereum exists:', !!window.ethereum);
     console.log('window.ethereum.isMetaMask:', window.ethereum?.isMetaMask);
+    console.log('window.ethereum.isCoinbaseWallet:', window.ethereum?.isCoinbaseWallet);
     console.log('window.ethereum providers:', window.ethereum?.providers);
-    let isMetaMask = false;
-    if (window.ethereum?.isMetaMask) {
-        isMetaMask = true;
+    let isSupportedWallet = false;
+    let walletName = '';
+    
+    if (window.ethereum?.isCoinbaseWallet) {
+        isSupportedWallet = true;
+        walletName = 'Coinbase Wallet';
+    } else if (window.ethereum?.isMetaMask) {
+        isSupportedWallet = true;
+        walletName = 'MetaMask';
     }
+    
     if (window.ethereum?.providers) {
+        const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
         const metamaskProvider = window.ethereum.providers.find(p => p.isMetaMask);
-        if (metamaskProvider) {
-            isMetaMask = true;
+        if (coinbaseProvider) {
+            isSupportedWallet = true;
+            walletName = 'Coinbase Wallet';
+            console.log('Found Coinbase Wallet in providers array');
+        } else if (metamaskProvider) {
+            isSupportedWallet = true;
+            walletName = 'MetaMask';
             console.log('Found MetaMask in providers array');
         }
     }
-    if (isMetaMask) {
-        statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> MetaMask Detected ✓<br><small style="color: #6b7280;">Ready to connect</small>';
+    
+    if (isSupportedWallet) {
+        statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> ${walletName} Detected ✓<br><small style="color: #6b7280;">Ready to connect</small>`;
         statusDiv.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
         statusDiv.style.border = '2px solid var(--success)';
         return true;
     } else if (window.ethereum) {
-        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Other wallet detected<br><small style="color: #6b7280;">MetaMask not found</small>';
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Other wallet detected<br><small style="color: #6b7280;">Coinbase Wallet or MetaMask not found</small>';
         statusDiv.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))';
         statusDiv.style.border = '2px solid var(--warning)';
         return false;
     } else {
-        statusDiv.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger);"></i> MetaMask Not Detected<br><small style="color: #6b7280;">Install the extension & refresh page</small>';
+        statusDiv.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger);"></i> Wallet Not Detected<br><small style="color: #6b7280;">Install Coinbase Wallet or MetaMask & refresh page</small>';
         statusDiv.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))';
         statusDiv.style.border = '2px solid var(--danger)';
         return false;
     }
 }
 
-async function recheckMetaMask() {
-    const statusDiv = document.getElementById('metamaskStatus');
+async function recheckWallet() {
+    const statusDiv = document.getElementById('walletStatus');
     statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rechecking...';
     let detected = false;
     for (let i = 0; i < 3; i++) {
         await new Promise(resolve => setTimeout(resolve, 500));
-        detected = await checkMetaMaskStatus();
+        detected = await checkWalletStatus();
         if (detected) break;
     }
     if (detected) {
-        alert('✅ MetaMask detected!\n\nYou can now click the "Connect Wallet" button in the navbar to connect your wallet.');
+        alert('✅ Wallet detected!\n\nYou can now click the "Connect Wallet" button in the navbar to connect your wallet.');
     } else {
         const action = confirm(
-            '❌ MetaMask still not detected.\n\n' +
+            '❌ Wallet still not detected.\n\n' +
             'Troubleshooting steps:\n' +
             '1. Close and reopen your browser\n' +
-            '2. Make sure MetaMask extension is enabled\n' +
-            '3. Click the MetaMask extension icon once\n' +
+            '2. Make sure your wallet extension is enabled\n' +
+            '3. Click the wallet extension icon once\n' +
             '4. Refresh this page (F5 or Ctrl+R)\n\n' +
-            'Press OK to see debug info, or Cancel to try installing MetaMask.'
+            'Press OK to see debug info, or Cancel to try installing Coinbase Wallet.'
         );
         if (action) {
             alert('Debug Info:\n\n' +
-                  'window.ethereum exists: ' + !!window.ethereum + '\n' +
-                  'window.ethereum.isMetaMask: ' + window.ethereum?.isMetaMask + '\n' +
-                  'Browser: ' + navigator.userAgent + '\n\n' +
-                  'Check browser console (F12) for more details.');
+                'window.ethereum exists: ' + !!window.ethereum + '\n' +
+                'window.ethereum.isCoinbaseWallet: ' + window.ethereum?.isCoinbaseWallet + '\n' +
+                'window.ethereum.isMetaMask: ' + window.ethereum?.isMetaMask + '\n' +
+                'Browser: ' + navigator.userAgent + '\n\n' +
+                'Check browser console (F12) for more details.');
         } else {
-            window.open('https://metamask.io/download/', '_blank');
+            window.open('https://www.coinbase.com/wallet', '_blank');
         }
     }
 }

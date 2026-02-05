@@ -64,6 +64,33 @@
 
 ---
 
+💰 Tokenomics
+
+### AETH Token Specifications
+
+- **Symbol**: AETH
+- **Name**: Aetheron
+- **Total Supply**: 1,000,000,000 AETH
+- **Network**: Polygon Mainnet
+- **Contract**: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
+
+### Tax Structure
+
+- **Buy Tax**: 5%
+- **Sell Tax**: 5% (reflected in buy tax for simplicity)
+- **Tax Distribution**: 
+  - 3% - Liquidity Pool
+  - 2% - Marketing & Development
+
+### Security Features
+
+- **Blacklist**: Yes - Malicious addresses can be blacklisted
+- **Max Transaction**: 1% of total supply per transaction
+- **Max Wallet**: 2% of total supply per wallet
+- **Anti-Whale Protection**: Enabled
+
+---
+
 🛠️ Technology Stack
 
 Frontend

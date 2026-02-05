@@ -1,6 +1,7 @@
-require('dotenv').config();
-const { exec } = require('child_process');
-const util = require('util');
+import dotenv from 'dotenv';
+dotenv.config();
+import { exec } from 'child_process';
+import util from 'util';
 const execPromise = util.promisify(exec);
 
 async function main() {

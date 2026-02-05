@@ -1,5 +1,5 @@
-const { ethers } = require("ethers");
-const fs = require('fs');
+import { ethers } from "ethers";
+import fs from 'fs';
 
 async function checkTradingStatus() {
   console.log("\n🚀 Checking Aetheron Trading Status...\n");

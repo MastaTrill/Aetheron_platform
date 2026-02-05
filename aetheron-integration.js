@@ -20,7 +20,7 @@ class AetheronIntegration {
     async initialize(aethAddress, stakingAddress) {
         try {
             if (!window.ethereum) {
-                throw new Error('MetaMask not installed');
+                throw new Error('No Ethereum wallet detected. Please install MetaMask or Coinbase Wallet');
             }
 
             const provider = new ethers.BrowserProvider(window.ethereum);
