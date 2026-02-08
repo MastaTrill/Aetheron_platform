@@ -9,9 +9,40 @@
 ✅ Staking LIVE with up to 25% APY
 
 Trade now: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-Dashboard: https://mastaTrill.github.io/Aetheron_platform/
+Dashboard: https://mastatrill.github.io/Aetheron_platform/
+
+Follow me: @William_McCoy_
 
 #DeFi #Polygon #CryptoLaunch #AETH
+```
+
+## Twitter/X Post 2 (Thread Starter)
+```
+🧵 Introducing AETHERON (AETH) - The Next Evolution in DeFi
+
+Built on @0xPolygon for lightning-fast transactions and minimal fees 🚀
+
+Here's what you need to know... 👇
+
+@William_McCoy_
+
+#DeFi #Polygon #AETH
+```
+
+## Twitter/X Post 3 (Feature Highlight)
+```
+💰 AETH Staking is LIVE!
+
+Choose your pool:
+🔸 30 days → 5% APY
+🔸 90 days → 12% APY  
+🔸 180 days → 25% APY
+
+Start earning: https://mastatrill.github.io/Aetheron_platform/
+
+Built by @William_McCoy_
+
+#PassiveIncome #DeFi #Staking
 ```
 
 ## Telegram Message
@@ -23,7 +54,9 @@ We're thrilled to announce that AETH is now tradeable on QuickSwap!
 📊 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💱 Trade: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💰 Staking: Up to 25% APY
-🌐 Dashboard: https://mastaTrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+
+Follow the founder: @William_McCoy_ on X/Twitter
 
 Join us in revolutionizing DeFi on Polygon!
 ```
@@ -44,7 +77,10 @@ After months of development, Aetheron is officially launched!
 QuickSwap: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 **Dashboard:**
-https://mastaTrill.github.io/Aetheron_platform/
+https://mastatrill.github.io/Aetheron_platform/
+
+**Developer:**
+Follow @William_McCoy_ on X/Twitter for updates
 
 What makes Aetheron special:
 - Advanced DeFi features
@@ -64,7 +100,9 @@ AETH is now LIVE and tradeable on QuickSwap!
 🔗 **Trade Link:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 📊 **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💰 **Staking:** Available with up to 25% APY
-🌐 **Dashboard:** https://mastaTrill.github.io/Aetheron_platform/
+🌐 **Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+
+Follow the founder → @William_McCoy_ on X/Twitter
 
 Welcome to the future of DeFi on Polygon! 🚀
 ```</content>

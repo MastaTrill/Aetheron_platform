@@ -5,12 +5,18 @@
  * Real-time monitoring of blockchain activity and user engagement
  */
 
-import { ethers } from 'ethers';
+import pkg from 'ethers';
+const { ethers } = pkg;
 import fs from 'fs';
+import https from 'https';
 
-// Polygon RPC endpoints
-const POLYGON_RPC = 'https://polygon-rpc.com/';
-const POLYGONSCAN_API = 'https://api.polygonscan.com/api';
+// Polygon RPC fallback endpoints
+const POLYGON_RPC_URLS = [
+  'https://polygon-rpc.com/',
+  'https://rpc-mainnet.matic.network/',
+  'https://polygon.llamarpc.com/',
+  'https://rpc.ankr.com/polygon'
+];
 
 // Contract addresses
 const AETH_TOKEN = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
@@ -35,7 +41,8 @@ const STAKING_ABI = [
 
 class TransactionMonitor {
   constructor() {
-    this.provider = new ethers.JsonRpcProvider(POLYGON_RPC);
+    this.provider = null;
+    this.aethPrice = 0;
     this.metrics = {
       startTime: Date.now(),
       transactions: {
@@ -56,12 +63,54 @@ class TransactionMonitor {
     };
   }
 
+  async initProvider() {
+    for (const rpcUrl of POLYGON_RPC_URLS) {
+      try {
+        const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+        await provider.getNetwork();
+        console.log(`✅ Connected to RPC: ${rpcUrl}`);
+        return provider;
+      } catch (error) {
+        console.log(`⚠️ Failed RPC ${rpcUrl}: ${error.message}`);
+      }
+    }
+    throw new Error('❌ All RPC endpoints failed');
+  }
+
+  async fetchPrice() {
+    return new Promise((resolve) => {
+      https.get(`https://api.dexscreener.com/latest/dex/tokens/${AETH_TOKEN}`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(data);
+            if (json.pairs && json.pairs[0] && json.pairs[0].priceUsd) {
+              resolve(parseFloat(json.pairs[0].priceUsd));
+            } else {
+              resolve(0.0000005512); // Fallback
+            }
+          } catch {
+            resolve(0.0000005512); // Fallback
+          }
+        });
+      }).on('error', () => resolve(0.0000005512));
+    });
+  }
+
   async initialize() {
     console.log('🚀 Starting Aetheron Transaction Monitor...\n');
+
+    // Initialize provider with fallbacks
+    this.provider = await this.initProvider();
 
     // Initialize contracts
     this.aethContract = new ethers.Contract(AETH_TOKEN, ERC20_ABI, this.provider);
     this.stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, this.provider);
+
+    // Fetch current price
+    this.aethPrice = await this.fetchPrice();
+    console.log(`💰 Current AETH Price: $${this.aethPrice}\n`);
 
     // Start monitoring from current block only (not historical)
     await this.startMonitoring();
@@ -82,9 +131,9 @@ class TransactionMonitor {
       this.metrics.transactions.transfers++;
       this.metrics.users.add(from.toLowerCase());
       this.metrics.users.add(to.toLowerCase());
-      this.metrics.volume.aeth += Number(ethers.formatEther(value));
+      this.metrics.volume.aeth += Number(ethers.utils.formatEther(value));
 
-      console.log(`💸 Transfer: ${Number(ethers.formatEther(value)).toFixed(2)} AETH`);
+      console.log(`💸 Transfer: ${Number(ethers.utils.formatEther(value)).toFixed(2)} AETH`);
     });
 
     // Monitor staking events only (less frequent)
@@ -92,19 +141,19 @@ class TransactionMonitor {
       this.metrics.transactions.total++;
       this.metrics.transactions.stakes++;
       this.metrics.users.add(user.toLowerCase());
-      console.log(`🔒 Stake: ${Number(ethers.formatEther(amount)).toFixed(2)} AETH (Pool ${poolId})`);
+      console.log(`🔒 Stake: ${Number(ethers.utils.formatEther(amount)).toFixed(2)} AETH (Pool ${poolId})`);
     });
 
     this.stakingContract.on('Unstaked', (user, amount, poolId) => {
       this.metrics.transactions.total++;
       this.metrics.transactions.unstakes++;
-      console.log(`🔓 Unstake: ${Number(ethers.formatEther(amount)).toFixed(2)} AETH (Pool ${poolId})`);
+      console.log(`🔓 Unstake: ${Number(ethers.utils.formatEther(amount)).toFixed(2)} AETH (Pool ${poolId})`);
     });
 
     this.stakingContract.on('RewardsClaimed', (user, amount) => {
       this.metrics.transactions.total++;
       this.metrics.transactions.claims++;
-      console.log(`🎁 Claim: ${Number(ethers.formatEther(amount)).toFixed(2)} AETH rewards`);
+      console.log(`🎁 Claim: ${Number(ethers.utils.formatEther(amount)).toFixed(2)} AETH rewards`);
     });
   }
 
@@ -114,15 +163,14 @@ class TransactionMonitor {
 
       // Get total supply
       const totalSupply = await this.aethContract.totalSupply();
-      console.log(`💰 Total AETH Supply: ${ethers.formatEther(totalSupply)}`);
+      console.log(`💰 Total AETH Supply: ${ethers.utils.formatEther(totalSupply)}`);
 
       // Get staking TVL
       const totalStaked = await this.stakingContract.getTotalStaked();
-      this.metrics.tvl = Number(ethers.formatEther(totalStaked));
-      console.log(`🏦 Staking TVL: ${this.metrics.tvl} AETH`);
+      this.metrics.tvl = Number(ethers.utils.formatEther(totalStaked));
+      console.log(`🏦 Staking TVL: ${this.metrics.tvl.toFixed(2)} AETH`);
 
-      // Get current AETH price (simplified)
-      this.aethPrice = 0.0000005512; // From previous data
+      // Update USD volumes
       this.metrics.volume.usd = this.metrics.volume.aeth * this.aethPrice;
 
     } catch (error) {
@@ -136,6 +184,8 @@ class TransactionMonitor {
     console.log('='.repeat(60));
 
     const uptime = Math.floor((Date.now() - this.metrics.startTime) / 1000 / 60);
+    const tvlUsd = (this.metrics.tvl * this.aethPrice).toFixed(2);
+    
     console.log(`⏱️  Uptime: ${uptime} minutes`);
     console.log(`👥 Unique Users: ${this.metrics.users.size}`);
     console.log(`💸 Total Transactions: ${this.metrics.transactions.total}`);
@@ -145,7 +195,8 @@ class TransactionMonitor {
     console.log(`🎁 Claims: ${this.metrics.transactions.claims}`);
     console.log(`💰 Volume (AETH): ${this.metrics.volume.aeth.toFixed(2)}`);
     console.log(`💵 Volume (USD): $${this.metrics.volume.usd.toFixed(2)}`);
-    console.log(`🏦 TVL: ${this.metrics.tvl.toFixed(2)} AETH ($${this.metrics.tvl * this.aethPrice.toFixed(2)})`);
+    console.log(`🏦 TVL: ${this.metrics.tvl.toFixed(2)} AETH ($${tvlUsd})`);
+    console.log(`📈 AETH Price: $${this.aethPrice}`);
 
     console.log('='.repeat(60));
     console.log('🔄 Monitoring active... (Ctrl+C to stop)');
