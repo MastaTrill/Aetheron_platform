@@ -1239,6 +1239,7 @@
             flex-direction: column;
             gap: 10px;
             max-width: 400px;
+            pointer-events: none;
         }
 
         .toast {
@@ -1248,6 +1249,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
+            pointer-events: auto;
             gap: 12px;
             animation: slideIn 0.3s ease-out;
             border-left: 4px solid var(--primary);
@@ -1348,6 +1350,7 @@
             transform-origin: left;
             transition: transform 0.3s ease;
             z-index: 10002;
+            pointer-events: none;
         }
 
         .progress-bar.active {
