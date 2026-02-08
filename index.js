@@ -170,6 +170,10 @@ async function detectWalletWithRetry() {
 
 async function checkWalletStatus() {
     const statusDiv = document.getElementById('walletStatus');
+    if (!statusDiv) {
+        console.warn('Wallet status element not found - page may not be fully loaded');
+        return false;
+    }
     console.log('Checking wallet status...');
     console.log('window.ethereum exists:', !!window.ethereum);
     console.log('window.ethereum.isMetaMask:', window.ethereum?.isMetaMask);
