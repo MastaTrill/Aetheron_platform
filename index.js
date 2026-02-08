@@ -547,6 +547,9 @@ async function updateStakingStats() {
         // Keep the default values that were already set - don't revert to "Loading..."
     }
 }
+
+// Connect wallet function
+async function connectWallet() {
     if (typeof window.ethereum === 'undefined') {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
