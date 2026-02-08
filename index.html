@@ -42,13 +42,20 @@
         gtag('js', new Date());
         gtag('config', 'GA_MEASUREMENT_ID');
     </script>
+    
+    <!-- External Libraries - Load FIRST -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Application Scripts - Load AFTER libraries -->
     <script src="index.js"></script>
     <script src="charts.js"></script>
     <script src="monitor.js"></script>
     <script src="marketing-launch.js"></script>
     <script src="performance-monitor.js"></script>
     <script src="shared-utils.js"></script>
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="mobile-optimization.css">
