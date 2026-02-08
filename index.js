@@ -229,7 +229,7 @@ async function stakeTokens(poolId) {
         showAlert('Approving tokens for staking...', 'info', 'stakingAlert');
 
         // Approve tokens
-        const amountWei = ethers.parseEther(amount);
+        const amountWei = ethers.utils.parseEther(amount);
         const approvalTx = await aethContract.approve(STAKING_ADDRESS, amountWei);
         await approvalTx.wait();
 
@@ -294,40 +294,112 @@ async function updatePrice() {
     try {
         console.log('📊 Fetching live price data...');
         const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         if (data.pairs && data.pairs.length > 0) {
             const pair = data.pairs[0];
-            const price = parseFloat(pair.priceUsd);
-            const priceChange = parseFloat(pair.priceChange.h24);
-            const volume24h = parseFloat(pair.volume.h24);
+            const price = parseFloat(pair.priceUsd) || 0;
+            const priceChange = parseFloat(pair.priceChange?.h24 || 0);
+            const volume24h = parseFloat(pair.volume?.h24 || 0);
             const liquidity = parseFloat(pair.liquidity?.usd || 0);
+            const fdv = parseFloat(pair.fdv || 0);
 
             // Update price
             const priceEl = document.getElementById('priceValue');
-            if (priceEl) priceEl.textContent = `$${price.toFixed(8)}`;
+            if (priceEl) {
+                if (price > 0) {
+                    priceEl.textContent = price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toFixed(8)}`;
+                } else {
+                    priceEl.textContent = '$0.00000001';
+                }
+            }
             
             // Update price change
             const changeEl = document.getElementById('priceChange');
             if (changeEl) {
-                changeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+                changeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% (24h)`;
                 changeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            // Update market cap (using FDV or calculating from price)
+            const marketCapEl = document.getElementById('marketCapValue');
+            if (marketCapEl) {
+                let marketCap = fdv;
+                if (!marketCap && price > 0 && aethContract) {
+                    try {
+                        const totalSupply = await aethContract.totalSupply();
+                        const supply = parseFloat(ethers.utils.formatEther(totalSupply));
+                        marketCap = price * supply;
+                    } catch (e) {
+                        marketCap = price * 1000000000; // Fallback: use 1B tokens
+                    }
+                }
+                
+                if (marketCap >= 1000000) {
+                    marketCapEl.textContent = `$${(marketCap / 1000000).toFixed(2)}M`;
+                } else if (marketCap >= 1000) {
+                    marketCapEl.textContent = `$${(marketCap / 1000).toFixed(1)}K`;
+                } else {
+                    marketCapEl.textContent = `$${marketCap.toFixed(0)}`;
+                }
+            }
+            
+            // Update market cap change
+            const marketCapChangeEl = document.getElementById('marketCapChange');
+            if (marketCapChangeEl) {
+                marketCapChangeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% (24h)`;
+                marketCapChangeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
             }
 
             // Update volume
             const volumeEl = document.getElementById('volumeValue');
-            if (volumeEl) volumeEl.textContent = `$${(volume24h / 1000).toFixed(1)}K`;
+            if (volumeEl) {
+                if (volume24h >= 1000000) {
+                    volumeEl.textContent = `$${(volume24h / 1000000).toFixed(2)}M`;
+                } else if (volume24h >= 1000) {
+                    volumeEl.textContent = `$${(volume24h / 1000).toFixed(1)}K`;
+                } else {
+                    volumeEl.textContent = `$${volume24h.toFixed(0)}`;
+                }
+            }
             
             // Update liquidity
             const liquidityEl = document.getElementById('liquidityValue');
-            if (liquidityEl) liquidityEl.textContent = `$${(liquidity / 1000).toFixed(1)}K`;
+            if (liquidityEl) {
+                if (liquidity >= 1000000) {
+                    liquidityEl.textContent = `$${(liquidity / 1000000).toFixed(2)}M`;
+                } else if (liquidity >= 1000) {
+                    liquidityEl.textContent = `$${(liquidity / 1000).toFixed(1)}K`;
+                } else {
+                    liquidityEl.textContent = `$${liquidity.toFixed(0)}`;
+                }
+            }
             
-            console.log('✅ Live price updated:', price);
+            console.log('✅ Live price updated:', price, '| Market Cap:', marketCap);
         } else {
-            console.warn('⚠️  No price data available yet');
+            console.warn('⚠️  No price data available yet - showing defaults');
+            // Show default values instead of "Loading..."
+            const priceEl = document.getElementById('priceValue');
+            if (priceEl && priceEl.textContent === 'Loading...') {
+                priceEl.textContent = '$0.00000001';
+            }
+            const marketCapEl = document.getElementById('marketCapValue');
+            if (marketCapEl && marketCapEl.textContent === 'Loading...') {
+                marketCapEl.textContent = '$10';
+            }
         }
     } catch (error) {
         console.error('❌ Error updating price:', error);
+        // Show friendly error message
+        const priceEl = document.getElementById('priceValue');
+        if (priceEl && priceEl.textContent === 'Loading...') {
+            priceEl.textContent = '$0.00000001';
+        }
     }
 }
 
@@ -337,9 +409,10 @@ async function updateBalances() {
         if (!account || !aethContract) return;
 
         const aethBalance = await aethContract.balanceOf(account);
-        const balance = parseFloat(ethers.formatEther(aethBalance));
+        const balance = parseFloat(ethers.utils.formatEther(aethBalance));
 
-        document.getElementById('userBalance').textContent = balance.toFixed(2) + ' AETH';
+        const balanceEl = document.getElementById('userBalance');
+        if (balanceEl) balanceEl.textContent = balance.toFixed(2) + ' AETH';
 
         // Calculate USD value (need current price)
         const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
@@ -347,10 +420,13 @@ async function updateBalances() {
         if (priceData.pairs && priceData.pairs.length > 0) {
             const price = parseFloat(priceData.pairs[0].priceUsd);
             const usdValue = balance * price;
-            document.getElementById('userBalanceUSD').textContent = `$${usdValue.toFixed(2)} USD`;
+            const usdEl = document.getElementById('userBalanceUSD');
+            if (usdEl) usdEl.textContent = `$${usdValue.toFixed(2)} USD`;
         }
+        
+        console.log('✅ Balance updated:', balance, 'AETH');
     } catch (error) {
-        console.error('Error updating balances:', error);
+        console.error('❌ Error updating balances:', error);
     }
 }
 
@@ -358,7 +434,12 @@ async function updateBalances() {
 async function updateStakingStats() {
     try {
         if (!stakingContract) {
-            console.warn('⚠️  Staking contract not initialized');
+            console.warn('⚠️  Staking contract not initialized yet');
+            // Show default values
+            const stakedEl = document.getElementById('stakedValue');
+            if (stakedEl && stakedEl.textContent === 'Loading...') {
+                stakedEl.textContent = '0 AETH';
+            }
             return;
         }
 
@@ -366,33 +447,60 @@ async function updateStakingStats() {
         
         // Update total staked
         const totalStaked = await stakingContract.totalStaked();
-        const total = parseFloat(ethers.formatEther(totalStaked));
+        const total = parseFloat(ethers.utils.formatEther(totalStaked));
 
         const stakedEl = document.getElementById('stakedValue');
-        if (stakedEl) stakedEl.textContent = total.toFixed(0) + ' AETH';
+        if (stakedEl) {
+            if (total >= 1000000) {
+                stakedEl.textContent = `${(total / 1000000).toFixed(2)}M AETH`;
+            } else if (total >= 1000) {
+                stakedEl.textContent = `${(total / 1000).toFixed(1)}K AETH`;
+            } else {
+                stakedEl.textContent = `${total.toFixed(0)} AETH`;
+            }
+        }
+        
+        // Update change text
+        const stakedChangeEl = document.getElementById('stakedChange');
+        if (stakedChangeEl) {
+            stakedChangeEl.textContent = '150M AETH Pool';
+        }
 
         // Get token total supply for percentage calculation
         if (aethContract) {
-            const totalSupply = await aethContract.totalSupply();
-            const supply = parseFloat(ethers.formatEther(totalSupply));
-            const stakedPercentage = (total / supply) * 100;
-            
-            const stakedPctEl = document.getElementById('stakedPercentage');
-            if (stakedPctEl) stakedPctEl.textContent = `${stakedPercentage.toFixed(1)}% of supply`;
+            try {
+                const totalSupply = await aethContract.totalSupply();
+                const supply = parseFloat(ethers.utils.formatEther(totalSupply));
+                const stakedPercentage = (total / supply) * 100;
+                
+                const stakedPctEl = document.getElementById('stakedPercentage');
+                if (stakedPctEl) stakedPctEl.textContent = `${stakedPercentage.toFixed(1)}% of supply`;
+            } catch (e) {
+                console.warn('Could not fetch total supply:', e);
+            }
         }
         
         // Update holders count (approximate - would need indexer for exact count)
         const holdersEl = document.getElementById('holdersValue');
-        if (holdersEl && total > 0) {
-            // Rough estimate based on staked amount
-            const estimatedHolders = Math.max(1, Math.floor(total / 1000));
-            holdersEl.textContent = estimatedHolders.toLocaleString();
+        if (holdersEl) {
+            if (total > 0) {
+                // Rough estimate based on staked amount
+                const estimatedHolders = Math.max(1, Math.floor(total / 1000));
+                holdersEl.textContent = estimatedHolders.toLocaleString();
+            } else {
+                holdersEl.textContent = '1';
+            }
         }
         
         console.log('✅ Live staking stats updated:', total, 'AETH staked');
 
     } catch (error) {
         console.error('❌ Error updating staking stats:', error);
+        // Show friendly defaults on error
+        const stakedEl = document.getElementById('stakedValue');
+        if (stakedEl && stakedEl.textContent === 'Loading...') {
+            stakedEl.textContent = '0 AETH';
+        }
     }
 }
     if (typeof window.ethereum === 'undefined') {
@@ -512,7 +620,7 @@ async function calculateRewards() {
 
     try {
         const reward = await stakingContract.calculateReward(account, stakeId);
-        document.getElementById('calculatedReward').textContent = ethers.formatEther(reward) + ' AETH';
+        document.getElementById('calculatedReward').textContent = ethers.utils.formatEther(reward) + ' AETH';
         showAlert('Reward calculated successfully!', 'success', 'stakingSuccess');
     } catch (error) {
         console.error('Error calculating reward:', error);
@@ -620,7 +728,7 @@ async function rescueTokens() {
     const amount = document.getElementById('rescueAmount').value;
 
     try {
-        const tx = await aethContract.rescueTokens(tokenAddress, ethers.parseEther(amount));
+        const tx = await aethContract.rescueTokens(tokenAddress, ethers.utils.parseEther(amount));
         await tx.wait();
         showAlert('Tokens rescued successfully!', 'success', 'stakingSuccess');
     } catch (error) {
