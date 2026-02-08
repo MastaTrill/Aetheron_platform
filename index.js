@@ -125,6 +125,17 @@ window.addEventListener('load', async () => {
     }, 5000);
     
     console.log('✅ Dashboard initialized!');
+    
+    // Initialize mobile menu
+    initMobileMenu();
+    
+    // Initialize progressive features
+    initProgressBar();
+    
+    // Add animation classes
+    document.querySelectorAll('.stat-card, .feature-card, .card').forEach((el, i) => {
+        setTimeout(() => el.classList.add('fade-in'), i * 100);
+    });
 });
 
 // Set default values to avoid stuck "Loading..." states
@@ -302,14 +313,17 @@ async function stakeTokens(poolId) {
         const stakeTx = await stakingContract.stake(poolId, amountWei);
         await stakeTx.wait();
 
+        showToast('Success!', `${amount} AETH staked successfully!`, 'success');
         showAlert(`Successfully staked ${amount} AETH in pool ${poolId + 1}!`, 'success', 'stakingSuccess');
         amountInput.value = '';
 
         // Update stats
         await updateStats();
+        await loadUserStakes();
 
     } catch (error) {
         console.error('Staking error:', error);
+        showToast('Staking Failed', error.message || 'Failed to stake tokens', 'error');
         showAlert('Staking failed: ' + error.message, 'error', 'stakingAlert');
     } finally {
         stakeBtn.disabled = false;
@@ -620,13 +634,26 @@ async function connectWallet() {
         document.getElementById('connectBtn').textContent = 'Connected ✓';
         document.getElementById('connectBtn').classList.add('connected');
         document.getElementById('walletConnected').classList.remove('hidden');
+        document.getElementById('walletNotConnected').classList.add('hidden');
         document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
 
+        // Update transaction history UI
+        document.getElementById('txNotConnected').classList.add('hidden');
+        document.getElementById('txConnected').classList.remove('hidden');
+
+        // Load user data
+        showProgress();
         await updateStats();
-        showAlert('Wallet connected successfully!', 'success', 'stakingSuccess');
+        await loadUserStakes();
+        await loadTransactionHistory();
+        hideProgress();
+        
+        showToast('Connected!', `Wallet ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
 
     } catch (error) {
         console.error('Error connecting:', error);
+        hideProgress();
+        showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
     }
 }
@@ -637,6 +664,21 @@ async function disconnectWallet() {
     signer = null;
     aethContract = null;
     stakingContract = null;
+    
+    document.getElementById('connectBtn').textContent = 'Connect Wallet';
+    document.getElementById('connectBtn').classList.remove('connected');
+    document.getElementById('walletConnected').classList.add('hidden');
+    document.getElementById('walletNotConnected').classList.remove('hidden');
+    document.getElementById('txConnected').classList.add('hidden');
+    document.getElementById('txNotConnected').classList.remove('hidden');
+    
+    // Remove user stakes container if exists
+    const stakesContainer = document.getElementById('userStakesContainer');
+    if (stakesContainer) stakesContainer.remove();
+    
+    showToast('Disconnected', 'Wallet disconnected successfully', 'info');
+    console.log('\ud83d\udd0c Wallet disconnected');
+}
 
     document.getElementById('connectBtn').textContent = 'Connect Wallet';
     document.getElementById('connectBtn').classList.remove('connected');
@@ -1315,6 +1357,457 @@ if ('serviceWorker' in navigator) {
                 console.log('❌ Service Worker registration failed:', error);
             });
     });
+}
+
+// ============================================================================
+// Toast Notification System
+// ============================================================================
+
+function showToast(title, message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'alert');
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `
+        <i class="fas ${icons[type]} toast-icon" aria-hidden="true"></i>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <i class="fas fa-times toast-close" aria-label="Close notification"></i>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+    });
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5000);
+}
+
+// ============================================================================
+// Mobile Menu
+// ============================================================================
+
+function initMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    
+    if (!hamburger || !navLinks || !overlay) return;
+    
+    function toggleMenu() {
+        const isActive = hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        overlay.classList.toggle('active');
+        hamburger.setAttribute('aria-expanded', isActive);
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    }
+    
+    function closeMenu() {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+    
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+    
+    // Close menu when clicking nav links
+    navLinks.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+}
+
+// ============================================================================
+// Progress Bar
+// ============================================================================
+
+function initProgressBar() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+    
+    // Show progress on page navigation
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (link.href && !link.href.startsWith('javascript:') && !link.target) {
+                progressBar.classList.add('active');
+            }
+        });
+    });
+}
+
+function showProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.classList.add('active');
+}
+
+function hideProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+        setTimeout(() => progressBar.classList.remove('active'), 300);
+    }
+}
+
+// ============================================================================
+// Data Caching System
+// ============================================================================
+
+const cache = {
+    set(key, value, ttl = 60000) { // Default 1 minute TTL
+        const item = {
+            value,
+            expiry: Date.now() + ttl
+        };
+        try {
+            localStorage.setItem(`aeth_cache_${key}`, JSON.stringify(item));
+        } catch (e) {
+            console.warn('Cache storage failed:', e);
+        }
+    },
+    
+    get(key) {
+        try {
+            const itemStr = localStorage.getItem(`aeth_cache_${key}`);
+            if (!itemStr) return null;
+            
+            const item = JSON.parse(itemStr);
+            if (Date.now() > item.expiry) {
+                localStorage.removeItem(`aeth_cache_${key}`);
+                return null;
+            }
+            return item.value;
+        } catch (e) {
+            return null;
+        }
+    },
+    
+    clear() {
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('aeth_cache_')) {
+                localStorage.removeItem(key);
+            }
+        });
+    }
+};
+
+// ============================================================================
+// User Stakes Dashboard
+// ============================================================================
+
+async function loadUserStakes() {
+    if (!account || !stakingContract) {
+        console.log('No account connected for stakes');
+        return;
+    }
+    
+    try {
+        showProgress();
+        
+        const stakesCount = await stakingContract.getUserStakesCount(account);
+        const stakes = [];
+        
+        for (let i = 0; i < stakesCount; i++) {
+            try {
+                const stake = await stakingContract.getUserStake(account, i);
+                stakes.push({
+                    id: i,
+                    amount: ethers.utils.formatEther(stake.amount),
+                    poolId: stake.poolId.toNumber(),
+                    startTime: new Date(stake.startTime.toNumber() * 1000),
+                    unlockTime: new Date(stake.unlockTime.toNumber() * 1000),
+                    pendingReward: ethers.utils.formatEther(stake.pendingReward)
+                });
+            } catch (error) {
+                console.warn(`Failed to load stake ${i}:`, error);
+            }
+        }
+        
+        displayUserStakes(stakes);
+        hideProgress();
+        
+        if (stakes.length > 0) {
+            showToast('Stakes Loaded', `Found ${stakes.length} active stake(s)`, 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error loading user stakes:', error);
+        hideProgress();
+        showToast('Error', 'Failed to load your stakes', 'error');
+    }
+}
+
+function displayUserStakes(stakes) {
+    // Find or create stakes container
+    let container = document.getElementById('userStakesContainer');
+    if (!container) {
+        const walletCard = document.querySelector('.card.mb-2');
+        if (walletCard) {
+            container = document.createElement('div');
+            container.id = 'userStakesContainer';
+            container.className = 'card mb-2';
+            container.innerHTML = `
+                <div class="card-header">
+                    <h2 class="card-title">Your Active Stakes</h2>
+                    <button class="btn btn-outline btn-sm" onclick="loadUserStakes()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="user-stakes" id="userStakesList"></div>
+            `;
+            walletCard.parentNode.insertBefore(container, walletCard.nextSibling);
+        }
+    }
+    
+    const list = document.getElementById('userStakesList');
+    if (!list) return;
+    
+    if (stakes.length === 0) {
+        list.innerHTML = `
+            <div class="wallet-section">
+                <i class="fas fa-inbox empty-icon"></i>
+                <p class="text-gray">No active stakes yet. Start staking to earn rewards!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const poolNames = ['30 Days (5% APY)', '90 Days (12% APY)', '180 Days (25% APY)'];
+    
+    list.innerHTML = stakes.map(stake => {
+        const isUnlocked = new Date() >= stake.unlockTime;
+        const status = isUnlocked ? 'completed' : 'active';
+        const statusText = isUnlocked ? 'Unlocked' : 'Locked';
+        
+        return `
+            <div class="stake-item slide-up">
+                <div class="stake-header">
+                    <div>
+                        <div class="fw-600">${poolNames[stake.poolId] || 'Unknown Pool'}</div>
+                        <div class="text-sm text-gray">Stake #${stake.id}</div>
+                    </div>
+                    <span class="stake-badge ${status}">${statusText}</span>
+                </div>
+                <div class="stake-details">
+                    <div class="stake-detail-item">
+                        <span class="stake-detail-label">Staked Amount</span>
+                        <span class="stake-detail-value">${parseFloat(stake.amount).toFixed(2)} AETH</span>
+                    </div>
+                    <div class="stake-detail-item">
+                        <span class="stake-detail-label">Pending Rewards</span>
+                        <span class="stake-detail-value">${parseFloat(stake.pendingReward).toFixed(4)} AETH</span>
+                    </div>
+                    <div class="stake-detail-item">
+                        <span class="stake-detail-label">Started</span>
+                        <span class="stake-detail-value">${stake.startTime.toLocaleDateString()}</span>
+                    </div>
+                    <div class="stake-detail-item">
+                        <span class="stake-detail-label">Unlock Date</span>
+                        <span class="stake-detail-value">${stake.unlockTime.toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <div class="stake-actions">
+                    ${parseFloat(stake.pendingReward) > 0 ? `
+                        <button class="btn btn-success btn-sm" onclick="claimStakeRewards(${stake.id})" ${!isUnlocked ? 'disabled' : ''}>
+                            <i class="fas fa-coins"></i> Claim Rewards
+                        </button>
+                    ` : ''}
+                    ${isUnlocked ? `
+                        <button class="btn btn-primary btn-sm" onclick="unstakeTokens(${stake.id})">
+                            <i class="fas fa-unlock"></i> Unstake
+                        </button>
+                    ` : `
+                        <button class="btn btn-warning btn-sm" onclick="emergencyUnstake(${stake.id})">
+                            <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
+                        </button>
+                    `}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Claim rewards from specific stake
+async function claimStakeRewards(stakeId) {
+    if (!stakingContract || !account) {
+        showToast('Error', 'Please connect your wallet first', 'error');
+        return;
+    }
+    
+    try {
+        showProgress();
+        showToast('Processing', 'Claiming rewards...', 'info');
+        
+        const tx = await stakingContract.claimRewards(stakeId);
+        showToast('Transaction Sent', 'Waiting for confirmation...', 'warning');
+        
+        await tx.wait();
+        
+        hideProgress();
+        showToast('Success!', 'Rewards claimed successfully!', 'success');
+        
+        // Refresh stakes display
+        await loadUserStakes();
+        await updateBalances();
+        
+    } catch (error) {
+        console.error('Error claiming rewards:', error);
+        hideProgress();
+        showToast('Error', error.message || 'Failed to claim rewards', 'error');
+    }
+}
+
+// Unstake tokens
+async function unstakeTokens(stakeId) {
+    if (!stakingContract || !account) {
+        showToast('Error', 'Please connect your wallet first', 'error');
+        return;
+    }
+    
+    try {
+        showProgress();
+        showToast('Processing', 'Unstaking tokens...', 'info');
+        
+        const tx = await stakingContract.unstake(stakeId);
+        showToast('Transaction Sent', 'Waiting for confirmation...', 'warning');
+        
+        await tx.wait();
+        
+        hideProgress();
+        showToast('Success!', 'Tokens unstaked successfully!', 'success');
+        
+        // Refresh displays
+        await loadUserStakes();
+        await updateBalances();
+        
+    } catch (error) {
+        console.error('Error unstaking:', error);
+        hideProgress();
+        showToast('Error', error.message || 'Failed to unstake', 'error');
+    }
+}
+
+// Emergency unstake (forfeit rewards)
+async function emergencyUnstake(stakeId) {
+    const confirmed = confirm('Emergency withdraw will forfeit all rewards. Continue?');
+    if (!confirmed) return;
+    
+    // Same as unstake but with warning
+    await unstakeTokens(stakeId);
+}
+
+// ============================================================================
+// Enhanced Transaction History
+// ============================================================================
+
+async function loadTransactionHistory() {
+    if (!account) return;
+    
+    try {
+        showProgress();
+        
+        // Check cache first
+        const cacheKey = `tx_history_${account}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            displayTransactions(cached);
+            hideProgress();
+            return;
+        }
+        
+        // Fetch from blockchain
+        const provider = readOnlyProvider || new ethers.providers.JsonRpcProvider(POLYGON_RPC_URLS[0]);
+        const contract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, provider);
+        
+        // Get Transfer events
+        const filterFrom = contract.filters.Transfer(account, null);
+        const filterTo = contract.filters.Transfer(null, account);
+        
+        const currentBlock = await provider.getBlockNumber();
+        const fromBlock = Math.max(0, currentBlock - 10000); // Last ~10k blocks
+        
+        const [sentEvents, receivedEvents] = await Promise.all([
+            contract.queryFilter(filterFrom, fromBlock),
+            contract.queryFilter(filterTo, fromBlock)
+        ]);
+        
+        const allEvents = [...sentEvents, ...receivedEvents]
+            .sort((a, b) => b.blockNumber - a.blockNumber)
+            .slice(0, 20); // Latest 20 transactions
+        
+        const transactions = await Promise.all(allEvents.map(async event => {
+            const block = await provider.getBlock(event.blockNumber);
+            return {
+                hash: event.transactionHash,
+                from: event.args.from,
+                to: event.args.to,
+                value: ethers.utils.formatEther(event.args.value),
+                timestamp: new Date(block.timestamp * 1000),
+                type: event.args.from.toLowerCase() === account.toLowerCase() ? 'send' : 'receive'
+            };
+        }));
+        
+        // Cache for 2 minutes
+        cache.set(cacheKey, transactions, 120000);
+        
+        displayTransactions(transactions);
+        hideProgress();
+        
+    } catch (error) {
+        console.error('Error loading transaction history:', error);
+        hideProgress();
+        showToast('Error', 'Failed to load transaction history', 'error');
+    }
+}
+
+function displayTransactions(transactions) {
+    const list = document.getElementById('txList');
+    if (!list) return;
+    
+    if (!transactions || transactions.length === 0) {
+        document.getElementById('txEmpty').classList.remove('hidden');
+        list.classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('txEmpty').classList.add('hidden');
+    list.classList.remove('hidden');
+    
+    list.innerHTML = transactions.map(tx => `
+        <div class="tx-item">
+            <div>
+                <span class="tx-type ${tx.type}">${tx.type === 'send' ? 'Sent' : 'Received'}</span>
+                <div class="text-sm text-gray mt-05">${tx.timestamp.toLocaleString()}</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="fw-600">${parseFloat(tx.value).toFixed(4)} AETH</div>
+                <a href="https://polygonscan.com/tx/${tx.hash}" target="_blank" rel="noopener" class="text-sm" style="color: var(--primary);">
+                    View <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    `).join('');
 }
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
