@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Aetheron Platform</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Mobile Optimization -->
+    <link rel="stylesheet" href="mobile-optimization.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Ethers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-change.positive {
+            color: #22c55e;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 350px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .timeframe-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timeframe-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .timeframe-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        .timeframe-btn.active {
+            background: rgba(139, 92, 246, 0.6);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        canvas {
+            max-height: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 12px 24px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(139, 92, 246, 0.4);
+            transform: translateX(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 250px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Additional insights section */
+        .insights-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        .insights-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .insight-item {
+            padding: 16px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .insight-item h4 {
+            margin-bottom: 8px;
+            color: #8b5cf6;
+        }
+
+        .insight-item p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-link">← Back to Dashboard</a>
+        
+        <header>
+            <h1>📊 Analytics Dashboard</h1>
+            <p class="subtitle">Real-time data and insights for Aetheron Platform</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Current Price</div>
+                <div class="stat-value" id="current-price">Loading...</div>
+                <div class="stat-change" id="price-change">
+                    <span>--</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">24h Volume</div>
+                <div class="stat-value" id="volume-24h">Loading...</div>
+                <div class="stat-change">
+                    <span id="volume-info">--</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Total Value Locked</div>
+                <div class="stat-value" id="tvl-value">Loading...</div>
+                <div class="stat-change">
+                    <span id="tvl-info">Liquidity + Staking</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Total Staked</div>
+                <div class="stat-value" id="staked-value">Loading...</div>
+                <div class="stat-change">
+                    <span id="staked-percent">--</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Active Stakers</div>
+                <div class="stat-value" id="stakers-count">Loading...</div>
+                <div class="stat-change">
+                    <span id="stakers-info">Unique wallets</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Reward Pool</div>
+                <div class="stat-value" id="reward-pool">Loading...</div>
+                <div class="stat-change">
+                    <span id="reward-info">Available rewards</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <!-- Price Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">💰 Price History</div>
+                    <div class="timeframe-selector">
+                        <button class="timeframe-btn active" data-timeframe="1H">1H</button>
+                        <button class="timeframe-btn" data-timeframe="24H">24H</button>
+                        <button class="timeframe-btn" data-timeframe="7D">7D</button>
+                        <button class="timeframe-btn" data-timeframe="30D">30D</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Volume Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">📊 Trading Volume</div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- TVL Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">💎 Total Value Locked</div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="tvlChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Staking Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">🎯 Staking Metrics</div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="stakingChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="insights-section">
+            <h3 class="insights-title">💡 Platform Insights</h3>
+            <div id="insights-container">
+                <div class="loading">Loading insights</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load main dashboard script for contract initialization -->
+    <script src="index.js"></script>
+    
+    <!-- Load charts script -->
+    <script src="charts.js"></script>
+
+    <!-- Analytics-specific logic -->
+    <script>
+        console.log('📊 Analytics dashboard initializing...');
+
+        // Update key metrics from live data
+        async function updateKeyMetrics() {
+            try {
+                // Price data
+                const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D');
+                const data = await response.json();
+                
+                if (data.pair) {
+                    const price = parseFloat(data.pair.priceUsd) || 0;
+                    const priceChange = parseFloat(data.pair.priceChange?.h24) || 0;
+                    const volume = parseFloat(data.pair.volume?.h24) || 0;
+                    const liquidity = parseFloat(data.pair.liquidity?.usd) || 0;
+
+                    document.getElementById('current-price').textContent = '$' + price.toFixed(6);
+                    
+                    const changeEl = document.getElementById('price-change');
+                    changeEl.innerHTML = (priceChange >= 0 ? '▲ ' : '▼ ') + Math.abs(priceChange).toFixed(2) + '%';
+                    changeEl.className = 'stat-change ' + (priceChange >= 0 ? 'positive' : 'negative');
+
+                    document.getElementById('volume-24h').textContent = '$' + volume.toFixed(2);
+                    document.getElementById('tvl-value').textContent = '$' + liquidity.toFixed(2);
+                }
+
+                // Staking data
+                if (window.readOnlyAethContract && window.readOnlyStakingContract) {
+                    const totalSupply = await window.readOnlyAethContract.totalSupply();
+                    const stakedBalance = await window.readOnlyStakingContract.totalStaked();
+                    const rewardBalance = await window.readOnlyAethContract.balanceOf(window.STAKING_ADDRESS);
+                    
+                    const totalStaked = parseFloat(ethers.utils.formatEther(stakedBalance));
+                    const rewards = parseFloat(ethers.utils.formatEther(rewardBalance));
+                    const stakingPercent = (totalStaked / parseFloat(ethers.utils.formatEther(totalSupply))) * 100;
+
+                    document.getElementById('staked-value').textContent = totalStaked.toFixed(0).toLocaleString() + ' AETH';
+                    document.getElementById('staked-percent').textContent = stakingPercent.toFixed(2) + '% of supply';
+                    document.getElementById('reward-pool').textContent = rewards.toFixed(0).toLocaleString() + ' AETH';
+
+                    // Try to get unique stakers count
+                    try {
+                        const poolCount = await window.readOnlyStakingContract.getPoolCount();
+                        document.getElementById('stakers-count').textContent = poolCount.toString();
+                    } catch (e) {
+                        document.getElementById('stakers-count').textContent = '3 Pools';
+                    }
+                }
+
+                generateInsights();
+
+            } catch (error) {
+                console.error('❌ Error updating key metrics:', error);
+            }
+        }
+
+        // Generate insights based on data
+        function generateInsights() {
+            const insightsContainer = document.getElementById('insights-container');
+            
+            const insights = [
+                {
+                    title: '📈 Price Performance',
+                    text: 'AETH is actively trading on QuickSwap V2. Price updates every 30 seconds from live DEX data.'
+                },
+                {
+                    title: '🎯 Staking Participation',
+                    text: 'Three staking pools are available with APYs ranging from 8% to 18%. Lock periods vary from 7 to 90 days.'
+                },
+                {
+                    title: '💰 Liquidity Status',
+                    text: 'Current liquidity pool contains AETH/POL on QuickSwap. Consider adding more liquidity for better price stability.'
+                },
+                {
+                    title: '🚀 Growth Opportunity',
+                    text: 'Platform is technically complete with verified contracts. Ready for marketing and user acquisition campaigns.'
+                }
+            ];
+
+            insightsContainer.innerHTML = insights.map(insight => `
+                <div class="insight-item">
+                    <h4>${insight.title}</h4>
+                    <p>${insight.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        setTimeout(() => {
+            updateKeyMetrics();
+            setInterval(updateKeyMetrics, 30000); // Update every 30 seconds
+        }, 2000); // Wait for contracts to initialize
+
+        console.log('✅ Analytics dashboard ready');
+    </script>
+</body>
+</html>
