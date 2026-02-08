@@ -680,16 +680,6 @@ async function disconnectWallet() {
     console.log('\ud83d\udd0c Wallet disconnected');
 }
 
-    document.getElementById('connectBtn').textContent = 'Connect Wallet';
-    document.getElementById('connectBtn').classList.remove('connected');
-    document.getElementById('walletConnected').classList.add('hidden');
-    document.getElementById('walletAddress').textContent = '';
-    document.getElementById('userBalance').textContent = '0.00';
-    document.getElementById('userBalanceUSD').textContent = '$0.00 USD';
-
-    showAlert('Wallet disconnected', 'info', 'stakingAlert');
-}
-
 // Add token to wallet function
 async function addTokenToWallet() {
     if (!window.ethereum) {
