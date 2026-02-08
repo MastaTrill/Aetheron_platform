@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Program - Aetheron Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00D4FF;
+            --secondary: #8A2BE2;
+            --accent: #FF6B35;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0a0a0a;
+            --light: #1a1a2e;
+            --text: #ffffff;
+            --card-bg: rgba(26, 26, 46, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .referral-code-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .referral-link {
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: var(--primary);
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .referral-list {
+            list-style: none;
+        }
+
+        .referral-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .referral-item:last-child {
+            border-bottom: none;
+        }
+
+        .referral-address {
+            font-family: monospace;
+            color: var(--primary);
+        }
+
+        .referral-reward {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .wallet-connect-box {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--accent);
+        }
+
+        .wallet-connect-box button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--accent), var(--danger));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .referral-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <div class="hero">
+            <h1><i class="fas fa-share-alt"></i> Referral Program</h1>
+            <p>Earn 5% of your friends' first stake in AETH tokens!</p>
+        </div>
+
+        <div id="walletConnectPrompt" class="card">
+            <div class="wallet-connect-box">
+                <i class="fas fa-wallet" style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h2>Connect Your Wallet</h2>
+                <p style="margin: 1rem 0; color: rgba(255, 255, 255, 0.7);">Connect your wallet to generate your unique referral link and track your rewards</p>
+                <button onclick="connectWallet()">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
+        </div>
+
+        <div id="referralContent" style="display: none;">
+            <!-- Your Referral Link -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-link"></i>
+                        Your Referral Link
+                    </h2>
+                </div>
+                
+                <div class="referral-code-box">
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">Share this link with your friends:</p>
+                    <div class="referral-link" id="referralLink">
+                        https://mastatrill.github.io/Aetheron_platform/?ref=0x...
+                    </div>
+                    <button class="copy-btn" onclick="copyReferralLink()">
+                        <i class="fas fa-copy"></i>
+                        <span id="copyBtnText">Copy Link</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Your Stats
+                    </h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalReferrals">0</div>
+                        <div class="stat-label">Total Referrals</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="activeReferrals">0</div>
+                        <div class="stat-label">Active Stakers</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalEarned">0 AETH</div>
+                        <div class="stat-label">Total Earned</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="pendingRewards">0 AETH</div>
+                        <div class="stat-label">Pending Rewards</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-question-circle"></i>
+                        How It Works
+                    </h2>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">1️⃣</div>
+                        <div class="benefit-title">Share Your Link</div>
+                        <div class="benefit-desc">Copy your unique referral link and share it with friends</div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">2️⃣</div>
+                        <div class="benefit-title">They Stake AETH</div>
+                        <div class="benefit-desc">When they stake tokens for the first time using your link</div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">3️⃣</div>
+                        <div class="benefit-title">You Earn 5%</div>
+                        <div class="benefit-desc">Receive 5% of their initial stake amount in AETH</div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🎁</div>
+                        <div class="benefit-title">Bonus Rewards</div>
+                        <div class="benefit-desc">Extra bonuses for top referrers each month!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Referrals -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Your Referrals
+                    </h2>
+                </div>
+
+                <ul class="referral-list" id="referralsList">
+                    <li style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5);">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                        No referrals yet. Start sharing your link!
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let provider, signer, account;
+        
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask to use this feature!');
+                return;
+            }
+
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                account = await signer.getAddress();
+
+                // Show referral content
+                document.getElementById('walletConnectPrompt').style.display = 'none';
+                document.getElementById('referralContent').style.display = 'block';
+
+                // Generate referral link
+                const referralLink = `https://mastatrill.github.io/Aetheron_platform/?ref=${account}`;
+                document.getElementById('referralLink').textContent = referralLink;
+
+                // Load referral stats (mock data for now)
+                loadReferralStats();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        }
+
+        function loadReferralStats() {
+            // In production, fetch real data from smart contract or backend
+            // For now, showing mock data
+            
+            const mockStats = {
+                totalReferrals: 5,
+                activeReferrals: 3,
+                totalEarned: 12500,
+                pendingRewards: 2500,
+                referrals: [
+                    { address: '0x1234...5678', reward: 5000 },
+                    { address: '0x2345...6789', reward: 3500 },
+                    { address: '0x3456...7890', reward: 2000 },
+                    { address: '0x4567...8901', reward: 1500 },
+                    { address: '0x5678...9012', reward: 500 }
+                ]
+            };
+
+            document.getElementById('totalReferrals').textContent = mockStats.totalReferrals;
+            document.getElementById('activeReferrals').textContent = mockStats.activeReferrals;
+            document.getElementById('totalEarned').textContent = `${mockStats.totalEarned.toLocaleString()} AETH`;
+            document.getElementById('pendingRewards').textContent = `${mockStats.pendingRewards.toLocaleString()} AETH`;
+
+            // Update referrals list
+            const referralsList = document.getElementById('referralsList');
+            if (mockStats.referrals.length > 0) {
+                referralsList.innerHTML = mockStats.referrals.map(ref => `
+                    <li class="referral-item">
+                        <span class="referral-address">${ref.address}</span>
+                        <span class="referral-reward">+${ref.reward.toLocaleString()} AETH</span>
+                    </li>
+                `).join('');
+            }
+        }
+
+        function copyReferralLink() {
+            const linkText = document.getElementById('referralLink').textContent;
+            navigator.clipboard.writeText(linkText).then(() => {
+                const btn = event.target.closest('.copy-btn');
+                const btnText = document.getElementById('copyBtnText');
+                
+                btn.classList.add('copied');
+                btnText.textContent = 'Copied!';
+                btn.querySelector('i').className = 'fas fa-check';
+
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btnText.textContent = 'Copy Link';
+                    btn.querySelector('i').className = 'fas fa-copy';
+                }, 2000);
+            });
+        }
+
+        // Check URL for referral parameter
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrer = urlParams.get('ref');
+            
+            if (referrer) {
+                // Store referrer in localStorage
+                localStorage.setItem('aeth_referrer', referrer);
+                console.log('Referrer saved:', referrer);
+            }
+        });
+    </script>
+</body>
+</html>

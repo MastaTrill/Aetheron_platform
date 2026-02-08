@@ -847,6 +847,121 @@
             font-weight: 700;
             color: var(--dark);
         }
+
+        /* Quick Actions Bar */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .quick-action-btn i {
+            font-size: 1rem;
+        }
+
+        .quick-action-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .live-indicator {
+            cursor: default;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .faq-question:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .faq-question h3 {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 1rem;
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 1rem;
+        }
+
+        .faq-toggle {
+            transition: transform 0.3s;
+        }
+
+        .faq-toggle.active {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 
@@ -875,6 +990,15 @@
                 <a href="transaction-history.html" class="nav-link">
                     <i class="fas fa-history"></i> History
                 </a>
+                <a href="leaderboard.html" class="nav-link">
+                    <i class="fas fa-trophy"></i> Leaderboard
+                </a>
+                <a href="referral.html" class="nav-link">
+                    <i class="fas fa-share-alt"></i> Referral
+                </a>
+                <a href="roadmap.html" class="nav-link">
+                    <i class="fas fa-route"></i> Roadmap
+                </a>
                 <a href="social-trading/index.html" class="nav-link">
                     <i class="fas fa-users"></i> Social Trading
                 </a>
@@ -902,6 +1026,26 @@
             <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
             <div id="networkAlert" class="alert alert-error hidden">
                 ⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
+            </div>
+            
+            <!-- Quick Actions Bar -->
+            <div class="quick-actions">
+                <button id="addToMetaMaskBtn" class="quick-action-btn" title="Add AETH to MetaMask">
+                    <i class="fas fa-plus-circle"></i>
+                    Add to MetaMask
+                </button>
+                <button id="copyContractBtn" class="quick-action-btn" title="Copy Contract Address">
+                    <i class="fas fa-copy"></i>
+                    <span id="copyBtnText">0xAb5a...71e</span>
+                </button>
+                <button id="viewOnScanBtn" class="quick-action-btn" onclick="window.open('https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
+                    <i class="fas fa-external-link-alt"></i>
+                    View on PolygonScan
+                </button>
+                 <div class="quick-action-btn live-indicator">
+                    <span class="pulse-dot"></span>
+                    <span id="liveHoldersCount">Loading...</span> Holders
+                </div>
             </div>
         </div>
 
@@ -983,7 +1127,10 @@
                 <div class="icon"><i class="fas fa-coins"></i></div>
                 <div class="label">AETH Price</div>
                 <div class="value" id="priceValue">Loading...</div>
-                <div class="change positive" id="priceChange">--</div>
+                <div class="change" id="priceChange">
+                    <i class="fas fa-arrow-up" id="priceArrow"></i>
+                    <span id="priceChangePercent">--</span>
+                </div>
             </div>
 
             <div class="stat-card success">
@@ -1345,6 +1492,111 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="container">
+        <div class="faq-section">
+            <h2 style="text-align: center; margin-bottom: 2rem;">
+                <i class="fas fa-question-circle"></i> Frequently Asked Questions
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(0)">
+                    <h3>How do I buy AETH tokens?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-0"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-0">
+                    <p>To buy AETH tokens:</p>
+                    <ol>
+                        <li>Connect your wallet (MetaMask recommended)</li>
+                        <li>Ensure you're on Polygon Mainnet (Chain ID: 137)</li>
+                        <li>Get some MATIC for gas fees</li>
+                        <li>Visit <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" style="color: var(--primary);">QuickSwap</a> and swap MATIC for AETH</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(1)">
+                    <h3>How does staking work?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-1"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-1">
+                    <p>Staking allows you to earn passive income by locking your AETH tokens for a set period. We offer three pools:</p>
+                    <ul>
+                        <li><strong>30 Days:</strong> 5% APY - Flexible short-term option</li>
+                        <li><strong>90 Days:</strong> 12% APY - Medium-term commitment</li>
+                        <li><strong>180 Days:</strong> 25% APY - Maximum rewards</li>
+                    </ul>
+                    <p>Rewards are automatically calculated and can be claimed at any time. Staking is tax-free!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(2)">
+                    <h3>What are the fees?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-2"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-2">
+                    <p>AETH has a simple tax structure:</p>
+                    <ul>
+                        <li><strong>Buy Tax:</strong> 3% (goes to treasury for development)</li>
+                        <li><strong>Sell Tax:</strong> 5% (supports platform sustainability)</li>
+                        <li><strong>Staking:</strong> Tax-free transfers</li>
+                        <li><strong>Gas Fees:</strong> Minimal on Polygon (usually $0.01-0.05)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(3)">
+                    <h3>Is AETH secure and audited?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-3"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-3">
+                    <p>Yes! Security is our top priority:</p>
+                    <ul>
+                        <li>Built using OpenZeppelin's battle-tested smart contracts</li>
+                        <li>All contracts are verified on PolygonScan</li>
+                        <li>Liquidity locked on QuickSwap</li>
+                        <li>Multi-signature wallet for admin functions</li>
+                        <li>Regular security audits and updates</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(4)">
+                    <h3>Can I unstake early?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-4"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-4">
+                    <p>Yes, but with conditions:</p>
+                    <ul>
+                        <li><strong>After Lock Period:</strong> Free unstaking with full rewards</li>
+                        <li><strong>Before Lock Period:</strong> Use "Emergency Withdraw" - you'll get your principal back but forfeit all rewards</li>
+                        <li><strong>Recommendation:</strong> Plan your staking period carefully to maximize rewards</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(5)">
+                    <h3>How do I add AETH to MetaMask?</h3>
+                    <i class="fas fa-chevron-down faq-toggle" id="faq-toggle-5"></i>
+                </div>
+                <div class="faq-answer" id="faq-answer-5">
+                    <p>Easy! Just click the "Add to MetaMask" button at the top of this page, or manually add:</p>
+                    <ul>
+                        <li><strong>Network:</strong> Polygon Mainnet</li>
+                        <li><strong>Contract:</strong> 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</li>
+                        <li><strong>Symbol:</strong> AETH</li>
+                        <li><strong>Decimals:</strong> 18</li>
+                    </ul>
                 </div>
             </div>
         </div>

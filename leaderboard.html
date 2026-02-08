@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Aetheron Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00D4FF;
+            --secondary: #8A2BE2;
+            --accent: #FF6B35;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0a0a0a;
+            --light: #1a1a2e;
+            --text: #ffffff;
+            --card-bg: rgba(26, 26, 46, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .leaderboard-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaderboard-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(138, 43, 226, 0.1));
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-title {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .leaderboard-list {
+            padding: 0;
+        }
+
+        .leader-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .leader-item:last-child {
+            border-bottom: none;
+        }
+
+        .leader-item:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .rank-1 { color: #FFD700; }
+        .rank-2 { color: #C0C0C0; }
+        .rank-3 { color: #CD7F32; }
+
+        .medal {
+            font-size: 2rem;
+        }
+
+        .leader-info {
+            flex: 1;
+        }
+
+        .leader-address {
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .leader-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .badge-whale {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-og {
+            background: rgba(138, 43, 226, 0.2);
+            color: var(--secondary);
+        }
+
+        .badge-diamond {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+
+        .leader-stats {
+            text-align: right;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            font-size: 3rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .leader-item {
+                flex-wrap: wrap;
+            }
+
+            .rank {
+                min-width: 40px;
+                font-size: 1.2rem;
+            }
+
+            .leader-stats {
+                width: 100%;
+                text-align: left;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-trophy"></i> Aetheron Leaderboard</h1>
+            <p>Top performers in the Aetheron ecosystem</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('holders')">
+                <i class="fas fa-users"></i> Top Holders
+            </div>
+            <div class="tab" onclick="switchTab('stakers')">
+                <i class="fas fa-lock"></i> Top Stakers
+            </div>
+            <div class="tab" onclick="switchTab('traders')">
+                <i class="fas fa-exchange-alt"></i> Top Traders
+            </div>
+            <div class="tab" onclick="switchTab('referrers')">
+                <i class="fas fa-share-alt"></i> Top Referrers
+            </div>
+        </div>
+
+        <div class="leaderboard-grid">
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <div class="leaderboard-title">
+                        <i class="fas fa-crown"></i>
+                        <span id="categoryTitle">Top Holders</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-sync-alt" onclick="refreshLeaderboard()" style="cursor: pointer; font-size: 1.2rem;"></i>
+                    </div>
+                </div>
+                <div id="leaderboardContent" class="leaderboard-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner loading-spinner"></i>
+                        <p style="margin-top: 1rem;">Loading leaderboard...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+        const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
+        
+        const AETH_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function totalSupply() view returns (uint256)"
+        ];
+
+        const STAKING_ABI = [
+            "function getUserStakesCount(address) view returns (uint256)",
+            "function getUserStake(address, uint256) view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
+            "function totalStaked() view returns (uint256)"
+        ];
+
+        let provider;
+        let currentTab = 'holders';
+
+        // Mock data (in production, fetch from blockchain or backend)
+        const mockLeaderboardData = {
+            holders: [
+                {
+                    address: '0x8A3a...3452',
+                    value: '125,450,000',
+                    percentage: '12.5%',
+                    badges: ['whale', 'og'],
+                    rank: 1
+                },
+                {
+                    address: '0x6F2B...8971',
+                    value: '98,320,500',
+                    percentage: '9.8%',
+                    badges: ['whale', 'diamond'],
+                    rank: 2
+                },
+                {
+                    address: '0x4D8E...1234',
+                    value: '75,890,200',
+                    percentage: '7.6%',
+                    badges: ['whale'],
+                    rank: 3
+                },
+                {
+                    address: '0x9C3F...5678',
+                    value: '52,100,000',
+                    percentage: '5.2%',
+                    badges: ['og'],
+                    rank: 4
+                },
+                {
+                    address: '0x2A7D...9012',
+                    value: '41,500,000',
+                    percentage: '4.2%',
+                    badges: ['diamond'],
+                    rank: 5
+                },
+                {
+                    address: '0x5B1C...3456',
+                    value: '35,200,000',
+                    percentage: '3.5%',
+                    badges: [],
+                    rank: 6
+                },
+                {
+                    address: '0x7E4F...7890',
+                    value: '28,900,000',
+                    percentage: '2.9%',
+                    badges: [],
+                    rank: 7
+                },
+                {
+                    address: '0x8D2A...2345',
+                    value: '22,100,000',
+                    percentage: '2.2%',
+                    badges: ['og'],
+                    rank: 8
+                },
+                {
+                    address: '0x3F5E...6789',
+                    value: '18,500,000',
+                    percentage: '1.9%',
+                    badges: [],
+                    rank: 9
+                },
+                {
+                    address: '0x1C6B...0123',
+                    value: '15,200,000',
+                    percentage: '1.5%',
+                    badges: [],
+                    rank: 10
+                }
+            ],
+            stakers: [
+                {
+                    address: '0x4D8E...1234',
+                    value: '45,890,200',
+                    duration: '180 days',
+                    badges: ['diamond'],
+                    rank: 1
+                },
+                {
+                    address: '0x8A3a...3452',
+                    value: '38,450,000',
+                    duration: '90 days',
+                    badges: ['whale', 'og'],
+                    rank: 2
+                },
+                {
+                    address: '0x6F2B...8971',
+                    value: '32,320,500',
+                    duration: '180 days',
+                    badges: ['diamond'],
+                    rank: 3
+                }
+            ],
+            traders: [
+                {
+                    address: '0x2A7D...9012',
+                    value: '$125,450',
+                    trades: '342',
+                    badges: ['whale'],
+                    rank: 1
+                },
+                {
+                    address: '0x5B1C...3456',
+                    value: '$98,320',
+                    trades: '289',
+                    badges: [],
+                    rank: 2
+                },
+                {
+                    address: '0x7E4F...7890',
+                    value: '$75,890',
+                    trades: '215',
+                    badges: ['og'],
+                    rank: 3
+                }
+            ],
+            referrers: [
+                {
+                    address: '0x9C3F...5678',
+                    value: '42',
+                    rewards: '125,000 AETH',
+                    badges: ['og'],
+                    rank: 1
+                },
+                {
+                    address: '0x8D2A...2345',
+                    value: '35',
+                    rewards: '98,000 AETH',
+                    badges: [],
+                    rank: 2
+                },
+                {
+                    address: '0x3F5E...6789',
+                    value: '28',
+                    rewards: '75,000 AETH',
+                    badges: [],
+                    rank: 3
+                }
+            ]
+        };
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            
+            // Update title
+            const titles = {
+                holders: 'Top Holders',
+                stakers: 'Top Stakers',
+                traders: 'Top Traders',
+                referrers: 'Top Referrers'
+            };
+            document.getElementById('categoryTitle').textContent = titles[tab];
+            
+            // Load data
+            loadLeaderboard(tab);
+        }
+
+        function loadLeaderboard(category) {
+            const content = document.getElementById('leaderboardContent');
+            const data = mockLeaderboardData[category];
+            
+            if (!data || data.length === 0) {
+                content.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <p style="margin-top: 1rem;">No data available yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            content.innerHTML = data.map(item => `
+                <div class="leader-item">
+                    <div class="rank ${item.rank <= 3 ? 'rank-' + item.rank : ''}">
+                        ${item.rank <= 3 ? 
+                            (item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : '🥉') :
+                            '#' + item.rank
+                        }
+                    </div>
+                    <div class="leader-info">
+                        <div class="leader-address">${item.address}</div>
+                        <div class="leader-badges">
+                            ${item.badges.includes('whale') ? '<span class="badge badge-whale"><i class="fas fa-water"></i> Whale</span>' : ''}
+                            ${item.badges.includes('og') ? '<span class="badge badge-og"><i class="fas fa-crown"></i> OG</span>' : ''}
+                            ${item.badges.includes('diamond') ? '<span class="badge badge-diamond"><i class="fas fa-gem"></i> Diamond Hands</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="leader-stats">
+                        <div class="stat-value">${item.value}</div>
+                        <div class="stat-label">
+                            ${category === 'holders' ? 'AETH Tokens' :
+                              category === 'stakers' ? item.duration :
+                              category === 'traders' ? item.trades + ' trades' :
+                              category === 'referrers' ? 'referrals' : ''}
+                        </div>
+                        ${item.percentage ? `<div class="stat-label">${item.percentage} of supply</div>` : ''}
+                        ${item.rewards ? `<div class="stat-label">${item.rewards} earned</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function refreshLeaderboard() {
+            const content = document.getElementById('leaderboardContent');
+            content.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner loading-spinner"></i>
+                    <p style="margin-top: 1rem;">Refreshing...</p>
+                </div>
+            `;
+            setTimeout(() => loadLeaderboard(currentTab), 1000);
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadLeaderboard('holders');
+        });
+    </script>
+</body>
+</html>
