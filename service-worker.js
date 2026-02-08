@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aetheron-v1.0.0';
+const CACHE_NAME = 'aetheron-v1.1.0';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,6 +9,8 @@ const urlsToCache = [
   '/roadmap.html',
   '/leaderboard.html',
   '/referral.html',
+  '/governance.html',
+  '/voting-history.html',
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'

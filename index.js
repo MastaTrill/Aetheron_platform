@@ -1021,6 +1021,130 @@ window.onclick = function(event) {
     }
 }
 
+// Theme Toggle Functionality
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'theme_toggle', {
+            'event_category': 'ui',
+            'event_label': newTheme,
+            'value': 1
+        });
+    }
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+}
+
+// Initialize theme on load
+initTheme();
+
+// Newsletter Signup Handler
+async function handleNewsletterSignup(event) {
+    event.preventDefault();
+    
+    const emailInput = document.getElementById('emailInput');
+    const messageDiv = document.getElementById('newsletterMessage');
+    const email = emailInput.value.trim();
+    
+    if (!email) return;
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        messageDiv.textContent = '❌ Please enter a valid email address';
+        messageDiv.className = 'newsletter-message error';
+        return;
+    }
+    
+    // Store in localStorage (in production, send to backend)
+    const preferences = {
+        email,
+        governance: document.querySelector('.notification-options input:nth-child(1)').checked,
+        features: document.querySelector('.notification-options input:nth-child(2)').checked,
+        priceAlerts: document.querySelector('.notification-options input:nth-child(3)').checked,
+        digest: document.querySelector('.notification-options input:nth-child(4)').checked,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('emailNotificationPrefs', JSON.stringify(preferences));
+    
+    // Request push notification permission
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                // Subscribe to push notifications
+                const registration = await navigator.serviceWorker.ready;
+                try {
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY') // Replace with real VAPID key
+                    });
+                    console.log('Push subscription:', subscription);
+                } catch (err) {
+                    console.log('Push subscription failed:', err);
+                }
+            }
+        } catch (err) {
+            console.log('Notification permission error:', err);
+        }
+    }
+    
+    messageDiv.textContent = '✅ Successfully subscribed! You\'ll receive notifications for selected topics.';
+    messageDiv.className = 'newsletter-message success';
+    emailInput.value = '';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'newsletter_signup', {
+            'event_category': 'engagement',
+            'event_label': email,
+            'value': 1
+        });
+    }
+    
+    // Show test notification
+    setTimeout(() => {
+        if (Notification.permission === 'granted') {
+            new Notification('Welcome to Aetheron! 🚀', {
+                body: 'You\'ll now receive updates about governance votes and platform features.',
+                icon: '/assets/icon-192.png',
+                badge: '/assets/icon-72.png'
+            });
+        }
+    }, 1000);
+}
+
+// Helper function for push notifications
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
 // Initialize new features on page load
 if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {
@@ -1053,6 +1177,18 @@ if (typeof window !== 'undefined') {
        const shareBtn = document.getElementById('shareBtn');
         if (shareBtn) {
             shareBtn.addEventListener('click', showShareModal);
+        }
+        
+        // Hook up theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        
+        // Hook up newsletter form
+        const newsletterForm = document.getElementById('newsletterForm');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', handleNewsletterSignup);
         }
     });
     
