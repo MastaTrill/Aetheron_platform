@@ -55,6 +55,7 @@ Best regards,
 [Your Name]
 [Your Title]
 Aetheron Platform
+X/Twitter: @William_McCoy_
 
 ---
 📎 Attachments:
@@ -188,6 +189,7 @@ P.S. Our analytics dashboard updates every 30 seconds with live on-chain data - 
 
 **Contact**:
 Website: https://aetheronplatform.github.io
+X/Twitter: @William_McCoy_
 Email: [your-email]
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 

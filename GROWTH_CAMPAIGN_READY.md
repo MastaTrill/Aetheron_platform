@@ -50,7 +50,7 @@
 - ✅ Success metrics and goals
 
 **How to Use**:
-1. Create Twitter account today (@AetheronDeFi or similar)
+1. Create Twitter account today (@William_McCoy_ - Primary account)
 2. Copy Tweet 1 from the doc → Post
 3. Copy Tweet 2 → Schedule for tomorrow
 4. Continue daily: 2 tweets per day from the 15 templates

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Alerts - Aetheron Platform</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="mobile-optimization.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AETHERON</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="analytics-dashboard.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="staking-calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+                <a href="price-alerts.html" class="active"><i class="fas fa-bell"></i> Alerts</a>
+                <a href="portfolio.html"><i class="fas fa-wallet"></i> Portfolio</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-bell"></i> Price Alerts</h1>
+                <p>Get notified when AETH hits your target price</p>
+            </div>
+
+            <!-- Current Price Display -->
+            <div class="current-price-card card">
+                <div class="price-info">
+                    <span class="price-label">Current AETH Price</span>
+                    <span class="price-value" id="currentPrice">Loading...</span>
+                    <span class="price-change" id="priceChange">--</span>
+                </div>
+                <div class="price-actions">
+                    <button class="btn-secondary" onclick="requestNotifications()">
+                        <i class="fas fa-bell"></i> Enable Notifications
+                    </button>
+                </div>
+            </div>
+
+            <!-- Create Alert Form -->
+            <div class="alert-form card">
+                <h2><i class="fas fa-plus-circle"></i> Create New Alert</h2>
+                <form id="alertForm" onsubmit="createAlert(event)">
+                    <div class="form-row">
+                        <div class="alert-form-group">
+                            <label for="targetPrice">Target Price (USD)</label>
+                            <input 
+                                type="number" 
+                                id="targetPrice" 
+                                step="0.000001" 
+                                min="0"
+                                placeholder="0.000010"
+                                required
+                            >
+                        </div>
+
+                        <div class="alert-form-group">
+                            <label for="direction">Alert When Price Is</label>
+                            <select id="direction" required>
+                                <option value="above">Above Target</option>
+                                <option value="below">Below Target</option>
+                            </select>
+                        </div>
+
+                        <div class="alert-form-group">
+                            <label for="notification">Notification Type</label>
+                            <select id="notification" required>
+                                <option value="browser">Browser Only</option>
+                                <option value="email">Email Only (Coming Soon)</option>
+                                <option value="both">Both (Coming Soon)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-bell-plus"></i> Create Alert
+                    </button>
+                </form>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="alerts-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bell-on"></i> Active Alerts (<span id="activeCount">0</span>)</h2>
+                    <button class="btn-text" onclick="clearTriggeredAlerts()">
+                        <i class="fas fa-eraser"></i> Clear Triggered
+                    </button>
+                </div>
+                <div class="alert-list" id="activeAlerts">
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No active alerts. Create one above to get started!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Triggered Alerts -->
+            <div class="alerts-section" id="triggeredSection" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="fas fa-check-circle"></i> Triggered Alerts (<span id="triggeredCount">0</span>)</h2>
+                </div>
+                <div class="alert-list" id="triggeredAlerts"></div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> How Price Alerts Work</h3>
+                <ul>
+                    <li>Prices are checked every 30 seconds from DexScreener</li>
+                    <li>Alerts trigger once when the price crosses your target</li>
+                    <li>Browser notifications require permission (click Enable button above)</li>
+                    <li>Alerts are stored locally in your browser</li>
+                    <li>You can create unlimited alerts</li>
+                    <li>Email alerts coming soon!</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="theme-toggle.js"></script>
+    <script src="price-alerts.js"></script>
+    <script>
+        // Display current price
+        async function updateCurrentPrice() {
+            const price = await priceAlertManager.getCurrentPrice();
+            if (price) {
+                document.getElementById('currentPrice').textContent = `$${price.toFixed(8)}`;
+                
+                // Would need historical data for change percentage
+                // For now, just show price
+            }
+        }
+
+        // Create new alert
+        function createAlert(event) {
+            event.preventDefault();
+            
+            const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+            const direction = document.getElementById('direction').value;
+            const notification = document.getElementById('notification').value;
+
+            try {
+                priceAlertManager.createAlert(targetPrice, direction, notification);
+                
+                // Reset form
+                document.getElementById('alertForm').reset();
+                
+                // Show success message
+                showSuccessMessage('Alert created successfully!');
+                
+                // Refresh alerts list
+                displayAlerts();
+            } catch (error) {
+                alert('Error creating alert: ' + error.message);
+            }
+        }
+
+        // Display all alerts
+        function displayAlerts() {
+            const activeAlerts = priceAlertManager.getActiveAlerts();
+            const triggeredAlerts = priceAlertManager.getTriggeredAlerts();
+
+            // Update counts
+            document.getElementById('activeCount').textContent = activeAlerts.length;
+            document.getElementById('triggeredCount').textContent = triggeredAlerts.length;
+
+            // Display active alerts
+            const activeContainer = document.getElementById('activeAlerts');
+            if (activeAlerts.length === 0) {
+                activeContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No active alerts. Create one above to get started!</p>
+                    </div>
+                `;
+            } else {
+                activeContainer.innerHTML = activeAlerts.map(alert => `
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-price">$${alert.targetPrice.toFixed(8)}</div>
+                            <div class="alert-direction">
+                                Alert when price is <strong>${alert.direction}</strong> target
+                                <span style="margin-left: 10px; color: var(--text-muted);">
+                                    <i class="fas fa-clock"></i> ${new Date(alert.createdAt).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-delete-btn" onclick="deleteAlert(${alert.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Display triggered alerts
+            const triggeredSection = document.getElementById('triggeredSection');
+            if (triggeredAlerts.length > 0) {
+                triggeredSection.style.display = 'block';
+                const triggeredContainer = document.getElementById('triggeredAlerts');
+                triggeredContainer.innerHTML = triggeredAlerts.map(alert => `
+                    <div class="alert-item triggered">
+                        <div class="alert-info">
+                            <div class="alert-price">$${alert.targetPrice.toFixed(8)}</div>
+                            <div class="alert-direction">
+                                <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                                Triggered at $${alert.triggeredPrice?.toFixed(8) || 'N/A'}
+                                <span style="margin-left: 10px; color: var(--text-muted);">
+                                    <i class="fas fa-clock"></i> ${new Date(alert.triggeredAt).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-delete-btn" onclick="deleteAlert(${alert.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                triggeredSection.style.display = 'none';
+            }
+        }
+
+        // Delete alert
+        function deleteAlert(alertId) {
+            if (confirm('Delete this alert?')) {
+                priceAlertManager.deleteAlert(alertId);
+                displayAlerts();
+                showSuccessMessage('Alert deleted');
+            }
+        }
+
+        // Request notification permission
+        async function requestNotifications() {
+            const permission = await priceAlertManager.requestNotificationPermission();
+            if (permission === 'granted') {
+                showSuccessMessage('Notifications enabled!');
+            } else if (permission === 'denied') {
+                alert('Notifications are blocked. Please enable them in your browser settings.');
+            }
+        }
+
+        // Clear triggered alerts
+        function clearTriggeredAlerts() {
+            if (confirm('Clear all triggered alerts?')) {
+                priceAlertManager.clearTriggeredAlerts();
+                displayAlerts();
+                showSuccessMessage('Triggered alerts cleared');
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'price-alert-notification';
+            notification.innerHTML = `
+                <div class="alert-icon">✅</div>
+                <div class="alert-content">
+                    <div class="alert-title">Success</div>
+                    <div class="alert-message">${message}</div>
+                </div>
+                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.classList.add('alert-fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        updateCurrentPrice();
+        displayAlerts();
+        setInterval(updateCurrentPrice, 30000); // Update price every 30s
+        setInterval(displayAlerts, 5000); // Refresh alerts every 5s
+    </script>
+
+    <style>
+        .current-price-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .price-change {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .btn-text:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .alerts-section {
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 640px) {
+            .current-price-card {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .price-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</body>
+</html>

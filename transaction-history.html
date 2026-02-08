@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - Aetheron Platform</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="mobile-optimization.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AETHERON</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="analytics-dashboard.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="staking-calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+                <a href="price-alerts.html"><i class="fas fa-bell"></i> Alerts</a>
+                <a href="portfolio.html"><i class="fas fa-wallet"></i> Portfolio</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-history"></i> Transaction History</h1>
+                <p>Complete record of all your AETH transactions</p>
+            </div>
+
+            <!-- Wallet Connection -->
+            <div class="wallet-status-card card" id="walletStatus">
+                <button class="btn-primary btn-lg" onclick="connectWallet()">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
+
+            <div id="historyContent" style="display: none;">
+                <!-- Stats Summary -->
+                <div class="history-stats">
+                    <div class="stat-box card">
+                        <div class="stat-icon" style="background: var(--accent-blue);">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Transactions</div>
+                            <div class="stat-value" id="totalTxs">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box card">
+                        <div class="stat-icon" style="background: var(--accent-green);">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Staked</div>
+                            <div class="stat-value" id="totalStaked">0 AETH</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box card">
+                        <div class="stat-icon" style="background: var(--accent-orange);">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Rewards</div>
+                            <div class="stat-value" id="totalRewards">0 AETH</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box card">
+                        <div class="stat-icon" style="background: var(--accent-red);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Fees Paid</div>
+                            <div class="stat-value" id="totalFees">0 MATIC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-bar card">
+                    <div class="filter-group">
+                        <label for="filterType">Type:</label>
+                        <select id="filterType" onchange="applyFilters()">
+                            <option value="all">All Transactions</option>
+                            <option value="stake">Stake</option>
+                            <option value="unstake">Unstake</option>
+                            <option value="claim">Claim Rewards</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="approval">Approval</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filterTime">Time:</label>
+                        <select id="filterTime" onchange="applyFilters()">
+                            <option value="all">All Time</option>
+                            <option value="24h">Last 24 Hours</option>
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d">Last 30 Days</option>
+                            <option value="90d">Last 90 Days</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <button class="btn-secondary" onclick="refreshHistory()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="filter-group">
+                        <button class="btn-secondary" onclick="exportHistory()">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="card transactions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Pool</th>
+                                <th>Amount</th>
+                                <th>Value (USD)</th>
+                                <th>Fee</th>
+                                <th>Status</th>
+                                <th>Tx Hash</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                                    <div class="loading-spinner">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 48px; opacity: 0.3;"></i>
+                                        <p style="margin-top: 16px;">Loading transactions...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button class="btn-secondary" onclick="previousPage()" id="prevBtn" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="page-info">
+                        Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                    </span>
+                    <button class="btn-secondary" onclick="nextPage()" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="theme-toggle.js"></script>
+    <script src="index.js"></script>
+    <script>
+        let currentAccount = null;
+        let allTransactions = [];
+        let filteredTransactions = [];
+        let currentPage = 1;
+        const txsPerPage = 20;
+
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert('Please install MetaMask to use this feature.');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                currentAccount = accounts[0];
+                
+                document.getElementById('walletStatus').style.display = 'none';
+                document.getElementById('historyContent').style.display = 'block';
+                
+                await loadTransactionHistory();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet');
+            }
+        }
+
+        async function loadTransactionHistory() {
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                
+                // Get all transactions from Polygonscan API
+                // Note: In production, you'd use your API key
+                const apiKey = 'YourPolygonscanAPIKey'; // Replace with actual key
+                const tokenAddress = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
+                const stakingAddress = '0x896D9d37A67B0bBf81dde0005975DA7850FFa638';
+                
+                // Fetch token transfers
+                const tokenUrl = `https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=${tokenAddress}&address=${currentAccount}&startblock=0&endblock=99999999&sort=desc`;
+                
+                // Fetch normal transactions (for stake/unstake calls)
+                const normalUrl = `https://api.polygonscan.com/api?module=account&action=txlist&address=${currentAccount}&startblock=0&endblock=99999999&sort=desc`;
+
+                // For now, simulate with contract events (better approach)
+                await loadFromContractEvents(provider);
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showErrorMessage('Failed to load transaction history');
+            }
+        }
+
+        async function loadFromContractEvents(provider) {
+            try {
+                const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+                const stakingContract = new ethers.Contract(stakingAddress, stakingABI, provider);
+
+                // Get block range (last 30 days ~= 1.3M blocks on Polygon)
+                const currentBlock = await provider.getBlockNumber();
+                const fromBlock = currentBlock - 1300000;
+
+                allTransactions = [];
+
+                // Fetch Staked events
+                const stakedFilter = stakingContract.filters.Staked(currentAccount);
+                const stakedEvents = await stakingContract.queryFilter(stakedFilter, fromBlock, currentBlock);
+                
+                for (const event of stakedEvents) {
+                    const block = await event.getBlock();
+                    const tx = await event.getTransaction();
+                    const receipt = await event.getTransactionReceipt();
+                    
+                    allTransactions.push({
+                        time: new Date(block.timestamp * 1000),
+                        type: 'stake',
+                        pool: event.args.poolId.toString(),
+                        amount: parseFloat(ethers.utils.formatEther(event.args.amount)),
+                        value: 0, // Would need historical price
+                        fee: parseFloat(ethers.utils.formatEther(receipt.gasUsed.mul(tx.gasPrice))),
+                        hash: event.transactionHash,
+                        status: 'confirmed'
+                    });
+                }
+
+                // Fetch Unstaked events
+                const unstakedFilter = stakingContract.filters.Unstaked(currentAccount);
+                const unstakedEvents = await stakingContract.queryFilter(unstakedFilter, fromBlock, currentBlock);
+                
+                for (const event of unstakedEvents) {
+                    const block = await event.getBlock();
+                    const tx = await event.getTransaction();
+                    const receipt = await event.getTransactionReceipt();
+                    
+                    allTransactions.push({
+                        time: new Date(block.timestamp * 1000),
+                        type: 'unstake',
+                        pool: event.args.poolId.toString(),
+                        amount: parseFloat(ethers.utils.formatEther(event.args.amount)),
+                        value: 0,
+                        fee: parseFloat(ethers.utils.formatEther(receipt.gasUsed.mul(tx.gasPrice))),
+                        hash: event.transactionHash,
+                        status: 'confirmed'
+                    });
+                }
+
+                // Fetch RewardClaimed events
+                const claimFilter = stakingContract.filters.RewardClaimed(currentAccount);
+                const claimEvents = await stakingContract.queryFilter(claimFilter, fromBlock, currentBlock);
+                
+                for (const event of claimEvents) {
+                    const block = await event.getBlock();
+                    const tx = await event.getTransaction();
+                    const receipt = await event.getTransactionReceipt();
+                    
+                    allTransactions.push({
+                        time: new Date(block.timestamp * 1000),
+                        type: 'claim',
+                        pool: event.args.poolId.toString(),
+                        amount: parseFloat(ethers.utils.formatEther(event.args.reward)),
+                        value: 0,
+                        fee: parseFloat(ethers.utils.formatEther(receipt.gasUsed.mul(tx.gasPrice))),
+                        hash: event.transactionHash,
+                        status: 'confirmed'
+                    });
+                }
+                // Fetch Transfer events (token transfers)
+                const transferFromFilter = tokenContract.filters.Transfer(currentAccount);
+                const transferToFilter = tokenContract.filters.Transfer(null, currentAccount);
+                
+                const [transfersFrom, transfersTo] = await Promise.all([
+                    tokenContract.queryFilter(transferFromFilter, fromBlock, currentBlock),
+                    tokenContract.queryFilter(transferToFilter, fromBlock, currentBlock)
+                ]);
+
+                for (const event of [...transfersFrom, ...transfersTo]) {
+                    // Skip if it's related to staking contract (already captured above)
+                    if (event.args.from === stakingAddress || event.args.to === stakingAddress) continue;
+                    
+                    const block = await event.getBlock();
+                    const tx = await event.getTransaction();
+                    const receipt = await event.getTransactionReceipt();
+                    
+                    allTransactions.push({
+                        time: new Date(block.timestamp * 1000),
+                        type: event.args.from === currentAccount ? 'transfer-out' : 'transfer-in',
+                        pool: '-',
+                        amount: parseFloat(ethers.utils.formatEther(event.args.value)),
+                        value: 0,
+                        fee: parseFloat(ethers.utils.formatEther(receipt.gasUsed.mul(tx.gasPrice))),
+                        hash: event.transactionHash,
+                        status: 'confirmed'
+                    });
+                }
+
+                // Sort by time (newest first)
+                allTransactions.sort((a, b) => b.time - a.time);
+
+                // Calculate stats
+                updateStats();
+                
+                // Apply filters and display
+                applyFilters();
+
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                
+                // Show empty state
+                document.getElementById('transactionsBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.5; display: block; margin-bottom: 16px;"></i>
+                            <p>No transactions found or error loading history</p>
+                            <p style="font-size: 14px; margin-top: 8px;">Make sure you're connected to Polygon network</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function updateStats() {
+            const stakes = allTransactions.filter(tx => tx.type === 'stake');
+            const unstakes = allTransactions.filter(tx => tx.type === 'unstake');
+            const claims = allTransactions.filter(tx => tx.type === 'claim');
+
+            document.getElementById('totalTxs').textContent = allTransactions.length;
+            
+            const totalStaked = stakes.reduce((sum, tx) => sum + tx.amount, 0) - unstakes.reduce((sum, tx) => sum + tx.amount, 0);
+            document.getElementById('totalStaked').textContent = `${totalStaked.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+            
+            const totalRewards = claims.reduce((sum, tx) => sum + tx.amount, 0);
+            document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString(undefined, {maximumFractionDigits: 4})} AETH`;
+            
+            const totalFees = allTransactions.reduce((sum, tx) => sum + tx.fee, 0);
+            document.getElementById('totalFees').textContent = `${totalFees.toFixed(4)} MATIC`;
+        }
+
+        function applyFilters() {
+            const typeFilter = document.getElementById('filterType').value;
+            const timeFilter = document.getElementById('filterTime').value;
+
+            filteredTransactions = allTransactions.filter(tx => {
+                // Type filter
+                if (typeFilter !== 'all' && tx.type !== typeFilter) {
+                    return false;
+                }
+
+                // Time filter
+                if (timeFilter !== 'all') {
+                    const now = Date.now();
+                    const txTime = tx.time.getTime();
+                    const timeRanges = {
+                        '24h': 24 * 60 * 60 * 1000,
+                        '7d': 7 * 24 * 60 * 60 * 1000,
+                        '30d': 30 * 24 * 60 * 60 * 1000,
+                        '90d': 90 * 24 * 60 * 60 * 1000
+                    };
+                    if (now - txTime > timeRanges[timeFilter]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            currentPage = 1;
+            displayTransactions();
+        }
+
+        function displayTransactions() {
+            const start = (currentPage - 1) * txsPerPage;
+            const end = start + txsPerPage;
+            const pageTransactions = filteredTransactions.slice(start, end);
+
+            const tbody = document.getElementById('transactionsBody');
+            
+            if (pageTransactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fas fa-filter" style="font-size: 48px; opacity: 0.5; display: block; margin-bottom: 16px;"></i>
+                            <p>No transactions match your filters</p>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination').style.display = 'none';
+            } else {
+                tbody.innerHTML = pageTransactions.map(tx => {
+                    const typeIcons = {
+                        'stake': '<i class="fas fa-lock" style="color: var(--accent-blue);"></i>',
+                        'unstake': '<i class="fas fa-unlock" style="color: var(--accent-orange);"></i>',
+                        'claim': '<i class="fas fa-gift" style="color: var(--accent-green);"></i>',
+                        'transfer-out': '<i class="fas fa-arrow-up" style="color: var(--accent-red);"></i>',
+                        'transfer-in': '<i class="fas fa-arrow-down" style="color: var(--accent-green);"></i>',
+                        'approval': '<i class="fas fa-check" style="color: var(--text-muted);"></i>'
+                    };
+
+                    const typeLabels = {
+                        'stake': 'Stake',
+                        'unstake': 'Unstake',
+                        'claim': 'Claim Rewards',
+                        'transfer-out': 'Transfer Out',
+                        'transfer-in': 'Transfer In',
+                        'approval': 'Approval'
+                    };
+
+                    return `
+                        <tr>
+                            <td>${tx.time.toLocaleString()}</td>
+                            <td>${typeIcons[tx.type]} ${typeLabels[tx.type]}</td>
+                            <td>${tx.pool === '-' ? '-' : `Pool ${parseInt(tx.pool) + 1}`}</td>
+                            <td><strong>${tx.amount.toLocaleString(undefined, {maximumFractionDigits: 4})} AETH</strong></td>
+                            <td>$${tx.value.toFixed(2)}</td>
+                            <td>${tx.fee.toFixed(4)} MATIC</td>
+                            <td><span class="badge badge-success">✓ ${tx.status}</span></td>
+                            <td>
+                                <a href="https://polygonscan.com/tx/${tx.hash}" target="_blank" class="tx-link">
+                                    ${tx.hash.substring(0, 6)}...${tx.hash.substring(tx.hash.length - 4)}
+                                    <i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 4px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Update pagination
+                const totalPages = Math.ceil(filteredTransactions.length / txsPerPage);
+                document.getElementById('currentPage').textContent = currentPage;
+                document.getElementById('totalPages').textContent = totalPages;
+                document.getElementById('prevBtn').disabled = currentPage === 1;
+                document.getElementById('nextBtn').disabled = currentPage === totalPages;
+                document.getElementById('pagination').style.display = 'flex';
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTransactions();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredTransactions.length / txsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayTransactions();
+            }
+        }
+
+        function refreshHistory() {
+            loadTransactionHistory();
+        }
+
+        function exportHistory() {
+            // Create CSV content
+            let csv = 'Time,Type,Pool,Amount (AETH),Value (USD),Fee (MATIC),Status,Transaction Hash\n';
+            
+            filteredTransactions.forEach(tx => {
+                csv += `"${tx.time.toISOString()}","${tx.type}","${tx.pool}",${tx.amount},${tx.value},${tx.fee},"${tx.status}","${tx.hash}"\n`;
+            });
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aetheron-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function showErrorMessage(message) {
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 60px 20px; color: var(--accent-red);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 48px; opacity: 0.5; display: block; margin-bottom: 16px;"></i>
+                        <p>${message}</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Auto-connect if already connected
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    currentAccount = accounts[0];
+                    document.getElementById('walletStatus').style.display = 'none';
+                    document.getElementById('historyContent').style.display = 'block';
+                    await loadTransactionHistory();
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .transactions-table {
+            overflow-x: auto;
+        }
+
+        .transactions-table table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+        }
+
+        .transactions-table th {
+            background: var(--bg-hover);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .transactions-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .tx-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .tx-link:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group select,
+            .filter-group button {
+                width: 100%;
+            }
+
+            .history-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

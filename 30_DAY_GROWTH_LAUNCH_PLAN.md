@@ -22,7 +22,7 @@
   - Analytics dashboard (full screen)
   - Calculator interface (with example)
   - Mobile view (3 device sizes)
-- [ ] Set up Twitter account @AetheronDeFi (or similar)
+- [ ] Set up Twitter account @William_McCoy_ (Primary account)
   - Upload logo as profile pic
   - Create header banner in Canva
   - Write bio: "Next-gen DeFi staking on Polygon. 8-18% APY, $0.01 fees, real-time analytics. https://aetheronplatform.github.io"

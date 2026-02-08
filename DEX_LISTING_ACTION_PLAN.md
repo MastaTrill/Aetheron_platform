@@ -46,7 +46,7 @@
    - **Description**: Next-generation DeFi staking platform on Polygon offering 8-18% APY with $0.01 transaction fees. Three flexible staking pools (7/30/90 days) with transparent, real-time analytics.
    - **Website**: https://aetheronplatform.github.io
    - **Telegram**: [Your link]
-   - **Twitter**: [Your link]
+   - **Twitter**: https://x.com/William_McCoy_
    - **Discord**: [Your link]
    - **Logo URL**: [Your 200x200 PNG logo]
 4. Submit for review
@@ -88,7 +88,7 @@ GitHub: https://github.com/MastaTrill/Aetheron_platform
 
 **Social Links**:
 ```
-Twitter: [Your handle]
+Twitter: @William_McCoy_
 Telegram: [Your group]
 Discord: [Your server]
 Reddit: [Your subreddit if exists]
@@ -191,7 +191,7 @@ Announcement: [Link to your blog/medium post]
 Message Board 1: [Your Discord/Telegram]
 Chat 1: [Your Telegram]
 
-Twitter: https://twitter.com/[your-handle]
+Twitter: https://x.com/William_McCoy_
 Reddit: [If available]
 Telegram: [Your link]
 Discord: [Your link]

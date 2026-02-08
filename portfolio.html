@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Tracker - Aetheron Platform</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="mobile-optimization.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AETHERON</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="analytics-dashboard.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="staking-calculator.html"><i class="fas fa-calculator"></i> Calculator</a>
+                <a href="price-alerts.html"><i class="fas fa-bell"></i> Alerts</a>
+                <a href="portfolio.html" class="active"><i class="fas fa-wallet"></i> Portfolio</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-wallet"></i> Portfolio Tracker</h1>
+                <p>Track your AETH holdings, staking positions, and rewards</p>
+            </div>
+
+            <!-- Wallet Connection -->
+            <div class="wallet-status-card card" id="walletStatus">
+                <button class="btn-primary btn-lg" onclick="connectWallet()">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
+
+            <!-- Portfolio Overview -->
+            <div id="portfolioContent" style="display: none;">
+                <!-- Total Portfolio Value -->
+                <div class="portfolio-summary">
+                    <div class="summary-card card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-details">
+                            <span class="card-label">Total Portfolio Value</span>
+                            <span class="card-value" id="totalValue">$0.00</span>
+                            <span class="card-change" id="totalChange">--</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="card-details">
+                            <span class="card-label">Total AETH Balance</span>
+                            <span class="card-value" id="totalAETH">0 AETH</span>
+                            <span class="card-change" id="aethUSD">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="card-details">
+                            <span class="card-label">Staked AETH</span>
+                            <span class="card-value" id="stakedAETH">0 AETH</span>
+                            <span class="card-change" id="stakedUSD">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="card-details">
+                            <span class="card-label">Total Rewards Earned</span>
+                            <span class="card-value" id="totalRewards">0 AETH</span>
+                            <span class="card-change" id="rewardsUSD">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asset Breakdown -->
+                <div class="section">
+                    <h2><i class="fas fa-layer-group"></i> Asset Breakdown</h2>
+                    <div class="asset-grid">
+                        <div class="asset-card card">
+                            <h3><i class="fas fa-wallet"></i> Wallet Balance</h3>
+                            <div class="asset-amount" id="walletBalance">0 AETH</div>
+                            <div class="asset-value" id="walletValue">$0.00</div>
+                            <div class="asset-percentage" id="walletPercentage">0%</div>
+                        </div>
+
+                        <div class="asset-card card">
+                            <h3><i class="fas fa-lock"></i> Staked (Pool 1)</h3>
+                            <div class="asset-amount" id="staked1">0 AETH</div>
+                            <div class="asset-value" id="staked1Value">$0.00</div>
+                            <div class="asset-percentage" id="staked1Percentage">0%</div>
+                        </div>
+
+                        <div class="asset-card card">
+                            <h3><i class="fas fa-lock"></i> Staked (Pool 2)</h3>
+                            <div class="asset-amount" id="staked2">0 AETH</div>
+                            <div class="asset-value" id="staked2Value">$0.00</div>
+                            <div class="asset-percentage" id="staked2Percentage">0%</div>
+                        </div>
+
+                        <div class="asset-card card">
+                            <h3><i class="fas fa-lock"></i> Staked (Pool 3)</h3>
+                            <div class="asset-amount" id="staked3">0 AETH</div>
+                            <div class="asset-value" id="staked3Value">$0.00</div>
+                            <div class="asset-percentage" id="staked3Percentage">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Stakes -->
+                <div class="section">
+                    <h2><i class="fas fa-chart-pie"></i> Active Staking Positions</h2>
+                    <div class="stakes-table card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pool</th>
+                                    <th>Amount Staked</th>
+                                    <th>APY</th>
+                                    <th>Rewards Earned</th>
+                                    <th>Est. Rewards</th>
+                                    <th>Lock Period</th>
+                                    <th>Unlock Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stakesTableBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                        <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.5; display: block; margin-bottom: 16px;"></i>
+                                        No active staking positions
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="section">
+                    <h2><i class="fas fa-chart-line"></i> Performance Metrics</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card card">
+                            <div class="metric-label">Average APY</div>
+                            <div class="metric-value" id="avgAPY">0%</div>
+                        </div>
+
+                        <div class="metric-card card">
+                            <div class="metric-label">Daily Earnings</div>
+                            <div class="metric-value" id="dailyEarnings">0 AETH</div>
+                        </div>
+
+                        <div class="metric-card card">
+                            <div class="metric-label">Monthly Earnings (Est.)</div>
+                            <div class="metric-value" id="monthlyEarnings">0 AETH</div>
+                        </div>
+
+                        <div class="metric-card card">
+                            <div class="metric-label">Yearly Earnings (Est.)</div>
+                            <div class="metric-value" id="yearlyEarnings">0 AETH</div>
+                        </div>
+
+                        <div class="metric-card card">
+                            <div class="metric-label">ROI Since Start</div>
+                            <div class="metric-value" id="roi">0%</div>
+                        </div>
+
+                        <div class="metric-card card">
+                            <div class="metric-label">Days Staking</div>
+                            <div class="metric-value" id="daysStaking">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History Link -->
+                <div class="section">
+                    <div class="info-box">
+                        <h3><i class="fas fa-history"></i> Need More Details?</h3>
+                        <p>View your complete transaction history, including all stakes, unstakes, and reward claims.</p>
+                        <a href="transaction-history.html" class="btn-secondary">
+                            <i class="fas fa-list"></i> View Transaction History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="theme-toggle.js"></script>
+    <script src="index.js"></script>
+    <script>
+        let currentAccount = null;
+
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert('Please install MetaMask to use this feature.');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                currentAccount = accounts[0];
+                
+                // Show portfolio content
+                document.getElementById('walletStatus').style.display = 'none';
+                document.getElementById('portfolioContent').style.display = 'block';
+                
+                // Load portfolio data
+                await loadPortfolio();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet');
+            }
+        }
+
+        async function loadPortfolio() {
+            try {
+                // Get current price
+                const priceData = await fetch('https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D');
+                const priceJson = await priceData.json();
+                const currentPrice = parseFloat(priceJson.pair?.priceUsd || 0);
+
+                // Get user balances
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+                const stakingContract = new ethers.Contract(stakingAddress, stakingABI, provider);
+
+                // Wallet balance
+                const walletBalance = await tokenContract.balanceOf(currentAccount);
+                const walletBalanceFormatted = parseFloat(ethers.utils.formatEther(walletBalance));
+
+                // Get staking info for each pool
+                let totalStaked = 0;
+                let totalRewards = 0;
+                const stakes = [];
+
+                const poolConfigs = [
+                    { id: 0, apy: 8, days: 7, name: 'Pool 1' },
+                    { id: 1, apy: 12, days: 30, name: 'Pool 2' },
+                    { id: 2, apy: 18, days: 90, name: 'Pool 3' }
+                ];
+
+                for (const pool of poolConfigs) {
+                    const userInfo = await stakingContract.userStakes(currentAccount, pool.id);
+                    const amount = parseFloat(ethers.utils.formatEther(userInfo.amount));
+                    
+                    if (amount > 0) {
+                        totalStaked += amount;
+                        
+                        // Calculate rewards (would need actual contract calls)
+                        const rewards = (amount * pool.apy / 100 / 365) * (Date.now() - userInfo.stakeTime * 1000) / (1000 * 60 * 60 * 24);
+                        totalRewards += rewards;
+
+                        stakes.push({
+                            pool: pool.name,
+                            poolId: pool.id,
+                            amount: amount,
+                            apy: pool.apy,
+                            rewards: rewards,
+                            lockDays: pool.days,
+                            stakeTime: userInfo.stakeTime,
+                            unlockTime: userInfo.unlockTime
+                        });
+                    }
+
+                    // Update individual pool displays
+                    document.getElementById(`staked${pool.id + 1}`).textContent = `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+                    document.getElementById(`staked${pool.id + 1}Value`).textContent = `$${(amount * currentPrice).toFixed(2)}`;
+                }
+
+                // Calculate totals
+                const totalAETH = walletBalanceFormatted + totalStaked;
+                const totalValue = totalAETH * currentPrice;
+
+                // Update summary cards
+                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+                document.getElementById('totalAETH').textContent = `${totalAETH.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+                document.getElementById('aethUSD').textContent = `$${totalValue.toFixed(2)}`;
+                document.getElementById('stakedAETH').textContent = `${totalStaked.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+                document.getElementById('stakedUSD').textContent = `$${(totalStaked * currentPrice).toFixed(2)}`;
+                document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+                document.getElementById('rewardsUSD').textContent = `$${(totalRewards * currentPrice).toFixed(2)}`;
+
+                // Update wallet balance
+                document.getElementById('walletBalance').textContent = `${walletBalanceFormatted.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
+                document.getElementById('walletValue').textContent = `$${(walletBalanceFormatted * currentPrice).toFixed(2)}`;
+                document.getElementById('walletPercentage').textContent = `${totalAETH > 0 ? ((walletBalanceFormatted / totalAETH) * 100).toFixed(1) : 0}%`;
+
+                // Calculate percentages for staked amounts
+                poolConfigs.forEach((pool, index) => {
+                    const amount = parseFloat(document.getElementById(`staked${index + 1}`).textContent);
+                    const percentage = totalAETH > 0 ? ((amount / totalAETH) * 100).toFixed(1) : 0;
+                    document.getElementById(`staked${index + 1}Percentage`).textContent = `${percentage}%`;
+                });
+
+                // Populate stakes table
+                if (stakes.length > 0) {
+                    const tbody = document.getElementById('stakesTableBody');
+                    tbody.innerHTML = stakes.map(stake => {
+                        const unlockDate = new Date(stake.unlockTime * 1000);
+                        const isLocked = Date.now() < unlockDate.getTime();
+                        const daysRemaining = Math.max(0, Math.ceil((unlockDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+
+                        return `
+                            <tr>
+                                <td><strong>${stake.pool}</strong></td>
+                                <td>${stake.amount.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH</td>
+                                <td><span class="badge badge-success">${stake.apy}%</span></td>
+                                <td>${stake.rewards.toLocaleString(undefined, {maximumFractionDigits: 4})} AETH</td>
+                                <td>${(stake.amount * stake.apy / 100).toLocaleString(undefined, {maximumFractionDigits: 2})} AETH/yr</td>
+                                <td>${stake.lockDays} days</td>
+                                <td>${unlockDate.toLocaleDateString()}</td>
+                                <td>
+                                    ${isLocked 
+                                        ? `<span class="badge badge-warning"><i class="fas fa-lock"></i> Locked (${daysRemaining}d)</span>` 
+                                        : `<span class="badge badge-success"><i class="fas fa-unlock"></i> Unlocked</span>`
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Calculate performance metrics
+                if (totalStaked > 0) {
+                    const weightedAPY = stakes.reduce((sum, stake) => sum + (stake.amount / totalStaked) * stake.apy, 0);
+                    document.getElementById('avgAPY').textContent = `${weightedAPY.toFixed(2)}%`;
+                    
+                    const dailyEarnings = (totalStaked * weightedAPY / 100 / 365);
+                    document.getElementById('dailyEarnings').textContent = `${dailyEarnings.toFixed(4)} AETH`;
+                    document.getElementById('monthlyEarnings').textContent = `${(dailyEarnings * 30).toFixed(2)} AETH`;
+                    document.getElementById('yearlyEarnings').textContent = `${(dailyEarnings * 365).toFixed(2)} AETH`;
+                    
+                    const roi = totalStaked > 0 ? ((totalRewards / totalStaked) * 100) : 0;
+                    document.getElementById('roi').textContent = `${roi.toFixed(2)}%`;
+                    
+                    // Calculate avg days staking (simplified)
+                    const avgDays = stakes.length > 0 
+                        ? Math.floor(stakes.reduce((sum, stake) => sum + ((Date.now() - stake.stakeTime * 1000) / (1000 * 60 * 60 * 24)), 0) / stakes.length)
+                        : 0;
+                    document.getElementById('daysStaking').textContent = avgDays;
+                }
+
+            } catch (error) {
+                console.error('Error loading portfolio:', error);
+                alert('Error loading portfolio data');
+            }
+        }
+
+        // Auto-connect if already connected
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    currentAccount = accounts[0];
+                    document.getElementById('walletStatus').style.display = 'none';
+                    document.getElementById('portfolioContent').style.display = 'block';
+                    await loadPortfolio();
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-change {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .asset-card h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .asset-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .asset-value {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .asset-percentage {
+            font-size: 14px;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .stakes-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stakes-table th {
+            background: var(--bg-hover);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .stakes-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--accent-green);
+        }
+
+        .badge-warning {
+            background: rgba(251, 188, 4, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 768px) {
+            .stakes-table {
+                overflow-x: auto;
+            }
+
+            .stakes-table table {
+                min-width: 800px;
+            }
+
+            .portfolio-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

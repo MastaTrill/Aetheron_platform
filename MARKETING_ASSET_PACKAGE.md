@@ -86,7 +86,7 @@ Text overlay:
 • "Real-Time Analytics"
 • "Mobile Optimized"
 
-Footer: aetheronplatform.github.io
+Footer: aetheronplatform.github.io | @William_McCoy_
 ```
 
 **Tweet Graphics** (1200x675):
