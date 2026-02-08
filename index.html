@@ -1364,18 +1364,22 @@
         .hamburger {
             display: none;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             cursor: pointer;
-            padding: 8px;
+            padding: 12px;
+            background: transparent;
+            border: none;
             z-index: 1001;
+            position: relative;
         }
 
         .hamburger span {
-            width: 25px;
+            width: 28px;
             height: 3px;
             background: var(--text);
             border-radius: 3px;
             transition: all 0.3s ease;
+            display: block;
         }
 
         .hamburger.active span:nth-child(1) {
@@ -1547,14 +1551,27 @@
         }
 
         @media (max-width: 768px) {
+            .navbar-content {
+                position: relative;
+            }
+
             .hamburger {
                 display: flex;
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .logo {
+                margin: 0 auto;
+                padding-left: 50px;
             }
 
             .nav-links {
                 position: fixed;
                 top: 0;
-                right: -100%;
+                left: -100%;
                 width: 80%;
                 max-width: 300px;
                 height: 100vh;
@@ -1563,13 +1580,14 @@
                 flex-direction: column;
                 padding: 80px 20px 20px;
                 gap: 0;
-                transition: right 0.3s ease;
+                transition: left 0.3s ease;
                 z-index: 1000;
                 overflow-y: auto;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
             }
 
             .nav-links.active {
-                right: 0;
+                left: 0;
             }
 
             .nav-link {
@@ -1698,15 +1716,15 @@
     <!-- Navbar -->
     <nav class="navbar" role="navigation">
         <div class="navbar-content">
-            <div class="logo">
-                <i class="fas fa-rocket" aria-hidden="true"></i>
-                <span>Aetheron Platform</span>
-            </div>
             <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
+            <div class="logo">
+                <i class="fas fa-rocket" aria-hidden="true"></i>
+                <span>Aetheron Platform</span>
+            </div>
             <div class="nav-links" id="navLinks">
                 <a href="dashboard-enhanced.html" class="nav-link">Dashboard</a>
                 <a href="analytics-dashboard.html" class="nav-link">
