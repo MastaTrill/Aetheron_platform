@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Aetheron (AETH) - Revolutionary DeFi Platform | Staking & Rewards</title>
     
     <!-- SEO Meta Tags -->
@@ -48,12 +51,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <!-- Application Scripts - Load AFTER libraries -->
-    <script src="index.js"></script>
-    <script src="charts.js"></script>
-    <script src="monitor.js"></script>
-    <script src="marketing-launch.js"></script>
-    <script src="performance-monitor.js"></script>
-    <script src="shared-utils.js"></script>
+    <script src="index.js?v=1.3.0"></script>
+    <script src="charts.js?v=1.3.0"></script>
+    <script src="monitor.js?v=1.3.0"></script>
+    <script src="marketing-launch.js?v=1.3.0"></script>
+    <script src="performance-monitor.js?v=1.3.0"></script>
+    <script src="shared-utils.js?v=1.3.0"></script>
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -2552,6 +2555,77 @@
     <button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Service worker registration with auto-update
+        if ('serviceWorker' in navigator) {
+            let refreshing = false;
+
+            // Detect service worker updates
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                console.log('🔄 Service Worker updated - reloading page...');
+                window.location.reload();
+            });
+
+            // Register service worker
+            navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+                .then(registration => {
+                    console.log('✅ Service Worker registered successfully');
+
+                    // Check for updates every 60 seconds
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000);
+
+                    // Listen for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New service worker available
+                                console.log('🆕 New version available!');
+                                
+                                // Show update notification (optional)
+                                if (window.showToast) {
+                                    showToast('Update Available', 'A new version is ready. Refreshing...', 'info');
+                                }
+                                
+                                // Auto-update after 2 seconds
+                                setTimeout(() => {
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                }, 2000);
+                            }
+                        });
+                    });
+
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'SW_UPDATED') {
+                            console.log('📦 Service Worker updated and activated');
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('❌ Service Worker registration failed:', error);
+                });
+        }
+
+        // Force reload on page show if coming from cache (back/forward navigation)
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                console.log('📄 Page loaded from cache - checking for updates...');
+                window.location.reload();
+            }
+        });
+
+        // Add version indicator to console
+        console.log('%c🚀 Aetheron Platform v1.3.0', 'color: #00D4FF; font-size: 16px; font-weight: bold;');
+        console.log('%c✨ Dashboard loaded successfully', 'color: #10b981; font-size: 12px;');
+    </script>
 
     <!-- JavaScript logic moved to index.js -->
 </body>
