@@ -1405,10 +1405,13 @@
             z-index: 999;
             opacity: 0;
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
         .mobile-menu-overlay.active {
+            display: block;
             opacity: 1;
+            pointer-events: auto;
         }
 
         /* Smooth Animations */
@@ -1599,14 +1602,6 @@
             .nav-links #connectBtn {
                 margin-top: 20px;
                 width: 100%;
-            }
-
-            .mobile-menu-overlay {
-                display: block;
-            }
-
-            .mobile-menu-overlay.active {
-                display: block;
             }
 
             .hero {
