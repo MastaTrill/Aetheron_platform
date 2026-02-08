@@ -1,19 +1,17 @@
 const CACHE_NAME = 'aetheron-v1.1.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/index.js',
-  '/charts.js',
-  '/shared-styles.css',
-  '/mobile-optimization.css',
-  '/roadmap.html',
-  '/leaderboard.html',
-  '/referral.html',
-  '/governance.html',
-  '/voting-history.html',
-  '/manifest.json',
+  './',
+  './index.html',
+  './index.js',
+  './charts.js',
+  './monitor.js',
+  './performance-monitor.js',
+  './marketing-launch.js',
+  './shared-utils.js',
+  './manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js'
 ];
 
 // Install event - cache resources
