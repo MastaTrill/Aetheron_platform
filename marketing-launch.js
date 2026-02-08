@@ -118,7 +118,7 @@ class MarketingLauncher {
     // Check weekly schedule
     setInterval(() => {
       const now = new Date();
-      const currentDay = now.toLocaleLowerCase().slice(0, 3);
+      const currentDay = now.toString().slice(0, 3).toLowerCase();
       const currentTime = now.toTimeString().slice(0, 5);
 
       this.postingSchedule.weekly.forEach(schedule => {
