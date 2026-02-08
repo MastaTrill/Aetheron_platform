@@ -57,7 +57,7 @@ class AetheronMonitor {
     try {
       // Check contract balances and activity
       if (window.ethers && window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
 
         // Monitor AETH transfers
         const aethContract = new ethers.Contract(

@@ -33,7 +33,7 @@ class PerformanceMonitor {
         return;
       }
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
 
       // Check if contracts are accessible
       const aethContract = new ethers.Contract(

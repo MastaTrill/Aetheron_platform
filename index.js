@@ -224,6 +224,10 @@ async function checkWalletStatus() {
 
 async function recheckWallet() {
     const statusDiv = document.getElementById('walletStatus');
+    if (!statusDiv) {
+        console.warn('Wallet status element not found');
+        return;
+    }
     statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rechecking...';
     let detected = false;
     for (let i = 0; i < 3; i++) {
