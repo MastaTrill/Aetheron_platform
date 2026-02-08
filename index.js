@@ -48,6 +48,9 @@ let provider, signer, account;
 let aethContract, stakingContract;
 let readOnlyProvider; // For reading data without wallet connection
 let transactions = [];
+let priceWebSocket; // WebSocket for real-time price updates
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
 
 let detectionAttempts = 0;
 const maxAttempts = 5;
@@ -104,7 +107,12 @@ window.addEventListener('load', async () => {
     
     // Start updating stats immediately with live blockchain data
     await updateStats();
-    setInterval(updateStats, 30000); // Update every 30 seconds
+    
+    // Initialize WebSocket for real-time updates
+    initializeWebSocket();
+    
+    // Fallback polling for blockchain data every 30 seconds
+    setInterval(updateStats, 30000);
     
     // Then check for wallet
     detectWalletWithRetry();
@@ -1210,6 +1218,104 @@ if (typeof window !== 'undefined') {
         }
     });
     
+// ============================================================================
+// WebSocket Real-Time Updates
+// ============================================================================
+
+function initializeWebSocket() {
+    console.log('🔌 Initializing WebSocket for real-time updates...');
+    
+    // Connect to Polygon mainnet via Alchemy WebSocket (fallback to polling if unavailable)
+    try {
+        // Use Alchemy's WebSocket for Polygon
+        const wsProvider = new ethers.providers.WebSocketProvider(
+            'wss://polygon-mainnet.g.alchemy.com/v2/demo' // Use your own key in production
+        );
+        
+        wsProvider.on('error', (error) => {
+            console.warn('⚠️ WebSocket error:', error.message);
+            reconnectWebSocket();
+        });
+        
+        wsProvider.on('close', () => {
+            console.log('🔌 WebSocket connection closed');
+            reconnectWebSocket();
+        });
+        
+        // Listen for new blocks (real-time blockchain updates)
+        wsProvider.on('block', async (blockNumber) => {
+            console.log(`📦 New block: ${blockNumber}`);
+            // Update stats when new block arrives (throttled)
+            if (blockNumber % 10 === 0) { // Every 10 blocks (~20 seconds)
+                await updateStakingStats();
+                await updateLiveHolders();
+            }
+        });
+        
+        // Listen for Transfer events on AETH contract
+        if (aethContract) {
+            const filter = aethContract.filters.Transfer();
+            wsProvider.on(filter, (log) => {
+                console.log('💸 New AETH transfer detected');
+                updateLiveHolders();
+            });
+        }
+        
+        console.log('✅ WebSocket connected for real-time updates');
+        reconnectAttempts = 0;
+        
+    } catch (error) {
+        console.warn('⚠️ WebSocket not available, using polling fallback:', error.message);
+    }
+    
+    // Initialize DexScreener price updates via more frequent polling
+    initializePriceStream();
+}
+
+function reconnectWebSocket() {
+    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+        console.log(`🔄 Reconnecting WebSocket in ${delay/1000}s (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+        setTimeout(initializeWebSocket, delay);
+    } else {
+        console.log('❌ Max WebSocket reconnection attempts reached. Using polling only.');
+    }
+}
+
+function initializePriceStream() {
+    // DexScreener doesn't provide WebSocket, so we'll use more frequent polling for price
+    const priceUpdateInterval = setInterval(async () => {
+        await updatePriceWithChange();
+    }, 10000); // Update price every 10 seconds for near real-time experience
+    
+    console.log('📊 Real-time price updates initialized (10s interval)');
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        clearInterval(priceUpdateInterval);
+        if (priceWebSocket) {
+            priceWebSocket.close();
+        }
+    });
+}
+
+// ============================================================================
+// Service Worker Registration (Progressive Web App)
+// ============================================================================
+
+// Register Service Worker (moved from inline script)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('✅ Service Worker registered:', registration.scope);
+            })
+            .catch(error => {
+                console.log('❌ Service Worker registration failed:', error);
+            });
+    });
+}
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js')
