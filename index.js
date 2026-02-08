@@ -79,8 +79,17 @@ function initReadOnlyProvider() {
 window.addEventListener('load', async () => {
     console.log('🚀 Aetheron Dashboard Loading...');
     
+    // Initialize theme first
+    initTheme();
+    
     // Set default values immediately to avoid "Loading..." stuck state
     setDefaultValues();
+    
+    // Hook up connect wallet button
+    const connectBtn = document.getElementById('connectBtn');
+    if (connectBtn) {
+        connectBtn.addEventListener('click', connectWallet);
+    }
     
     // Initialize read-only provider first for live data
     const readOnlyContracts = initReadOnlyProvider();
@@ -242,8 +251,6 @@ async function recheckWallet() {
         }
     }
 }
-
-document.getElementById('connectBtn').addEventListener('click', connectWallet);
 
 // Staking function
 async function stakeTokens(poolId) {
