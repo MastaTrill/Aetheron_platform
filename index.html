@@ -4,8 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetheron Platform - Your DeFi Dashboard</title>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <title>Aetheron (AETH) - Revolutionary DeFi Platform | Staking & Rewards</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Aetheron Platform: Revolutionary blockchain ecosystem with staking rewards up to 250% APY, referral program, and gamified leaderboards. Join the future of DeFi.">
+    <meta name="keywords" content="Aetheron, AETH, DeFi, cryptocurrency, staking, blockchain, Polygon, rewards, referral program">
+    <meta name="author" content="Aetheron Team">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mastatrill.github.io/Aetheron_platform/">
+    <meta property="og:title" content="Aetheron (AETH) - Revolutionary DeFi Platform">
+    <meta property="og:description" content="Stake AETH tokens and earn up to 250% APY. Join our referral program and compete on the leaderboard!">
+    <meta property="og:image" content="https://mastatrill.github.io/Aetheron_platform/assets/og-image.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mastatrill.github.io/Aetheron_platform/">
+    <meta name="twitter:title" content="Aetheron (AETH) - Revolutionary DeFi Platform">
+    <meta name="twitter:description" content="Stake AETH tokens and earn up to 250% APY. Join our referral program and compete on the leaderboard!">
+    <meta name="twitter:image" content="https://mastatrill.github.io/Aetheron_platform/assets/og-image.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00D4FF">
+    <link rel="apple-touch-icon" href="/assets/icon-192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
@@ -962,6 +992,100 @@
         .faq-toggle.active {
             transform: rotate(180deg);
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--card-bg), rgba(138, 43, 226, 0.2));
+            margin: 10% auto;
+            padding: 30px;
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+        }
+
+        .share-buttons {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background: #1DA1F2;
+        }
+
+        .share-btn.facebook {
+            background: #4267B2;
+        }
+
+        .share-btn.telegram {
+            background: #0088cc;
+        }
+
+        .share-btn.linkedin {
+            background: #0077b5;
+        }
+
+        .share-btn.copy {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
     </style>
 </head>
 
@@ -995,6 +1119,9 @@
                 </a>
                 <a href="referral.html" class="nav-link">
                     <i class="fas fa-share-alt"></i> Referral
+                </a>
+                <a href="governance.html" class="nav-link">
+                    <i class="fas fa-vote-yea"></i> Governance
                 </a>
                 <a href="roadmap.html" class="nav-link">
                     <i class="fas fa-route"></i> Roadmap
@@ -1038,9 +1165,17 @@
                     <i class="fas fa-copy"></i>
                     <span id="copyBtnText">0xAb5a...71e</span>
                 </button>
+                <button id="qrCodeBtn" class="quick-action-btn" title="Show QR Code">
+                    <i class="fas fa-qrcode"></i>
+                    QR Code
+                </button>
+                <button id="shareBtn" class="quick-action-btn" title="Share Aetheron">
+                    <i class="fas fa-share-alt"></i>
+                    Share
+                </button>
                 <button id="viewOnScanBtn" class="quick-action-btn" onclick="window.open('https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
                     <i class="fas fa-external-link-alt"></i>
-                    View on PolygonScan
+                    PolygonScan
                 </button>
                  <div class="quick-action-btn live-indicator">
                     <span class="pulse-dot"></span>
@@ -1611,6 +1746,46 @@
                 class="footer-link">GitHub</a>
         </p>
     </footer>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeQRModal()">&times;</span>
+            <h2>AETH Contract Address</h2>
+            <div id="qrcode" style="margin: 20px auto; text-align: center;"></div>
+            <p style="font-size: 12px; word-break: break-all; margin-top: 20px;">
+                0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+            </p>
+            <button onclick="copyContractAddress()" style="margin-top: 10px;" class="quick-action-btn">
+                <i class="fas fa-copy"></i> Copy Address
+            </button>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeShareModal()">&times;</span>
+            <h2>Share Aetheron</h2>
+            <div class="share-buttons">
+                <button onclick="shareTwitter()" class="share-btn twitter">
+                    <i class="fab fa-twitter"></i> Share on Twitter
+                </button>
+                <button onclick="shareFacebook()" class="share-btn facebook">
+                    <i class="fab fa-facebook"></i> Share on Facebook
+                </button>
+                <button onclick="shareTelegram()" class="share-btn telegram">
+                    <i class="fab fa-telegram"></i> Share on Telegram
+                </button>
+                <button onclick="shareLinkedIn()" class="share-btn linkedin">
+                    <i class="fab fa-linkedin"></i> Share on LinkedIn
+                </button>
+                <button onclick="copyShareLink()" class="share-btn copy">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript logic moved to index.js -->
 </body>

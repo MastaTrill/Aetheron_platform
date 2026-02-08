@@ -902,6 +902,125 @@ async function updatePriceWithChange() {
     }
 }
 
+// QR Code Modal Functions
+function showQRCode() {
+    const modal = document.getElementById('qrModal');
+    const qrcodeContainer = document.getElementById('qrcode');
+    
+    // Clear previous QR code
+    qrcodeContainer.innerHTML = '';
+    
+    // Generate new QR code
+    new QRCode(qrcodeContainer, {
+        text: AETH_ADDRESS,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    modal.style.display = 'block';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'show_qr_code', {
+            'event_category': 'engagement',
+            'event_label': 'contract_qr'
+        });
+    }
+}
+
+function closeQRModal() {
+    document.getElementById('qrModal').style.display = 'none';
+}
+
+// Share Modal Functions
+function showShareModal() {
+    document.getElementById('shareModal').style.display = 'block';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'show_share_modal', {
+            'event_category': 'engagement',
+            'event_label': 'share_button'
+        });
+    }
+}
+
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+}
+
+function shareTwitter() {
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 250% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    trackShare('twitter');
+}
+
+function shareFacebook() {
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    trackShare('facebook');
+}
+
+function shareTelegram() {
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 250% APY staking rewards!');
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+    trackShare('telegram');
+}
+
+function shareLinkedIn() {
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+    trackShare('linkedin');
+}
+
+function copyShareLink() {
+    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target.closest('.share-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.style.background = 'var(--success)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+        }, 2000);
+        
+        trackShare('copy_link');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link');
+    });
+}
+
+function trackShare(platform) {
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'share', {
+            'event_category': 'social',
+            'event_label': platform,
+            'value': 1
+        });
+    }
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const qrModal = document.getElementById('qrModal');
+    const shareModal = document.getElementById('shareModal');
+    
+    if (event.target === qrModal) {
+        closeQRModal();
+    }
+    if (event.target === shareModal) {
+        closeShareModal();
+    }
+}
+
 // Initialize new features on page load
 if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {
@@ -924,5 +1043,23 @@ if (typeof window !== 'undefined') {
         // Enhanced price updates
         updatePriceWithChange();
         setInterval(updatePriceWithChange, 30000); // Update every 30 seconds
+        
+        // Hook up QR code and share buttons
+        const qrBtn = document.getElementById('qrCodeBtn');
+        if (qrBtn) {
+            qrBtn.addEventListener('click', showQRCode);
+        }
+        
+       const shareBtn = document.getElementById('shareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', showShareModal);
+        }
     });
+    
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => console.log('✅ Service Worker registered:', registration.scope))
+            .catch(error => console.error('❌ Service Worker registration failed:', error));
+    }
 }
