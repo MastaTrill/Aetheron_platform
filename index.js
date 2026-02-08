@@ -1,42 +1,86 @@
 // index.js - Extracted from index.html inline <script>
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
-// Contract Addresses
-const AETH_ADDRESS = "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5";
+// Contract Addresses - UPDATED February 8, 2026
+const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
+const LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 const OWNER_ADDRESS = "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452".toLowerCase();
 const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
+const POLYGON_RPC_URL = 'https://polygon-rpc.com/';
 
 // ABIs
 const AETH_ABI = [
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
     "function balanceOf(address) view returns (uint256)",
     "function transfer(address to, uint256 amount) returns (bool)",
     "function approve(address spender, uint256 amount) returns (bool)",
     "function decimals() view returns (uint8)",
     "function totalSupply() view returns (uint256)",
     "function owner() view returns (address)",
+    "function tradingEnabled() view returns (bool)",
     "event Transfer(address indexed from, address indexed to, uint256 value)",
     "event Approval(address indexed owner, address indexed spender, uint256 value)"
 ];
 
 const STAKING_ABI = [
     "function stake(uint256 poolId, uint256 amount)",
+    "function unstake(uint256 stakeId)",
+    "function claimRewards(uint256 stakeId)",
+    "function calculateReward(address user, uint256 stakeId) view returns (uint256)",
     "function pools(uint256) view returns (uint256 lockDuration, uint256 rewardRate, uint256 totalStaked, bool isActive)",
+    "function getUserStakesCount(address user) view returns (uint256)",
+    "function getUserStake(address user, uint256 stakeId) view returns (uint256 amount, uint256 startTime, uint256 lastClaimTime, uint256 poolId, uint256 pendingReward, uint256 unlockTime)",
+    "function totalStaked() view returns (uint256)",
+    "function rewardBalance() view returns (uint256)",
     "event Staked(address indexed user, uint256 poolId, uint256 amount)",
-    "event Unstaked(address indexed user, uint256 poolId, uint256 amount)"
+    "event Unstaked(address indexed user, uint256 stakeId, uint256 amount)",
+    "event RewardClaimed(address indexed user, uint256 stakeId, uint256 reward)"
 ];
 
 let provider, signer, account;
 let aethContract, stakingContract;
+let readOnlyProvider; // For reading data without wallet connection
 let transactions = [];
 
 let detectionAttempts = 0;
 const maxAttempts = 5;
 
+// Initialize read-only provider for live data
+function initReadOnlyProvider() {
+    try {
+        readOnlyProvider = new ethers.providers.JsonRpcProvider(POLYGON_RPC_URL);
+        console.log('✅ Read-only provider initialized for live data');
+        
+        // Initialize read-only contracts for displaying stats
+        const readOnlyAethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, readOnlyProvider);
+        const readOnlyStakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, readOnlyProvider);
+        
+        return { aethContract: readOnlyAethContract, stakingContract: readOnlyStakingContract };
+    } catch (error) {
+        console.error('Error initializing read-only provider:', error);
+        return null;
+    }
+}
+
 // Initialize
 window.addEventListener('load', async () => {
+    console.log('🚀 Aetheron Dashboard Loading...');
+    
+    // Initialize read-only provider first for live data
+    const readOnlyContracts = initReadOnlyProvider();
+    if (readOnlyContracts) {
+        // Use read-only contracts initially for stats
+        if (!aethContract) aethContract = readOnlyContracts.aethContract;
+        if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
+    }
+    
+    // Start updating stats immediately with live blockchain data
     await updateStats();
     setInterval(updateStats, 30000); // Update every 30 seconds
+    
+    // Then check for wallet
     detectWalletWithRetry();
     window.addEventListener('ethereum#initialized', handleEthereumInit, { once: true });
     setTimeout(() => {
@@ -45,6 +89,8 @@ window.addEventListener('load', async () => {
             checkWalletStatus();
         }
     }, 5000);
+    
+    console.log('✅ Dashboard initialized with live data!');
 });
 
 function handleEthereumInit() {
@@ -246,6 +292,7 @@ async function updateStats() {
 // Update price from DexScreener
 async function updatePrice() {
     try {
+        console.log('📊 Fetching live price data...');
         const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
         const data = await response.json();
 
@@ -253,21 +300,34 @@ async function updatePrice() {
             const pair = data.pairs[0];
             const price = parseFloat(pair.priceUsd);
             const priceChange = parseFloat(pair.priceChange.h24);
-            const marketCap = parseFloat(pair.marketCap);
+            const volume24h = parseFloat(pair.volume.h24);
+            const liquidity = parseFloat(pair.liquidity?.usd || 0);
 
-            document.getElementById('priceValue').textContent = `$${price.toFixed(6)}`;
-            document.getElementById('priceChange').textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
-
+            // Update price
+            const priceEl = document.getElementById('priceValue');
+            if (priceEl) priceEl.textContent = `$${price.toFixed(8)}`;
+            
+            // Update price change
             const changeEl = document.getElementById('priceChange');
-            changeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
-
-            // Update market cap
-            if (marketCap) {
-                document.getElementById('marketCapValue').textContent = `$${(marketCap / 1000000).toFixed(1)}M`;
+            if (changeEl) {
+                changeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+                changeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
             }
+
+            // Update volume
+            const volumeEl = document.getElementById('volumeValue');
+            if (volumeEl) volumeEl.textContent = `$${(volume24h / 1000).toFixed(1)}K`;
+            
+            // Update liquidity
+            const liquidityEl = document.getElementById('liquidityValue');
+            if (liquidityEl) liquidityEl.textContent = `$${(liquidity / 1000).toFixed(1)}K`;
+            
+            console.log('✅ Live price updated:', price);
+        } else {
+            console.warn('⚠️  No price data available yet');
         }
     } catch (error) {
-        console.error('Error updating price:', error);
+        console.error('❌ Error updating price:', error);
     }
 }
 
@@ -297,24 +357,42 @@ async function updateBalances() {
 // Update staking pool statistics
 async function updateStakingStats() {
     try {
-        if (!stakingContract) return;
+        if (!stakingContract) {
+            console.warn('⚠️  Staking contract not initialized');
+            return;
+        }
 
+        console.log('📊 Fetching live staking data...');
+        
         // Update total staked
         const totalStaked = await stakingContract.totalStaked();
         const total = parseFloat(ethers.formatEther(totalStaked));
 
-        document.getElementById('stakedValue').textContent = total.toFixed(0) + ' AETH';
+        const stakedEl = document.getElementById('stakedValue');
+        if (stakedEl) stakedEl.textContent = total.toFixed(0) + ' AETH';
 
-        // Update holders count (approximate)
+        // Get token total supply for percentage calculation
+        if (aethContract) {
+            const totalSupply = await aethContract.totalSupply();
+            const supply = parseFloat(ethers.formatEther(totalSupply));
+            const stakedPercentage = (total / supply) * 100;
+            
+            const stakedPctEl = document.getElementById('stakedPercentage');
+            if (stakedPctEl) stakedPctEl.textContent = `${stakedPercentage.toFixed(1)}% of supply`;
+        }
+        
+        // Update holders count (approximate - would need indexer for exact count)
         const holdersEl = document.getElementById('holdersValue');
         if (holdersEl && total > 0) {
             // Rough estimate based on staked amount
             const estimatedHolders = Math.max(1, Math.floor(total / 1000));
             holdersEl.textContent = estimatedHolders.toLocaleString();
         }
+        
+        console.log('✅ Live staking stats updated:', total, 'AETH staked');
 
     } catch (error) {
-        console.error('Error updating staking stats:', error);
+        console.error('❌ Error updating staking stats:', error);
     }
 }
     if (typeof window.ethereum === 'undefined') {
@@ -357,6 +435,9 @@ async function updateStakingStats() {
 
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+        
+        console.log('\u2705 Wallet connected! Address:', account);
+        console.log('\ud83d\udd17 Contracts initialized with wallet signer');
 
         document.getElementById('connectBtn').textContent = 'Connected ✓';
         document.getElementById('connectBtn').classList.add('connected');
