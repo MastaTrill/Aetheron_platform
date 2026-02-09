@@ -653,6 +653,21 @@
             const container = document.getElementById('referralLeaderboard');
             container.innerHTML = '';
 
+            if (!entries || entries.length === 0) {
+                const row = document.createElement('div');
+                row.className = 'leaderboard-row';
+                row.innerHTML = `
+                    <div class="leaderboard-rank">--</div>
+                    <div>
+                        <div class="leaderboard-name">No tracked wallets yet</div>
+                        <div>Add addresses to tracked-addresses.json</div>
+                    </div>
+                    <div class="leaderboard-stats">Waiting</div>
+                `;
+                container.appendChild(row);
+                return;
+            }
+
             entries.forEach((entry) => {
                 const row = document.createElement('div');
                 row.className = 'leaderboard-row';
