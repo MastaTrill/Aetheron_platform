@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or private directories
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /scripts/
+Disallow: /test/
+
+# Allow all CSS, JS, and images
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.webp$
+
+# Sitemap location
+Sitemap: https://mastatrill.github.io/Aetheron_platform/sitemap.xml
+
+# Crawl delay (optional, 1 second)
+Crawl-delay: 1

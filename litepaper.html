@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Aetheron Litepaper - Technical overview of AETH DeFi token, tokenomics, staking mechanics, and project vision.">
+    <meta property="og:title" content="Aetheron (AETH) Litepaper - DeFi on Polygon">
+    <meta property="og:description" content="Comprehensive DeFi platform on Polygon with staking rewards up to 25% APY, social trading, and governance.">
+    <title>Litepaper - Aetheron Platform</title>
+    <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #00d4ff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        .version {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            color: #00d4ff;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #8a2be2;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: #d1d5db;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            color: #d1d5db;
+        }
+
+        .highlight {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 1.5rem;
+            border-left: 4px solid #00d4ff;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .warning {
+            background: rgba(255, 107, 53, 0.2);
+            padding: 1.5rem;
+            border-left: 4px solid #ff6b35;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 1rem;
+            text-align: left;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .formula {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid #8a2be2;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-file-alt"></i> Aetheron Litepaper</h1>
+            <p class="subtitle">A Comprehensive DeFi Ecosystem on Polygon</p>
+            <p class="version">Version 1.0 | February 2026</p>
+        </div>
+
+        <div class="content">
+            <h2>Abstract</h2>
+            <p>Aetheron (AETH) is a decentralized finance ecosystem built on the Polygon blockchain, designed to provide users with accessible, high-yield staking opportunities, social trading features, and comprehensive portfolio management tools. By leveraging Polygon's Layer 2 scaling solution, Aetheron delivers near-instantaneous transactions with minimal fees while maintaining Ethereum's security guarantees.</p>
+
+            <p>This litepaper outlines the technical architecture, tokenomics, staking mechanics, governance structure, and roadmap for the Aetheron platform.</p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value">1B</div>
+                    <div class="stat-label">Total Supply</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">25%</div>
+                    <div class="stat-label">Max APY</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">Polygon</div>
+                    <div class="stat-label">Blockchain</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">$0.01</div>
+                    <div class="stat-label">Avg Gas Fee</div>
+                </div>
+            </div>
+
+            <h2>1. Introduction</h2>
+            
+            <h3>1.1 The Problem</h3>
+            <p>The DeFi landscape faces several critical challenges:</p>
+            <ul>
+                <li><strong>High Transaction Costs:</strong> Ethereum gas fees often exceed $50-100 per transaction, making DeFi inaccessible to small-capital users</li>
+                <li><strong>Complex User Experience:</strong> Fragmented protocols require multiple platforms for staking, trading, and portfolio management</li>
+                <li><strong>Limited Earning Opportunities:</strong> Traditional staking yields are often below 5% APY</li>
+                <li><strong>Lack of Social Features:</strong> DeFi protocols rarely incorporate community-driven trading and learning</li>
+                <li><strong>Poor Governance:</strong> Many projects have centralized decision-making or inactive governance</li>
+            </ul>
+
+            <h3>1.2 The Solution</h3>
+            <p>Aetheron addresses these pain points through:</p>
+            <ul>
+                <li><strong>Polygon Integration:</strong> Sub-$0.05 transaction costs and 2-second finality</li>
+                <li><strong>Unified Platform:</strong> All DeFi tools in one accessible dashboard</li>
+                <li><strong>High-Yield Staking:</strong> Rewards up to 25% APY across multiple pools</li>
+                <li><strong>Social Trading Network:</strong> Copy successful traders and share strategies</li>
+                <li><strong>Community Governance:</strong> Token-holder voting on all major decisions</li>
+            </ul>
+
+            <h2>2. Technical Architecture</h2>
+
+            <h3>2.1 Blockchain Infrastructure</h3>
+            <p><strong>Network:</strong> Polygon PoS (Proof of Stake)</p>
+            <p><strong>Why Polygon?</strong></p>
+            <ul>
+                <li>EVM compatibility - seamless Ethereum tooling integration</li>
+                <li>2-second block times - near-instant transaction confirmation</li>
+                <li>Gas fees under $0.05 - accessible to all users</li>
+                <li>Ethereum security - checkpoints to Ethereum mainnet</li>
+                <li>Mature ecosystem - extensive DeFi integrations available</li>
+            </ul>
+
+            <h3>2.2 Smart Contract Architecture</h3>
+            <p>Aetheron consists of multiple interconnected smart contracts:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Contract</th>
+                        <th>Function</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AETH Token</td>
+                        <td>ERC-20 token contract</td>
+                        <td><code>0xAb5a...671e</code></td>
+                    </tr>
+                    <tr>
+                        <td>Staking Pool 1</td>
+                        <td>30-day lock, 5% APY</td>
+                        <td>View on PolygonScan</td>
+                    </tr>
+                    <tr>
+                        <td>Staking Pool 2</td>
+                        <td>90-day lock, 12% APY</td>
+                        <td>View on PolygonScan</td>
+                    </tr>
+                    <tr>
+                        <td>Staking Pool 3</td>
+                        <td>180-day lock, 25% APY</td>
+                        <td>View on PolygonScan</td>
+                    </tr>
+                    <tr>
+                        <td>Governance</td>
+                        <td>Voting mechanism</td>
+                        <td>Deployed in Q2 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.3 Security Features</h3>
+            <ul>
+                <li><strong>No Admin Keys:</strong> Contracts are immutable after deployment</li>
+                <li><strong>Open Source:</strong> All code publicly available on GitHub</li>
+                <li><strong>Time-Locks:</strong> Staking mechanisms enforce lock periods</li>
+                <li><strong>Reentrancy Guards:</strong> Protection against common exploits</li>
+                <li><strong>Battle-Tested Standards:</strong> OpenZeppelin contracts used throughout</li>
+            </ul>
+
+            <h2>3. Tokenomics</h2>
+
+            <h3>3.1 Supply & Distribution</h3>
+            
+            <div class="highlight">
+                <strong>Total Supply:</strong> 1,000,000,000 AETH (Fixed - No Inflation)<br>
+                <strong>Token Standard:</strong> ERC-20 on Polygon<br>
+                <strong>Decimals:</strong> 18<br>
+                <strong>Contract:</strong> <code>0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</code>
+            </div>
+
+            <p><strong>Token Distribution:</strong></p>
+            <ul>
+                <li><strong>40% (400M)</strong> - DEX Liquidity (QuickSwap)</li>
+                <li><strong>30% (300M)</strong> - Staking Rewards Pool (vested over 24 months)</li>
+                <li><strong>20% (200M)</strong> - Community Treasury (governance-controlled)</li>
+                <li><strong>10% (100M)</strong> - Development & Marketing (vested over 12 months)</li>
+            </ul>
+
+            <h3>3.2 Vesting Schedule</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Allocation</th>
+                        <th>Amount</th>
+                        <th>Vesting Period</th>
+                        <th>Release Schedule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DEX Liquidity</td>
+                        <td>400M</td>
+                        <td>Immediate</td>
+                        <td>Locked in LP</td>
+                    </tr>
+                    <tr>
+                        <td>Staking Rewards</td>
+                        <td>300M</td>
+                        <td>24 months</td>
+                        <td>Linear daily release</td>
+                    </tr>
+                    <tr>
+                        <td>Treasury</td>
+                        <td>200M</td>
+                        <td>Indefinite</td>
+                        <td>Governance votes only</td>
+                    </tr>
+                    <tr>
+                        <td>Development</td>
+                        <td>100M</td>
+                        <td>12 months</td>
+                        <td>Linear monthly release</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 Token Utility</h3>
+            <p>AETH tokens provide multiple utilities within the ecosystem:</p>
+            <ul>
+                <li><strong>Staking:</strong> Lock tokens to earn passive income (5-25% APY)</li>
+                <li><strong>Governance:</strong> Vote on proposals (1 AETH = 1 vote)</li>
+                <li><strong>Fee Discounts:</strong> Reduced trading fees for AETH holders</li>
+                <li><strong>Premium Access:</strong> Advanced features require minimum AETH balance</li>
+                <li><strong>Liquidity Mining:</strong> Earn bonus AETH for providing liquidity</li>
+                <li><strong>NFT Minting:</strong> Required for platform NFT purchases</li>
+            </ul>
+
+            <h2>4. Staking Mechanism</h2>
+
+            <h3>4.1 Staking Pools</h3>
+            <p>Aetheron offers three staking pools with varying lock periods and APY rates:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pool</th>
+                        <th>Lock Period</th>
+                        <th>APY</th>
+                        <th>Min Stake</th>
+                        <th>Max Stake</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pool 1</td>
+                        <td>30 days</td>
+                        <td>5%</td>
+                        <td>100 AETH</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Pool 2</td>
+                        <td>90 days</td>
+                        <td>12%</td>
+                        <td>100 AETH</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Pool 3</td>
+                        <td>180 days</td>
+                        <td>25%</td>
+                        <td>100 AETH</td>
+                        <td>Unlimited</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.2 Reward Calculation</h3>
+            <p>Rewards accrue continuously based on the formula:</p>
+
+            <div class="formula">
+Reward = (Staked Amount) × (APY / 365) × (Days Staked)
+
+Example:
+- Staked: 10,000 AETH
+- Pool: 180-day (25% APY)
+- Duration: 180 days
+
+Reward = 10,000 × (0.25 / 365) × 180 = 1,232.88 AETH
+            </div>
+
+            <h3>4.3 Claiming & Compounding</h3>
+            <ul>
+                <li><strong>Flexible Claiming:</strong> Rewards can be claimed at any time while principal remains locked</li>
+                <li><strong>Auto-Compounding:</strong> Option to automatically reinvest rewards into the same pool</li>
+                <li><strong>No Fees:</strong> Zero fees for staking, unstaking, or claiming rewards</li>
+                <li><strong>Penalty-Free:</strong> No early withdrawal penalties (lock period enforced by contract)</li>
+            </ul>
+
+            <h2>5. Governance</h2>
+
+            <h3>5.1 Governance Model</h3>
+            <p>Aetheron implements a decentralized autonomous organization (DAO) structure:</p>
+            <ul>
+                <li><strong>1 AETH = 1 Vote:</strong> Democratic voting rights</li>
+                <li><strong>Proposal Threshold:</strong> 10,000 AETH required to submit proposals</li>
+                <li><strong>Quorum:</strong> 10% of circulating supply must participate for validity</li>
+                <li><strong>Voting Period:</strong> 7 days per proposal</li>
+                <li><strong>Timelock:</strong> 48-hour delay before execution</li>
+            </ul>
+
+            <h3>5.2 Governance Scope</h3>
+            <p>Token holders can vote on:</p>
+            <ul>
+                <li>Protocol parameter adjustments (APY rates, lock periods)</li>
+                <li>Treasury fund allocation</li>
+                <li>New feature development priorities</li>
+                <li>Strategic partnerships and integrations</li>
+                <li>Marketing and community initiatives</li>
+                <li>Smart contract upgrades (via proxy patterns)</li>
+            </ul>
+
+            <h2>6. Platform Features</h2>
+
+            <h3>6.1 Social Trading Network</h3>
+            <p>Unique social features differentiate Aetheron from competitors:</p>
+            <ul>
+                <li><strong>Copy Trading:</strong> Automatically replicate successful traders' strategies</li>
+                <li><strong>Signal Sharing:</strong> Publish and follow trading signals</li>
+                <li><strong>Leaderboard:</strong> Rank traders by performance</li>
+                <li><strong>Portfolio Sharing:</strong> Public/private portfolio visibility options</li>
+                <li><strong>Trading Competitions:</strong> Regular contests with AETH rewards</li>
+            </ul>
+
+            <h3>6.2 Portfolio Analytics</h3>
+            <ul>
+                <li>Real-time portfolio valuation</li>
+                <li>Historical performance tracking</li>
+                <li>Risk assessment tools</li>
+                <li>Asset allocation visualization</li>
+                <li>Tax reporting exports</li>
+            </ul>
+
+            <h3>6.3 DeFi Integration</h3>
+            <ul>
+                <li><strong>Yield Aggregator:</strong> Compare yields across protocols</li>
+                <li><strong>Multi-Protocol Support:</strong> Aave, Curve, Balancer, etc.</li>
+                <li><strong>Price Alerts:</strong> Custom notifications for token prices</li>
+                <li><strong>Transaction History:</strong> Complete on-chain activity log</li>
+            </ul>
+
+            <h2>7. Roadmap</h2>
+
+            <h3>Q1 2026 ✅ (Complete)</h3>
+            <ul>
+                <li>✅ Smart contract development and deployment</li>
+                <li>✅ Three-tier staking system launch</li>
+                <li>✅ QuickSwap DEX listing with liquidity</li>
+                <li>✅ Dashboard platform v1.0 release</li>
+                <li>✅ Portfolio tracking and analytics</li>
+                <li>✅ Social trading beta features</li>
+            </ul>
+
+            <h3>Q2 2026 🚧 (In Progress)</h3>
+            <ul>
+                <li>Mobile app development (iOS & Android)</li>
+                <li>Social trading platform v2.0</li>
+                <li>Additional DEX listings (Uniswap v3, SushiSwap)</li>
+                <li>CoinGecko and CoinMarketCap listings</li>
+                <li>Governance v1 launch</li>
+                <li>Yield aggregator integration</li>
+                <li>NFT marketplace beta</li>
+            </ul>
+
+            <h3>Q3 2026</h3>
+            <ul>
+                <li>CEX listing applications (Tier 2-3 exchanges)</li>
+                <li>Cross-chain bridge (Polygon ↔ Ethereum)</li>
+                <li>Advanced analytics features</li>
+                <li>API access for developers</li>
+                <li>Automated portfolio rebalancing</li>
+                <li>Fiat on-ramp integration</li>
+            </ul>
+
+            <h3>Q4 2026</h3>
+            <ul>
+                <li>Major CEX listings (Tier 1 exchanges)</li>
+                <li>Platform v2.0 overhaul</li>
+                <li>Multi-chain expansion (Arbitrum, Optimism)</li>
+                <li>Institutional staking products</li>
+                <li>Algorithmic trading bots</li>
+                <li>Insurance product integration</li>
+            </ul>
+
+            <h3>2027 and Beyond</h3>
+            <ul>
+                <li>Full multi-chain deployment</li>
+                <li>DeFi insurance underwriting</li>
+                <li>Leveraged yield farming</li>
+                <li>Traditional finance integrations</li>
+                <li>Geographic expansion with local partnerships</li>
+            </ul>
+
+            <h2>8. Team & Community</h2>
+
+            <h3>8.1 Core Team</h3>
+            <p><strong>Founder & Lead Developer:</strong> William McCoy (<a href="https://twitter.com/William_McCoy_" target="_blank" style="color: #00d4ff;">@William_McCoy_</a>)</p>
+            <ul>
+                <li>Blockchain developer with focus on DeFi innovation</li>
+                <li>Active GitHub contributor</li>
+                <li>Transparent, community-first development approach</li>
+            </ul>
+
+            <h3>8.2 Community Channels</h3>
+            <ul>
+                <li><strong>Twitter:</strong> <a href="https://twitter.com/William_McCoy_" target="_blank" style="color: #00d4ff;">@William_McCoy_</a></li>
+                <li><strong>GitHub:</strong> <a href="https://github.com/mastatrill/Aetheron_platform" target="_blank" style="color: #00d4ff;">mastatrill/Aetheron_platform</a></li>
+                <li><strong>Dashboard:</strong> <a href="https://mastatrill.github.io/Aetheron_platform/" target="_blank" style="color: #00d4ff;">Aetheron Platform</a></li>
+            </ul>
+
+            <h2>9. Risk Disclosures</h2>
+
+            <div class="warning">
+                <strong>⚠️ IMPORTANT RISK FACTORS:</strong>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Market Volatility:</strong> Cryptocurrency prices are highly volatile and can fluctuate rapidly</li>
+                    <li><strong>Smart Contract Risk:</strong> Bugs or exploits in smart contracts could result in loss of funds</li>
+                    <li><strong>Regulatory Risk:</strong> Changes in regulations could impact token utility or value</li>
+                    <li><strong>Liquidity Risk:</strong> Low trading volume may make it difficult to buy or sell at desired prices</li>
+                    <li><strong>Technology Risk:</strong> Blockchain network issues could temporarily prevent transactions</li>
+                    <li><strong>No Guarantees:</strong> APY rates are estimates and not guaranteed</li>
+                    <li><strong>Total Loss Possibility:</strong> You could lose your entire investment</li>
+                </ul>
+            </div>
+
+            <p><strong>Investment Notice:</strong> This litepaper does not constitute financial advice. Always conduct your own research (DYOR) and never invest more than you can afford to lose. Consult with financial and legal professionals before making investment decisions.</p>
+
+            <h2>10. Conclusion</h2>
+            <p>Aetheron represents a comprehensive solution to the accessibility challenges facing DeFi today. By combining high-yield staking, social trading features, and comprehensive portfolio tools on the low-cost Polygon network, Aetheron makes advanced DeFi strategies accessible to everyone.</p>
+
+            <p>Our commitment to transparency, community governance, and continuous innovation positions Aetheron as a leading platform in the next evolution of decentralized finance.</p>
+
+            <div class="highlight" style="margin-top: 3rem; text-align: center;">
+                <h3 style="color: #00d4ff; margin-bottom: 1rem;">Join the Aetheron Revolution</h3>
+                <p style="margin-bottom: 1.5rem;">Start staking, trading, and earning today on Polygon's most comprehensive DeFi platform.</p>
+                <a href="index.html" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #00d4ff, #8a2be2); border-radius: 12px; color: white; text-decoration: none; font-weight: 600; margin: 0.5rem;">
+                    <i class="fas fa-rocket"></i> Launch Dashboard
+                </a>
+                <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" style="display: inline-block; padding: 1rem 2rem; background: rgba(0, 212, 255, 0.2); border: 1px solid #00d4ff; border-radius: 12px; color: white; text-decoration: none; font-weight: 600; margin: 0.5rem;">
+                    <i class="fas fa-exchange-alt"></i> Trade on QuickSwap
+                </a>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 3rem 0;">
+
+            <p style="text-align: center; color: #666; font-size: 0.9rem;">
+                <strong>Aetheron Platform</strong><br>
+                Litepaper v1.0 | February 2026<br>
+                Contract: <code>0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</code><br>
+                Network: Polygon
+            </p>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => console.log('ServiceWorker registered:', registration.scope))
+                    .catch(err => console.log('ServiceWorker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
