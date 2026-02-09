@@ -1,0 +1,20 @@
+{
+  "contractAddress": "0x072091F554df794852E0A9d1c809F2B2bBda171E",
+  "rpcUrl": "https://polygon-rpc.com",
+  "trackedAddresses": [
+    "0xYourAddress1Here",
+    "0xYourAddress2Here",
+    "0xYourAddress3Here",
+    "0xYourAddress4Here",
+    "0xYourAddress5Here"
+  ],
+  "badgeTiers": {
+    "Elite": 1000000,
+    "Pro": 500000,
+    "Rising": 100000,
+    "Growth": 50000,
+    "Starter": 10000
+  },
+  "refreshInterval": 60000,
+  "topCount": 10
+}

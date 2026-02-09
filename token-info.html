@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>AETH Token Info - Aetheron Platform</title>
+    <meta name="theme-color" content="#00D4FF">
     <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -11,7 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'GA_MEASUREMENT_ID');
     </script>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -257,6 +261,49 @@
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .leaderboard-table {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            border-left: 4px solid rgba(0, 212, 255, 0.6);
+        }
+
+        .leaderboard-rank {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .leaderboard-stats {
+            text-align: right;
+            color: var(--dark);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--primary);
+            margin-left: 0.5rem;
         }
 
         .token-card h2 {
@@ -551,6 +598,185 @@
                 </a>
             </div>
         </div>
+
+        <div class="token-card">
+            <h2>🏆 Referral Leaderboard</h2>
+            <div class="leaderboard-table" id="referralLeaderboard"></div>
+        </div>
     </div>
+
+    <script>
+        const leaderboardFallback = [
+            {
+                rank: 1,
+                address: '0xA4B9...9F21',
+                referrals: 42,
+                reward: '+12,500 AETH',
+                badge: 'Elite',
+                badgeIcon: 'crown'
+            },
+            {
+                rank: 2,
+                address: '0xB22C...104D',
+                referrals: 31,
+                reward: '+9,800 AETH',
+                badge: 'Pro',
+                badgeIcon: 'star'
+            },
+            {
+                rank: 3,
+                address: '0x7E11...4C8A',
+                referrals: 24,
+                reward: '+7,250 AETH',
+                badge: 'Rising',
+                badgeIcon: 'gem'
+            },
+            {
+                rank: 4,
+                address: '0xF00D...A0B1',
+                referrals: 18,
+                reward: '+5,400 AETH',
+                badge: 'Growth',
+                badgeIcon: 'bolt'
+            },
+            {
+                rank: 5,
+                address: '0x9C77...88EA',
+                referrals: 12,
+                reward: '+3,250 AETH',
+                badge: 'Starter',
+                badgeIcon: 'seedling'
+            }
+        ];
+
+        function renderLeaderboard(entries) {
+            const container = document.getElementById('referralLeaderboard');
+            container.innerHTML = '';
+
+            entries.forEach((entry) => {
+                const row = document.createElement('div');
+                row.className = 'leaderboard-row';
+
+                const badge = entry.badge
+                    ? `<span class="badge"><i class="fas fa-${entry.badgeIcon}"></i> ${entry.badge}</span>`
+                    : '';
+
+                row.innerHTML = `
+                    <div class="leaderboard-rank">#${entry.rank}</div>
+                    <div>
+                        <div class="leaderboard-name">${entry.address} ${badge}</div>
+                        <div>Referrals: ${entry.referrals}</div>
+                    </div>
+                    <div class="leaderboard-stats">${entry.reward}</div>
+                `;
+
+                container.appendChild(row);
+            });
+        }
+
+        // Contract configuration
+        const CONTRACT_ADDRESS = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
+        const RPC_URL = 'https://polygon-rpc.com'; // Polygon mainnet
+        const CONTRACT_ABI = [
+            'function balanceOf(address account) view returns (uint256)'
+        ];
+
+        // Tracked addresses for leaderboard (add your community addresses here)
+        const TRACKED_ADDRESSES = [
+            '0xA4B9...9F21', // Replace with real addresses
+            '0xB22C...104D',
+            '0x7E11...4C8A',
+            '0xF00D...A0B1',
+            '0x9C77...88EA',
+            '0x1234...5678',
+            '0xABCD...EF99',
+            '0x9999...1111'
+        ];
+
+        // Badge tiers based on holdings
+        function getBadge(balance) {
+            if (balance >= 1000000) return { badge: 'Elite', badgeIcon: 'crown' };
+            if (balance >= 500000) return { badge: 'Pro', badgeIcon: 'star' };
+            if (balance >= 100000) return { badge: 'Rising', badgeIcon: 'gem' };
+            if (balance >= 50000) return { badge: 'Growth', badgeIcon: 'bolt' };
+            if (balance >= 10000) return { badge: 'Starter', badgeIcon: 'seedling' };
+            return { badge: '', badgeIcon: '' };
+        }
+
+        // Format address for display
+        function formatAddress(address) {
+            if (address.length < 10) return address;
+            return `${address.slice(0, 6)}...${address.slice(-4)}`;
+        }
+
+        // Load on-chain holder balances
+        async function loadOnChainLeaderboard() {
+            try {
+                const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+
+                // Query balances for all tracked addresses
+                const balancePromises = TRACKED_ADDRESSES.map(async (address) => {
+                    try {
+                        const balance = await contract.balanceOf(address);
+                        const balanceNum = parseFloat(ethers.utils.formatEther(balance));
+                        return { address, balance: balanceNum };
+                    } catch {
+                        return { address, balance: 0 };
+                    }
+                });
+
+                const results = await Promise.all(balancePromises);
+
+                // Sort by balance and assign ranks
+                const sorted = results
+                    .filter(r => r.balance > 0)
+                    .sort((a, b) => b.balance - a.balance)
+                    .slice(0, 10);
+
+                const leaderboard = sorted.map((item, index) => {
+                    const badgeInfo = getBadge(item.balance);
+                    return {
+                        rank: index + 1,
+                        address: formatAddress(item.address),
+                        referrals: Math.floor(item.balance / 1000), // Simulated referral count
+                        reward: `${item.balance.toLocaleString('en-US', { maximumFractionDigits: 0 })} AETH`,
+                        badge: badgeInfo.badge,
+                        badgeIcon: badgeInfo.badgeIcon
+                    };
+                });
+
+                if (leaderboard.length > 0) {
+                    renderLeaderboard(leaderboard);
+                } else {
+                    throw new Error('No holders found');
+                }
+            } catch (error) {
+                console.warn('On-chain leaderboard failed, using fallback:', error);
+                loadFallbackLeaderboard();
+            }
+        }
+
+        // Load from JSON file as fallback
+        function loadFallbackLeaderboard() {
+            fetch('referral-leaderboard.json')
+                .then((response) => (response.ok ? response.json() : null))
+                .then((data) => renderLeaderboard(data?.entries || leaderboardFallback))
+                .catch(() => renderLeaderboard(leaderboardFallback));
+        }
+
+        // Main loader - tries on-chain first, falls back to JSON
+        function loadLeaderboard() {
+            if (typeof ethers !== 'undefined') {
+                loadOnChainLeaderboard();
+            } else {
+                console.warn('Ethers.js not loaded, using fallback');
+                loadFallbackLeaderboard();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
+    </script>
+    <script src="global-announcements.js"></script>
 </body>
 </html>
