@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Portfolio Tracker - Aetheron Platform</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="mobile-optimization.css">
+    <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -200,181 +204,7 @@
         </div>
     </main>
 
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
-    <script src="theme-toggle.js"></script>
-    <script src="index.js"></script>
-    <script>
-        let currentAccount = null;
 
-        async function connectWallet() {
-            if (!window.ethereum) {
-                alert('Please install MetaMask to use this feature.');
-                return;
-            }
-
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                currentAccount = accounts[0];
-                
-                // Show portfolio content
-                document.getElementById('walletStatus').style.display = 'none';
-                document.getElementById('portfolioContent').style.display = 'block';
-                
-                // Load portfolio data
-                await loadPortfolio();
-            } catch (error) {
-                console.error('Error connecting wallet:', error);
-                alert('Failed to connect wallet');
-            }
-        }
-
-        async function loadPortfolio() {
-            try {
-                // Get current price
-                const priceData = await fetch('https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D');
-                const priceJson = await priceData.json();
-                const currentPrice = parseFloat(priceJson.pair?.priceUsd || 0);
-
-                // Get user balances
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
-                const stakingContract = new ethers.Contract(stakingAddress, stakingABI, provider);
-
-                // Wallet balance
-                const walletBalance = await tokenContract.balanceOf(currentAccount);
-                const walletBalanceFormatted = parseFloat(ethers.utils.formatEther(walletBalance));
-
-                // Get staking info for each pool
-                let totalStaked = 0;
-                let totalRewards = 0;
-                const stakes = [];
-
-                const poolConfigs = [
-                    { id: 0, apy: 8, days: 7, name: 'Pool 1' },
-                    { id: 1, apy: 12, days: 30, name: 'Pool 2' },
-                    { id: 2, apy: 18, days: 90, name: 'Pool 3' }
-                ];
-
-                for (const pool of poolConfigs) {
-                    const userInfo = await stakingContract.userStakes(currentAccount, pool.id);
-                    const amount = parseFloat(ethers.utils.formatEther(userInfo.amount));
-                    
-                    if (amount > 0) {
-                        totalStaked += amount;
-                        
-                        // Calculate rewards (would need actual contract calls)
-                        const rewards = (amount * pool.apy / 100 / 365) * (Date.now() - userInfo.stakeTime * 1000) / (1000 * 60 * 60 * 24);
-                        totalRewards += rewards;
-
-                        stakes.push({
-                            pool: pool.name,
-                            poolId: pool.id,
-                            amount: amount,
-                            apy: pool.apy,
-                            rewards: rewards,
-                            lockDays: pool.days,
-                            stakeTime: userInfo.stakeTime,
-                            unlockTime: userInfo.unlockTime
-                        });
-                    }
-
-                    // Update individual pool displays
-                    document.getElementById(`staked${pool.id + 1}`).textContent = `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
-                    document.getElementById(`staked${pool.id + 1}Value`).textContent = `$${(amount * currentPrice).toFixed(2)}`;
-                }
-
-                // Calculate totals
-                const totalAETH = walletBalanceFormatted + totalStaked;
-                const totalValue = totalAETH * currentPrice;
-
-                // Update summary cards
-                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
-                document.getElementById('totalAETH').textContent = `${totalAETH.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
-                document.getElementById('aethUSD').textContent = `$${totalValue.toFixed(2)}`;
-                document.getElementById('stakedAETH').textContent = `${totalStaked.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
-                document.getElementById('stakedUSD').textContent = `$${(totalStaked * currentPrice).toFixed(2)}`;
-                document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
-                document.getElementById('rewardsUSD').textContent = `$${(totalRewards * currentPrice).toFixed(2)}`;
-
-                // Update wallet balance
-                document.getElementById('walletBalance').textContent = `${walletBalanceFormatted.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH`;
-                document.getElementById('walletValue').textContent = `$${(walletBalanceFormatted * currentPrice).toFixed(2)}`;
-                document.getElementById('walletPercentage').textContent = `${totalAETH > 0 ? ((walletBalanceFormatted / totalAETH) * 100).toFixed(1) : 0}%`;
-
-                // Calculate percentages for staked amounts
-                poolConfigs.forEach((pool, index) => {
-                    const amount = parseFloat(document.getElementById(`staked${index + 1}`).textContent);
-                    const percentage = totalAETH > 0 ? ((amount / totalAETH) * 100).toFixed(1) : 0;
-                    document.getElementById(`staked${index + 1}Percentage`).textContent = `${percentage}%`;
-                });
-
-                // Populate stakes table
-                if (stakes.length > 0) {
-                    const tbody = document.getElementById('stakesTableBody');
-                    tbody.innerHTML = stakes.map(stake => {
-                        const unlockDate = new Date(stake.unlockTime * 1000);
-                        const isLocked = Date.now() < unlockDate.getTime();
-                        const daysRemaining = Math.max(0, Math.ceil((unlockDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-
-                        return `
-                            <tr>
-                                <td><strong>${stake.pool}</strong></td>
-                                <td>${stake.amount.toLocaleString(undefined, {maximumFractionDigits: 2})} AETH</td>
-                                <td><span class="badge badge-success">${stake.apy}%</span></td>
-                                <td>${stake.rewards.toLocaleString(undefined, {maximumFractionDigits: 4})} AETH</td>
-                                <td>${(stake.amount * stake.apy / 100).toLocaleString(undefined, {maximumFractionDigits: 2})} AETH/yr</td>
-                                <td>${stake.lockDays} days</td>
-                                <td>${unlockDate.toLocaleDateString()}</td>
-                                <td>
-                                    ${isLocked 
-                                        ? `<span class="badge badge-warning"><i class="fas fa-lock"></i> Locked (${daysRemaining}d)</span>` 
-                                        : `<span class="badge badge-success"><i class="fas fa-unlock"></i> Unlocked</span>`
-                                    }
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-
-                // Calculate performance metrics
-                if (totalStaked > 0) {
-                    const weightedAPY = stakes.reduce((sum, stake) => sum + (stake.amount / totalStaked) * stake.apy, 0);
-                    document.getElementById('avgAPY').textContent = `${weightedAPY.toFixed(2)}%`;
-                    
-                    const dailyEarnings = (totalStaked * weightedAPY / 100 / 365);
-                    document.getElementById('dailyEarnings').textContent = `${dailyEarnings.toFixed(4)} AETH`;
-                    document.getElementById('monthlyEarnings').textContent = `${(dailyEarnings * 30).toFixed(2)} AETH`;
-                    document.getElementById('yearlyEarnings').textContent = `${(dailyEarnings * 365).toFixed(2)} AETH`;
-                    
-                    const roi = totalStaked > 0 ? ((totalRewards / totalStaked) * 100) : 0;
-                    document.getElementById('roi').textContent = `${roi.toFixed(2)}%`;
-                    
-                    // Calculate avg days staking (simplified)
-                    const avgDays = stakes.length > 0 
-                        ? Math.floor(stakes.reduce((sum, stake) => sum + ((Date.now() - stake.stakeTime * 1000) / (1000 * 60 * 60 * 24)), 0) / stakes.length)
-                        : 0;
-                    document.getElementById('daysStaking').textContent = avgDays;
-                }
-
-            } catch (error) {
-                console.error('Error loading portfolio:', error);
-                alert('Error loading portfolio data');
-            }
-        }
-
-        // Auto-connect if already connected
-        window.addEventListener('load', async () => {
-            if (window.ethereum) {
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    currentAccount = accounts[0];
-                    document.getElementById('walletStatus').style.display = 'none';
-                    document.getElementById('portfolioContent').style.display = 'block';
-                    await loadPortfolio();
-                }
-            }
-        });
-    </script>
 
     <style>
         .portfolio-summary {
@@ -533,5 +363,328 @@
             }
         }
     </style>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for offline support and caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                        
+                        // Check for updates every 60 seconds
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000);
+                        
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                                    console.log('New service worker activated, reloading...');
+                                    setTimeout(() => window.location.reload(), 2000);
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.log('ServiceWorker registration failed:', err));
+            });
+        }
+        
+        // Handle page shown from back/forward cache
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <!-- Portfolio Functionality -->
+    <script>
+        let provider;
+        let signer;
+        let userAddress;
+        let tokenContract;
+        let stakingContract;
+        let aethPrice = 0.000487; // USD - default value
+
+        // Contract addresses
+        const TOKEN_ADDRESS = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
+        const STAKING_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'; // Replace if different
+
+        // ABIs
+        const TOKEN_ABI = [
+            "function balanceOf(address owner) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)"
+        ];
+
+        const STAKING_ABI = [
+            "function userStakes(address user, uint256 poolId) view returns (uint256 amount, uint256 stakeTime, uint256 unlockTime)",
+            "function calculateReward(address user, uint256 poolId) view returns (uint256)",
+            "function poolCount() view returns (uint256)"
+        ];
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('Please install MetaMask to use this feature!');
+                    return;
+                }
+
+                // Request account access
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                // Check network
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137) {
+                    alert('Please switch to Polygon Mainnet (Chain ID: 137)');
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x89' }],
+                        });
+                        location.reload();
+                        return;
+                    } catch (switchError) {
+                        console.error('Failed to switch network:', switchError);
+                        return;
+                    }
+                }
+
+                // Initialize contracts
+                tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+                stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
+
+                // Hide wallet button, show portfolio
+                document.getElementById('walletStatus').style.display = 'none';
+                document.getElementById('portfolioContent').style.display = 'block';
+
+                // Load portfolio data
+                await loadPortfolioData();
+
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        }
+
+        async function fetchAethPrice() {
+            try {
+                const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D');
+                const data = await response.json();
+                if (data.pair && data.pair.priceUsd) {
+                    aethPrice = parseFloat(data.pair.priceUsd);
+                }
+            } catch (error) {
+                console.log('Failed to fetch price, using default:', error);
+            }
+        }
+
+        async function loadPortfolioData() {
+            try {
+                // Fetch current price
+                await fetchAethPrice();
+
+                // Get wallet balance
+                const balance = await tokenContract.balanceOf(userAddress);
+                const decimals = await tokenContract.decimals();
+                const walletAETH = parseFloat(ethers.utils.formatUnits(balance, decimals));
+
+                // Get staking positions
+                let totalStaked = 0;
+                let totalRewards = 0;
+                const stakePositions = [];
+
+                const poolConfigs = [
+                    { id: 0, apy: 5, days: 30, name: '30-Day Pool (5% APY)' },
+                    { id: 1, apy: 12, days: 90, name: '90-Day Pool (12% APY)' },
+                    { id: 2, apy: 25, days: 180, name: '180-Day Pool (25% APY)' }
+                ];
+
+                for (const pool of poolConfigs) {
+                    try {
+                        const userInfo = await stakingContract.userStakes(userAddress, pool.id);
+                        const stakeAmount = parseFloat(ethers.utils.formatUnits(userInfo.amount, decimals));
+                        
+                        if (stakeAmount > 0) {
+                            const stakeTime = userInfo.stakeTime.toNumber();
+                            const unlockTime = userInfo.unlockTime.toNumber();
+                            
+                            // Calculate rewards (estimatedAPY calculation)
+                            const daysStaked = (Date.now() / 1000 - stakeTime) / 86400;
+                            const rewardAmount = (stakeAmount * pool.apy / 100 / 365) * daysStaked;
+                            
+                            totalStaked += stakeAmount;
+                            totalRewards += rewardAmount;
+                            
+                            stakePositions.push({
+                                pool: pool.name,
+                                poolId: pool.id,
+                                amount: stakeAmount,
+                                rewards: rewardAmount,
+                                apy: pool.apy,
+                                lockDays: pool.days,
+                                stakeTime: stakeTime,
+                                unlockTime: unlockTime
+                            });
+                        }
+
+                        // Update individual pool displays
+                        document.getElementById(`staked${pool.id + 1}`).textContent = `${stakeAmount.toFixed(2)} AETH`;
+                        document.getElementById(`staked${pool.id + 1}Value`).textContent = `$${(stakeAmount * aethPrice).toFixed(2)}`;
+                        
+                    } catch (e) {
+                        console.log(`No stake in pool ${pool.id}`, e);
+                        // Set zeroes for pools without stakes
+                        document.getElementById(`staked${pool.id + 1}`).textContent = '0 AETH';
+                        document.getElementById(`staked${pool.id + 1}Value`).textContent = '$0.00';
+                        document.getElementById(`staked${pool.id + 1}Percentage`).textContent = '0%';
+                    }
+                }
+
+                // Calculate totals
+                const totalAETH = walletAETH + totalStaked;
+                const totalValue = totalAETH * aethPrice;
+
+ // Update summary cards
+                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+                document.getElementById('totalChange').textContent = `+${totalRewards.toFixed(4)} AETH earned`;
+                document.getElementById('totalAETH').textContent = `${totalAETH.toFixed(2)} AETH`;
+                document.getElementById('aethUSD').textContent = `$${(totalAETH * aethPrice).toFixed(2)}`;
+                document.getElementById('stakedAETH').textContent = `${totalStaked.toFixed(2)} AETH`;
+                document.getElementById('stakedUSD').textContent = `$${(totalStaked * aethPrice).toFixed(2)}`;
+                document.getElementById('totalRewards').textContent = `${totalRewards.toFixed(4)} AETH`;
+                document.getElementById('rewardsUSD').textContent = `$${(totalRewards * aethPrice).toFixed(4)}`;
+
+                // Asset breakdown - wallet balance
+                document.getElementById('walletBalance').textContent = `${walletAETH.toFixed(2)} AETH`;
+                document.getElementById('walletValue').textContent = `$${(walletAETH * aethPrice).toFixed(2)}`;
+                document.getElementById('walletPercentage').textContent = `${totalAETH > 0 ? ((walletAETH / totalAETH) * 100).toFixed(1) : 0}%`;
+
+                // Calculate percentages for each staked pool
+                poolConfigs.forEach((pool, index) => {
+                    const amountText = document.getElementById(`staked${index + 1}`).textContent;
+                    const amount = parseFloat(amountText.replace(' AETH', ''));
+                    const percentage = totalAETH > 0 ? ((amount / totalAETH) * 100).toFixed(1) : 0;
+                    document.getElementById(`staked${index + 1}Percentage`).textContent = `${percentage}%`;
+                });
+
+                // Update staking positions table
+                updateStakingTable(stakePositions);
+
+                // Performance metrics
+                if (totalStaked > 0) {
+                    const weightedAPY = stakePositions.length > 0
+                        ? stakePositions.reduce((sum, pos) => sum + (pos.amount / totalStaked) * pos.apy, 0)
+                        : 0;
+                    
+                    document.getElementById('avgAPY').textContent = `${weightedAPY.toFixed(2)}%`;
+                    
+                    const dailyEarnings = (totalStaked * weightedAPY / 100 / 365);
+                    document.getElementById('dailyEarnings').textContent = `${dailyEarnings.toFixed(4)} AETH`;
+                    document.getElementById('monthlyEarnings').textContent = `${(dailyEarnings * 30).toFixed(2)} AETH`;
+                    document.getElementById('yearlyEarnings').textContent = `${(dailyEarnings * 365).toFixed(2)} AETH`;
+                    
+                    const roi = totalStaked > 0 ? ((totalRewards / totalStaked) * 100) : 0;
+                    document.getElementById('roi').textContent = `${roi.toFixed(2)}%`;
+                    
+                    // Calculate avg days staking
+                    const avgDays = stakePositions.length > 0
+                        ? Math.floor(stakePositions.reduce((sum, pos) => sum + ((Date.now() / 1000 - pos.stakeTime) / 86400), 0) / stakePositions.length)
+                        : 0;
+                    document.getElementById('daysStaking').textContent = avgDays;
+                } else {
+                    // Set zeros if no staking
+                    document.getElementById('avgAPY').textContent = '0%';
+                    document.getElementById('dailyEarnings').textContent = '0 AETH';
+                    document.getElementById('monthlyEarnings').textContent = '0 AETH';
+                    document.getElementById('yearlyEarnings').textContent = '0 AETH';
+                    document.getElementById('roi').textContent = '0%';
+                    document.getElementById('daysStaking').textContent = '0';
+                }
+
+            } catch (error) {
+                console.error('Error loading portfolio data:', error);
+                alert('Failed to load portfolio data. Some features may not work correctly.');
+            }
+        }
+
+        function updateStakingTable(positions) {
+            const tbody = document.getElementById('stakesTableBody');
+            tbody.innerHTML = '';
+
+            if (positions.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.5; display: block; margin-bottom: 16px;"></i>
+                        No active staking positions
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            positions.forEach(pos => {
+                const stakeDate = new Date(pos.stakeTime * 1000);
+                const unlockDate = new Date(pos.unlockTime * 1000);
+                const now = Date.now();
+                const isLocked = now < unlockDate.getTime();
+                const daysRemaining = Math.max(0, Math.ceil((unlockDate.getTime() - now) / (1000 * 60 * 60 * 24)));
+                const estYearlyRewards = (pos.amount * pos.apy / 100);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${pos.pool}</strong></td>
+                    <td>${pos.amount.toFixed(2)} AETH</td>
+                    <td><span class="badge badge-success">${pos.apy}%</span></td>
+                    <td>${pos.rewards.toFixed(4)} AETH</td>
+                    <td>${estYearlyRewards.toFixed(2)} AETH/yr</td>
+                    <td>${pos.lockDays} days</td>
+                    <td>${unlockDate.toLocaleDateString()}</td>
+                    <td>
+                        ${isLocked 
+                            ? `<span class="badge badge-warning"><i class="fas fa-lock"></i> Locked (${daysRemaining}d)</span>` 
+                            : `<span class="badge badge-success"><i class="fas fa-unlock"></i> Unlocked</span>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Auto-connect if already connected
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    userAddress = accounts[0];
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+                    stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
+                    
+                    document.getElementById('walletStatus').style.display = 'none';
+                    document.getElementById('portfolioContent').style.display = 'block';
+                    await loadPortfolioData();
+                }
+            }
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (userAddress) {
+                loadPortfolioData();
+            }
+        }, 30000);
+    </script>
 </body>
 </html>
