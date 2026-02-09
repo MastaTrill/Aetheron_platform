@@ -215,6 +215,104 @@ html {
     }
 }
 
+/* Global Announcement Banner */
+.global-announcement {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(118, 75, 162, 0.15));
+    border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #ffffff;
+}
+
+.global-announcement-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.global-announcement-text {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.global-announcement-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.global-announcement-dismiss {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+}
+
+/* PWA Install Banner */
+.pwa-install-banner {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 520px;
+    width: calc(100% - 2rem);
+    z-index: 1000;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.pwa-install-title {
+    font-weight: 700;
+}
+
+.pwa-install-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+}
+
+.pwa-install-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Global Toast */
+.global-toast-container {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 1100;
+}
+
+.global-toast {
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.global-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Theme Toggle */
 .theme-toggle {
     pointer-events: auto;
