@@ -6,10 +6,38 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Referral Program - Aetheron Platform</title>
+    <meta name="description" content="Join the Aetheron Referral Program. Earn up to 25% rewards by referring friends. Get real-time stats and track your earnings.">
+    <meta name="keywords" content="Aetheron, referral program, cryptocurrency, AETH token, Polygon, earn rewards, defi">
+    <meta name="author" content="Aetheron Platform">
+    <meta name="theme-color" content="#00D4FF">
+    
+    <!-- Open Graph / Social Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aetheron.online/referral.html">
+    <meta property="og:title" content="Aetheron Referral Program - Earn Rewards">
+    <meta property="og:description" content="Join 10000+ members earning rewards. Generate your unique referral link and start earning AETH tokens today.">
+    <meta property="og:image" content="https://aetheron.online/logo-512x512.png">
+    <meta property="og:site_name" content="Aetheron Platform">
+    
+    <!-- Twitter / X Meta -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aetheron.online/referral.html">
+    <meta property="twitter:title" content="Aetheron Referral Program - Earn Rewards">
+    <meta property="twitter:description" content="Earn up to 25% rewards by referring friends to Aetheron. Join our referral program today.">
+    <meta property="twitter:image" content="https://aetheron.online/logo-512x512.png">
+    <meta property="twitter:creator" content="@AetherionCrypto">
+    
+    <!-- Canonical & Mobile -->
+    <link rel="canonical" href="https://aetheron.online/referral.html">
+    <link rel="alternate" hreflang="en" href="https://aetheron.online/referral.html">
+    
+    <title>Aetheron Referral Program - Earn Rewards</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://polygon-rpc.com">
     <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -422,37 +450,104 @@
         }
 
         function loadReferralStats() {
-            // In production, fetch real data from smart contract or backend
-            // For now, showing mock data
+            // Load real referral stats from localStorage + tracking data
+            const userAddress = account.toLowerCase();
             
-            const mockStats = {
-                totalReferrals: 5,
-                activeReferrals: 3,
-                totalEarned: 12500,
-                pendingRewards: 2500,
-                referrals: [
-                    { address: '0x1234...5678', reward: 5000 },
-                    { address: '0x2345...6789', reward: 3500 },
-                    { address: '0x3456...7890', reward: 2000 },
-                    { address: '0x4567...8901', reward: 1500 },
-                    { address: '0x5678...9012', reward: 500 }
-                ]
+            // Fetch referral tracking data
+            let referralData = {
+                totalReferrals: 0,
+                activeReferrals: 0,
+                totalEarned: 0,
+                pendingRewards: 0,
+                referrals: []
             };
 
-            document.getElementById('totalReferrals').textContent = mockStats.totalReferrals;
-            document.getElementById('activeReferrals').textContent = mockStats.activeReferrals;
-            document.getElementById('totalEarned').textContent = `${mockStats.totalEarned.toLocaleString()} AETH`;
-            document.getElementById('pendingRewards').textContent = `${mockStats.pendingRewards.toLocaleString()} AETH`;
+            try {
+                // Load from localStorage
+                const storedData = localStorage.getItem(`aeth_referral_${userAddress}`);
+                if (storedData) {
+                    const parsed = JSON.parse(storedData);
+                    referralData = { ...referralData, ...parsed };
+                }
+
+                // Optionally query on-chain referral data (if contract supports it)
+                queryOnChainReferrals(userAddress).then(onChainStats => {
+                    if (onChainStats) {
+                        // Merge on-chain data with localStorage
+                        referralData.totalReferrals = Math.max(referralData.totalReferrals, onChainStats.totalReferrals || 0);
+                        referralData.activeReferrals = Math.max(referralData.activeReferrals, onChainStats.activeReferrals || 0);
+                        referralData.totalEarned = Math.max(referralData.totalEarned, onChainStats.totalEarned || 0);
+                        referralData.pendingRewards = onChainStats.pendingRewards || referralData.pendingRewards;
+                        updateReferralDisplay(referralData);
+                    }
+                }).catch(err => {
+                    console.log('On-chain referral query not available:', err);
+                    updateReferralDisplay(referralData);
+                });
+
+                // Display localStorage data immediately
+                updateReferralDisplay(referralData);
+            } catch (error) {
+                console.error('Error loading referral stats:', error);
+                updateReferralDisplay(referralData);
+            }
+        }
+
+        function updateReferralDisplay(stats) {
+            document.getElementById('totalReferrals').textContent = stats.totalReferrals;
+            document.getElementById('activeReferrals').textContent = stats.activeReferrals;
+            document.getElementById('totalEarned').textContent = `${stats.totalEarned.toLocaleString()} AETH`;
+            document.getElementById('pendingRewards').textContent = `${stats.pendingRewards.toLocaleString()} AETH`;
 
             // Update referrals list
             const referralsList = document.getElementById('referralsList');
-            if (mockStats.referrals.length > 0) {
-                referralsList.innerHTML = mockStats.referrals.map(ref => `
+            if (stats.referrals && stats.referrals.length > 0) {
+                referralsList.innerHTML = stats.referrals.map(ref => `
                     <li class="referral-item">
-                        <span class="referral-address">${ref.address}</span>
+                        <span class="referral-address">${formatAddress(ref.address)}</span>
                         <span class="referral-reward">+${ref.reward.toLocaleString()} AETH</span>
                     </li>
                 `).join('');
+            } else {
+                referralsList.innerHTML = '<p style="color: rgba(255,255,255,0.5);">No referrals yet. Share your link to get started!</p>';
+            }
+        }
+
+        // Format address helper
+        function formatAddress(addr) {
+            if (addr.length < 10) return addr;
+            return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+        }
+
+        // Query on-chain referral data (if contract supports it)
+        async function queryOnChainReferrals(userAddress) {
+            try {
+                const provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com');
+                const CONTRACT_ADDRESS = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
+                
+                // Minimal ABI check for referral functions
+                const ABI = [
+                    'function getReferralStats(address referrer) view returns (uint256 total, uint256 active, uint256 earned, uint256 pending)',
+                    'function getReferrals(address referrer) view returns (address[] referrals)'
+                ];
+
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+                
+                try {
+                    const stats = await contract.getReferralStats(userAddress);
+                    return {
+                        totalReferrals: stats.total.toNumber(),
+                        activeReferrals: stats.active.toNumber(),
+                        totalEarned: parseFloat(ethers.utils.formatEther(stats.earned)),
+                        pendingRewards: parseFloat(ethers.utils.formatEther(stats.pending))
+                    };
+                } catch {
+                    // Contract doesn't support referral functions - return null to use localStorage only
+                    return null;
+                }
+            } catch (error) {
+                console.log('On-chain referral query failed:', error.message);
+                return null;
             }
         }
 
@@ -466,12 +561,71 @@
                 btnText.textContent = 'Copied!';
                 btn.querySelector('i').className = 'fas fa-check';
 
+                // Track copy event
+                trackReferralEvent('link_copied', {
+                    address: account,
+                    timestamp: new Date().toISOString()
+                });
+
                 setTimeout(() => {
                     btn.classList.remove('copied');
                     btnText.textContent = 'Copy Link';
                     btn.querySelector('i').className = 'fas fa-copy';
                 }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy link. Please try again.');
             });
+        }
+
+        // Track referral events in localStorage
+        function trackReferralEvent(eventType, data) {
+            try {
+                const events = JSON.parse(localStorage.getItem('aeth_referral_events') || '[]');
+                events.push({
+                    type: eventType,
+                    ...data,
+                    timestamp: new Date().toISOString()
+                });
+                // Keep only last 100 events
+                if (events.length > 100) {
+                    events.shift();
+                }
+                localStorage.setItem('aeth_referral_events', JSON.stringify(events));
+            } catch (e) {
+                console.warn('Failed to track event:', e);
+            }
+        }
+
+        // Track referral click and increment referrer's count
+        function trackReferralClick(referrerAddress) {
+            try {
+                const referrerKey = `aeth_referral_${referrerAddress.toLowerCase()}`;
+                const referralData = JSON.parse(localStorage.getItem(referrerKey) || '{"totalReferrals":0,"activeReferrals":0,"totalEarned":0,"pendingRewards":0,"referrals":[]}');
+                
+                // Increment referral count
+                referralData.totalReferrals = (referralData.totalReferrals || 0) + 1;
+                referralData.activeReferrals = (referralData.activeReferrals || 0) + 1;
+                referralData.lastUpdated = new Date().toISOString();
+                
+                // Add referral entry with visitor info
+                const visitingAddress = localStorage.getItem('aeth_user_address') || 'anonymous';
+                referralData.referrals.push({
+                    address: visitingAddress,
+                    reward: 0,
+                    timestamp: new Date().toISOString()
+                });
+
+                localStorage.setItem(referrerKey, JSON.stringify(referralData));
+                console.log('Referral click tracked:', referrerAddress);
+                
+                trackReferralEvent('referral_click', {
+                    referrer: referrerAddress,
+                    visitor: visitingAddress
+                });
+            } catch (e) {
+                console.warn('Failed to track referral click:', e);
+            }
         }
 
         // Check URL for referral parameter
@@ -479,12 +633,49 @@
             const urlParams = new URLSearchParams(window.location.search);
             const referrer = urlParams.get('ref');
             
-            if (referrer) {
-                // Store referrer in localStorage
-                localStorage.setItem('aeth_referrer', referrer);
-                console.log('Referrer saved:', referrer);
+            if (referrer && ethers.utils.isAddress(referrer)) {
+                // Valid referrer found - track the click
+                console.log('Referral link detected:', referrer);
+                trackReferralClick(referrer.toLowerCase());
+                
+                // Store referrer in localStorage for future transactions
+                localStorage.setItem('aeth_referrer', referrer.toLowerCase());
+                
+                // Show referral banner
+                showReferralBanner(referrer);
+                
+                // Clean URL (remove ref param for aesthetics)
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
             }
         });
+
+        function showReferralBanner(referrerAddress) {
+            // Create notification banner
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                background: linear-gradient(135deg, #00D4FF, #667eea);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+                z-index: 9999;
+                font-size: 0.9em;
+                max-width: 400px;
+            `;
+            banner.innerHTML = `
+                <strong>✨ You were referred by:</strong><br>
+                ${formatAddress(referrerAddress)}<br>
+                <small style="opacity: 0.9;">Earning benefits enabled</small>
+            `;
+            document.body.appendChild(banner);
+            
+            // Auto-remove after 8 seconds
+            setTimeout(() => banner.remove(), 8000);
+        }
     </script>
     <script src="global-announcements.js"></script>
 </body>
