@@ -34,7 +34,7 @@
 ✅ Liquidity Added on @QuickswapDEX
 ✅ Staking LIVE with up to 25% APY
 
-Trade now: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+Trade: quickswap.exchange
 Dashboard: https://mastatrill.github.io/Aetheron_platform/
 
 #DeFi #Polygon #CryptoLaunch #AETH

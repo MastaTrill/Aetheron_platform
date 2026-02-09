@@ -274,16 +274,24 @@
             </button>
             <div id="walletInfo" class="wallet-info">
                 <div class="info-row">
+                    <span class="info-label">Wallet Type:</span>
+                    <span class="info-value" id="walletType">-</span>
+                </div>
+                <div class="info-row">
                     <span class="info-label">Connected Account:</span>
                     <span class="info-value" id="accountAddress">-</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">ETH Balance:</span>
-                    <span class="info-value" id="ethBalance">-</span>
+                    <span class="info-label">Network:</span>
+                    <span class="info-value" id="networkName">Polygon Mainnet</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">MATIC Balance:</span>
+                    <span class="info-value" id="ethBalance">0 MATIC</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">AETH Balance:</span>
-                    <span class="info-value" id="aethBalance">-</span>
+                    <span class="info-value" id="aethBalance">0 AETH</span>
                 </div>
             </div>
         </div>
@@ -345,19 +353,23 @@
                 <h2>📊 Contract Info</h2>
                 <div class="info-row">
                     <span class="info-label">AETH Token:</span>
-                    <span class="info-value font-08">0x5FbDB...0aa3</span>
+                    <span class="info-value font-08">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Staking:</span>
-                    <span class="info-value font-08">0xe7f17...0512</span>
+                    <span class="info-value font-08">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Network:</span>
-                    <span class="info-value">Hardhat Local</span>
+                    <span class="info-value">Polygon Mainnet</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Chain ID:</span>
-                    <span class="info-value">1337</span>
+                    <span class="info-value">137</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Explorer:</span>
+                    <span class="info-value"><a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e" target="_blank" style="color: #00D4FF;">View on PolygonScan</a></span>
                 </div>
             </div>
         </div>
@@ -382,51 +394,215 @@
 
         let provider, signer, account;
         let aethContract, stakingContract;
+        let walletType = 'Unknown';
+
+        // Polygon Mainnet Configuration
+        const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
+        const POLYGON_PARAMS = {
+            chainId: POLYGON_CHAIN_ID,
+            chainName: 'Polygon Mainnet',
+            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+            rpcUrls: ['https://polygon-rpc.com/'],
+            blockExplorerUrls: ['https://polygonscan.com/']
+        };
 
         // Check wallet on page load
-        window.addEventListener('load', checkWallet);
+        window.addEventListener('load', async () => {
+            checkWallet();
+            const walletProvider = getWalletProvider();
+            if (walletProvider && walletProvider.selectedAddress) {
+                await connectWallet();
+            }
+        });
+
+        // Get wallet provider with Coinbase priority
+        function getWalletProvider() {
+            // Priority 1: Coinbase Wallet Extension
+            if (window.coinbaseWalletExtension) {
+                walletType = 'Coinbase';
+                return window.coinbaseWalletExtension;
+            }
+            
+            // Priority 2: Check if ethereum provider is Coinbase
+            if (window.ethereum) {
+                if (window.ethereum.isCoinbaseWallet) {
+                    walletType = 'Coinbase';
+                    return window.ethereum;
+                }
+                
+                // Priority 3: Check for multiple providers (Coinbase first)
+                if (window.ethereum.providers) {
+                    const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
+                    if (coinbaseProvider) {
+                        walletType = 'Coinbase';
+                        return coinbaseProvider;
+                    }
+                    
+                    // Fall back to MetaMask if available
+                    const metamaskProvider = window.ethereum.providers.find(p => p.isMetaMask);
+                    if (metamaskProvider) {
+                        walletType = 'MetaMask';
+                        return metamaskProvider;
+                    }
+                }
+                
+                // Priority 4: Generic ethereum provider
+                if (window.ethereum.isMetaMask) {
+                    walletType = 'MetaMask';
+                } else {
+                    walletType = 'Web3 Wallet';
+                }
+                return window.ethereum;
+            }
+            
+            return null;
+        }
+
+        // Setup wallet event listeners
+        function setupWalletListeners(walletProvider) {
+            if (walletProvider) {
+                walletProvider.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        disconnectWallet();
+                    } else {
+                        connectWallet();
+                    }
+                });
+
+                walletProvider.on('chainChanged', () => {
+                    window.location.reload();
+                });
+            }
+        }
 
         function checkWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                document.getElementById('connectBtn').style.display = 'block';
+            const connectBtn = document.getElementById('connectBtn');
+            const walletProvider = getWalletProvider();
+            
+            if (walletProvider) {
+                if (walletType === 'Coinbase') {
+                    connectBtn.textContent = '🔵 Connect Coinbase Wallet';
+                } else if (walletType === 'MetaMask') {
+                    connectBtn.textContent = '🦊 Connect MetaMask';
+                } else {
+                    connectBtn.textContent = 'Connect Wallet';
+                }
+                connectBtn.style.display = 'inline-block';
+            } else {
+                connectBtn.textContent = '📥 Install Coinbase Wallet';
+                connectBtn.style.display = 'inline-block';
             }
         }
 
         document.getElementById('connectBtn').addEventListener('click', connectWallet);
 
         async function connectWallet() {
-            if (typeof window.ethereum === 'undefined') {
-                alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
-                window.open('https://metamask.io/download/', '_blank');
+            const walletProvider = getWalletProvider();
+            
+            if (!walletProvider) {
+                const installChoice = confirm(
+                    '🔵 No Web3 wallet detected!\n\n' +
+                    'We recommend Coinbase Wallet for the best experience.\n\n' +
+                    '✅ Click OK to install Coinbase Wallet\n' +
+                    '❌ Click Cancel to see MetaMask instead'
+                );
+                
+                if (installChoice) {
+                    window.open('https://www.coinbase.com/wallet/downloads', '_blank');
+                } else {
+                    window.open('https://metamask.io/download/', '_blank');
+                }
                 return;
             }
 
             try {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
+                provider = new ethers.providers.Web3Provider(walletProvider);
                 await provider.send("eth_requestAccounts", []);
+                
+                // Setup event listeners
+                setupWalletListeners(walletProvider);
+                
+                // Check network
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137) {
+                    await switchToPolygon(walletProvider);
+                }
+                
                 signer = provider.getSigner();
                 account = await signer.getAddress();
 
                 aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
                 stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
 
-                document.getElementById('connectBtn').textContent = 'Connected ✓';
+                let walletEmoji = walletType === 'Coinbase' ? '🔵' : walletType === 'MetaMask' ? '🦊' : '✓';
+                document.getElementById('connectBtn').textContent = `${walletEmoji} Connected`;
                 document.getElementById('connectBtn').classList.add('connected');
                 document.getElementById('walletInfo').classList.add('active');
+                document.getElementById('walletType').textContent = `${walletEmoji} ${walletType}`;
                 document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
+                document.getElementById('networkName').textContent = 'Polygon Mainnet';
 
                 await updateBalances();
+                console.log(`Connected with ${walletType}:`, account);
             } catch (error) {
                 console.error('Error connecting:', error);
-                alert('Failed to connect: ' + error.message);
+                
+                if (error.code === 4001) {
+                    alert('❌ Connection rejected. Please approve the connection request.');
+                } else if (error.code === -32002) {
+                    alert('⏳ Connection request pending. Check your wallet for a pending request.');
+                } else {
+                    alert('❌ Failed to connect: ' + error.message);
+                }
             }
         }
 
-        async function updateBalances() {
+        async function switchToPolygon(walletProvider) {
             try {
-                const ethBalance = await provider.getBalance(account);
+                await walletProvider.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: POLYGON_CHAIN_ID }],
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await walletProvider.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [POLYGON_PARAMS],
+                        });
+                    } catch (addError) {
+                        throw new Error('Failed to add Polygon network: ' + addError.message);
+                    }
+                } else {
+                    throw switchError;
+                }
+            }
+        }
+
+        function disconnectWallet() {
+            provider = null;
+            signer = null;
+            account = null;
+            aethContract = null;
+            stakingContract = null;
+
+            checkWallet();
+            document.getElementById('connectBtn').classList.remove('connected');
+            document.getElementById('walletInfo').classList.remove('active');
+            document.getElementById('walletType').textContent = '-';
+            document.getElementById('accountAddress').textContent = '-';
+            document.getElementById('networkName').textContent = '-';
+            document.getElementById('ethBalance').textContent = '0 MATIC';
+            document.getElementById('aethBalance').textContent = '0 AETH';
+        }
+
+        async function updateBalances() {
+            if (!provider || !account) return;
+            
+            try {
+                const maticBalance = await provider.getBalance(account);
                 document.getElementById('ethBalance').textContent =
-                    parseFloat(ethers.utils.formatEther(ethBalance)).toFixed(4) + ' ETH';
+                    parseFloat(ethers.utils.formatEther(maticBalance)).toFixed(4) + ' MATIC';
 
                 const aethBalance = await aethContract.balanceOf(account);
                 document.getElementById('aethBalance').textContent =
@@ -437,64 +613,112 @@
         }
 
         async function transferTokens() {
-            const to = document.getElementById('transferTo').value;
+            if (!aethContract || !account) {
+                alert('⚠️ Please connect your wallet first');
+                return;
+            }
+
+            const to = document.getElementById('transferTo').value.trim();
             const amount = document.getElementById('transferAmount').value;
             const statusEl = document.getElementById('transferStatus');
 
             if (!to || !amount) {
-                statusEl.textContent = 'Please fill in all fields';
+                statusEl.textContent = '⚠️ Please fill in all fields';
                 statusEl.className = 'status-message error';
+                statusEl.style.display = 'block';
+                return;
+            }
+
+            if (!ethers.utils.isAddress(to)) {
+                statusEl.textContent = '❌ Invalid recipient address';
+                statusEl.className = 'status-message error';
+                statusEl.style.display = 'block';
                 return;
             }
 
             try {
-                statusEl.textContent = 'Processing transaction...';
+                statusEl.textContent = '⏳ Processing transaction...';
                 statusEl.className = 'status-message';
                 statusEl.style.display = 'block';
 
                 const tx = await aethContract.transfer(to, ethers.utils.parseEther(amount));
+                statusEl.textContent = '⏳ Waiting for confirmation...';
+                
                 await tx.wait();
 
-                statusEl.textContent = 'Transfer successful!';
+                statusEl.textContent = '✅ Transfer successful!';
                 statusEl.className = 'status-message success';
+                
+                document.getElementById('transferTo').value = '';
+                document.getElementById('transferAmount').value = '';
+                
                 await updateBalances();
             } catch (error) {
                 console.error('Transfer error:', error);
-                statusEl.textContent = 'Transfer failed: ' + error.message;
+                let errorMsg = '❌ Transfer failed: ';
+                
+                if (error.code === 4001) {
+                    errorMsg += 'Transaction rejected';
+                } else if (error.code === 'INSUFFICIENT_FUNDS') {
+                    errorMsg += 'Insufficient balance';
+                } else {
+                    errorMsg += error.message || 'Unknown error';
+                }
+                
+                statusEl.textContent = errorMsg;
                 statusEl.className = 'status-message error';
             }
         }
 
         async function stakeTokens() {
+            if (!stakingContract || !account) {
+                alert('⚠️ Please connect your wallet first');
+                return;
+            }
+
             const poolId = document.getElementById('poolId').value;
             const amount = document.getElementById('stakeAmount').value;
             const statusEl = document.getElementById('stakeStatus');
 
             if (!amount) {
-                statusEl.textContent = 'Please enter an amount';
+                statusEl.textContent = '⚠️ Please enter an amount';
                 statusEl.className = 'status-message error';
+                statusEl.style.display = 'block';
                 return;
             }
 
             try {
-                statusEl.textContent = 'Approving tokens...';
+                statusEl.textContent = '⏳ Approving tokens...';
                 statusEl.className = 'status-message';
                 statusEl.style.display = 'block';
 
                 const approvalTx = await aethContract.approve(STAKING_ADDRESS, ethers.utils.parseEther(amount));
                 await approvalTx.wait();
 
-                statusEl.textContent = 'Staking tokens...';
+                statusEl.textContent = '⏳ Staking tokens...';
 
                 const stakeTx = await stakingContract.stake(poolId, ethers.utils.parseEther(amount));
                 await stakeTx.wait();
 
-                statusEl.textContent = 'Staking successful!';
+                statusEl.textContent = '✅ Staking successful!';
                 statusEl.className = 'status-message success';
+                
+                document.getElementById('stakeAmount').value = '';
+                
                 await updateBalances();
             } catch (error) {
                 console.error('Staking error:', error);
-                statusEl.textContent = 'Staking failed: ' + error.message;
+                let errorMsg = '❌ Staking failed: ';
+                
+                if (error.code === 4001) {
+                    errorMsg += 'Transaction rejected';
+                } else if (error.code === 'INSUFFICIENT_FUNDS') {
+                    errorMsg += 'Insufficient balance';
+                } else {
+                    errorMsg += error.message || 'Unknown error';
+                }
+                
+                statusEl.textContent = errorMsg;
                 statusEl.className = 'status-message error';
             }
         }

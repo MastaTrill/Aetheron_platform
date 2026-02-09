@@ -1,0 +1,275 @@
+/* ===================================
+   SHARED MOBILE & POLISH STYLES
+   Include this in all pages for consistent mobile experience
+   =================================== */
+
+/* Mobile Touch Optimization */
+* {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Prevent double-tap zoom on buttons */
+button,
+a,
+input,
+select,
+textarea {
+    touch-action: manipulation;
+}
+
+/* Enhanced Viewport Support */
+@viewport {
+    width: device-width;
+    zoom: 1.0;
+    user-zoom: zoom;
+}
+
+/* Pointer Events Management */
+.overlay,
+.toast-container,
+.progress-bar,
+.notification-container,
+.loading-overlay {
+    pointer-events: none;
+}
+
+.modal,
+.modal-content,
+button,
+a,
+input,
+select,
+textarea,
+.clickable,
+.interactive {
+    pointer-events: auto;
+}
+
+/* Polish Enhancements - Transitions */
+button,
+a,
+.card,
+.nav-link,
+.tab,
+.btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button Ripple Effect */
+button,
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+button::before,
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:active::before,
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Enhanced Shadows */
+.card,
+.modal,
+.dropdown {
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.card:hover {
+    box-shadow: 
+        0 20px 25px rgba(0, 0, 0, 0.15),
+        0 10px 10px rgba(0, 0, 0, 0.04),
+        0 0 30px rgba(0, 212, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Focus Glow Rings */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 
+        0 0 0 3px rgba(0, 212, 255, 0.3),
+        0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* Navigation Link Underline Animation */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00d4ff, #8a2be2);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+    left: 0;
+}
+
+/* Card Scale Effect */
+.card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: translateY(-4px) scale(1.01);
+}
+
+/* Button Hover States */
+button:hover,
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+}
+
+button:active,
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Mobile Hamburger Menu */
+.hamburger {
+    pointer-events: auto;
+    touch-action: manipulation;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hamburger:hover {
+    transform: scale(1.1);
+}
+
+.hamburger:active {
+    transform: scale(0.95);
+}
+
+/* Mobile Overlay */
+.mobile-menu-overlay {
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-overlay.active {
+    pointer-events: auto;
+}
+
+/* Toast Notifications */
+.toast {
+    animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    pointer-events: auto;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.15) rotate(15deg);
+}
+
+.theme-toggle:active {
+    transform: scale(1.05) rotate(0deg);
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+    .dashboard-grid,
+    .stats-grid,
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .card,
+    button,
+    .nav-link {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .hamburger,
+    .mobile-menu-overlay,
+    .theme-toggle,
+    button,
+    .nav-links {
+        display: none;
+    }
+}
