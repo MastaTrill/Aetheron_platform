@@ -597,31 +597,40 @@
             }
         }
 
-        // Track referral click and increment referrer's count
+        // Track referral click and increment referrer's count with caps
         function trackReferralClick(referrerAddress) {
             try {
+                const MAX_REWARD_PER_REFERRAL = 2500; // Hard cap on AETH per referral
+                
                 const referrerKey = `aeth_referral_${referrerAddress.toLowerCase()}`;
                 const referralData = JSON.parse(localStorage.getItem(referrerKey) || '{"totalReferrals":0,"activeReferrals":0,"totalEarned":0,"pendingRewards":0,"referrals":[]}');
                 
                 // Increment referral count
                 referralData.totalReferrals = (referralData.totalReferrals || 0) + 1;
                 referralData.activeReferrals = (referralData.activeReferrals || 0) + 1;
+                
+                // Apply reward cap
+                const baseReward = 100; // Base reward per referral
+                const cappedReward = Math.min(baseReward, MAX_REWARD_PER_REFERRAL);
+                referralData.totalEarned = (referralData.totalEarned || 0) + cappedReward;
+                
                 referralData.lastUpdated = new Date().toISOString();
                 
                 // Add referral entry with visitor info
                 const visitingAddress = localStorage.getItem('aeth_user_address') || 'anonymous';
                 referralData.referrals.push({
                     address: visitingAddress,
-                    reward: 0,
+                    reward: cappedReward,
                     timestamp: new Date().toISOString()
                 });
 
                 localStorage.setItem(referrerKey, JSON.stringify(referralData));
-                console.log('Referral click tracked:', referrerAddress);
+                console.log(`✓ Referral tracked: ${referrerAddress} (+${cappedReward} AETH, capped at ${MAX_REWARD_PER_REFERRAL})`);
                 
                 trackReferralEvent('referral_click', {
                     referrer: referrerAddress,
-                    visitor: visitingAddress
+                    visitor: visitingAddress,
+                    reward: cappedReward
                 });
             } catch (e) {
                 console.warn('Failed to track referral click:', e);
