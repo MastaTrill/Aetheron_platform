@@ -10,6 +10,8 @@ describe("AetheronPresale", function () {
   let addr1;
   let addr2;
   const RATE = 1000; // 1 MATIC = 1000 Tokens
+  const MAX_TOKENS = ethers.parseEther("40000000");
+  const MAX_WEI = ethers.parseEther("33333.333333333333333333");
 
   beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
@@ -21,7 +23,7 @@ describe("AetheronPresale", function () {
 
     // Deploy Presale
     AetheronPresale = await ethers.getContractFactory("AetheronPresale");
-    presale = await AetheronPresale.deploy(await token.getAddress(), RATE);
+    presale = await AetheronPresale.deploy(await token.getAddress(), RATE, MAX_TOKENS, MAX_WEI);
 
     // Exclude presale from tax/trading restrictions
     await token.setExcludedFromTax(await presale.getAddress(), true);
@@ -42,6 +44,11 @@ describe("AetheronPresale", function () {
 
     it("Should default to active", async function () {
       expect(await presale.isPresaleActive()).to.equal(true);
+    });
+
+    it("Should set the caps", async function () {
+      expect(await presale.maxTokensForSale()).to.equal(MAX_TOKENS);
+      expect(await presale.maxWeiRaised()).to.equal(MAX_WEI);
     });
   });
 
@@ -75,6 +82,29 @@ describe("AetheronPresale", function () {
       await expect(
         presale.connect(addr1).buyTokens({ value: 0 })
       ).to.be.revertedWith("Wei amount is 0");
+    });
+
+    it("Should fail if hard cap is exceeded", async function () {
+      const overCap = MAX_WEI + ethers.parseEther("1");
+      await expect(
+        presale.connect(addr1).buyTokens({ value: overCap })
+      ).to.be.revertedWith("Presale hard cap reached");
+    });
+
+    it("Should fail if token cap is exceeded", async function () {
+      const maxWeiHigh = ethers.parseEther("50000");
+      const PresaleFactory = await ethers.getContractFactory("AetheronPresale");
+      const presaleHighCap = await PresaleFactory.deploy(await token.getAddress(), RATE, MAX_TOKENS, maxWeiHigh);
+      await token.setExcludedFromTax(await presaleHighCap.getAddress(), true);
+
+      const amountToFund = ethers.parseEther("40000000");
+      await token.transfer(await presaleHighCap.getAddress(), amountToFund);
+
+      const maxTokensAsMatic = MAX_TOKENS / BigInt(RATE);
+      const overTokens = maxTokensAsMatic + ethers.parseEther("1");
+      await expect(
+        presaleHighCap.connect(addr1).buyTokens({ value: overTokens })
+      ).to.be.revertedWith("Presale token cap reached");
     });
   });
 

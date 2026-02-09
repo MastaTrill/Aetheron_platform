@@ -9,6 +9,9 @@ contract AetheronPresale is Ownable, ReentrancyGuard {
     IERC20 public token;
     uint256 public rate; // How many tokens per 1 MATIC
     uint256 public weiRaised;
+    uint256 public maxTokensForSale;
+    uint256 public maxWeiRaised;
+    uint256 public tokensSold;
     bool public isPresaleActive;
 
     event TokensPurchased(
@@ -19,9 +22,11 @@ contract AetheronPresale is Ownable, ReentrancyGuard {
     event PresaleStateChanged(bool isActive);
     event RateChanged(uint256 newRate);
 
-    constructor(address _token, uint256 _rate) Ownable(msg.sender) {
+    constructor(address _token, uint256 _rate, uint256 _maxTokensForSale, uint256 _maxWeiRaised) Ownable(msg.sender) {
         token = IERC20(_token);
         rate = _rate;
+        maxTokensForSale = _maxTokensForSale;
+        maxWeiRaised = _maxWeiRaised;
         isPresaleActive = true;
     }
 
@@ -37,12 +42,16 @@ contract AetheronPresale is Ownable, ReentrancyGuard {
         // Calculate token amount to be created
         uint256 tokens = msg.value * rate;
 
+        require(weiRaised + msg.value <= maxWeiRaised, "Presale hard cap reached");
+        require(tokensSold + tokens <= maxTokensForSale, "Presale token cap reached");
+
         require(
             token.balanceOf(address(this)) >= tokens,
             "Not enough tokens in contract for this trade"
         );
 
         weiRaised += msg.value;
+        tokensSold += tokens;
 
         // Transfer tokens to the user
         token.transfer(msg.sender, tokens);
@@ -58,6 +67,11 @@ contract AetheronPresale is Ownable, ReentrancyGuard {
     function setRate(uint256 _rate) external onlyOwner {
         rate = _rate;
         emit RateChanged(_rate);
+    }
+
+    function setCaps(uint256 _maxTokensForSale, uint256 _maxWeiRaised) external onlyOwner {
+        maxTokensForSale = _maxTokensForSale;
+        maxWeiRaised = _maxWeiRaised;
     }
 
     // Withdraw valid tokens (AETH) remaining in the contract

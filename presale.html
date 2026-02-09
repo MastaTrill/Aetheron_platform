@@ -182,12 +182,20 @@
                     <div class="label">Total Raised</div>
                     <div class="stat-value" id="raisedDisplay">0 MATIC</div>
                 </div>
+                <div class="stat-box">
+                    <div class="label">Max Tokens</div>
+                    <div class="stat-value" id="maxTokensDisplay">40,000,000 AETH</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Max Raise</div>
+                    <div class="stat-value" id="maxRaiseDisplay">$25,000</div>
+                </div>
             </div>
             
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
-            <p style="text-align: center; color: #64748b;">Goal: Raise liquidity for QuickSwap Listing</p>
+            <p style="text-align: center; color: #64748b;" id="capStatus">Goal: Raise liquidity for QuickSwap Listing</p>
         </div>
 
         <div class="card">
@@ -200,6 +208,7 @@
                 <label>You Will Receive (Approx)</label>
                 <input type="text" id="tokenAmount" disabled placeholder="0 AETH">
             </div>
+            <p id="capWarning" style="color: #ef4444; display: none; margin: 0 0 0.75rem 0;"></p>
             <button id="buyBtn" onclick="buyTokens()" disabled>Enter Amount</button>
         </div>
         

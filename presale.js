@@ -9,6 +9,30 @@ const PRESALE_ABI = [
 ];
 
 let currentRate = 1000;
+let totalRaisedMatic = 0;
+
+const MAX_PRESALE_TOKENS = 40000000;
+const MAX_TOTAL_USD = 25000;
+const MATIC_USD = 0.75;
+
+function getMaxMaticByUsd() {
+    return MAX_TOTAL_USD / MATIC_USD;
+}
+
+function getMaxMaticByTokens(rate) {
+    return MAX_PRESALE_TOKENS / rate;
+}
+
+function getEffectiveMaticCap(rate) {
+    return Math.min(getMaxMaticByUsd(), getMaxMaticByTokens(rate));
+}
+
+function formatNumber(value, decimals = 2) {
+    return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    });
+}
 
 async function connectWallet() {
     if (window.ethereum) {
@@ -49,7 +73,23 @@ async function loadPresaleData() {
 
         const raised = await presaleContract.weiRaised();
         const raisedMatic = ethers.utils.formatEther(raised);
-        document.getElementById('raisedDisplay').innerText = `${parseFloat(raisedMatic).toFixed(2)} MATIC`;
+        totalRaisedMatic = parseFloat(raisedMatic);
+        document.getElementById('raisedDisplay').innerText = `${formatNumber(totalRaisedMatic, 2)} MATIC`;
+
+        const maxMaticByUsd = getMaxMaticByUsd();
+        const maxMaticByTokens = getMaxMaticByTokens(currentRate);
+        const effectiveMaticCap = getEffectiveMaticCap(currentRate);
+
+        const tokenCapDisplay = `${MAX_PRESALE_TOKENS.toLocaleString()} AETH`;
+        const usdCapDisplay = `$${MAX_TOTAL_USD.toLocaleString()}`;
+        document.getElementById('maxTokensDisplay').innerText = tokenCapDisplay;
+        document.getElementById('maxRaiseDisplay').innerText = usdCapDisplay;
+
+        const progress = Math.min((totalRaisedMatic / effectiveMaticCap) * 100, 100);
+        document.getElementById('progressBar').style.width = `${progress.toFixed(2)}%`;
+
+        const capNote = `Caps: ${formatNumber(maxMaticByUsd, 2)} MATIC ($${MAX_TOTAL_USD.toLocaleString()}) or ${formatNumber(maxMaticByTokens, 2)} MATIC (${MAX_PRESALE_TOKENS.toLocaleString()} AETH), whichever comes first.`;
+        document.getElementById('capStatus').innerText = capNote;
         
     } catch(err) {
         console.error("Error loading data", err);
@@ -58,14 +98,40 @@ async function loadPresaleData() {
 
 function calculateTokens() {
     const maticInput = document.getElementById('maticAmount').value;
+    const warning = document.getElementById('capWarning');
+    const buyBtn = document.getElementById('buyBtn');
+
+    warning.style.display = 'none';
+    warning.innerText = '';
+
     if(maticInput > 0) {
+        const effectiveMaticCap = getEffectiveMaticCap(currentRate);
+        const remainingMatic = Math.max(effectiveMaticCap - totalRaisedMatic, 0);
+        const maticAmount = parseFloat(maticInput);
         const tokens = maticInput * currentRate;
         document.getElementById('tokenAmount').value = tokens + " AETH";
-        if(signer) document.getElementById('buyBtn').disabled = false;
-        document.getElementById('buyBtn').innerText = "Buy Tokens";
+
+        if (maticAmount > remainingMatic) {
+            warning.innerText = `Cap reached or exceeded. Remaining capacity: ${formatNumber(remainingMatic, 2)} MATIC.`;
+            warning.style.display = 'block';
+            buyBtn.disabled = true;
+            buyBtn.innerText = "Cap Reached";
+            return;
+        }
+
+        if (tokens > MAX_PRESALE_TOKENS) {
+            warning.innerText = `Token cap exceeded. Max presale tokens: ${MAX_PRESALE_TOKENS.toLocaleString()} AETH.`;
+            warning.style.display = 'block';
+            buyBtn.disabled = true;
+            buyBtn.innerText = "Cap Reached";
+            return;
+        }
+
+        if(signer) buyBtn.disabled = false;
+        buyBtn.innerText = "Buy Tokens";
     } else {
         document.getElementById('tokenAmount').value = "";
-        document.getElementById('buyBtn').disabled = true;
+        buyBtn.disabled = true;
     }
 }
 
@@ -74,6 +140,14 @@ async function buyTokens() {
     
     const maticAmount = document.getElementById('maticAmount').value;
     if(!maticAmount) return;
+
+    const effectiveMaticCap = getEffectiveMaticCap(currentRate);
+    const remainingMatic = Math.max(effectiveMaticCap - totalRaisedMatic, 0);
+    const maticValue = parseFloat(maticAmount);
+    if (maticValue > remainingMatic) {
+        alert(`Cap reached. Remaining capacity: ${formatNumber(remainingMatic, 2)} MATIC.`);
+        return;
+    }
 
     try {
         document.getElementById('buyBtn').innerText = "Processing...";

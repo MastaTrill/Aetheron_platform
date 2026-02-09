@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -327,7 +327,7 @@
                     <div class="referral-link" id="referralLink">
                         https://mastatrill.github.io/Aetheron_platform/?ref=0x...
                     </div>
-                    <button class="copy-btn" onclick="copyReferralLink()">
+                    <button class="copy-btn" onclick="copyReferralLink(this)">
                         <i class="fas fa-copy"></i>
                         <span id="copyBtnText">Copy Link</span>
                     </button>
@@ -551,10 +551,10 @@
             }
         }
 
-        function copyReferralLink() {
+        function copyReferralLink(buttonEl) {
             const linkText = document.getElementById('referralLink').textContent;
             navigator.clipboard.writeText(linkText).then(() => {
-                const btn = event.target.closest('.copy-btn');
+                const btn = buttonEl || document.querySelector('.copy-btn');
                 const btnText = document.getElementById('copyBtnText');
                 
                 btn.classList.add('copied');
