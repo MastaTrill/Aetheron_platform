@@ -62,10 +62,10 @@
         <p>Advanced portfolio tracking, risk assessment, and performance insights</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-outline" onclick="exportPortfolio()">
+        <button class="btn btn-outline" onclick="window.analyticsDashboard.exportData()">
           <i class="fas fa-download"></i> Export
         </button>
-        <button class="btn btn-primary" onclick="refreshAnalytics()">
+        <button class="btn btn-primary" id="refreshBtn" onclick="window.analyticsDashboard.refreshData()">
           <i class="fas fa-sync-alt"></i> Refresh
         </button>
       </div>

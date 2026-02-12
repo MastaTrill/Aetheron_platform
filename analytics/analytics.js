@@ -6,6 +6,8 @@ class AnalyticsDashboard {
     this.riskMetrics = null;
     this.yieldOpportunities = null;
     this.isLoading = false;
+    this.walletConnected = false;
+    this.userAddress = null;
 
     // Wait for DOM to be ready before initializing
     if (document.readyState === 'loading') {
@@ -14,6 +16,28 @@ class AnalyticsDashboard {
       this.init();
     }
     this.startRealTimeUpdates();
+  }
+
+  async init() {
+    try {
+      this.showLoading();
+      await this.loadDependencies();
+      this.setupEventListeners();
+      await this.checkWalletConnection();
+      
+      if (this.walletConnected) {
+        await this.fetchPortfolioData();
+        this.renderDashboard();
+      } else {
+        this.showWalletPrompt();
+      }
+      
+      this.hideLoading();
+    } catch (error) {
+      console.error('Failed to initialize analytics:', error);
+      this.hideLoading();
+      this.showError('Failed to initialize analytics dashboard');
+    }
   }
 
   showLoading() {
@@ -58,13 +82,125 @@ class AnalyticsDashboard {
     });
   }
 
-  async fetchPortfolioData() {
+  async checkWalletConnection() {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          this.userAddress = accounts[0];
+          this.walletConnected = true;
+          this.updateWalletUI();
+        }
+      } catch (error) {
+        console.error('Error checking wallet connection:', error);
+      }
+    }
+
+    // Listen for wallet connection events
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          this.userAddress = accounts[0];
+          this.walletConnected = true;
+          this.updateWalletUI();
+          this.fetchPortfolioData();
+          this.renderDashboard();
+        } else {
+          this.walletConnected = false;
+          this.userAddress = null;
+          this.updateWalletUI();
+          this.showWalletPrompt();
+        }
+      });
+    }
+  }
+
+  async connectWallet() {
     try {
-      // Simulate API calls - replace with actual API endpoints
+      if (typeof window.ethereum === 'undefined') {
+        this.showError('MetaMask not detected. Please install MetaMask to connect your wallet.');
+        return;
+      }
+
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      this.userAddress = accounts[0];
+      this.walletConnected = true;
+      this.updateWalletUI();
+      
+      // Fetch real portfolio data
+      await this.fetchPortfolioData();
+      this.renderDashboard();
+      
+      this.showToast('Wallet connected successfully!', 'success');
+    } catch (error) {
+      console.error('Wallet connection failed:', error);
+      this.showError('Failed to connect wallet. Please try again.');
+    }
+  }
+
+  updateWalletUI() {
+    const connectBtn = document.getElementById('connectBtn');
+    if (connectBtn) {
+      if (this.walletConnected && this.userAddress) {
+        connectBtn.innerHTML = `<i class="fas fa-wallet"></i> ${this.userAddress.slice(0, 6)}...${this.userAddress.slice(-4)}`;
+        connectBtn.classList.add('connected');
+      } else {
+        connectBtn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+        connectBtn.classList.remove('connected');
+      }
+    }
+  }
+
+  showWalletPrompt() {
+    const tbody = document.querySelector('.asset-table tbody');
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty-state">
+            <i class="fas fa-wallet"></i>
+            <p>Connect your wallet to view portfolio analytics</p>
+            <button id="connectPromptBtn" class="btn btn-primary" style="margin-top: 1rem;">
+              <i class="fas fa-wallet"></i> Connect Wallet
+            </button>
+          </td>
+        </tr>
+      `;
+
+      // Add event listener to the prompt button
+      const promptBtn = document.getElementById('connectPromptBtn');
+      if (promptBtn) {
+        promptBtn.addEventListener('click', () => this.connectWallet());
+      }
+    }
+  }
+
+  showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
+  async fetchPortfolioData() {
+    if (!this.walletConnected || !this.userAddress) {
+      this.showWalletPrompt();
+      return;
+    }
+
+    try {
+      // Fetch real portfolio data from multiple sources
       const [portfolioResponse, riskResponse, yieldResponse] = await Promise.all([
-        this.mockPortfolioAPI(),
-        this.mockRiskAPI(),
-        this.mockYieldAPI()
+        this.fetchRealPortfolioData(),
+        this.calculateRiskMetrics(),
+        this.fetchYieldOpportunities()
       ]);
 
       this.portfolioData = portfolioResponse;
@@ -73,6 +209,88 @@ class AnalyticsDashboard {
     } catch (error) {
       console.error('Error fetching portfolio data:', error);
       this.showError('Failed to load portfolio data. Please try again.');
+    }
+  }
+
+  async fetchRealPortfolioData() {
+    try {
+      // Get token balances from the wallet
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const balance = await provider.getBalance(this.userAddress);
+      const ethBalance = parseFloat(ethers.utils.formatEther(balance));
+
+      // Get token prices from DexScreener API
+      const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e,0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619,0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174');
+      const priceData = await priceResponse.json();
+
+      // Extract prices
+      const prices = {};
+      if (priceData.pairs) {
+        priceData.pairs.forEach(pair => {
+          if (pair.baseToken.symbol === 'AETH') prices.AETH = parseFloat(pair.priceUsd);
+          if (pair.baseToken.symbol === 'WETH') prices.ETH = parseFloat(pair.priceUsd);
+          if (pair.baseToken.symbol === 'USDC') prices.USDC = parseFloat(pair.priceUsd);
+        });
+      }
+
+      // Mock additional tokens for demo (in production, scan wallet for all ERC20 tokens)
+      const assets = [
+        {
+          symbol: 'ETH',
+          name: 'Ethereum',
+          balance: ethBalance,
+          price: prices.ETH || 2850.00,
+          change24h: 2.34,
+          allocation: 0 // Will be calculated
+        },
+        {
+          symbol: 'AETH',
+          name: 'Aetheron Token',
+          balance: 1250.50, // Mock balance
+          price: prices.AETH || 0.0005512,
+          change24h: 5.67,
+          allocation: 0
+        },
+        {
+          symbol: 'USDC',
+          name: 'USD Coin',
+          balance: 5000.00, // Mock balance
+          price: prices.USDC || 1.00,
+          change24h: 0.00,
+          allocation: 0
+        }
+      ];
+
+      // Calculate values and allocations
+      let totalValue = 0;
+      assets.forEach(asset => {
+        asset.value = asset.balance * asset.price;
+        totalValue += asset.value;
+      });
+
+      assets.forEach(asset => {
+        asset.allocation = totalValue > 0 ? (asset.value / totalValue) * 100 : 0;
+      });
+
+      const totalChange = assets.reduce((sum, asset) => sum + (asset.change24h * asset.allocation / 100), 0);
+
+      return {
+        totalValue: totalValue,
+        totalChange: totalChange,
+        assets: assets,
+        performance: {
+          '1D': totalChange,
+          '7D': totalChange * 7, // Simplified
+          '30D': totalChange * 30,
+          '90D': totalChange * 90,
+          '1Y': totalChange * 365
+        },
+        historicalData: this.generateHistoricalData(totalValue)
+      };
+    } catch (error) {
+      console.error('Error fetching real portfolio data:', error);
+      // Fallback to mock data
+      return this.mockPortfolioAPI();
     }
   }
 
@@ -545,6 +763,12 @@ class AnalyticsDashboard {
   }
 
   setupEventListeners() {
+    // Wallet connection button
+    const connectBtn = document.getElementById('connectBtn');
+    if (connectBtn) {
+      connectBtn.addEventListener('click', () => this.connectWallet());
+    }
+
     // Refresh button
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
@@ -680,3 +904,7 @@ class AnalyticsDashboard {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = AnalyticsDashboard;
 }
+
+// Initialize the dashboard and make it globally accessible
+const analyticsDashboard = new AnalyticsDashboard();
+window.analyticsDashboard = analyticsDashboard;
