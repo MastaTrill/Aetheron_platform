@@ -1,0 +1,132 @@
+/* Externalized styles from governance.html */
+
+.vote-bar-fill {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+}
+
+.vote-bar-fill.against {
+  background: linear-gradient(90deg, #ff6b6b, #ffb347);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.abstain-text {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+/* Proposal status */
+.proposal-status.status-active {
+  color: #4caf50;
+}
+.proposal-status.status-closed {
+  color: #2196f3;
+}
+.proposal-status.status-pending {
+  color: #ff9800;
+}
+.proposal-status.status-executed {
+  color: #9c27b0;
+}
+.proposal-status.status-failed {
+  color: #f44336;
+}
+
+/* Button styles */
+.vote-btn.for {
+  background: #4caf50;
+  color: #fff;
+}
+.vote-btn.against {
+  background: #f44336;
+  color: #fff;
+}
+.vote-btn.abstain {
+  background: #aaa;
+  color: #fff;
+}
+.vote-btn {
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 0 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vote-btn:active {
+  opacity: 0.8;
+}
+
+/* Stat card for delegate */
+.stat-card.delegate {
+  cursor: pointer;
+}
+.stat-card .delegate-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.stat-card .stat-value.emoji {
+  font-size: 2rem;
+}
+.stat-card .delegate-desc {
+  font-size: 0.85rem;
+  color: var(--primary);
+  margin-top: 5px;
+}
+
+/* Modal info text */
+.deposit-info .refund-note,
+.delegate-form .warning,
+.delegate-form .explanation {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Proposal description warning */
+#descWarning {
+  display: none;
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Delegation warning */
+.delegate-form .warning-text {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Explanation text for delegation */
+.delegate-form .explanation {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin: 15px 0;
+}
+
+/* Add background-clip for compatibility */
+header h1 {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Remove inline style for proposal deposit note */
+.deposit-info p[style] {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Remove inline style for delegation warning */
+#delegateForm p[style] {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin: 15px 0;
+}

@@ -1,131 +1,67 @@
-</script>
+<!-- All floating health/status widgets have been removed. No floating Platform Health widget is present. -->
+<link rel="stylesheet" href="dashboard-enhanced.css">
 <script src="stripe-launchpad-frontend.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="stripe-frontend.js"></script>
-<script>
-  // Token Security Scanner form handler
-  document.addEventListener('DOMContentLoaded', function () {
-    const scanForm = document.getElementById('token-scan-form');
-    if (scanForm) {
-      scanForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const address = document.getElementById('scan-token-address').value.trim();
-        const type = document.getElementById('scan-type').value;
-        const resultDiv = document.getElementById('scan-result');
-        resultDiv.textContent = 'Scanning...';
-        try {
-          const res = await fetch('/api/scan-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ address, full: type === 'full' })
-          });
-          const data = await res.json();
-          if (res.ok) {
-            if (type === 'basic') {
-              resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Summary:</b> ${data.summary}`;
-            } else {
-              resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Issues:</b><ul>` + data.issues.map(i => `<li>${i}</li>`).join('') + `</ul><b>Summary:</b> ${data.summary}`;
-            }
-          } else {
-            resultDiv.textContent = data.error || 'Scan failed.';
-          }
-        } catch (err) {
-          resultDiv.textContent = 'Error connecting to scanner API.';
-        }
-      });
-    }
-
-  });
-
-  // --- LAUNCHPAD UI POLISH ---
-</script>
+<!-- ...existing code... -->
 
 <!-- Token Launchpad Card -->
 <div class="card">
   <h3>🚀 Token Launchpad</h3>
   <form id="token-launch-form">
-    <input type="text" id="launch-token-name" placeholder="Token Name" required
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <input type="text" id="launch-token-symbol" placeholder="Token Symbol" maxlength="8" required
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="text" id="launch-token-name" placeholder="Token Name" required class="input-full">
+    <input type="text" id="launch-token-symbol" placeholder="Token Symbol" maxlength="8" required class="input-full">
     <input type="number" id="launch-token-supply" placeholder="Total Supply (e.g. 1000000)" min="1" required
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <input type="text" id="launch-team-wallet" placeholder="Team Wallet Address (for allocation)"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+      class="input-full">
+    <input type="text" id="launch-team-wallet" placeholder="Team Wallet Address (for allocation)" class="input-full">
     <input type="number" id="launch-allocation" placeholder="Team Allocation % (e.g. 1)" min="0" max="100"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <input type="url" id="launch-website" placeholder="Project Website (optional)"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <textarea id="launch-description" placeholder="Project Description (optional)"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;"></textarea>
-    <button type="submit" class="btn" style="width:100%">Launch Token</button>
+      class="input-full">
+    <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)" class="input-full">
+    <input type="url" id="launch-website" placeholder="Project Website (optional)" class="input-full">
+    <textarea id="launch-description" placeholder="Project Description (optional)" class="input-full"></textarea>
+    <button type="submit" class="btn btn-block">Launch Token</button>
   </form>
-  <div id="launch-result" style="margin-top:1rem;"></div>
+  <div id="launch-result" class="launch-result"></div>
 </div>
 </script>
 
 <!-- What's New Section -->
-<div class="card"
-  style="background:linear-gradient(90deg,#00D4FF22,#8A2BE222);border:2px solid #00D4FF;margin-bottom:2rem;box-shadow:0 4px 24px #00D4FF22;">
-  <h3 style="margin-bottom:1rem;font-size:1.5em;display:flex;align-items:center;gap:.5em;">
-    <span style="font-size:1.3em;">✨</span> What's New in Aetheron
+<div class="card whats-new-card">
+  <h3 class="whats-new-title">
+    <span class="whats-new-icon">✨</span> What's New in Aetheron
   </h3>
-  <div style="display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;justify-content:space-between;">
-    <div style="flex:1 1 220px;min-width:220px;max-width:350px;display:flex;align-items:flex-start;gap:1em;">
-      <span style="font-size:2em;">🔎</span>
+  <div class="whats-new-features">
+    <div class="whats-new-feature">
+      <span class="whats-new-feature-icon">🔎</span>
       <div>
         <b>Token Security Scanner</b><br>
-        <span style="font-size:1.05em;">Instantly scan any token for risks and vulnerabilities before you invest or
+        <span class="whats-new-feature-desc">Instantly scan any token for risks and vulnerabilities before you invest or
           trade.</span>
       </div>
     </div>
-    <div style="flex:1 1 220px;min-width:220px;max-width:350px;display:flex;align-items:flex-start;gap:1em;">
-      <span style="font-size:2em;">🚀</span>
+    <div class="whats-new-feature">
+      <span class="whats-new-feature-icon">🚀</span>
       <div>
         <b>Token Launchpad</b><br>
-        <span style="font-size:1.05em;">Launch your own token on Polygon with onboarding, allocation, and payment
+        <span class="whats-new-feature-desc">Launch your own token on Polygon with onboarding, allocation, and payment
           integration—no coding required!</span>
       </div>
     </div>
   </div>
-  <div style="margin-top:1.5rem;text-align:center;">
-    <a href="#token-launch-form" class="btn btn-primary" style="font-size:1.1em;padding:.7em 2em;margin-right:1em;">Try
-      Launchpad</a>
-    <a href="#token-scan-form" class="btn btn-outline" style="font-size:1.1em;padding:.7em 2em;">Try Scanner</a>
+  <div class="whats-new-actions">
+    <a href="#token-launch-form" class="btn btn-primary whats-new-action">Try Launchpad</a>
+    <a href="#token-scan-form" class="btn btn-outline whats-new-action">Try Scanner</a>
   </div>
 </div>
 <div class="card">
   <h3>🔎 Token Security Scanner</h3>
   <form id="token-scan-form">
-    <input type="text" id="scan-token-address" placeholder="Paste token address"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
-    <select id="scan-type"
-      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="text" id="scan-token-address" placeholder="Paste token address" class="input-full">
+    <select id="scan-type" class="input-full" title="Select scan type">
       <option value="basic">Basic Scan (Free)</option>
       <option value="full">Full Report ($9+)</option>
     </select>
-    <button type="submit" class="btn" style="width:100%">Scan Token</button>
-    try {
-    if (type === 'full') {
-    // Require payment before full scan
-    resultDiv.textContent = 'Redirecting to payment...';
-    await window.payForFullScan(address, 900); // $9.00 in cents
-    return;
-    }
-    // Basic scan (free)
-    const res = await fetch('/api/scan-token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ address, full: false })
-    });
-    const data = await res.json();
-    if (res.ok) {
-    resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Summary:</b> ${data.summary}`;
-    } else {
-    resultDiv.textContent = data.error || 'Scan failed.';
-    }
-    } catch (err) {
-    resultDiv.textContent = 'Error connecting to scanner API.';
-    }
+    <button type="submit" class="btn btn-block">Scan Token</button>
+    <div id="scan-result"></div>
+  </form>
+</div>
