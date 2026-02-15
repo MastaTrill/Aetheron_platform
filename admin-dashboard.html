@@ -66,6 +66,30 @@
         </ul>
       </article>
     </section>
+    <section id="payments" class="content-section">
+      <header>
+        <h2>💸 Payment Management</h2>
+      </header>
+      <div class="payments-table-container">
+        <table class="payments-table">
+          <thead>
+            <tr class="payments-table-header-row">
+              <th>User</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Receipt</th>
+              <th>Gateway</th>
+            </tr>
+          </thead>
+          <tbody id="adminPaymentTableBody">
+            <tr>
+              <td colspan="6">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
     <div id="login-modal" class="login-modal">
       <form id="login-form" class="login-form">
         <h2 class="login-title">Admin Login</h2>
@@ -81,6 +105,35 @@
     </div>
   </footer>
   <script src="global-announcements.js"></script>
+  <script>
+    async function fetchAllPayments() {
+      // For demo, fetch a flat file or extend backend for admin
+      const res = await fetch('/api/all-payments');
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.payments || [];
+    }
+    async function renderAdminPayments() {
+      const table = document.getElementById('adminPaymentTableBody');
+      if (!table) return;
+      const payments = await fetchAllPayments();
+      if (!payments.length) {
+        table.innerHTML = '<tr><td colspan="6">No payments found.</td></tr>';
+        return;
+      }
+      table.innerHTML = payments.map(p => `
+        <tr>
+          <td>${p.user || '-'}</td>
+          <td>${p.date ? new Date(p.date).toLocaleString() : '-'}</td>
+          <td>${p.amount} ${p.currency}</td>
+          <td>${p.status || '-'}</td>
+          <td>${p.txid ? `<a href="${p.txid}" target="_blank">View</a>` : '-'}</td>
+          <td>${p.gateway || 'Coinbase'}</td>
+        </tr>
+      `).join('');
+    }
+    window.addEventListener('DOMContentLoaded', renderAdminPayments);
+  </script>
 </body>
 
 </html>

@@ -82,6 +82,7 @@
   </noscript>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
   <script>window.addEventListener("load", function () { const e = document.createElement("link"); e.rel = "stylesheet", e.href = "shared-styles.min.css", document.head.appendChild(e) })</script>
+  <script src="coinbase-commerce-frontend.js"></script>
 </head>
 
 <body>
@@ -211,7 +212,8 @@
               <div>
                 <div class="text-sm text-gray">Connected Wallet</div>
                 <div id="walletAddress" class="fw-600 font-mono"></div>
-              </div><button class="btn btn-outline" onclick="disconnectWallet()" type="button"><i
+              </div>
+              <button class="btn btn-outline" onclick="disconnectWallet()" type="button"><i
                   class="fas fa-sign-out-alt"></i> Disconnect</button>
             </div>
             <div class="balance-display">
@@ -219,10 +221,15 @@
               <div class="amount" id="userBalance">0.00</div>
               <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
             </div>
-            <div class="d-grid grid-2 mt-1"><button class="btn btn-primary"
+            <div class="d-grid grid-2 mt-1">
+              <button class="btn btn-primary"
                 onclick='window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank")'
-                type="button"><i class="fas fa-shopping-cart"></i> Buy AETH</button> <button class="btn btn-success"
-                onclick="addTokenToWallet()" type="button"><i class="fas fa-plus"></i> Add to Wallet</button></div>
+                type="button"><i class="fas fa-shopping-cart"></i> Buy AETH</button>
+              <button class="btn btn-success" onclick="addTokenToWallet()" type="button"><i class="fas fa-plus"></i> Add
+                to Wallet</button>
+              <button class="btn btn-info" style="background:linear-gradient(135deg,#0052ff,#00d4ff);margin-top:10px;"
+                onclick="payWithCoinbase()"><i class="fas fa-coins"></i> Pay with Crypto (Coinbase)</button>
+            </div>
           </div>
         </div>
         <div class="card" id="staking">

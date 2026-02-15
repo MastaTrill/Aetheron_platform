@@ -1,1 +1,500 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Governance - Aetheron Platform</title><link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0"><link rel="stylesheet" href="governance.css?v=1.0.0"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6F9QBP7B8C"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-6F9QBP7B8C")</script></head><body><div class="container"><a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a><header><h1>🗳️ Governance</h1><p>Shape the future of Aetheron through community voting</p></header><div class="stats-row"><div class="stat-card"><div class="stat-label">Active Proposals</div><div class="stat-value">5</div></div><div class="stat-card"><div class="stat-label">Total Votes Cast</div><div class="stat-value">1,247</div></div><div class="stat-card"><div class="stat-label">Voting Power</div><div class="stat-value" id="votingPower">Connect Wallet</div></div><div class="stat-card"><div class="stat-label">Participation Rate</div><div class="stat-value">68%</div></div></div><div class="proposals-grid"><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Increase Staking Rewards for 6-Month Pool</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x1234...5678</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 3 days</span> <span class="meta-item"><i class="fas fa-users"></i> 342 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Proposal to increase the reward rate for the 6-month staking pool from 100% to 150% APY to incentivize longer-term commitments and reduce circulating supply.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:78%">For: 78% (267,000 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:15%">Against: 15% (51,300 AETH)</div></div><div class="abstain-text">Abstain: 7% (23,900 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(1,"for")' aria-label="Vote for proposal: Increase Staking Rewards"><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(1,"against")' aria-label="Vote against proposal: Increase Staking Rewards"><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(1,"abstain")' aria-label="Abstain from voting on proposal: Increase Staking Rewards"><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Implement NFT Staking Boost System</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0xabcd...ef12</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 5 days</span> <span class="meta-item"><i class="fas fa-users"></i> 289 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Introduce NFTs that provide staking reward boosts of 10-50% depending on rarity. NFTs would be earned through achievements or available for purchase.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:65%">For: 65% (188,500 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:28%">Against: 28% (81,200 AETH)</div></div><div class="abstain-text">Abstain: 7% (20,300 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(2,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(2,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(2,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Allocate 5% of Treasury for Marketing</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x9876...4321</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 1 day</span> <span class="meta-item"><i class="fas fa-users"></i> 421 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Allocate 5% of the community treasury (approximately 500,000 AETH) for strategic marketing campaigns, influencer partnerships, and exchange listings.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:82%">For: 82% (345,000 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:12%">Against: 12% (50,500 AETH)</div></div><div class="abstain-text">Abstain: 6% (25,200 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(3,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(3,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(3,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card expired"><div class="proposal-header"><div><h2 class="proposal-title">Reduce Transaction Fees to 3%</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x5555...6666</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Closed</span> <span class="meta-item"><i class="fas fa-users"></i> 512 voters</span></div></div><span class="proposal-status status-closed">Passed</span></div><p class="proposal-description">Successfully passed! Transaction fees reduced from 4% to 3% (2% buy, 1% sell).</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:91%">For: 91% (456,700 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:6%">Against: 6% (30,100 AETH)</div></div><div class="abstain-text">Abstain: 3% (15,050 AETH)</div></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Launch Aetheron DAO V2</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 7 days</span> <span class="meta-item"><i class="fas fa-users"></i> 156 voters</span></div></div><span class="proposal-status status-pending">Pending</span></div><p class="proposal-description">Upgrade governance system with delegated voting, proposal deposits, and automated execution of passed proposals through smart contracts.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:58%">For: 58% (89,400 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:18%">Against: 18% (27,700 AETH)</div></div><div class="abstain-text">Abstain: 24% (37,000 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(5,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(5,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(5,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Partnership with MoonPay for Fiat On-Ramp</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x7D...3f9A</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 4 days</span> <span class="meta-item"><i class="fas fa-users"></i> 203 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Integrate MoonPay widget to allow users to buy AETH directly with credit card, bank transfer, or Apple/Google Pay. 2% of transaction fees will go to treasury.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:84%">For: 84% (178,200 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:9%">Against: 9% (19,100 AETH)</div></div><div class="abstain-text">Abstain: 7% (14,800 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(6,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(6,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(6,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Launch Aetheron NFT Marketplace</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x2C...8bE4</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Executed 15 days ago</span> <span class="meta-item"><i class="fas fa-users"></i> 287 voters</span></div></div><span class="proposal-status status-executed">Passed & Executed</span></div><p class="proposal-description">Create a native NFT marketplace with 50% fee discount for AETH stakers and exclusive collections. 1% listing fees go to stakers.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:93%">For: 93% (356,700 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:4%">Against: 4% (15,300 AETH)</div></div><div class="abstain-text">Abstain: 3% (11,500 AETH)</div></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Enable Cross-Chain Bridge to Ethereum</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x91...5cA2</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 2 days</span> <span class="meta-item"><i class="fas fa-users"></i> 178 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Implement LayerZero bridge to allow seamless transfer of AETH between Polygon and Ethereum mainnet. Bridge fees: 0.1% to treasury.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:71%">For: 71% (142,300 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:22%">Against: 22% (44,100 AETH)</div></div><div class="abstain-text">Abstain: 7% (14,000 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(8,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(8,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(8,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Launch Aetheron Mobile App (iOS & Android)</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 9 days</span> <span class="meta-item"><i class="fas fa-users"></i> 134 voters</span></div></div><span class="proposal-status status-pending">Pending</span></div><p class="proposal-description">Develop native mobile apps with built-in wallet, staking, governance voting, and push notifications. Budget: 50,000 AETH from treasury.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:88%">For: 88% (124,600 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:7%">Against: 7% (9,900 AETH)</div></div><div class="abstain-text">Abstain: 5% (7,100 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(9,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(9,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(9,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Implement 30-Day Lock-Up Bonus (5% APY Boost)</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x4E...7dB1</span> <span class="meta-item"><i class="fas fa-times-circle"></i> Failed 8 days ago</span> <span class="meta-item"><i class="fas fa-users"></i> 112 voters</span></div></div><span class="proposal-status status-failed">Defeated</span></div><p class="proposal-description">Add optional 30-day lock-up period for staked tokens with 5% APY bonus. Tokens unstakable after lock period with 7-day cooldown.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:42%">For: 42% (58,100 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:51%">Against: 51% (70,600 AETH)</div></div><div class="abstain-text">Abstain: 7% (9,700 AETH)</div></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Treasury Diversification Strategy</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x8F...2aD7</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 6 days</span> <span class="meta-item"><i class="fas fa-users"></i> 167 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Diversify 20% of treasury into stablecoins (USDC/DAI) and 10% into blue-chip DeFi tokens (AAVE, UNI) to reduce volatility and ensure operational runway.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:66%">For: 66% (156,200 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:28%">Against: 28% (66,300 AETH)</div></div><div class="abstain-text">Abstain: 6% (14,200 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(11,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(11,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(11,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Integrate Chainlink Price Feeds</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x5B...9cF3</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Executed 22 days ago</span> <span class="meta-item"><i class="fas fa-users"></i> 198 voters</span></div></div><span class="proposal-status status-executed">Passed & Executed</span></div><p class="proposal-description">Replace manual price updates with Chainlink oracles for accurate, tamper-proof AETH/USD pricing in all smart contracts.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:89%">For: 89% (267,800 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:6%">Against: 6% (18,100 AETH)</div></div><div class="abstain-text">Abstain: 5% (15,000 AETH)</div></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Launch Aetheron Ambassador Program</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x3D...4eA9</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 5 days</span> <span class="meta-item"><i class="fas fa-users"></i> 221 voters</span></div></div><span class="proposal-status status-active">Active</span></div><p class="proposal-description">Create ambassador program with monthly stipends (1,000-5,000 AETH) for top contributors. Ambassadors will create content, host events, and onboard new users.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:79%">For: 79% (198,400 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:13%">Against: 13% (32,600 AETH)</div></div><div class="abstain-text">Abstain: 8% (20,100 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(13,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(13,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(13,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Implement Dynamic Supply Model</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: 0x6A...1bC8</span> <span class="meta-item"><i class="fas fa-times-circle"></i> Failed 19 days ago</span> <span class="meta-item"><i class="fas fa-users"></i> 143 voters</span></div></div><span class="proposal-status status-failed">Defeated</span></div><p class="proposal-description">Introduce algorithmic supply adjustment based on demand metrics. Burn tokens when price drops, mint when demand exceeds supply by 20%.</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:31%">For: 31% (52,900 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:64%">Against: 64% (109,200 AETH)</div></div><div class="abstain-text">Abstain: 5% (8,500 AETH)</div></div></div></div><div class="proposal-card"><div class="proposal-header"><div><h2 class="proposal-title">Launch Aetheron Grants Program</h2><div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 11 days</span> <span class="meta-item"><i class="fas fa-users"></i> 192 voters</span></div></div><span class="proposal-status status-pending">Pending</span></div><p class="proposal-description">Allocate 100,000 AETH for quarterly grants to developers building on Aetheron ecosystem. Grant sizes: Small (2,500), Medium (10,000), Large (25,000).</p><div class="vote-section"><div class="vote-results"><div class="vote-bar"><div class="vote-bar-fill" style="width:91%">For: 91% (234,500 AETH)</div></div><div class="vote-bar"><div class="vote-bar-fill against" style="width:5%">Against: 5% (12,900 AETH)</div></div><div class="abstain-text">Abstain: 4% (10,300 AETH)</div></div><div class="vote-buttons"><button class="vote-btn for" onclick='vote(15,"for")'><i class="fas fa-thumbs-up"></i> Vote For</button> <button class="vote-btn against" onclick='vote(15,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button class="vote-btn abstain" onclick='vote(15,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div></div></div></div><button class="create-proposal-btn" onclick="openCreateModal()" title="Create Proposal"><i class="fas fa-plus"></i></button><div id="createProposalModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeCreateModal()">&times;</span><h2>📝 Create New Proposal</h2><div class="deposit-info"><p><i class="fas fa-info-circle"></i> Proposal Deposit Required</p><p class="amount">10,000 AETH</p><p style="font-size:.9rem;color:rgba(255,255,255,.6)">Refunded if proposal reaches 20% quorum</p></div><form id="proposalForm" onsubmit="submitProposal(event)"><div class="form-group"><label for="proposalTitle">Title *</label> <input type="text" id="proposalTitle" placeholder="e.g., Increase Staking Rewards" required maxlength="100" aria-label="Proposal title" aria-describedby="title-help"></div><div class="form-group"><label for="proposalDescription">Description *</label> <textarea id="proposalDescription" placeholder="Provide detailed explanation of your proposal..." required minlength="50" aria-label="Proposal description" aria-describedby="desc-warning"></textarea> <span class="warning-text" id="descWarning" style="display:none">Minimum 50 characters required</span></div><div class="form-group"><label for="proposalCategory">Category *</label> <select id="proposalCategory" required aria-label="Proposal category"><option value="">Select category</option><option value="tokenomics">Tokenomics</option><option value="governance">Governance</option><option value="partnerships">Partnerships</option><option value="development">Development</option><option value="marketing">Marketing</option><option value="community">Community</option><option value="treasury">Treasury</option></select></div><div class="form-group"><label for="votingDuration">Voting Period</label> <select id="votingDuration"><option value="3">3 days</option><option value="7" selected="selected">7 days (recommended)</option><option value="14">14 days</option></select></div><button type="submit" class="submit-btn" id="submitProposalBtn"><i class="fas fa-rocket"></i> Submit Proposal (10,000 AETH Deposit)</button></form></div></div><div id="delegateModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeDelegateModal()">&times;</span><h2>🤝 Delegate Voting Power</h2><div class="delegation-status"><p><strong>Your Voting Power:</strong> <span id="userVotingPower">Loading...</span> AETH</p><p><strong>Currently Delegated To:</strong> <span id="currentDelegate">None</span></p><p><strong>Delegated Power Received:</strong> <span id="receivedDelegations">0</span> AETH</p></div><form id="delegateForm" onsubmit="submitDelegation(event)"><div class="form-group"><label for="delegateAddress">Delegate Address *</label> <input type="text" id="delegateAddress" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$"> <span class="warning-text">Enter a valid Ethereum address</span></div><p style="color:rgba(255,255,255,.7);font-size:.9rem;margin:15px 0"><i class="fas fa-exclamation-triangle"></i> Delegating transfers your voting power. You can revoke delegation at any time.</p><button type="submit" class="delegate-btn"><i class="fas fa-hand-holding-heart"></i> Delegate Votes</button> <button type="button" class="delegate-btn btn-secondary" onclick="revokeDelegation()"><i class="fas fa-undo"></i> Revoke Current Delegation</button></form></div></div></div><script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script><script>async function connectWallet(){if(void 0!==window.ethereum)try{const e=await ethereum.request({method:"eth_requestAccounts"}),t=new ethers.providers.Web3Provider(window.ethereum),n=await t.getBalance(e[0]),o=ethers.utils.formatEther(n);document.getElementById("votingPower").textContent=`${parseFloat(o).toFixed(2)} AETH`}catch(e){console.error("Failed to connect wallet:",e)}else alert("Please install MetaMask to vote!")}async function vote(e,t){await connectWallet(),alert(`Vote recorded: Proposal ${e} - ${t.toUpperCase()}\n\n(In production, this would submit an on-chain transaction)`),"undefined"!=typeof gtag&&gtag("event","governance_vote",{event_category:"governance",event_label:`proposal_${e}_${t}`,value:e})}const GOVERNANCE_CONTRACT="0x0000000000000000000000000000000000000000",GOVERNANCE_ABI=["function createProposal(string title, string description, bytes executionData) external returns (uint256)","function castVote(uint256 proposalId, uint8 vote) external","function delegate(address delegatee) external","function getVotingPower(address account) view returns (uint256)","function delegates(address account) view returns (address)","function delegatedVotingPower(address account) view returns (uint256)","function state(uint256 proposalId) view returns (uint8)","event ProposalCreated(uint256 indexed proposalId, address indexed proposer, string title, uint256 startTime, uint256 endTime)","event VoteCast(address indexed voter, uint256 indexed proposalId, uint8 vote, uint256 votes)","event DelegateChanged(address indexed delegator, address indexed delegate)"];function openCreateModal(){document.getElementById("createProposalModal").style.display="block"}function closeCreateModal(){document.getElementById("createProposalModal").style.display="none",document.getElementById("proposalForm").reset()}function openDelegateModal(){document.getElementById("delegateModal").style.display="block",loadDelegationInfo()}function closeDelegateModal(){document.getElementById("delegateModal").style.display="none"}async function submitProposal(e){if(e.preventDefault(),void 0!==window.ethereum)try{const e=new ethers.providers.Web3Provider(window.ethereum),t=(e.getSigner(),await e.listAccounts());if(0===t.length)return void await connectWallet();const n=document.getElementById("proposalTitle").value,o=(document.getElementById("proposalDescription").value,document.getElementById("proposalCategory").value),a=document.getElementById("votingDuration").value,r=await e.getBalance(t[0]),l=parseFloat(ethers.utils.formatEther(r));if(l<1e4)return void alert(`Insufficient balance!\n\nRequired: 10,000 AETH\nYour balance: ${l.toFixed(2)} AETH`);const i=document.getElementById("submitProposalBtn"),d=i.innerHTML;i.disabled=!0,i.innerHTML='<i class="fas fa-spinner fa-spin"></i> Creating Proposal...',setTimeout(()=>{alert(`✅ Proposal Created Successfully!\n\nTitle: ${n}\nCategory: ${o}\nDuration: ${a} days\n\nDeposit: 10,000 AETH (will be refunded if quorum is reached)\n\n(In production, this would submit an on-chain transaction)`),"undefined"!=typeof gtag&&gtag("event","proposal_created",{event_category:"governance",event_label:o,value:1}),closeCreateModal(),i.disabled=!1,i.innerHTML=d},2e3)}catch(e){console.error("Proposal creation failed:",e),alert("Failed to create proposal. Please try again."),document.getElementById("submitProposalBtn").disabled=!1}else alert("Please install MetaMask to create proposals!")}async function loadDelegationInfo(){if(void 0!==window.ethereum)try{const e=new ethers.providers.Web3Provider(window.ethereum),t=await e.listAccounts();if(0===t.length)return void await connectWallet();const n=await e.getBalance(t[0]),o=ethers.utils.formatEther(n);document.getElementById("userVotingPower").textContent=parseFloat(o).toFixed(2),document.getElementById("currentDelegate").textContent="None",document.getElementById("receivedDelegations").textContent="0"}catch(e){console.error("Failed to load delegation info:",e)}}async function submitDelegation(e){if(e.preventDefault(),void 0!==window.ethereum)try{const e=new ethers.providers.Web3Provider(window.ethereum).getSigner(),t=document.getElementById("delegateAddress").value;if(!ethers.utils.isAddress(t))return void alert("Invalid Ethereum address!");const n=await e.getAddress();if(t.toLowerCase()===n.toLowerCase())return void alert("Cannot delegate to yourself!");alert(`✅ Delegation Successful!\n\nDelegated to: ${t}\n\n(In production, this would submit an on-chain transaction)`),"undefined"!=typeof gtag&&gtag("event","vote_delegated",{event_category:"governance",value:1}),closeDelegateModal()}catch(e){console.error("Delegation failed:",e),alert("Failed to delegate votes. Please try again.")}else alert("Please install MetaMask to delegate votes!")}async function revokeDelegation(){if(void 0!==window.ethereum)try{new ethers.providers.Web3Provider(window.ethereum).getSigner();alert("✅ Delegation Revoked!\n\n(In production, this would submit an on-chain transaction)"),closeDelegateModal()}catch(e){console.error("Revoke failed:",e),alert("Failed to revoke delegation. Please try again.")}else alert("Please install MetaMask!")}window.onclick=function(e){const t=document.getElementById("createProposalModal"),n=document.getElementById("delegateModal");e.target==t&&closeCreateModal(),e.target==n&&closeDelegateModal()},document.getElementById("proposalDescription")?.addEventListener("input",function(){const e=document.getElementById("descWarning");this.value.length<50&&this.value.length>0?e.style.display="block":e.style.display="none"}),window.addEventListener("load",()=>{void 0!==window.ethereum&&ethereum.request({method:"eth_accounts"}).then(e=>{e.length>0&&connectWallet()});const e=document.querySelector(".stats-row");if(e){const t=document.createElement("div");t.className="stat-card",t.style.cursor="pointer",t.onclick=openDelegateModal,t.innerHTML='\n                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">Delegate Voting Power</div>\n                    <div class="stat-value">🤝</div>\n                    <div style="font-size: 0.85rem; color: var(--primary); margin-top: 5px;">Click to Delegate</div>\n                ',e.appendChild(t)}})</script><script src="global-announcements.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Governance - Aetheron Platform</title>
+  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+  <link rel="stylesheet" href="governance.css?v=1.0.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F9QBP7B8C"></script>
+  <script>function gtag() { dataLayer.push(arguments) } window.dataLayer = window.dataLayer || [], gtag("js", new Date), gtag("config", "G-6F9QBP7B8C")</script>
+</head>
+
+<body>
+  <div class="container"><a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <header>
+      <h1>🗳️ Governance</h1>
+      <p>Shape the future of Aetheron through community voting</p>
+    </header>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Active Proposals</div>
+        <div class="stat-value">5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Votes Cast</div>
+        <div class="stat-value">1,247</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Voting Power</div>
+        <div class="stat-value" id="votingPower">Connect Wallet</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Participation Rate</div>
+        <div class="stat-value">68%</div>
+      </div>
+    </div>
+    <div class="proposals-grid">
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Increase Staking Rewards for 6-Month Pool</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x1234...5678</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 3 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 342 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Proposal to increase the reward rate for the 6-month staking pool from 100% to
+          150% APY to incentivize longer-term commitments and reduce circulating supply.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-78">For: 78% (267,000 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-15">Against: 15% (51,300 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 7% (23,900 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(1,"for")'
+              aria-label="Vote for proposal: Increase Staking Rewards"><i class="fas fa-thumbs-up"></i> Vote
+              For</button> <button type="button" class="vote-btn against" onclick='vote(1,"against")'
+              aria-label="Vote against proposal: Increase Staking Rewards"><i class="fas fa-thumbs-down"></i> Vote
+              Against</button> <button type="button" class="vote-btn abstain" onclick='vote(1,"abstain")'
+              aria-label="Abstain from voting on proposal: Increase Staking Rewards"><i class="fas fa-minus"></i>
+              Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Implement NFT Staking Boost System</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0xabcd...ef12</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 5 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 289 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Introduce NFTs that provide staking reward boosts of 10-50% depending on rarity.
+          NFTs would be earned through achievements or available for purchase.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-65">For: 65% (188,500 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-28">Against: 28% (81,200 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 7% (20,300 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(2,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(2,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(2,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Allocate 5% of Treasury for Marketing</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x9876...4321</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 1 day</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 421 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Allocate 5% of the community treasury (approximately 500,000 AETH) for strategic
+          marketing campaigns, influencer partnerships, and exchange listings.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-82">For: 82% (345,000 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-12">Against: 12% (50,500 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 6% (25,200 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(3,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(3,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(3,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card expired">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Reduce Transaction Fees to 3%</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x5555...6666</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Closed</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 512 voters</span></div>
+          </div><span class="proposal-status status-closed">Passed</span>
+        </div>
+        <p class="proposal-description">Successfully passed! Transaction fees reduced from 4% to 3% (2% buy, 1% sell).
+        </p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-91">For: 91% (456,700 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-6">Against: 6% (30,100 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 3% (15,050 AETH)</div>
+          </div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Launch Aetheron DAO V2</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span>
+              <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 7 days</span> <span class="meta-item"><i
+                  class="fas fa-users"></i> 156 voters</span>
+            </div>
+          </div><span class="proposal-status status-pending">Pending</span>
+        </div>
+        <p class="proposal-description">Upgrade governance system with delegated voting, proposal deposits, and
+          automated execution of passed proposals through smart contracts.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-58">For: 58% (89,400 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-18">Against: 18% (27,700 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 24% (37,000 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(5,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(5,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(5,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Partnership with MoonPay for Fiat On-Ramp</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x7D...3f9A</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 4 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 203 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Integrate MoonPay widget to allow users to buy AETH directly with credit card,
+          bank transfer, or Apple/Google Pay. 2% of transaction fees will go to treasury.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-84">For: 84% (178,200 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-9">Against: 9% (19,100 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 7% (14,800 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(6,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(6,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(6,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Launch Aetheron NFT Marketplace</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x2C...8bE4</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Executed 15 days
+                ago</span> <span class="meta-item"><i class="fas fa-users"></i> 287 voters</span></div>
+          </div><span class="proposal-status status-executed">Passed & Executed</span>
+        </div>
+        <p class="proposal-description">Create a native NFT marketplace with 50% fee discount for AETH stakers and
+          exclusive collections. 1% listing fees go to stakers.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-93">For: 93% (356,700 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-4">Against: 4% (15,300 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 3% (11,500 AETH)</div>
+          </div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Enable Cross-Chain Bridge to Ethereum</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x91...5cA2</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 2 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 178 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Implement LayerZero bridge to allow seamless transfer of AETH between Polygon
+          and Ethereum mainnet. Bridge fees: 0.1% to treasury.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-71">For: 71% (142,300 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-22">Against: 22% (44,100 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 7% (14,000 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(8,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(8,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(8,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Launch Aetheron Mobile App (iOS & Android)</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span>
+              <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 9 days</span> <span class="meta-item"><i
+                  class="fas fa-users"></i> 134 voters</span>
+            </div>
+          </div><span class="proposal-status status-pending">Pending</span>
+        </div>
+        <p class="proposal-description">Develop native mobile apps with built-in wallet, staking, governance voting, and
+          push notifications. Budget: 50,000 AETH from treasury.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-88">For: 88% (124,600 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-7">Against: 7% (9,900 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 5% (7,100 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(9,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(9,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(9,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Implement 30-Day Lock-Up Bonus (5% APY Boost)</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x4E...7dB1</span> <span class="meta-item"><i class="fas fa-times-circle"></i> Failed 8 days ago</span>
+              <span class="meta-item"><i class="fas fa-users"></i> 112 voters</span>
+            </div>
+          </div><span class="proposal-status status-failed">Defeated</span>
+        </div>
+        <p class="proposal-description">Add optional 30-day lock-up period for staked tokens with 5% APY bonus. Tokens
+          unstakable after lock period with 7-day cooldown.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-42">For: 42% (58,100 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-51">Against: 51% (70,600 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 7% (9,700 AETH)</div>
+          </div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Treasury Diversification Strategy</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x8F...2aD7</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 6 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 167 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Diversify 20% of treasury into stablecoins (USDC/DAI) and 10% into blue-chip
+          DeFi tokens (AAVE, UNI) to reduce volatility and ensure operational runway.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-66">For: 66% (156,200 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-28">Against: 28% (66,300 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 6% (14,200 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(11,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(11,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(11,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Integrate Chainlink Price Feeds</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x5B...9cF3</span> <span class="meta-item"><i class="fas fa-check-circle"></i> Executed 22 days
+                ago</span> <span class="meta-item"><i class="fas fa-users"></i> 198 voters</span></div>
+          </div><span class="proposal-status status-executed">Passed & Executed</span>
+        </div>
+        <p class="proposal-description">Replace manual price updates with Chainlink oracles for accurate, tamper-proof
+          AETH/USD pricing in all smart contracts.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-89">For: 89% (267,800 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-6">Against: 6% (18,100 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 5% (15,000 AETH)</div>
+          </div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Launch Aetheron Ambassador Program</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x3D...4eA9</span> <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 5 days</span> <span
+                class="meta-item"><i class="fas fa-users"></i> 221 voters</span></div>
+          </div><span class="proposal-status status-active">Active</span>
+        </div>
+        <p class="proposal-description">Create ambassador program with monthly stipends (1,000-5,000 AETH) for top
+          contributors. Ambassadors will create content, host events, and onboard new users.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-79">For: 79% (198,400 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-13">Against: 13% (32,600 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 8% (20,100 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(13,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(13,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(13,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Implement Dynamic Supply Model</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by:
+                0x6A...1bC8</span> <span class="meta-item"><i class="fas fa-times-circle"></i> Failed 19 days ago</span>
+              <span class="meta-item"><i class="fas fa-users"></i> 143 voters</span>
+            </div>
+          </div><span class="proposal-status status-failed">Defeated</span>
+        </div>
+        <p class="proposal-description">Introduce algorithmic supply adjustment based on demand metrics. Burn tokens
+          when price drops, mint when demand exceeds supply by 20%.</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-31">For: 31% (52,900 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-64">Against: 64% (109,200 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 5% (8,500 AETH)</div>
+          </div>
+        </div>
+      </div>
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <div>
+            <h2 class="proposal-title">Launch Aetheron Grants Program</h2>
+            <div class="proposal-meta"><span class="meta-item"><i class="fas fa-user"></i> Proposed by: Core Team</span>
+              <span class="meta-item"><i class="fas fa-clock"></i> Ends in: 11 days</span> <span class="meta-item"><i
+                  class="fas fa-users"></i> 192 voters</span>
+            </div>
+          </div><span class="proposal-status status-pending">Pending</span>
+        </div>
+        <p class="proposal-description">Allocate 100,000 AETH for quarterly grants to developers building on Aetheron
+          ecosystem. Grant sizes: Small (2,500), Medium (10,000), Large (25,000).</p>
+        <div class="vote-section">
+          <div class="vote-results">
+            <div class="vote-bar">
+              <div class="vote-bar-fill width-91">For: 91% (234,500 AETH)</div>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-fill against width-5">Against: 5% (12,900 AETH)</div>
+            </div>
+            <div class="abstain-text">Abstain: 4% (10,300 AETH)</div>
+          </div>
+          <div class="vote-buttons"><button type="button" class="vote-btn for" onclick='vote(15,"for")'><i
+                class="fas fa-thumbs-up"></i> Vote For</button> <button type="button" class="vote-btn against"
+              onclick='vote(15,"against")'><i class="fas fa-thumbs-down"></i> Vote Against</button> <button
+              type="button" class="vote-btn abstain" onclick='vote(15,"abstain")'><i class="fas fa-minus"></i> Abstain</button></div>
+        </div>
+      </div>
+    </div><button type="button" class="create-proposal-btn" onclick="openCreateModal()" title="Create Proposal"><i
+        class="fas fa-plus"></i></button>
+    <div id="createProposalModal" class="modal">
+      <div class="modal-content"><span class="modal-close" onclick="closeCreateModal()">&times;</span>
+        <h2>📝 Create New Proposal</h2>
+        <div class="deposit-info">
+          <p><i class="fas fa-info-circle"></i> Proposal Deposit Required</p>
+          <p class="amount">10,000 AETH</p>
+          <p class="proposal-refund-note">Refunded if proposal reaches 20% quorum</p>
+        </div>
+        <form id="proposalForm" onsubmit="submitProposal(event)">
+          <div class="form-group"><label for="proposalTitle">Title *</label> <input type="text" id="proposalTitle"
+              placeholder="e.g., Increase Staking Rewards" required maxlength="100" aria-label="Proposal title"
+              aria-describedby="title-help"></div>
+          <div class="form-group"><label for="proposalDescription">Description *</label> <textarea
+              id="proposalDescription" placeholder="Provide detailed explanation of your proposal..." required
+              minlength="50" aria-label="Proposal description" aria-describedby="desc-warning"></textarea> <span
+              class="warning-text" id="descWarning">Minimum 50 characters required</span></div>
+          <div class="form-group"><label for="proposalCategory">Category *</label> <select id="proposalCategory"
+              required aria-label="Proposal category">
+              <option value="">Select category</option>
+              <option value="tokenomics">Tokenomics</option>
+              <option value="governance">Governance</option>
+              <option value="partnerships">Partnerships</option>
+              <option value="development">Development</option>
+              <option value="marketing">Marketing</option>
+              <option value="community">Community</option>
+              <option value="treasury">Treasury</option>
+            </select></div>
+          <div class="form-group"><label for="votingDuration">Voting Period</label> <select id="votingDuration">
+              <option value="3">3 days</option>
+              <option value="7" selected="selected">7 days (recommended)</option>
+              <option value="14">14 days</option>
+            </select></div><button type="submit" class="submit-btn" id="submitProposalBtn"><i class="fas fa-rocket"></i>
+            Submit Proposal (10,000 AETH Deposit)</button>
+        </form>
+      </div>
+    </div>
+    <div id="delegateModal" class="modal">
+      <div class="modal-content"><span class="modal-close" onclick="closeDelegateModal()">&times;</span>
+        <h2>🤝 Delegate Voting Power</h2>
+        <div class="delegation-status">
+          <p><strong>Your Voting Power:</strong> <span id="userVotingPower">Loading...</span> AETH</p>
+          <p><strong>Currently Delegated To:</strong> <span id="currentDelegate">None</span></p>
+          <p><strong>Delegated Power Received:</strong> <span id="receivedDelegations">0</span> AETH</p>
+        </div>
+        <form id="delegateForm" onsubmit="submitDelegation(event)">
+          <div class="form-group"><label for="delegateAddress">Delegate Address *</label> <input type="text"
+              id="delegateAddress" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$"> <span
+              class="warning-text">Enter a valid Ethereum address</span></div>
+          <p class="delegate-warning"><i
+              class="fas fa-exclamation-triangle"></i> Delegating transfers your voting power. You can revoke delegation
+            at any time.</p><button type="submit" class="delegate-btn"><i class="fas fa-hand-holding-heart"></i>
+            Delegate Votes</button> <button type="button" class="delegate-btn btn-secondary"
+            onclick="revokeDelegation()"><i class="fas fa-undo"></i> Revoke Current Delegation</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+  <script>async function connectWallet() { if (void 0 !== window.ethereum) try { const e = await ethereum.request({ method: "eth_requestAccounts" }), t = new ethers.providers.Web3Provider(window.ethereum), n = await t.getBalance(e[0]), o = ethers.utils.formatEther(n); document.getElementById("votingPower").textContent = `${parseFloat(o).toFixed(2)} AETH` } catch (e) { console.error("Failed to connect wallet:", e) } else alert("Please install MetaMask to vote!") } async function vote(e, t) { await connectWallet(), alert(`Vote recorded: Proposal ${e} - ${t.toUpperCase()}\n\n(In production, this would submit an on-chain transaction)`), "undefined" != typeof gtag && gtag("event", "governance_vote", { event_category: "governance", event_label: `proposal_${e}_${t}`, value: e }) } const GOVERNANCE_CONTRACT = "0x0000000000000000000000000000000000000000", GOVERNANCE_ABI = ["function createProposal(string title, string description, bytes executionData) external returns (uint256)", "function castVote(uint256 proposalId, uint8 vote) external", "function delegate(address delegatee) external", "function getVotingPower(address account) view returns (uint256)", "function delegates(address account) view returns (address)", "function delegatedVotingPower(address account) view returns (uint256)", "function state(uint256 proposalId) view returns (uint8)", "event ProposalCreated(uint256 indexed proposalId, address indexed proposer, string title, uint256 startTime, uint256 endTime)", "event VoteCast(address indexed voter, uint256 indexed proposalId, uint8 vote, uint256 votes)", "event DelegateChanged(address indexed delegator, address indexed delegate)"]; function openCreateModal() { document.getElementById("createProposalModal").style.display = "block" } function closeCreateModal() { document.getElementById("createProposalModal").style.display = "none", document.getElementById("proposalForm").reset() } function openDelegateModal() { document.getElementById("delegateModal").style.display = "block", loadDelegationInfo() } function closeDelegateModal() { document.getElementById("delegateModal").style.display = "none" } async function submitProposal(e) { if (e.preventDefault(), void 0 !== window.ethereum) try { const e = new ethers.providers.Web3Provider(window.ethereum), t = (e.getSigner(), await e.listAccounts()); if (0 === t.length) return void await connectWallet(); const n = document.getElementById("proposalTitle").value, o = (document.getElementById("proposalDescription").value, document.getElementById("proposalCategory").value), a = document.getElementById("votingDuration").value, r = await e.getBalance(t[0]), l = parseFloat(ethers.utils.formatEther(r)); if (l < 1e4) return void alert(`Insufficient balance!\n\nRequired: 10,000 AETH\nYour balance: ${l.toFixed(2)} AETH`); const i = document.getElementById("submitProposalBtn"), d = i.innerHTML; i.disabled = !0, i.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Proposal...', setTimeout(() => { alert(`✅ Proposal Created Successfully!\n\nTitle: ${n}\nCategory: ${o}\nDuration: ${a} days\n\nDeposit: 10,000 AETH (will be refunded if quorum is reached)\n\n(In production, this would submit an on-chain transaction)`), "undefined" != typeof gtag && gtag("event", "proposal_created", { event_category: "governance", event_label: o, value: 1 }), closeCreateModal(), i.disabled = !1, i.innerHTML = d }, 2e3) } catch (e) { console.error("Proposal creation failed:", e), alert("Failed to create proposal. Please try again."), document.getElementById("submitProposalBtn").disabled = !1 } else alert("Please install MetaMask to create proposals!") } async function loadDelegationInfo() { if (void 0 !== window.ethereum) try { const e = new ethers.providers.Web3Provider(window.ethereum), t = await e.listAccounts(); if (0 === t.length) return void await connectWallet(); const n = await e.getBalance(t[0]), o = ethers.utils.formatEther(n); document.getElementById("userVotingPower").textContent = parseFloat(o).toFixed(2), document.getElementById("currentDelegate").textContent = "None", document.getElementById("receivedDelegations").textContent = "0" } catch (e) { console.error("Failed to load delegation info:", e) } } async function submitDelegation(e) { if (e.preventDefault(), void 0 !== window.ethereum) try { const e = new ethers.providers.Web3Provider(window.ethereum).getSigner(), t = document.getElementById("delegateAddress").value; if (!ethers.utils.isAddress(t)) return void alert("Invalid Ethereum address!"); const n = await e.getAddress(); if (t.toLowerCase() === n.toLowerCase()) return void alert("Cannot delegate to yourself!"); alert(`✅ Delegation Successful!\n\nDelegated to: ${t}\n\n(In production, this would submit an on-chain transaction)`), "undefined" != typeof gtag && gtag("event", "vote_delegated", { event_category: "governance", value: 1 }), closeDelegateModal() } catch (e) { console.error("Delegation failed:", e), alert("Failed to delegate votes. Please try again.") } else alert("Please install MetaMask to delegate votes!") } async function revokeDelegation() { if (void 0 !== window.ethereum) try { new ethers.providers.Web3Provider(window.ethereum).getSigner(); alert("✅ Delegation Revoked!\n\n(In production, this would submit an on-chain transaction)"), closeDelegateModal() } catch (e) { console.error("Revoke failed:", e), alert("Failed to revoke delegation. Please try again.") } else alert("Please install MetaMask!") } window.onclick = function (e) { const t = document.getElementById("createProposalModal"), n = document.getElementById("delegateModal"); e.target == t && closeCreateModal(), e.target == n && closeDelegateModal() }, document.getElementById("proposalDescription")?.addEventListener("input", function () { const e = document.getElementById("descWarning"); this.value.length < 50 && this.value.length > 0 ? e.style.display = "block" : e.style.display = "none" }), window.addEventListener("load", () => { void 0 !== window.ethereum && ethereum.request({ method: "eth_accounts" }).then(e => { e.length > 0 && connectWallet() }); const e = document.querySelector(".stats-row"); if (e) { const t = document.createElement("div"); t.className = "stat-card", t.style.cursor = "pointer", t.onclick = openDelegateModal, t.innerHTML = '\n                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">Delegate Voting Power</div>\n                    <div class="stat-value">🤝</div>\n                    <div style="font-size: 0.85rem; color: var(--primary); margin-top: 5px;">Click to Delegate</div>\n                ', e.appendChild(t) } })</script>
+  <script src="global-announcements.js"></script>
+</body>
+
+</html>

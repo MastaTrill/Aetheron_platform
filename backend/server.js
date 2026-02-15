@@ -4,8 +4,9 @@ const bodyParser = require('body-parser');
 
 const scannerApi = require('./scanner/scanner-api');
 const launchpadApi = require('./scanner/launchpad-api');
-const paymentApi = require('./scanner/payment');
-const paymentLaunchpadApi = require('./scanner/payment-launchpad');
+const coinbaseCommerceApi = require('./scanner/coinbase-commerce');
+const paymentHistoryApi = require('./scanner/payment-history-backend');
+const allPaymentsApi = require('./scanner/all-payments-backend');
 
 const path = require('path');
 const app = express();
@@ -17,8 +18,9 @@ app.use(express.static(path.join(__dirname, '..')));
 // API routes
 app.use('/api', scannerApi);
 app.use('/api', launchpadApi);
-app.use('/api', paymentApi);
-app.use('/api', paymentLaunchpadApi);
+app.use('/api', coinbaseCommerceApi);
+app.use('/api', paymentHistoryApi);
+app.use('/api', allPaymentsApi);
 
 // Fallback: serve index.html for unknown (non-API) routes (SPA support)
 app.use((req, res, next) => {

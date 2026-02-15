@@ -14,9 +14,19 @@
     },
     "AetheronStaking": {
       "address": "0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7",
+      "args": ["0x44F9c15816bCe5d6691448F60DAD50355ABa40b5"]
+    },
+    "SecondAetheron": {
+      "address": "0x072091F554df794852E0A9d1c809F2B2bBda171E",
       "args": [
-        "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5"
+        "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82",
+        "0x8D3442424F8F6BEEd97496C7E54e056166f96746",
+        "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82"
       ]
+    },
+    "AetxToken": {
+      "address": "0x072091F554df794852E0A9d1c809F2B2bBda171E",
+      "args": ["0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82"]
     }
   },
   "configuration": {

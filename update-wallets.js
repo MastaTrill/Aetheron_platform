@@ -3,10 +3,15 @@
 // update-wallets.js - Update treasury wallet addresses in Aetheron contract
 import { ethers } from 'ethers';
 
-const CONTRACT_ADDRESS = 'YOUR_AETHERON_CONTRACT_ADDRESS'; // Replace with actual contract address
+const CONTRACT_ADDRESS = process.env.AETHERON_CONTRACT_ADDRESS; // Set your contract address in .env as AETHERON_CONTRACT_ADDRESS
 const ABI = [
   'function updateWallets(address newTeamWallet, address newMarketingWallet, address newStakingPool)',
 ];
+
+if (!process.env.POLYGON_RPC_URL || !process.env.PRIVATE_KEY || !CONTRACT_ADDRESS) {
+  console.error('Missing POLYGON_RPC_URL, PRIVATE_KEY, or AETHERON_CONTRACT_ADDRESS in .env');
+  process.exit(1);
+}
 
 const provider = new ethers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
