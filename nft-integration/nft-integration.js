@@ -14,6 +14,7 @@ class NFTIntegration {
     this.charts = {};
     this.isWalletConnected = false;
     this.walletAddress = null;
+    this.selectedFile = null;
 
     this.init();
   }
@@ -139,6 +140,57 @@ class NFTIntegration {
     });
   }
 
+  handleFileUpload(file) {
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg', 'audio/mp3'];
+    if (!allowedTypes.includes(file.type)) {
+      this.showToast('Unsupported file type. Please upload JPG, PNG, GIF, MP4, MP3, or MPEG files.', 'error');
+      return;
+    }
+
+    // Validate file size (50MB limit)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      this.showToast('File size too large. Maximum size is 50MB.', 'error');
+      return;
+    }
+
+    // Store the file for minting
+    this.selectedFile = file;
+
+    // Show preview
+    this.showFilePreview(file);
+  }
+
+  showFilePreview(file) {
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const previewVideo = document.getElementById('previewVideo');
+    const previewAudio = document.getElementById('previewAudio');
+
+    // Hide all previews first
+    previewImage.style.display = 'none';
+    previewVideo.style.display = 'none';
+    previewAudio.style.display = 'none';
+
+    const fileURL = URL.createObjectURL(file);
+
+    if (file.type.startsWith('image/')) {
+      previewImage.src = fileURL;
+      previewImage.style.display = 'block';
+    } else if (file.type.startsWith('video/')) {
+      previewVideo.src = fileURL;
+      previewVideo.style.display = 'block';
+    } else if (file.type.startsWith('audio/')) {
+      previewAudio.src = fileURL;
+      previewAudio.style.display = 'block';
+    }
+
+    previewContainer.style.display = 'block';
+  }
+
   switchTab(tabName) {
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -162,7 +214,7 @@ class NFTIntegration {
     // Simulate API call - replace with real API endpoints
     this.nfts = await this.fetchNFTs();
     this.collections = await this.fetchCollections();
-    this.userNFTs = await this.fetchUserNFTs();
+    this.userNFTs = await this.loadUserNFTsFromStorage();
   }
 
   async fetchNFTs() {
@@ -303,6 +355,38 @@ class NFTIntegration {
         acquired: "2024-01-15"
       }
     ];
+  }
+
+  async loadUserNFTsFromStorage() {
+    try {
+      const stored = localStorage.getItem('userNFTs');
+      if (stored) {
+        const nfts = JSON.parse(stored);
+        // Recreate blob URLs for images
+        return nfts.map(nft => ({
+          ...nft,
+          image: nft.image.startsWith('blob:') ? nft.image : URL.createObjectURL(new Blob([], { type: 'image/png' })) // Placeholder, in real app store file data
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading user NFTs from storage:', error);
+    }
+    // Fallback to mock data
+    return await this.fetchUserNFTs();
+  }
+
+  saveUserNFTsToStorage() {
+    try {
+      // Note: In a real app, you'd need to store file data separately
+      // For demo purposes, we'll store metadata only
+      const nftsToStore = this.userNFTs.map(nft => ({
+        ...nft,
+        image: nft.image // Keep blob URL, but it won't persist across sessions
+      }));
+      localStorage.setItem('userNFTs', JSON.stringify(nftsToStore));
+    } catch (error) {
+      console.error('Error saving user NFTs to storage:', error);
+    }
   }
 
   async loadAnalyticsData() {
@@ -908,9 +992,8 @@ class NFTIntegration {
 
     const name = document.getElementById('nftName').value;
     const description = document.getElementById('nftDescription').value;
-    const fileInput = document.getElementById('fileInput');
 
-    if (!name || !fileInput.files[0]) {
+    if (!name || !this.selectedFile) {
       this.showToast('Please fill in all required fields', 'warning');
       return;
     }
@@ -925,7 +1008,7 @@ class NFTIntegration {
         id: Date.now(),
         name: name,
         collection: 'Aetheron',
-        image: URL.createObjectURL(fileInput.files[0]),
+        image: URL.createObjectURL(this.selectedFile),
         price: 0.1,
         currency: 'ETH',
         rarity: 'Common',
@@ -933,18 +1016,29 @@ class NFTIntegration {
         likes: 0,
         views: 0,
         description: description,
-        attributes: []
+        attributes: [],
+        floorPrice: 0.1,
+        lastPrice: 0.1,
+        acquired: new Date().toISOString().split('T')[0]
       };
 
       // Add to marketplace
       this.nfts.unshift(newNFT);
       this.renderMarketplace();
 
+      // Add to user's gallery
+      this.userNFTs.unshift(newNFT);
+      this.renderGallery();
+
+      // Save to localStorage for persistence
+      this.saveUserNFTsToStorage();
+
       // Reset form
       document.getElementById('nftName').value = '';
       document.getElementById('nftDescription').value = '';
       document.getElementById('fileInput').value = '';
       document.getElementById('previewContainer').style.display = 'none';
+      this.selectedFile = null;
 
       this.showToast(`Successfully minted ${name}!`, 'success');
     } catch (error) {

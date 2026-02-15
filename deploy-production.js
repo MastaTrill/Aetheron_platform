@@ -17,31 +17,33 @@ const DEPLOYMENT_STEPS = [
       () => checkTestsPassing(),
       () => checkReactBuild(),
       () => checkContractAddresses(),
-      () => checkSecurityAudit()
-    ]
+      () => checkSecurityAudit(),
+    ],
   },
   {
     name: '📦 Build Optimization',
     actions: [
       () => optimizeContracts(),
       () => optimizeFrontend(),
-      () => generateDeploymentReport()
-    ]
+      () => generateDeploymentReport(),
+    ],
   },
   {
     name: '🚀 Deployment Preparation',
     actions: [
       () => prepareMainnetDeployment(),
       () => prepareHostingDeployment(),
-      () => createLaunchChecklist()
-    ]
-  }
+      () => createLaunchChecklist(),
+    ],
+  },
 ];
 
 function checkContractsCompiled() {
   console.log('📝 Checking contract compilation...');
   try {
-    execSync('cd smart-contract && npx hardhat compile --force', { stdio: 'pipe' });
+    execSync('cd smart-contract && npx hardhat compile --force', {
+      stdio: 'pipe',
+    });
     console.log('✅ Contracts compiled successfully');
     return true;
   } catch (error) {
@@ -53,7 +55,10 @@ function checkContractsCompiled() {
 function checkTestsPassing() {
   console.log('🧪 Running contract tests...');
   try {
-    const output = execSync('cd smart-contract && npm test', { stdio: 'pipe', encoding: 'utf8' });
+    const output = execSync('cd smart-contract && npm test', {
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
     if (output.includes('37 passing')) {
       console.log('✅ All 37 tests passing');
       return true;
@@ -83,8 +88,10 @@ function checkContractAddresses() {
   const readmePath = 'README.md';
   if (fs.existsSync(readmePath)) {
     const content = fs.readFileSync(readmePath, 'utf8');
-    if (content.includes('0x44F9c15816bCe5d6691448F60DAD50355ABa40b5') &&
-      content.includes('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')) {
+    if (
+      content.includes('0x44F9c15816bCe5d6691448F60DAD50355ABa40b5') &&
+      content.includes('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')
+    ) {
       console.log('✅ Contract addresses documented');
       return true;
     }
@@ -96,10 +103,17 @@ function checkContractAddresses() {
 function checkSecurityAudit() {
   console.log('🔒 Checking security audit...');
   try {
-    execSync('cd smart-contract && python -m slither . --exclude-dependencies > security-audit.log 2>&1', { stdio: 'pipe' });
-    const auditLog = fs.readFileSync('smart-contract/security-audit.log', 'utf8');
+    execSync(
+      'cd smart-contract && python -m slither . --exclude-dependencies > security-audit.log 2>&1',
+      { stdio: 'pipe' },
+    );
+    const auditLog = fs.readFileSync(
+      'smart-contract/security-audit.log',
+      'utf8',
+    );
     const issueCount = (auditLog.match(/INFO:Detectors:/g) || []).length;
-    if (issueCount <= 4) { // We reduced from 25 to 4 issues
+    if (issueCount <= 4) {
+      // We reduced from 25 to 4 issues
       console.log(`✅ Security audit passed (${issueCount} issues remaining)`);
       return true;
     } else {
@@ -115,7 +129,9 @@ function checkSecurityAudit() {
 function optimizeContracts() {
   console.log('⚡ Optimizing contracts...');
   try {
-    execSync('cd smart-contract && npx hardhat compile --force', { stdio: 'pipe' });
+    execSync('cd smart-contract && npx hardhat compile --force', {
+      stdio: 'pipe',
+    });
     console.log('✅ Contracts optimized');
     return true;
   } catch (error) {
@@ -143,18 +159,18 @@ function generateDeploymentReport() {
     version: '2.0.0',
     contracts: {
       aetheron: '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5',
-      staking: '0x896D9d37A67B0bBf81dde0005975DA7850FFa638'
+      staking: '0x896D9d37A67B0bBf81dde0005975DA7850FFa638',
     },
-    networks: ['mumbai', 'polygon'],
+    networks: ['polygon'],
     frontend: {
       buildSize: getBuildSize(),
-      optimized: true
+      optimized: true,
     },
     security: {
       slitherIssues: 4,
       testsPassing: 37,
-      auditComplete: true
-    }
+      auditComplete: true,
+    },
   };
 
   fs.writeFileSync('deployment-report.json', JSON.stringify(report, null, 2));
@@ -177,12 +193,15 @@ function prepareMainnetDeployment() {
     network: 'polygon',
     contracts: {
       aetheron: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
-      staking: '0x896D9d37A67B0bBf81dde0005975DA7850FFa638'
+      staking: '0x896D9d37A67B0bBf81dde0005975DA7850FFa638',
     },
-    verified: true
+    verified: true,
   };
 
-  fs.writeFileSync('mainnet-deployment.json', JSON.stringify(mainnetConfig, null, 2));
+  fs.writeFileSync(
+    'mainnet-deployment.json',
+    JSON.stringify(mainnetConfig, null, 2),
+  );
   console.log('✅ Mainnet deployment config ready');
   return true;
 }
@@ -194,10 +213,13 @@ function prepareHostingDeployment() {
     buildCommand: 'npm run build',
     publishDir: 'build',
     domain: 'mastatrill.github.io/aetheron-platform',
-    cname: 'aetheron-platform.mastatrill.github.io'
+    cname: 'aetheron-platform.mastatrill.github.io',
   };
 
-  fs.writeFileSync('hosting-config.json', JSON.stringify(hostingConfig, null, 2));
+  fs.writeFileSync(
+    'hosting-config.json',
+    JSON.stringify(hostingConfig, null, 2),
+  );
   console.log('✅ Hosting deployment config ready');
   return true;
 }
@@ -213,7 +235,7 @@ function createLaunchChecklist() {
       '🔄 Get mainnet approval from team',
       '🔄 Set up production wallet',
       '🔄 Configure domain and hosting',
-      '🔄 Test on mainnet with small amounts'
+      '🔄 Test on mainnet with small amounts',
     ],
     launchDay: [
       '🔄 Deploy to mainnet',
@@ -221,14 +243,14 @@ function createLaunchChecklist() {
       '🔄 Deploy frontend to production',
       '🔄 Announce on social media',
       '🔄 Monitor transactions and gas usage',
-      '🔄 Prepare emergency response plan'
+      '🔄 Prepare emergency response plan',
     ],
     postLaunch: [
       '🔄 Monitor contract interactions',
       '🔄 Collect user feedback',
       '🔄 Plan feature updates',
-      '🔄 Community engagement'
-    ]
+      '🔄 Community engagement',
+    ],
   };
 
   fs.writeFileSync('LAUNCH_CHECKLIST.json', JSON.stringify(checklist, null, 2));

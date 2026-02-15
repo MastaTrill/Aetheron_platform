@@ -5,10 +5,7 @@
     "aetheron": "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5",
     "staking": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638"
   },
-  "networks": [
-    "mumbai",
-    "polygon"
-  ],
+  "networks": ["polygon"],
   "frontend": {
     "buildSize": "Unknown",
     "optimized": true

@@ -1,16 +1,17 @@
-const CACHE_VERSION = 'v1.3.1';
+const CACHE_VERSION = 'v1.4.0';
 const CACHE_NAME = `aetheron-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `aetheron-runtime-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './index.js',
-  './charts.js',
+  './index.min.js',
+  './charts.min.js',
   './monitor.js',
   './performance-monitor.js',
   './marketing-launch.js',
   './shared-utils.js',
+  './critical.min.css',
   './shared-mobile-polish.css',
   './global-announcements.js',
   './announcements.json',
@@ -62,16 +63,49 @@ self.addEventListener('fetch', (event) => {
   const isHtmlRequest = event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html');
   const isSameOrigin = requestUrl.origin === self.location.origin;
 
+  // Handle external requests differently
   if (!isSameOrigin && !requestUrl.hostname.includes('cdn')) {
+    // Cache external API calls for 5 minutes
+    if (requestUrl.hostname.includes('polygon-rpc.com') ||
+        requestUrl.hostname.includes('polygonscan.com') ||
+        requestUrl.hostname.includes('quickswap.exchange')) {
+      event.respondWith(
+        caches.open('api-cache').then(cache => {
+          return cache.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+              // Check if cache is still fresh (5 minutes)
+              const cacheTime = new Date(cachedResponse.headers.get('sw-cache-time'));
+              const now = new Date();
+              if (now - cacheTime < 5 * 60 * 1000) {
+                return cachedResponse;
+              }
+            }
+
+            return fetch(event.request).then(response => {
+              if (response.status === 200) {
+                const responseClone = response.clone();
+                responseClone.headers.set('sw-cache-time', new Date().toISOString());
+                cache.put(event.request, responseClone);
+              }
+              return response;
+            });
+          });
+        })
+      );
+      return;
+    }
     return;
   }
 
+  // Handle HTML requests with network-first strategy
   if (isHtmlRequest) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const responseClone = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, responseClone));
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, responseClone));
+          }
           return response;
         })
         .catch(() => caches.match(event.request))
@@ -79,23 +113,39 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Handle static assets with cache-first strategy
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|woff|woff2|webp)$/i.test(requestUrl.pathname);
+
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return fetch(event.request).then((response) => {
+          if (response && response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Default cache-first strategy with background update
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        fetch(event.request).then((response) => {
-          if (response && response.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((response) => {
-        if (response && response.status === 200) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
         }
-        return response;
+        return networkResponse;
       });
+
+      return cachedResponse || fetchPromise;
     })
   );
 });

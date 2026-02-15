@@ -3,11 +3,13 @@
 ## ✅ What's Been Done
 
 ### 1. Repository Setup ✓
+
 - Fixed file naming issues
 - Organized project structure
 - Configured Git repository
 
 ### 2. Smart Contracts Created ✓
+
 - **Aetheron (AETH) Token** - ERC20 with tax system
 - **AetheronStaking** - Multi-pool staking with rewards
 - Comprehensive test suite
@@ -15,6 +17,7 @@
 - Dependencies installed (579 packages)
 
 ### 3. Frontend Integration Files ✓
+
 - Web3 connection hooks
 - Token interaction hooks
 - Staking interaction hooks
@@ -25,6 +28,7 @@
 ### Immediate Next Steps (30 minutes)
 
 #### 1. Compile Smart Contracts
+
 ```powershell
 cd "C:\Users\willi\OneDrive\Desktop\Aetheron platform\Aetheron_platform\smart-contract"
 npx hardhat compile
@@ -33,6 +37,7 @@ npx hardhat compile
 **Expected Result:** Contracts compile successfully, generating ABIs in `artifacts/`
 
 #### 2. Run Tests
+
 ```powershell
 npx hardhat test
 ```
@@ -40,6 +45,7 @@ npx hardhat test
 **Expected Result:** All tests pass (deployment, trading, staking, rewards)
 
 #### 3. Check Test Coverage (Optional)
+
 ```powershell
 npx hardhat coverage
 ```
@@ -49,6 +55,7 @@ npx hardhat coverage
 ### Short Term (This Week)
 
 #### Day 1: Local Testing
+
 ```powershell
 # Terminal 1: Start local blockchain
 npx hardhat node
@@ -62,6 +69,7 @@ Take note of the deployed contract addresses from the output.
 #### Day 2-3: Configure Environment
 
 1. **Create `.env` file:**
+
 ```powershell
 cd smart-contract
 copy .env.example .env
@@ -69,10 +77,11 @@ notepad .env
 ```
 
 2. **Add your credentials:**
+
 ```env
 PRIVATE_KEY=your_metamask_private_key
 POLYGON_RPC_URL=https://polygon-rpc.com
-MUMBAI_RPC_URL=https://rpc-mumbai.maticvigil.com
+ # ...existing code...
 POLYGONSCAN_API_KEY=get_from_polygonscan.com
 ```
 
@@ -81,6 +90,7 @@ POLYGONSCAN_API_KEY=get_from_polygonscan.com
 #### Day 4-5: Frontend Setup
 
 1. **Install frontend dependencies:**
+
 ```powershell
 cd ..  # Back to root
 npm install
@@ -89,6 +99,7 @@ npm install
 2. **Update contract addresses** in `src/config/contracts.js`
 
 3. **Test frontend locally:**
+
 ```powershell
 npm run dev
 ```
@@ -103,12 +114,14 @@ npm run dev
    - Mumbai MATIC: https://faucet.polygon.technology
 
 2. **Deploy to Mumbai testnet:**
+
 ```powershell
 cd smart-contract
 npm run deploy:mumbai
 ```
 
 3. **Verify contracts:**
+
 ```powershell
 npx hardhat verify --network mumbai <CONTRACT_ADDRESS>
 ```
@@ -133,12 +146,14 @@ npx hardhat verify --network mumbai <CONTRACT_ADDRESS>
 ### Long Term (Before Mainnet)
 
 #### Security Audit
+
 - [ ] Code review by security experts
 - [ ] Automated security scan (Slither, Mythril)
 - [ ] Penetration testing
 - [ ] Fix any vulnerabilities found
 
 #### Mainnet Preparation
+
 - [ ] Set up multi-sig wallet for contract ownership
 - [ ] Prepare liquidity (at least $10k recommended)
 - [ ] Marketing materials ready
@@ -146,6 +161,7 @@ npx hardhat verify --network mumbai <CONTRACT_ADDRESS>
 - [ ] Legal compliance checked
 
 #### Mainnet Launch
+
 ```powershell
 # Only when ready!
 cd smart-contract
@@ -153,6 +169,7 @@ npm run deploy:polygon
 ```
 
 **Post-deployment checklist:**
+
 1. Enable trading: `aetheronToken.enableTrading()`
 2. Add liquidity on DEX
 3. Verify contracts on PolygonScan
@@ -194,21 +211,25 @@ Aetheron_platform/
 ## 🛠️ Troubleshooting
 
 ### "Cannot find module"
+
 ```powershell
 npm install
 ```
 
 ### "Insufficient funds"
+
 - Get testnet tokens from faucet
 - Check wallet balance
 
 ### "Transaction reverted"
+
 - Check contract is deployed
 - Verify you have enough tokens
 - Check trading is enabled
 - Review error message
 
 ### "Wrong network"
+
 - Switch MetaMask to correct network (Polygon/Mumbai)
 - Update `NEXT_PUBLIC_CHAIN_ID` in `.env`
 
@@ -217,19 +238,23 @@ npm install
 ## 📚 Resources
 
 ### Documentation
+
 - **Hardhat:** https://hardhat.org/docs
 - **OpenZeppelin:** https://docs.openzeppelin.com/
 - **Ethers.js:** https://docs.ethers.org/
 - **Polygon:** https://docs.polygon.technology/
 
 ### Block Explorers
+
 - **Polygon:** https://polygonscan.com
 - **Mumbai:** https://mumbai.polygonscan.com
 
 ### Faucets
+
 - **Mumbai MATIC:** https://faucet.polygon.technology/
 
 ### Tools
+
 - **Remix IDE:** https://remix.ethereum.org/
 - **Hardhat VSCode:** Install extension for Solidity support
 - **MetaMask:** Browser extension for Web3 wallet
@@ -241,24 +266,28 @@ npm install
 Before moving to next phase, ensure:
 
 ✅ **Smart Contracts:**
+
 - [ ] Compiles without errors
 - [ ] All tests pass
 - [ ] Gas costs are reasonable
 - [ ] Security checks pass
 
 ✅ **Local Testing:**
+
 - [ ] Deploys successfully to local network
 - [ ] All functions work as expected
 - [ ] Events are emitted correctly
 - [ ] Edge cases handled
 
 ✅ **Testnet:**
+
 - [ ] Deploys to Mumbai successfully
 - [ ] Verified on Mumbai explorer
 - [ ] All functions tested on testnet
 - [ ] No critical bugs found
 
 ✅ **Frontend:**
+
 - [ ] Wallet connects successfully
 - [ ] Contract interactions work
 - [ ] UI is responsive
@@ -278,6 +307,7 @@ Before moving to next phase, ensure:
 ## 🎉 You're Ready!
 
 Run this to start:
+
 ```powershell
 cd "C:\Users\willi\OneDrive\Desktop\Aetheron platform\Aetheron_platform\smart-contract"
 npx hardhat compile

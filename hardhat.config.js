@@ -28,8 +28,7 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 137
     },
-    mumbai: {
-      url: process.env.MUMBAI_RPC_URL || "https://rpc-mumbai.maticvigil.com",
+    // ...existing code...
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 80001
     },
@@ -40,7 +39,7 @@ export default {
   etherscan: {
     apiKey: {
       polygon: "YOUR_POLYGONSCAN_API_KEY",
-      polygonMumbai: "YOUR_POLYGONSCAN_API_KEY"
+      // ...existing code...
     }
   }
 };

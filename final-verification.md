@@ -7,6 +7,7 @@ This guide provides a comprehensive checklist and verification procedures for Ae
 ### 1. Environment Setup Verification
 
 **Run the setup verification script:**
+
 ```bash
 cd smart-contract
 node scripts/verify-setup.js
@@ -15,6 +16,7 @@ node scripts/verify-setup.js
 **Expected Output:** All checks should pass (✓ PASS)
 
 The script verifies:
+
 - [x] Environment file (.env) exists
 - [x] PRIVATE_KEY is set and properly formatted (0x + 64 hex chars)
 - [x] POLYGON_RPC_URL is set and accessible
@@ -24,6 +26,7 @@ The script verifies:
 - [x] Deployer wallet has sufficient POL (minimum 0.1, recommended 0.5+)
 
 **If any checks fail:**
+
 1. Review the error message and suggested solution
 2. Fix the configuration issue in .env
 3. Re-run the verification script
@@ -84,6 +87,7 @@ npx hardhat run scripts/redeploy.js --network polygon
 **Monitor the deployment output carefully:**
 
 Expected stages:
+
 1. ✓ Configuration validation
 2. ✓ Aetheron Token deployment
 3. ✓ Aetheron Staking deployment
@@ -91,6 +95,7 @@ Expected stages:
 5. ✓ Verification of deployment
 
 **Save the output!** You'll need:
+
 - AETH Token address
 - Staking Contract address
 - Transaction hashes
@@ -126,6 +131,7 @@ node scripts/enable-trading.js
 ```
 
 **Expected output:**
+
 - Current status shows "DISABLED"
 - Transaction submitted and confirmed
 - New status shows "ENABLED"
@@ -135,11 +141,13 @@ node scripts/enable-trading.js
 ### Step 6: Add Initial Liquidity
 
 **Option A: Automated Script**
+
 ```bash
 node scripts/add-liquidity.js
 ```
 
 **Option B: Manual via QuickSwap**
+
 1. Visit https://quickswap.exchange/#/pool
 2. Connect wallet with deployer account
 3. Select "Add Liquidity"
@@ -157,6 +165,7 @@ node scripts/final-deployment-check.js
 **Verify the following:**
 
 Contract Configuration:
+
 - [x] Token name is "Aetheron"
 - [x] Token symbol is "AETH"
 - [x] Total supply is 1,000,000,000 AETH
@@ -166,12 +175,14 @@ Contract Configuration:
 - [x] Marketing wallet matches configuration
 
 Token Distribution:
+
 - [x] Deployer has ~500M AETH (for liquidity)
 - [x] Team wallet has 200M AETH (20%)
 - [x] Marketing wallet has 150M AETH (15%)
 - [x] Staking contract has 150M AETH (15%)
 
 Staking Configuration:
+
 - [x] Staking token is AETH
 - [x] Staking owner is correct
 - [x] 3 staking pools created (30d, 90d, 180d)
@@ -230,10 +241,12 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ### Issue: Verification script fails
 
 **Symptoms:**
+
 - ✗ FAIL checks in verify-setup.js
 - Red error messages
 
 **Solutions:**
+
 1. Read the error message carefully
 2. Check the specific field mentioned (PRIVATE_KEY, POLYGON_RPC_URL, etc.)
 3. Compare your .env with .env.example
@@ -243,21 +256,23 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ### Issue: Deployment transaction reverts
 
 **Symptoms:**
+
 - "Transaction reverted" error
 - Gas estimation fails
 
 **Possible Causes & Solutions:**
 
-| Cause | Solution |
-|-------|----------|
-| Insufficient POL | Add more POL to deployer wallet |
-| Wrong network | Verify POLYGON_RPC_URL is for Polygon Mainnet |
-| Invalid parameters | Check wallet addresses are correct |
-| Network congestion | Wait and retry with higher gas |
+| Cause              | Solution                                      |
+| ------------------ | --------------------------------------------- |
+| Insufficient POL   | Add more POL to deployer wallet               |
+| Wrong network      | Verify POLYGON_RPC_URL is for Polygon Mainnet |
+| Invalid parameters | Check wallet addresses are correct            |
+| Network congestion | Wait and retry with higher gas                |
 
 ### Issue: Contract verification fails on PolygonScan
 
 **Solutions:**
+
 1. Verify constructor arguments are correct
 2. Use exact compiler version from hardhat.config.js
 3. Ensure optimization settings match (200 runs)
@@ -267,10 +282,12 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ### Issue: Trading enable fails
 
 **Symptoms:**
+
 - "Ownable: caller is not the owner" error
 - Transaction reverts
 
 **Solutions:**
+
 1. Ensure you're using deployer's private key in .env
 2. Verify AETH_TOKEN_ADDRESS is correct
 3. Check if trading is already enabled
@@ -279,10 +296,12 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ### Issue: Liquidity addition fails
 
 **Symptoms:**
+
 - "Insufficient balance" error
 - Approval fails
 
 **Solutions:**
+
 1. Verify you have enough AETH tokens
 2. Ensure you have WMATIC (wrap POL if needed)
 3. Check token approvals are successful
@@ -349,11 +368,13 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ## Support Resources
 
 **Documentation:**
+
 - Main README: `../README.md`
 - Smart Contract README: `./README.md`
 - .env.example: Template with all variables
 
 **Scripts:**
+
 - `scripts/verify-setup.js` - Pre-deployment verification
 - `scripts/deploy.js` or `scripts/redeploy.js` - Deployment
 - `scripts/enable-trading.js` - Enable trading
@@ -361,12 +382,14 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 - `scripts/final-deployment-check.js` - Post-deployment verification
 
 **External Resources:**
+
 - PolygonScan: https://polygonscan.com
 - QuickSwap: https://quickswap.exchange
 - Polygon RPC: https://rpc.polygon.technology/
 - Hardhat Docs: https://hardhat.org/getting-started/
 
 **Getting Help:**
+
 1. Run `node scripts/verify-setup.js` for diagnostics
 2. Check error messages carefully
 3. Review this guide's troubleshooting section
@@ -376,6 +399,7 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 ## Final Notes
 
 ✅ **Success Criteria:**
+
 - All verification checks pass
 - Contracts deployed and verified
 - Trading enabled
@@ -384,11 +408,14 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 - Community can trade tokens
 
 ⚠️ **Remember:**
+
 - Always run verify-setup.js before deployment
 - Save all contract addresses and transaction hashes
 - Backup deployment logs
 - Never share private keys
-- Test on testnet first when possible
+
+# ...existing code...
+
 - Double-check all addresses before deploying
 
 🎉 **Congratulations!**

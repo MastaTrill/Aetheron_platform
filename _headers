@@ -5,6 +5,7 @@ Expires: 0
 X-Content-Type-Options: nosniff
 X-Frame-Options: SAMEORIGIN
 X-XSS-Protection: 1; mode=block
+Content-Encoding: gzip, deflate, br
 
 /*.html
 Cache-Control: no-cache, no-store, must-revalidate

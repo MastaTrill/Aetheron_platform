@@ -188,14 +188,14 @@ contract AetheronGovernance is Ownable, ReentrancyGuard {
 
         // Remove voting power from old delegate
         if (currentDelegate != address(0)) {
-            uint256 power = getOwnVotingPower(msg.sender);
-            delegatedVotingPower[currentDelegate] -= power;
+            uint256 oldPower = getOwnVotingPower(msg.sender);
+            delegatedVotingPower[currentDelegate] -= oldPower;
         }
 
         // Add voting power to new delegate
         delegates[msg.sender] = delegatee;
-        uint256 power = getOwnVotingPower(msg.sender);
-        delegatedVotingPower[delegatee] += power;
+        uint256 newPower = getOwnVotingPower(msg.sender);
+        delegatedVotingPower[delegatee] += newPower;
 
         emit DelegateChanged(msg.sender, delegatee);
     }
@@ -329,23 +329,22 @@ contract AetheronGovernance is Ownable, ReentrancyGuard {
         )
     {
         Proposal storage proposal = proposals[proposalId];
-        return (
-            proposal.proposer,
-            proposal.title,
-            proposal.description,
-            proposal.forVotes,
-            proposal.againstVotes,
-            proposal.abstainVotes,
-            proposal.startTime,
-            proposal.endTime,
-            state(proposalId)
-        );
+        proposer = proposal.proposer;
+        title = proposal.title;
+        description = proposal.description;
+        forVotes = proposal.forVotes;
+        againstVotes = proposal.againstVotes;
+        abstainVotes = proposal.abstainVotes;
+        startTime = proposal.startTime;
+        endTime = proposal.endTime;
+        currentState = state(proposalId);
     }
 
     /**
      * @dev Check if an address has voted
      */
-    function hasVoted(
+
+    function hasVotedForProposal(
         uint256 proposalId,
         address voter
     ) external view returns (bool) {

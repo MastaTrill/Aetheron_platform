@@ -3,9 +3,11 @@
 ## Before You Deploy:
 
 ### ✅ Step 1: Configure Your Private Key
+
 Edit `smart-contract/.env` and add your MetaMask private key:
 
 **To export your private key from MetaMask:**
+
 1. Open MetaMask extension
 2. Click the three dots (⋮) next to your account
 3. Select "Account Details"
@@ -23,6 +25,7 @@ PRIVATE_KEY=0xYourPrivateKeyHere
 ---
 
 ### ✅ Step 2: Fund Your Wallet
+
 Your deployer wallet needs POL for gas fees:
 
 **Wallet Address:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
@@ -30,6 +33,7 @@ Your deployer wallet needs POL for gas fees:
 **Recommended:** 10-15 POL (deployment costs ~5-8 POL)
 
 **Where to get POL:**
+
 - Buy on exchanges: Binance, Coinbase, Kraken
 - Bridge from Ethereum: [Polygon Bridge](https://wallet.polygon.technology/polygon/bridge)
 - Use a DEX: Uniswap, QuickSwap
@@ -39,6 +43,7 @@ Your deployer wallet needs POL for gas fees:
 ---
 
 ### ✅ Step 3: Verify Configuration
+
 Check your settings in `smart-contract/.env`:
 
 ```bash
@@ -67,14 +72,14 @@ cd smart-contract
 npx hardhat run scripts/redeploy.js --network localhost
 ```
 
-### Option 2: Deploy to Mumbai Testnet (Safe Testing)
+### Option 2: Deploy to Polygon Mainnet (Safe Testing)
 
 ```bash
-# Get free testnet POL from:
+# Get free POL from:
 # https://faucet.polygon.technology/
 
 cd smart-contract
-npx hardhat run scripts/redeploy.js --network mumbai
+npx hardhat run scripts/redeploy.js --network polygon
 ```
 
 ### Option 3: Deploy to Polygon Mainnet (PRODUCTION)
@@ -116,6 +121,7 @@ npx hardhat run scripts/redeploy.js --network polygon
 ### 1. Verify Contracts on PolygonScan
 
 The script will give you verification commands like:
+
 ```bash
 npx hardhat verify --network polygon TOKEN_ADDRESS "TEAM_WALLET" "MARKETING_WALLET" "STAKING_ADDRESS"
 npx hardhat verify --network polygon STAKING_ADDRESS "TOKEN_ADDRESS"
@@ -134,6 +140,7 @@ node scripts/enable-trading.js
 ### 3. Update Frontend
 
 The deployment will create a JSON file with addresses. Update:
+
 - `src/config/contracts.js`
 - `dashboard.html`
 - `admin-dashboard.html`
@@ -142,6 +149,7 @@ The deployment will create a JSON file with addresses. Update:
 ### 4. Add Liquidity
 
 Use your 500M AETH to create liquidity pool on:
+
 - QuickSwap: https://quickswap.exchange/
 - Uniswap (Polygon): https://app.uniswap.org/
 
@@ -150,20 +158,24 @@ Use your 500M AETH to create liquidity pool on:
 ## 🆘 Common Issues:
 
 ### "Insufficient funds for gas"
+
 - Add more POL to your wallet
 - Current balance: ~0.84 POL
 - Need: ~10 POL minimum
 
 ### "Invalid private key"
+
 - Make sure it starts with 0x
 - No spaces before/after
 - Check you copied the full key
 
 ### "Network not configured"
+
 - Check RPC URL in `.env`
 - Try alternative: https://polygon-mainnet.g.alchemy.com/v2/demo
 
 ### "Deployment failed"
+
 - Check gas price isn't too high
 - Verify contract code compiles: `npm run compile`
 - Check all dependencies installed: `npm install`

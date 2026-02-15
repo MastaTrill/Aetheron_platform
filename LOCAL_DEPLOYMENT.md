@@ -18,8 +18,9 @@ npx hardhat run scripts/deploy.js --network localhost
 ```
 
 This will:
+
 - Deploy Aetheron Token
-- Deploy Staking Contract  
+- Deploy Staking Contract
 - Configure tax exclusions
 - Transfer staking rewards
 - Save deployment addresses to `deployment.json`
@@ -52,6 +53,7 @@ npm run dev
 - Currency: ETH
 
 **Import Test Account:**
+
 - Private Key: `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
 - This account has 10,000 ETH and the deployed tokens
 
@@ -77,20 +79,23 @@ Account #1: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
 Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
 ```
 
-*See terminal output for all 20 accounts*
+_See terminal output for all 20 accounts_
 
 ## 🔧 Troubleshooting
 
 ### Contract deployment fails
+
 - Ensure Hardhat node is running
 - Check no other process is using port 8545
 
 ### Frontend can't connect
+
 - Verify contract addresses are updated in `src/config/contracts.js`
 - Check MetaMask is connected to localhost:8545
 - Ensure NEXT_PUBLIC_CHAIN_ID is set to 1337
 
 ### Reset local blockchain
+
 ```bash
 # Stop the current node (Ctrl+C)
 # Restart fresh
@@ -126,22 +131,27 @@ Deploying contracts with account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ============================================================
 ```
 
-## 🌐 Next: Testnet Deployment
+## 🌐 Next: Mainnet Deployment
 
 Once local testing is complete:
 
-1. Get testnet ETH/MATIC from faucet
+1. Get ETH/MATIC from faucet
 2. Update `.env` with your private key
-3. Deploy to Mumbai or Sepolia:
+3. Deploy to Polygon Mainnet:
    ```bash
-   npx hardhat run scripts/deploy.js --network mumbai
+
    ```
+
+# ...existing code...
+
+```
 4. Verify contracts on block explorer
-5. Update frontend config with testnet addresses
+5. Update frontend config with mainnet addresses
 
 ## ⚠️ Important Notes
 
 - Never commit `.env` file with real private keys
-- Test thoroughly on local/testnet before mainnet
+- Test thoroughly on local/mainnet before mainnet
 - Local blockchain resets on restart (all data lost)
 - Use test accounts only for development
+```

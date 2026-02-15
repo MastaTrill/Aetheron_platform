@@ -21,7 +21,7 @@ const AETHERON_ABI = [
   'function approve(address,uint256) returns (bool)',
   'function tradingEnabled() view returns (bool)',
   'function buyTaxRate() view returns (uint256)',
-  'function sellTaxRate() view returns (uint256)'
+  'function sellTaxRate() view returns (uint256)',
 ];
 
 const STAKING_ABI = [
@@ -30,7 +30,7 @@ const STAKING_ABI = [
   'function stake(uint256,uint256)',
   'function unstake(uint256)',
   'function claimRewards(uint256)',
-  'function totalStaked() view returns (uint256)'
+  'function totalStaked() view returns (uint256)',
 ];
 
 function testContractSetup() {
@@ -57,7 +57,10 @@ function testContractSetup() {
 
     // Test Staking functions
     const poolCountCall = stakingInterface.encodeFunctionData('poolCount');
-    const stakeCall = stakingInterface.encodeFunctionData('stake', [0, ethers.parseEther('100')]);
+    const stakeCall = stakingInterface.encodeFunctionData('stake', [
+      0,
+      ethers.parseEther('100'),
+    ]);
 
     console.log('✅ Staking function encoding successful');
 
@@ -82,7 +85,9 @@ function testContractSetup() {
     const testAmount = ethers.parseEther('1000');
     const formattedAmount = ethers.formatEther(testAmount);
 
-    console.log(`✅ Ether parsing/formatting: ${testAmount} wei = ${formattedAmount} ETH`);
+    console.log(
+      `✅ Ether parsing/formatting: ${testAmount} wei = ${formattedAmount} ETH`,
+    );
 
     // Summary
     console.log('\n🎉 Contract Setup Verification Completed Successfully!');
@@ -95,10 +100,9 @@ function testContractSetup() {
 
     console.log('\n🚀 Status: Ready for network testing!');
     console.log('\n📝 Next Steps:');
-    console.log('1. Test with live Mumbai testnet');
+    // ...existing code...
     console.log('2. Test MetaMask integration');
     console.log('3. Execute staking transactions');
-
   } catch (error) {
     console.error('❌ Contract Setup Verification Failed:', error.message);
     process.exit(1);

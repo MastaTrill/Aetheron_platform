@@ -1,76 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add AETH Liquidity - QuickSwap</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <link rel="stylesheet" href="add-liquidity.css">
-    <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
-</head>
-<body>
-    <div class="container">
-        <h1>🌊 Add AETH Liquidity</h1>
-        <p>Add liquidity to QuickSwap to enable trading</p>
-        
-        <div class="status" id="status">Ready to connect wallet...</div>
-        
-        <div id="walletInfo" class="hidden">
-            <h3>Your Balances:</h3>
-            <div class="balance">
-                <span>AETH:</span>
-                <strong id="aethBalance">0</strong>
-            </div>
-            <div class="balance">
-                <span>USDC:</span>
-                <strong id="usdcBalance">0</strong>
-            </div>
-            <div class="balance">
-                <span>MATIC:</span>
-                <strong id="maticBalance">0</strong>
-            </div>
-        </div>
-        
-        <div class="input-group">
-            <label>Amount of AETH to Add:</label>
-            <input type="number" id="aethAmount" placeholder="1000000" value="1000000">
-            <small>Recommended: 100,000 - 10,000,000 AETH</small>
-        </div>
-        
-        <div class="input-group">
-            <label>Amount of USDC to Pair:</label>
-            <input type="number" id="usdcAmount" placeholder="1000" value="1000">
-            <small>This sets the initial price: USDC ÷ AETH = price per token</small>
-        </div>
-        
-        <div class="info">
-            <strong>💡 Initial Price:</strong>
-            <div id="priceCalc">Enter amounts to calculate price</div>
-        </div>
-        
-        <button class="btn btn-primary" id="connectBtn">
-            Connect MetaMask
-        </button>
-        
-        <button class="btn btn-primary hidden" id="addLiquidityBtn" disabled>
-            Add Liquidity to QuickSwap
-        </button>
-        
-        <div id="result"></div>
-        
-        <div class="warning">
-            <strong>⚠️ Important:</strong>
-            <ul class="warning-list">
-                <li>Ensure you're on Polygon Network</li>
-                <li>You need MATIC for gas fees (~0.05 MATIC)</li>
-                <li>This will approve and add liquidity in one flow</li>
-                <li>You'll receive LP tokens representing your position</li>
-            </ul>
-        </div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Add AETH Liquidity - QuickSwap</title><script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script><link rel="stylesheet" href="add-liquidity.css"><link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0"></head><body>
+  <main class="container">
+    <header>
+      <h1>🌊 Add AETH Liquidity</h1>
+      <p>Add liquidity to QuickSwap to enable trading</p>
+    </header>
+
+    <section class="status-section">
+      <div class="status" id="status">Ready to connect wallet...</div>
+    </section>
+
+    <section id="walletInfo" class="wallet-info hidden">
+      <h3>Your Balances:</h3>
+      <div class="balance-grid">
+        <div class="balance"><span>AETH:</span> <strong id="aethBalance">0</strong></div>
+        <div class="balance"><span>USDC:</span> <strong id="usdcBalance">0</strong></div>
+        <div class="balance"><span>MATIC:</span> <strong id="maticBalance">0</strong></div>
+      </div>
+    </section>
+
+    <form class="liquidity-form">
+      <fieldset class="input-group">
+        <label for="aethAmount">Amount of AETH to Add:</label>
+        <input type="number" id="aethAmount" placeholder="1000000" value="1000000">
+        <small>Recommended: 100,000 - 10,000,000 AETH</small>
+      </fieldset>
+
+      <fieldset class="input-group">
+        <label for="usdcAmount">Amount of USDC to Pair:</label>
+        <input type="number" id="usdcAmount" placeholder="1000" value="1000">
+        <small>This sets the initial price: USDC ÷ AETH = price per token</small>
+      </fieldset>
+
+      <div class="info">
+        <strong>💡 Initial Price:</strong>
+        <div id="priceCalc">Enter amounts to calculate price</div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-primary" id="connectBtn">Connect MetaMask</button>
+        <button type="button" class="btn btn-primary hidden" id="addLiquidityBtn" disabled="disabled">Add Liquidity to QuickSwap</button>
+      </div>
+    </form>
+
+    <section class="result-section">
+      <div id="result"></div>
+    </section>
+
+    <aside class="warning">
+      <strong>⚠️ Important:</strong>
+      <ul class="warning-list">
+        <li>Ensure you're on Polygon Network</li>
+        <li>You need MATIC for gas fees (~0.05 MATIC)</li>
+        <li>This will approve and add liquidity in one flow</li>
+        <li>You'll receive LP tokens representing your position</li>
+      </ul>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Aetheron Platform. All rights reserved.</p>
     </div>
-
-    <script src="add-liquidity.js"></script>
-    <script src="global-announcements.js"></script>
-</body>
-</html>
-
+  </footer><script src="add-liquidity.js"></script><script src="global-announcements.js"></script></body></html>

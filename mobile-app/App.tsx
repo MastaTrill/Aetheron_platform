@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
   }, []);
   return (
     <Web3Provider>
-      <NavigationContainer>
+      <NavigationContainer testID="app-root">
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <Tab.Navigator
           screenOptions={{

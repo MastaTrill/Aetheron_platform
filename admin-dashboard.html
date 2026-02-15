@@ -1,99 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetheron Admin Dashboard</title>
-    <link rel="stylesheet" href="./admin-dashboard.css">
-    <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aetheron Admin Dashboard</title>
+  <link rel="stylesheet" href="./admin-dashboard.css">
+  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>">
 </head>
-<body>
-    <canvas id="space-bg" class="canvas-bg"></canvas>
-    <header class="header-gradient">
-        <div class="header-content">
-            <h1 class="orbitron">🌌 Aetheron Control Center</h1>
-            <p class="share-tech">Decentralized Space Exploration Platform</p>
-        </div>
-    </header>
 
-    <nav id="sidebar" class="sidebar-custom">
-        <div class="sidebar-header">
-            <h3 class="sidebar-title">🚀 Aetheron</h3>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="#dashboard" class="sidebar-link nav-link active">📊 Dashboard</a></li>
-            <li><a href="#users" class="sidebar-link nav-link">👥 Users</a></li>
-            <li><a href="#missions" class="sidebar-link nav-link">🎯 Missions</a></li>
-            <li><a href="#blockchain" class="sidebar-link nav-link">⛓️ Blockchain</a></li>
-            <li><a href="#analytics" class="sidebar-link nav-link">📈 Analytics</a></li>
+<body><canvas id="space-bg" class="canvas-bg"></canvas>
+  <header class="header-gradient">
+    <div class="header-content">
+      <h1 class="orbitron">🌌 Aetheron Control Center</h1>
+      <p class="share-tech">Decentralized Space Exploration Platform</p>
+    </div>
+  </header>
+  <nav id="sidebar" class="sidebar-custom">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">🚀 Aetheron</h3>
+    </div>
+    <ul class="nav-menu">
+      <li><a href="#dashboard" class="sidebar-link nav-link active">📊 Dashboard</a></li>
+      <li><a href="#users" class="sidebar-link nav-link">👥 Users</a></li>
+      <li><a href="#missions" class="sidebar-link nav-link">🎯 Missions</a></li>
+      <li><a href="#blockchain" class="sidebar-link nav-link">⛓️ Blockchain</a></li>
+      <li><a href="#analytics" class="sidebar-link nav-link">📈 Analytics</a></li>
+    </ul>
+  </nav>
+  <main id="main-content" class="main-content main-bg">
+    <section id="dashboard" class="content-section active">
+      <header>
+        <h2>🌌 Welcome to Aetheron Platform</h2>
+      </header>
+      <div class="stats-grid">
+        <article class="stat-card">
+          <h3>Total Users</h3>
+          <p class="stat-number">1,234</p>
+        </article>
+        <article class="stat-card">
+          <h3>Active Missions</h3>
+          <p class="stat-number">56</p>
+        </article>
+        <article class="stat-card">
+          <h3>AETH Staked</h3>
+          <p class="stat-number">892,345</p>
+        </article>
+        <article class="stat-card">
+          <h3>Network Health</h3>
+          <p class="stat-number">99.9%</p>
+        </article>
+      </div>
+      <article class="welcome-message">
+        <h3>🚀 Platform Status: LIVE</h3>
+        <p>Welcome to the Aetheron Admin Dashboard. This is a revolutionary blockchain and space exploration platform.
+        </p>
+        <ul>
+          <li>✅ Admin Dashboard - Fully Functional</li>
+          <li>✅ Mobile App - React Native Ready</li>
+          <li>✅ Backend API - Express.js Server</li>
+          <li>✅ Smart Contracts - Solidity Ready</li>
+          <li>✅ Professional Structure - Production Ready</li>
         </ul>
-    </nav>
+      </article>
+    </section>
+    <div id="login-modal" class="login-modal">
+      <form id="login-form" class="login-form">
+        <h2 class="login-title">Admin Login</h2>
+        <button type="submit" class="login-btn">Login</button>
+        <div id="login-error" class="login-error"></div>
+      </form>
+    </div>
+  </main>
 
-    <main id="main-content" class="main-content main-bg">
-        <nav id="widget-controls" class="widget-controls"></nav>
-        <ul id="feed-list" class="feed-list"></ul>
-        <input id="user-search" placeholder="Search address..." class="user-search">
-        <table id="user-table" class="styled-table"></table>
-        <table id="logs-table" class="styled-table"></table>
-        <div id="plugin-list" class="plugin-list"></div>
-        <form id="plugin-install-form" class="plugin-install-form">
-            <input id="plugin-url" placeholder="Plugin URL or ID" class="plugin-url">
-        </form>
-        <div id="ai-chat" class="ai-chat">
-            <div class="ai-chat-header">
-                <span class="ai-chat-title">Aetheron AI Assistant</span>
-                <button onclick="document.getElementById('ai-chat').style.display='none'" class="ai-chat-close">&times;</button>
-            </div>
-            <div id="ai-holo-container" class="ai-holo-container">
-                <canvas id="ai-holo" width="300" height="220" class="ai-holo"></canvas>
-            </div>
-            <div id="ai-chat-messages" class="ai-chat-messages"></div>
-            <form id="ai-chat-form" class="ai-chat-form">
-                <input id="ai-chat-input" autocomplete="off" placeholder="Ask anything..." class="ai-chat-input">
-            </form>
-        </div>
-        <section id="dashboard" class="content-section active">
-            <h2>🌌 Welcome to Aetheron Platform</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Users</h3>
-                    <p class="stat-number">1,234</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Missions</h3>
-                    <p class="stat-number">56</p>
-                </div>
-                <div class="stat-card">
-                    <h3>AETH Staked</h3>
-                    <p class="stat-number">892,345</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Network Health</h3>
-                    <p class="stat-number">99.9%</p>
-                </div>
-            </div>
-            
-            <div class="welcome-message">
-                <h3>🚀 Platform Status: LIVE</h3>
-                <p>Welcome to the Aetheron Admin Dashboard. This is a revolutionary blockchain and space exploration platform.</p>
-                <ul>
-                    <li>✅ Admin Dashboard - Fully Functional</li>
-                    <li>✅ Mobile App - React Native Ready</li>
-                    <li>✅ Backend API - Express.js Server</li>
-                    <li>✅ Smart Contracts - Solidity Ready</li>
-                    <li>✅ Professional Structure - Production Ready</li>
-                </ul>
-            </div>
-        </section>
-            <div id="login-modal" class="login-modal">
-                <form id="login-form" class="login-form">
-                    <h2 class="login-title">Admin Login</h2>
-                    <button type="submit" class="login-btn">Login</button>
-                    <div id="login-error" class="login-error"></div>
-                </form>
-            </div>
-    </main>
-    <script src="global-announcements.js"></script>
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Aetheron Platform. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="global-announcements.js"></script>
 </body>
-</html>
 
+</html>

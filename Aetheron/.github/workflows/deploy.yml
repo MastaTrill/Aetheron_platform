@@ -191,5 +191,4 @@ jobs:
           name: playwright-videos
           path: aetheron-platform/test-results/videos
           if-no-files-found: ignore
-    outputs:
-      url: ${{ steps.deploy.outputs.url }}
+    # No outputs defined because 'deploy' step does not exist in this job

@@ -19,7 +19,7 @@ PRIVATE_KEY=your_private_key_from_metamask
 
 # RPC URLs
 POLYGON_RPC_URL=https://polygon-rpc.com
-MUMBAI_RPC_URL=https://rpc-mumbai.maticvigil.com
+ # ...existing code...
 
 # Optional: Block Explorer API Keys for verification
 POLYGONSCAN_API_KEY=your_api_key_here
@@ -56,11 +56,11 @@ npm run node
 npm run deploy:local
 ```
 
-### Step 4: Deploy to Mumbai Testnet (Recommended First)
+### Step 4: Deploy to Polygon Mainnet (Recommended First)
 
 ```bash
-# Get testnet POL from: https://faucet.polygon.technology/
-npm run deploy:mumbai
+# Get POL from: https://faucet.polygon.technology/
+ # ...existing code...
 ```
 
 ### Step 5: Deploy to Polygon Mainnet
@@ -152,7 +152,7 @@ Verify token supply:
 
 - **NEVER** commit your `.env` file to git
 - **BACKUP** your private key securely
-- **TEST** on Mumbai testnet first
+- **TEST** on Polygon mainnet first
 - **VERIFY** all contracts on PolygonScan
 - **AUDIT** contracts before mainnet deployment (recommended)
 

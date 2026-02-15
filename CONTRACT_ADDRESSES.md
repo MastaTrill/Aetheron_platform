@@ -5,6 +5,7 @@
 ### Primary Contracts
 
 #### AETH Token
+
 - **Address:** `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - **Type:** ERC-20 Token
 - **Symbol:** AETH
@@ -13,6 +14,7 @@
 - **View on PolygonScan:** [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 
 #### Staking Contract
+
 - **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - **Type:** Staking Contract
 - **Manages:** AETH token staking rewards
@@ -24,6 +26,7 @@
 ### Additional Contracts
 
 #### Contract 1 (Test/Previous Token)
+
 - **Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E`
 - **Type:** ERC-20 Token Contract
 - **Deployed:** 142 days ago (Jul 2025)
@@ -34,6 +37,7 @@
 - **View on PolygonScan:** [Link](https://polygonscan.com/address/0x072091F554df794852E0A9d1c809F2B2bBda171E)
 
 #### Contract 2 (Oldest Test Token)
+
 - **Address:** `0xb687083F85c59f3dE192ab001d2D52c8D87181d5`
 - **Type:** ERC-20 Token Contract
 - **Deployed:** 162 days ago (Jun 2025)
@@ -43,6 +47,7 @@
 - **View on PolygonScan:** [Link](https://polygonscan.com/address/0xb687083F85c59f3dE192ab001d2D52c8D87181d5)
 
 #### Contract 3 (Another Test Token)
+
 - **Address:** `0x25ed26BD8A6Cd2551AA3CCA8D4022A7efc276D54`
 - **Type:** ERC-20 Token Contract
 - **Deployed:** 158 days ago (Jun 2025)
@@ -57,11 +62,14 @@
 ## Wallet Addresses
 
 ### Team Wallet / Owner Wallet
-- **Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+
+- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Coinbase wallet)
+- **Role:** Contract owner, deployer, marketing, and staking pool
 - **Role:** Contract owner and deployer
 - **Allocation:** 200,000,000 AETH (20%)
 
 ### Keeper's Lantern Wallet
+
 - **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
 - **Type:** Personal wallet
 
@@ -70,6 +78,7 @@
 ## Cross-Chain Addresses
 
 ### Solana
+
 - **Address:** `5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki`
 - **Type:** Solana Account/Mint
 - **View on Solscan:** [Link](https://solscan.io/account/5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki)
@@ -79,6 +88,7 @@
 ## Network Information
 
 ### Polygon Mainnet
+
 - **Chain ID:** 137
 - **RPC URL:** https://polygon-rpc.com
 - **Currency:** POL (Polygon)
@@ -98,6 +108,7 @@
 ## Contract Interactions
 
 All contracts can be interacted with via:
+
 - MetaMask + Dashboard UI
 - Hardhat scripts in `smart-contract/scripts/`
 - Direct blockchain explorer (PolygonScan)

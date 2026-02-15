@@ -2,9 +2,9 @@
 // Script to add liquidity to QuickSwap (Polygon) for Aetheron (AETH) and USDC
 // Usage: node add-liquidity.js
 
-import { ethers } from "ethers";
-import dotenv from "dotenv";
-import fs from "fs";
+const ethers = require("ethers");
+const dotenv = require("dotenv");
+const fs = require("fs");
 dotenv.config();
 
 const ROUTER_ADDRESS = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"; // QuickSwap Router

@@ -1,513 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>Aetheron Platform - Enhanced Dashboard</title>
-  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+</script>
+<script src="stripe-launchpad-frontend.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="stripe-frontend.js"></script>
+<script>
+  // Token Security Scanner form handler
+  document.addEventListener('DOMContentLoaded', function () {
+    const scanForm = document.getElementById('token-scan-form');
+    if (scanForm) {
+      scanForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const address = document.getElementById('scan-token-address').value.trim();
+        const type = document.getElementById('scan-type').value;
+        const resultDiv = document.getElementById('scan-result');
+        resultDiv.textContent = 'Scanning...';
+        try {
+          const res = await fetch('/api/scan-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ address, full: type === 'full' })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            if (type === 'basic') {
+              resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Summary:</b> ${data.summary}`;
+            } else {
+              resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Issues:</b><ul>` + data.issues.map(i => `<li>${i}</li>`).join('') + `</ul><b>Summary:</b> ${data.summary}`;
+            }
+          } else {
+            resultDiv.textContent = data.error || 'Scan failed.';
+          }
+        } catch (err) {
+          resultDiv.textContent = 'Error connecting to scanner API.';
+        }
+      });
     }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0a0a0a;
-      color: #ffffff;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+  });
 
-    canvas#space-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
+  // --- LAUNCHPAD UI POLISH ---
+</script>
 
-    .navbar {
-      background: rgba(255, 255, 255, 0.05);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      padding: 1rem 2rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+<!-- Token Launchpad Card -->
+<div class="card">
+  <h3>🚀 Token Launchpad</h3>
+  <form id="token-launch-form">
+    <input type="text" id="launch-token-name" placeholder="Token Name" required
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="text" id="launch-token-symbol" placeholder="Token Symbol" maxlength="8" required
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="number" id="launch-token-supply" placeholder="Total Supply (e.g. 1000000)" min="1" required
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="text" id="launch-team-wallet" placeholder="Team Wallet Address (for allocation)"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="number" id="launch-allocation" placeholder="Team Allocation % (e.g. 1)" min="0" max="100"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <input type="url" id="launch-website" placeholder="Project Website (optional)"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <textarea id="launch-description" placeholder="Project Description (optional)"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;"></textarea>
+    <button type="submit" class="btn" style="width:100%">Launch Token</button>
+  </form>
+  <div id="launch-result" style="margin-top:1rem;"></div>
+</div>
+</script>
 
-    .navbar .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .navbar .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #00d4ff;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .nav-link {
-      color: #ffffff;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      background: rgba(0, 212, 255, 0.2);
-      color: #00d4ff;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
-    }
-
-    .card h3 {
-      color: #00d4ff;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      color: #cccccc;
-      font-size: 0.9rem;
-    }
-
-    .progress-container {
-      margin: 1rem 0;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #00d4ff, #0099cc);
-      border-radius: 4px;
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-
-    .trading-rewards ul {
-      list-style: none;
-    }
-
-    .trading-rewards li {
-      padding: 0.5rem;
-      margin: 0.25rem 0;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .trading-rewards .unlocked {
-      background: rgba(0, 255, 0, 0.1);
-      border-left: 4px solid #00ff00;
-    }
-
-    .trading-rewards .locked {
-      background: rgba(255, 255, 255, 0.05);
-      border-left: 4px solid #666;
-    }
-
-    .content-section {
-      display: none;
-    }
-
-    .content-section.active {
-      display: block;
-    }
-
-    .btn {
-      background: linear-gradient(135deg, #00d4ff, #0099cc);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
-    }
-
-    .btn.secondary {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .share-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .achievements-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .achievement {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .achievement.unlocked {
-      border-color: #00ff00;
-      background: rgba(0, 255, 0, 0.1);
-    }
-
-    .achievement-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .achievement h4 {
-      color: #00d4ff;
-      margin-bottom: 0.25rem;
-    }
-
-    .achievement p {
-      color: #cccccc;
-      font-size: 0.9rem;
-    }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 212, 255, 0.9);
-      color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      z-index: 1000;
-      animation: slideIn 0.3s ease;
-    }
-
-    .notification.achievement {
-      background: rgba(0, 255, 0, 0.9);
-    }
-
-    .notification.error {
-      background: rgba(255, 0, 0, 0.9);
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    .trade-notification {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 255, 0, 0.9);
-      color: white;
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      z-index: 1000;
-      animation: bounceIn 0.5s ease;
-    }
-
-    @keyframes bounceIn {
-      0% {
-        transform: translate(-50%, -50%) scale(0.3);
-        opacity: 0;
-      }
-
-      50% {
-        transform: translate(-50%, -50%) scale(1.05);
-      }
-
-      70% {
-        transform: translate(-50%, -50%) scale(0.9);
-      }
-
-      100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-    }
-
-    .referral-section {
-      text-align: center;
-      margin: 2rem 0;
-    }
-
-    .referral-code {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 1rem;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 1.1rem;
-      margin: 1rem 0;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .community-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      .navbar .container {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .container {
-        padding: 1rem;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <canvas id="space-bg"></canvas>
-
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="container">
-      <div class="logo">🌌 Aetheron Platform</div>
-      <div class="nav-links">
-        <a href="javascript:void(0)" class="nav-link active" data-section="dashboard">Dashboard</a>
-        <a href="javascript:void(0)" class="nav-link" data-section="trading">Trading</a>
-        <a href="javascript:void(0)" class="nav-link" data-section="community">Community</a>
-        <a href="javascript:void(0)" class="nav-link" data-section="achievements">Achievements</a>
-        <a href="javascript:void(0)" class="nav-link" data-section="referrals">Referrals</a>
+<!-- What's New Section -->
+<div class="card"
+  style="background:linear-gradient(90deg,#00D4FF22,#8A2BE222);border:2px solid #00D4FF;margin-bottom:2rem;box-shadow:0 4px 24px #00D4FF22;">
+  <h3 style="margin-bottom:1rem;font-size:1.5em;display:flex;align-items:center;gap:.5em;">
+    <span style="font-size:1.3em;">✨</span> What's New in Aetheron
+  </h3>
+  <div style="display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;justify-content:space-between;">
+    <div style="flex:1 1 220px;min-width:220px;max-width:350px;display:flex;align-items:flex-start;gap:1em;">
+      <span style="font-size:2em;">🔎</span>
+      <div>
+        <b>Token Security Scanner</b><br>
+        <span style="font-size:1.05em;">Instantly scan any token for risks and vulnerabilities before you invest or
+          trade.</span>
       </div>
     </div>
-  </nav>
-
-  <div class="container">
-    <!-- Dashboard Section -->
-    <div id="dashboard" class="content-section active">
-      <div class="dashboard-grid">
-        <!-- Live Stats -->
-        <div class="card">
-          <h3>📊 Live Price</h3>
-          <div class="stat-value" id="live-price">$0.000123</div>
-          <div class="stat-label">AETH/USD</div>
-        </div>
-
-        <div class="card">
-          <h3>💰 24h Volume</h3>
-          <div class="stat-value" id="live-volume">$0</div>
-          <div class="stat-label">Trading Volume</div>
-        </div>
-
-        <div class="card">
-          <h3>👥 Total Holders</h3>
-          <div class="stat-value" id="live-holders">0</div>
-          <div class="stat-label">Token Holders</div>
-        </div>
-
-        <div class="card">
-          <h3>🌐 Community</h3>
-          <div class="stat-value" id="twitter-followers-count">0</div>
-          <div class="stat-label">Twitter Followers</div>
-          <br>
-          <div class="stat-value" id="telegram-members-count">0</div>
-          <div class="stat-label">Telegram Members</div>
-        </div>
-      </div>
-
-      <!-- Trading Volume Incentives -->
-      <div class="card">
-        <h3>🚀 Trading Volume Rewards</h3>
-        <p>Trade more to unlock bonus APY rewards!</p>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="volume-progress"></div>
-          </div>
-          <div id="volume-text">$0 / $1000</div>
-        </div>
-        <ul id="trading-rewards" class="trading-rewards">
-          <!-- Rewards will be populated by JavaScript -->
-        </ul>
-        <button type="button" class="btn" id="simulate-trade">Simulate Trade</button>
-      </div>
-    </div>
-
-    <!-- Trading Section -->
-    <div id="trading" class="content-section">
-      <div class="card">
-        <h3>📈 Trading Tools</h3>
-        <p>Access QuickSwap and other DEXs to trade AETH</p>
-        <a href="https://quickswap.exchange/#/swap?outputCurrency=0x44F9c15816bCe5d6691448F60DAD50355ABa40b5"
-          class="btn" target="_blank" rel="noopener">Trade on QuickSwap</a>
-        <a href="https://dexscreener.com/polygon/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5" class="btn secondary"
-          target="_blank" rel="noopener">View on DexScreener</a>
-      </div>
-
-      <div class="card">
-        <h3>💡 Trading Tips</h3>
-        <ul>
-          <li>Trade regularly to build volume and unlock rewards</li>
-          <li>Use small amounts to test the waters</li>
-          <li>Share your trades on social media for extra visibility</li>
-          <li>Encourage friends to trade and earn referral bonuses</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Community Section -->
-    <div id="community" class="content-section">
-      <div class="card">
-        <h3>🌐 Join Our Community</h3>
-        <p>Connect with fellow Aetheron enthusiasts!</p>
-        <div class="share-buttons">
-          <a href="https://twitter.com/search?q=AetheronToken" class="btn share-button" target="_blank"
-            rel="noopener">🐦 Follow on
-            Twitter</a>
-          <a href="https://t.me/AetheronOfficial" class="btn share-button" target="_blank" rel="noopener">📱 Join
-            Telegram</a>
-          <a href="https://reddit.com/r/AetheronToken" class="btn share-button" target="_blank" rel="noopener">🟠 Join
-            Reddit</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>📊 Community Stats</h3>
-        <div class="community-stats-grid">
-          <div>
-            <div class="stat-value" id="community-twitter-followers-count">0</div>
-            <div class="stat-label">Twitter</div>
-          </div>
-          <div>
-            <div class="stat-value" id="community-telegram-members-count">0</div>
-            <div class="stat-label">Telegram</div>
-          </div>
-          <div>
-            <div class="stat-value" id="discord-members-count">0</div>
-            <div class="stat-label">Discord</div>
-          </div>
-          <div>
-            <div class="stat-value" id="total-holders-count">0</div>
-            <div class="stat-label">Holders</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Achievements Section -->
-    <div id="achievements" class="content-section">
-      <div class="card">
-        <h3>🏆 Achievements</h3>
-        <p>Unlock achievements by engaging with the platform!</p>
-        <div id="achievements-list" class="achievements-list">
-          <!-- Achievements will be populated by JavaScript -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Referrals Section -->
-    <div id="referrals" class="content-section">
-      <div class="card">
-        <h3>🤝 Referral Program</h3>
-        <p>Earn rewards by bringing new users to Aetheron!</p>
-
-        <div class="referral-section">
-          <p>Your unique referral code:</p>
-          <div class="referral-code" id="referral-code">AETHXXXXXXX</div>
-          <button type="button" class="btn" id="generate-referral">Generate Referral Link</button>
-        </div>
-
-        <h4>How it works:</h4>
-        <ul>
-          <li>Share your referral link with friends</li>
-          <li>When they trade AETH, you both get bonus rewards</li>
-          <li>Earn up to 10% of their trading volume</li>
-          <li>Track your referrals and earnings here</li>
-        </ul>
+    <div style="flex:1 1 220px;min-width:220px;max-width:350px;display:flex;align-items:flex-start;gap:1em;">
+      <span style="font-size:2em;">🚀</span>
+      <div>
+        <b>Token Launchpad</b><br>
+        <span style="font-size:1.05em;">Launch your own token on Polygon with onboarding, allocation, and payment
+          integration—no coding required!</span>
       </div>
     </div>
   </div>
-
-  <script src="dashboard.js"></script>
-  <script src="marketing-launch.js"></script>
-  <script src="trading-competition.js"></script>
-  <script src="referral-system.js"></script>
-    <script src="global-announcements.js"></script>
-</body>
-
-</html>
+  <div style="margin-top:1.5rem;text-align:center;">
+    <a href="#token-launch-form" class="btn btn-primary" style="font-size:1.1em;padding:.7em 2em;margin-right:1em;">Try
+      Launchpad</a>
+    <a href="#token-scan-form" class="btn btn-outline" style="font-size:1.1em;padding:.7em 2em;">Try Scanner</a>
+  </div>
+</div>
+<div class="card">
+  <h3>🔎 Token Security Scanner</h3>
+  <form id="token-scan-form">
+    <input type="text" id="scan-token-address" placeholder="Paste token address"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+    <select id="scan-type"
+      style="width:100%;padding:.5rem;margin-bottom:.5rem;border-radius:6px;border:1px solid #222;">
+      <option value="basic">Basic Scan (Free)</option>
+      <option value="full">Full Report ($9+)</option>
+    </select>
+    <button type="submit" class="btn" style="width:100%">Scan Token</button>
+    try {
+    if (type === 'full') {
+    // Require payment before full scan
+    resultDiv.textContent = 'Redirecting to payment...';
+    await window.payForFullScan(address, 900); // $9.00 in cents
+    return;
+    }
+    // Basic scan (free)
+    const res = await fetch('/api/scan-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address, full: false })
+    });
+    const data = await res.json();
+    if (res.ok) {
+    resultDiv.innerHTML = `<b>Risk Score:</b> ${data.riskScore}/100<br><b>Summary:</b> ${data.summary}`;
+    } else {
+    resultDiv.textContent = data.error || 'Scan failed.';
+    }
+    } catch (err) {
+    resultDiv.textContent = 'Error connecting to scanner API.';
+    }
