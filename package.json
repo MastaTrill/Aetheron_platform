@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "aetheron-platform",
   "version": "2.0.0",
@@ -24,16 +25,16 @@
     "ethereum",
     "polygon"
   ],
-  "author": "Mastatrill",
+  "author": "MastaTrill",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mastatrill/aetheron-platform.git"
+    "url": "https://github.com/MastaTrill/Aetheron_platform.git"
   },
   "bugs": {
-    "url": "https://github.com/Mastatrill/aetheron-platform/issues"
+    "url": "https://github.com/MastaTrill/Aetheron_platform/issues"
   },
-  "homepage": "https://mastatrill.github.io/aetheron-platform",
+  "homepage": "https://mastatrill.github.io/Aetheron_platform",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
     "dotenv": "^16.3.1",
@@ -58,3 +59,4 @@
     "prettier": "^3.1.0"
   }
 }
+=======
