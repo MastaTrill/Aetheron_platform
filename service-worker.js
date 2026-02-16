@@ -19,34 +19,43 @@ const STATIC_ASSETS = [
   './manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js'
+  'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
       .then(() => self.clients.matchAll({ type: 'window' }))
       .then((clients) => {
-        clients.forEach((client) => client.postMessage({ type: 'CACHE_READY' }));
-      })
+        clients.forEach((client) =>
+          client.postMessage({ type: 'CACHE_READY' }),
+        );
+      }),
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => Promise.all(
-      cacheNames.map((cacheName) => {
-        if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-          return caches.delete(cacheName);
-        }
-        return null;
-      })
-    )).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+              return caches.delete(cacheName);
+            }
+            return null;
+          }),
+        ),
+      )
+      .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: 'window' }))
       .then((clients) => {
         clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED' }));
-      })
+      }),
   );
 });
 
@@ -60,37 +69,58 @@ self.addEventListener('fetch', (event) => {
   }
 
   const requestUrl = new URL(event.request.url);
-  const isHtmlRequest = event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html');
+  const isHtmlRequest =
+    event.request.mode === 'navigate' ||
+    event.request.headers.get('accept')?.includes('text/html');
   const isSameOrigin = requestUrl.origin === self.location.origin;
 
   // Handle external requests differently
   if (!isSameOrigin && !requestUrl.hostname.includes('cdn')) {
     // Cache external API calls for 5 minutes
-    if (requestUrl.hostname.includes('polygon-rpc.com') ||
-        requestUrl.hostname.includes('polygonscan.com') ||
-        requestUrl.hostname.includes('quickswap.exchange')) {
+    if (
+      requestUrl.hostname.includes('polygon-rpc.com') ||
+      requestUrl.hostname.includes('polygonscan.com') ||
+      requestUrl.hostname.includes('quickswap.exchange')
+    ) {
       event.respondWith(
-        caches.open('api-cache').then(cache => {
-          return cache.match(event.request).then(cachedResponse => {
+        caches.open('api-cache').then((cache) => {
+          return cache.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
               // Check if cache is still fresh (5 minutes)
-              const cacheTime = new Date(cachedResponse.headers.get('sw-cache-time'));
+              const cacheTime = new Date(
+                cachedResponse.headers.get('sw-cache-time'),
+              );
               const now = new Date();
               if (now - cacheTime < 5 * 60 * 1000) {
                 return cachedResponse;
               }
             }
 
-            return fetch(event.request).then(response => {
+            return fetch(event.request).then((response) => {
               if (response.status === 200) {
-                const responseClone = response.clone();
-                responseClone.headers.set('sw-cache-time', new Date().toISOString());
-                cache.put(event.request, responseClone);
+                // Clone response and add custom header for cache freshness
+                try {
+                  const headers = new Headers(response.headers);
+                  headers.set('sw-cache-time', new Date().toISOString());
+                  response
+                    .clone()
+                    .blob()
+                    .then((blob) => {
+                      const cachedResponse = new Response(blob, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: headers,
+                      });
+                      cache.put(event.request, cachedResponse);
+                    });
+                } catch (e) {
+                  console.warn('Failed to clone response for caching', e);
+                }
               }
               return response;
             });
           });
-        })
+        }),
       );
       return;
     }
@@ -104,17 +134,21 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           if (response.status === 200) {
             const responseClone = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, responseClone));
+            caches
+              .open(RUNTIME_CACHE)
+              .then((cache) => cache.put(event.request, responseClone));
           }
           return response;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(event.request)),
     );
     return;
   }
 
   // Handle static assets with cache-first strategy
-  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|woff|woff2|webp)$/i.test(requestUrl.pathname);
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|woff|woff2|webp)$/i.test(
+    requestUrl.pathname,
+  );
 
   if (isStaticAsset) {
     event.respondWith(
@@ -125,12 +159,18 @@ self.addEventListener('fetch', (event) => {
 
         return fetch(event.request).then((response) => {
           if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+            try {
+              const responseClone = response.clone();
+              caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.put(event.request, responseClone));
+            } catch (e) {
+              console.warn('Failed to clone response for caching', e);
+            }
           }
           return response;
         });
-      })
+      }),
     );
     return;
   }
@@ -140,13 +180,15 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
+          caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, networkResponse.clone()));
         }
         return networkResponse;
       });
 
       return cachedResponse || fetchPromise;
-    })
+    }),
   );
 });
 

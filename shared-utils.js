@@ -38,7 +38,9 @@ class AetheronPlatform {
     async connectWallet() {
         try {
             if (typeof window.ethereum === 'undefined') {
-                this.showToast('MetaMask not detected. Please install MetaMask.', 'error');
+                this.showToast('MetaMask not detected. Please install MetaMask and refresh the page.', 'error');
+                // Optionally, show a modal or link to MetaMask download
+                this.showMetaMaskInstallGuide();
                 return;
             }
 
@@ -52,7 +54,29 @@ class AetheronPlatform {
 
         } catch (error) {
             console.error('Wallet connection failed:', error);
-            this.showToast('Failed to connect wallet', 'error');
+            if (error && (error.code === 4001 || error.message?.includes('User rejected'))) {
+                this.showToast('Wallet connection request was rejected.', 'warning');
+            } else if (error && error.message?.includes('MetaMask')) {
+                this.showToast('MetaMask extension not found. Please install MetaMask.', 'error');
+                this.showMetaMaskInstallGuide();
+            } else {
+                this.showToast('Failed to connect wallet. Please try again.', 'error');
+            }
+        }
+        // Show a user-friendly guide if MetaMask is not installed
+        showMetaMaskInstallGuide() {
+            if (document.getElementById('metamask-guide')) return;
+            const guide = document.createElement('div');
+            guide.id = 'metamask-guide';
+            guide.style = 'position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
+            guide.innerHTML = `
+                <div style="background:#fff;padding:2em 2.5em;border-radius:12px;max-width:400px;text-align:center;box-shadow:0 4px 32px rgba(0,0,0,0.18);">
+                    <h2 style='margin-bottom:0.5em;'>MetaMask Required</h2>
+                    <p style='margin-bottom:1.2em;'>To use wallet features, please <a href='https://metamask.io/download/' target='_blank' rel='noopener' style='color:#f6851b;font-weight:600;'>install MetaMask</a> and refresh this page.</p>
+                    <button style='background:#f6851b;color:#fff;border:none;padding:0.7em 1.5em;border-radius:6px;font-size:1em;cursor:pointer;' onclick='document.getElementById("metamask-guide").remove()'>Close</button>
+                </div>
+            `;
+            document.body.appendChild(guide);
         }
     }
 
