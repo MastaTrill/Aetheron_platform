@@ -75,6 +75,12 @@ async function main() {
         console.log('   ℹ️  Already verified\n');
       } else {
         console.log('   ❌ Verification failed:', error.message);
+        console.log('   💡 Manual Verification Steps:');
+        console.log('      1. Go to: https://polygonscan.com/address/' + AETH_TOKEN + '#code');
+        console.log('      2. Click "Verify and Publish"');
+        console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
+        console.log('      4. License: MIT');
+        console.log('      5. Upload Aetheron.sol and constructor args: ' + TEAM_WALLET + ', ' + MARKETING_WALLET + ', ' + STAKING_POOL + '\n');
       }
     }
 
@@ -92,6 +98,12 @@ async function main() {
         console.log('   ℹ️  Already verified\n');
       } else {
         console.log('   ❌ Verification failed:', error.message);
+        console.log('   💡 Manual Verification Steps:');
+        console.log('      1. Go to: https://polygonscan.com/address/' + SECOND_TOKEN + '#code');
+        console.log('      2. Click "Verify and Publish"');
+        console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
+        console.log('      4. License: MIT');
+        console.log('      5. Upload AetxToken.sol and constructor arg: ' + TEAM_WALLET + '\n');
       }
     }
 
@@ -109,6 +121,12 @@ async function main() {
         console.log('   ℹ️  Already verified\n');
       } else {
         console.log('   ❌ Verification failed:', error.message);
+        console.log('   💡 Manual Verification Steps:');
+        console.log('      1. Go to: https://polygonscan.com/address/' + STAKING + '#code');
+        console.log('      2. Click "Verify and Publish"');
+        console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
+        console.log('      4. License: MIT');
+        console.log('      5. Upload AetheronStaking.sol and constructor arg: ' + AETH_TOKEN + '\n');
       }
     }
 
