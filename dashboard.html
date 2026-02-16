@@ -2,7 +2,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+  <script>
+    // Chart initialization with null checks
+    function initPriceChart() {
+      const canvas = document.getElementById('priceChart');
+      if (!canvas) return;
+      // ...existing chart code...
+    }
+    function initVolumeChart() {
+      const canvas = document.getElementById('volumeChart');
+      if (!canvas) return;
+      // ...existing chart code...
+    }
+    function initTVLChart() {
+      const canvas = document.getElementById('tvlChart');
+      if (!canvas) return;
+      // ...existing chart code...
+    }
+    function initStakingChart() {
+      const canvas = document.getElementById('stakingChart');
+      if (!canvas) return;
+      // ...existing chart code...
+    }
+    // Error handling for wallet connection
+    function checkWalletConnection() {
+      try {
+        // ...existing wallet connection code...
+      } catch (err) {
+        console.error('Error checking wallet connection:', err);
+      }
+    }
+    // Null check for parentElement access
+    document.addEventListener('DOMContentLoaded', function () {
+      const el = document.getElementById('someElement');
+      if (el && el.parentElement) {
+        // ...existing code...
+      }
+    });
+  </script>
   <title>Aetheron Platform</title>
   <style>
     /* Universal Reset and Touch Improvements */
@@ -73,11 +111,21 @@
       overflow-x: hidden;
       position: relative;
     }
+
     @keyframes gradientBG {
-      0% { background-position: 0% 50%, 0 0; }
-      50% { background-position: 100% 50%, 0 0; }
-      100% { background-position: 0% 50%, 0 0; }
+      0% {
+        background-position: 0% 50%, 0 0;
+      }
+
+      50% {
+        background-position: 100% 50%, 0 0;
+      }
+
+      100% {
+        background-position: 0% 50%, 0 0;
+      }
     }
+
     #starfield-canvas {
       position: fixed;
       top: 0;
@@ -1257,18 +1305,24 @@
     window.addEventListener('DOMContentLoaded', updateTreasuryChart);
   </script>
   <script>
-    // Animated starfield background
-    (function() {
+    // Animated starfield background with UFOs, satellites, rockets, and spaceships
+    (function () {
       const canvas = document.getElementById('starfield-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       let stars = [];
       const STAR_COUNT = 120;
       const STAR_COLOR = ['#fff', '#b2ebf2', '#e0e0e0', '#f5f5f5'];
+
+      // Space objects
+      const OBJECT_TYPES = ['ufo', 'satellite', 'rocket', 'spaceship'];
+      let spaceObjects = [];
+
       function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       }
+
       function createStars() {
         stars = [];
         for (let i = 0; i < STAR_COUNT; i++) {
@@ -1281,8 +1335,147 @@
           });
         }
       }
-      function animateStars() {
+
+      function randomObjectType() {
+        return OBJECT_TYPES[Math.floor(Math.random() * OBJECT_TYPES.length)];
+      }
+
+      function spawnSpaceObject() {
+        // Randomly choose direction: left-to-right or right-to-left
+        const leftToRight = Math.random() > 0.5;
+        const y = Math.random() * (canvas.height * 0.7) + canvas.height * 0.1;
+        const type = randomObjectType();
+        const speed = Math.random() * 1.5 + 1.2;
+        const size = Math.random() * 24 + 24;
+        spaceObjects.push({
+          type,
+          x: leftToRight ? -size : canvas.width + size,
+          y,
+          size,
+          speed: leftToRight ? speed : -speed,
+          leftToRight,
+          t: 0 // for animation
+        });
+      }
+
+      function drawUFO(obj) {
+        const { x, y, size } = obj;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(size / 60, size / 60);
+        // Body
+        ctx.beginPath();
+        ctx.ellipse(30, 30, 24, 10, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = '#b2ebf2';
+        ctx.shadowColor = '#b2ebf2';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        // Dome
+        ctx.beginPath();
+        ctx.ellipse(30, 25, 12, 7, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.7;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        // Lights
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath();
+          ctx.arc(16 + i * 7, 39, 2, 0, 2 * Math.PI);
+          ctx.fillStyle = ['#ff6b35', '#fff', '#00d4ff', '#fff', '#8a2be2'][i];
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawSatellite(obj) {
+        const { x, y, size } = obj;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(size / 40, size / 40);
+        // Main body
+        ctx.fillStyle = '#e0e0e0';
+        ctx.fillRect(15, 18, 10, 12);
+        // Solar panels
+        ctx.fillStyle = '#00d4ff';
+        ctx.fillRect(5, 15, 8, 18);
+        ctx.fillRect(27, 15, 8, 18);
+        // Antenna
+        ctx.beginPath();
+        ctx.moveTo(20, 18);
+        ctx.lineTo(20, 10);
+        ctx.strokeStyle = '#8a2be2';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawRocket(obj) {
+        const { x, y, size } = obj;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(size / 40, size / 40);
+        // Body
+        ctx.beginPath();
+        ctx.moveTo(20, 5);
+        ctx.lineTo(30, 35);
+        ctx.lineTo(10, 35);
+        ctx.closePath();
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        // Window
+        ctx.beginPath();
+        ctx.arc(20, 18, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#00d4ff';
+        ctx.fill();
+        // Flames
+        ctx.beginPath();
+        ctx.moveTo(20, 35);
+        ctx.lineTo(23, 42);
+        ctx.lineTo(17, 42);
+        ctx.closePath();
+        ctx.fillStyle = '#ff6b35';
+        ctx.globalAlpha = 0.7;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function drawSpaceship(obj) {
+        const { x, y, size } = obj;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(size / 50, size / 50);
+        // Body
+        ctx.beginPath();
+        ctx.moveTo(25, 10);
+        ctx.lineTo(40, 40);
+        ctx.lineTo(10, 40);
+        ctx.closePath();
+        ctx.fillStyle = '#8a2be2';
+        ctx.fill();
+        // Cockpit
+        ctx.beginPath();
+        ctx.arc(25, 25, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.8;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function drawSpaceObject(obj) {
+        switch (obj.type) {
+          case 'ufo': drawUFO(obj); break;
+          case 'satellite': drawSatellite(obj); break;
+          case 'rocket': drawRocket(obj); break;
+          case 'spaceship': drawSpaceship(obj); break;
+        }
+      }
+
+      function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Stars
         for (let star of stars) {
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
@@ -1301,12 +1494,27 @@
             star.color = STAR_COLOR[Math.floor(Math.random() * STAR_COLOR.length)];
           }
         }
-        requestAnimationFrame(animateStars);
+        // Space objects
+        for (let obj of spaceObjects) {
+          drawSpaceObject(obj);
+          obj.x += obj.speed;
+          obj.t += 1;
+        }
+        // Remove objects that have left the screen
+        spaceObjects = spaceObjects.filter(obj => obj.leftToRight ? obj.x < canvas.width + obj.size : obj.x > -obj.size);
+        requestAnimationFrame(animate);
       }
+
+      // Occasionally spawn a new space object
+      setInterval(() => {
+        if (Math.random() < 0.5) return; // 50% chance to skip
+        spawnSpaceObject();
+      }, 3500);
+
       function initStarfield() {
         resizeCanvas();
         createStars();
-        animateStars();
+        animate();
       }
       window.addEventListener('resize', () => {
         resizeCanvas();
