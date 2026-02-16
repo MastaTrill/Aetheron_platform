@@ -1,4 +1,5 @@
 openJdk-25/lib/modules
+.git.bfg-report/
 node_modules
 .env
 .env.local
