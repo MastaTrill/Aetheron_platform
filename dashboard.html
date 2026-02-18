@@ -64,10 +64,7 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background:
-        url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><rect fill="%230a0a0a" width="100%25" height="100%25"/><circle cx="20" cy="30" r="2" fill="%23eee"/><circle cx="40" cy="70" r="2" fill="%23fff"/><circle cx="90" cy="40" r="1" fill="%23eee"/><circle cx="130" cy="80" r="1" fill="%23fff"/><circle cx="160" cy="30" r="2" fill="%23ddd"/><circle cx="80%25" cy="60%25" r="1.5" fill="%23fff"/><circle cx="60%25" cy="80%25" r="1.5" fill="%23b2ebf2"/><circle cx="90%25" cy="20%25" r="1.5" fill="%23fff"/></svg>') repeat,
-        linear-gradient(270deg, #0f2027, #2c5364, #1a2980, #26d0ce, #1e3c72, #2a5298);
-      background-size: 400% 400%, auto;
-      animation: gradientBG 20s ease-in-out infinite;
+        url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><rect fill="%230a0a0a" width="100%25" height="100%25"/><circle cx="20" cy="30" r="2" fill="%23eee"/><circle cx="40" cy="70" r="2" fill="%23fff"/><circle cx="90" cy="40" r="1" fill="%23eee"/><circle cx="130" cy="80" r="1" fill="%23fff"/><circle cx="160" cy="30" r="2" fill="%23ddd"/><circle cx="80%25" cy="60%25" r="1.5" fill="%23fff"/><circle cx="60%25" cy="80%25" r="1.5" fill="%23b2ebf2"/><circle cx="90%25" cy="20%25" r="1.5" fill="%23fff"/></svg>') repeat;
       color: var(--text);
       min-height: 100vh;
       transition: background 0.3s, color 0.3s;
@@ -75,17 +72,34 @@
       position: relative;
     }
 
-    @keyframes gradientBG {
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(270deg, #0f2027, #2c5364, #1a2980, #26d0ce, #1e3c72, #2a5298);
+      background-size: 400% 400%;
+      background-position: 0% 50%;
+      opacity: 0.5;
+      will-change: background-position;
+      animation: gradientBGTransform 20s ease-in-out infinite;
+    }
+
+    @keyframes gradientBGTransform {
       0% {
-        background-position: 0% 50%, 0 0;
+        background-position: 0% 50%;
       }
 
       50% {
-        background-position: 100% 50%, 0 0;
+        background-position: 100% 50%;
       }
 
       100% {
-        background-position: 0% 50%, 0 0;
+        background-position: 0% 50%;
       }
     }
 

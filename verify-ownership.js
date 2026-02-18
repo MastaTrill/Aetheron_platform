@@ -3,7 +3,7 @@
 // verify-ownership.js - Verify ownership and test admin functions
 import { ethers } from 'ethers';
 
-const AETH_CONTRACT = '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5';
+const AETH_CONTRACT = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
 const STAKING_CONTRACT = '0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7';
 const EXPECTED_OWNER = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
 

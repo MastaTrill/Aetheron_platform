@@ -2,7 +2,7 @@
   "timestamp": "2026-01-25T04:28:48.862Z",
   "version": "2.0.0",
   "contracts": {
-    "aetheron": "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5",
+    "aetheron": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
     "staking": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638"
   },
   "networks": ["polygon"],

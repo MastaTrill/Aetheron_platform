@@ -1,7 +1,7 @@
 // enable-trading.js - Enable trading on the AETH token
 import { ethers } from 'ethers';
 
-const AETH_CONTRACT = '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5';
+const AETH_CONTRACT = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
 
 // ⚠️  IMPORTANT: Replace with your actual private key
 const PRIVATE_KEY = process.env.PRIVATE_KEY || '48935deec3b96fc16d5d0a25de885d4ad9b4dfbf38bd78ef018f50dee8818485';

@@ -3,26 +3,50 @@ dotenv.config();
 import { exec } from 'child_process';
 import util from 'util';
 const execPromise = util.promisify(exec);
+import fs from 'fs';
 
 async function main() {
   console.log('\n📝 POLYGONSCAN CONTRACT VERIFICATION');
   console.log('='.repeat(60) + '\n');
 
-  const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
-
   if (!POLYGONSCAN_API_KEY) {
     console.log('⚠️  POLYGONSCAN_API_KEY not found in .env');
     console.log('   Get your API key from: https://polygonscan.com/myapikey');
-    console.log('   Add to .env: POLYGONSCAN_API_KEY=your_key_here\n');
+    console.log(
+      '   Add to .env: POLYGONSCAN_API_KEY=y469f844cb8b345beac474891b236b9a7\n',
+    );
   }
 
+  // Try to read addresses from deployment-info.json
+  let AETH_TOKEN, SECOND_TOKEN, ST;
   const TEAM_WALLET = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
   const MARKETING_WALLET = '0x8D3442424F8F6BEEd97496C7E54e056166f96746';
   const STAKING_POOL = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
 
-  const AETH_TOKEN = '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5';
-  const SECOND_TOKEN = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
-  const STAKING = '0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7';
+  try {
+    if (fs.existsSync('deployment-info.json')) {
+      const deploymentData = JSON.parse(
+        fs.readFileSync('deployment-info.json', 'utf8'),
+      );
+      AETH_TOKEN = deploymentData.contracts.Aetheron.address;
+      SECOND_TOKEN = deploymentData.contracts.AetxToken.address;
+      STAKING = deploymentData.contracts.AetheronStaking.address;
+      console.log('📋 Using addresses from deployment-info.json:');
+    } else {
+      // Fallback to hardcoded addresses
+      AETH_TOKEN = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
+      SECOND_TOKEN = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
+      STAKING = '0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7';
+      console.log('📋 Using fallback addresses (may be outdated):');
+    }
+  } catch (error) {
+    console.log(
+      '⚠️  Could not read deployment-info.json, using fallback addresses',
+    );
+    AETH_TOKEN = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
+    SECOND_TOKEN = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
+    STAKING = '0xA39D2334567f3142312F7Abfc63aa3E8Eabd56e7';
+  }
 
   console.log('📋 Contracts to Verify:\n');
   console.log('1. AETH Token:', AETH_TOKEN);
@@ -33,15 +57,17 @@ async function main() {
     STAKING_POOL,
   );
   console.log('2. Second Token:', SECOND_TOKEN);
-  console.log(
-    '   Constructor Args:',
-    TEAM_WALLET,
-    MARKETING_WALLET,
-    STAKING_POOL,
-  );
+  console.log('   Constructor Args:', TEAM_WALLET);
   console.log('3. Staking Contract:', STAKING);
   console.log('   Constructor Args:', AETH_TOKEN);
   console.log('\n' + '='.repeat(60));
+  console.log(
+    '💡 If verification fails with "bytecode mismatch" or "Expected valid bigint":',
+  );
+  console.log('   The contracts were deployed with different source code.');
+  console.log('   Run: node scripts/redeploy.mjs');
+  console.log('   Then run this verification script again.');
+  console.log('='.repeat(60));
 
   if (!POLYGONSCAN_API_KEY) {
     console.log('\n💡 Manual Verification Steps:\n');
@@ -76,17 +102,29 @@ async function main() {
       } else {
         console.log('   ❌ Verification failed:', error.message);
         console.log('   💡 Manual Verification Steps:');
-        console.log('      1. Go to: https://polygonscan.com/address/' + AETH_TOKEN + '#code');
+        console.log(
+          '      1. Go to: https://polygonscan.com/address/' +
+            AETH_TOKEN +
+            '#code',
+        );
         console.log('      2. Click "Verify and Publish"');
         console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
         console.log('      4. License: MIT');
-        console.log('      5. Upload Aetheron.sol and constructor args: ' + TEAM_WALLET + ', ' + MARKETING_WALLET + ', ' + STAKING_POOL + '\n');
+        console.log(
+          '      5. Upload Aetheron.sol and constructor args: ' +
+            TEAM_WALLET +
+            ', ' +
+            MARKETING_WALLET +
+            ', ' +
+            STAKING_POOL +
+            '\n',
+        );
       }
     }
 
     // Verify Second Token
     console.log('2️⃣  Verifying Second Token...');
-    const secondTokenCmd = `npx hardhat verify --network polygon ${SECOND_TOKEN} "${TEAM_WALLET}" "${MARKETING_WALLET}" "${STAKING_POOL}"`;
+    const secondTokenCmd = `npx hardhat verify --network polygon ${SECOND_TOKEN} "${TEAM_WALLET}"`;
     console.log('   Command:', secondTokenCmd);
     try {
       const { stdout, stderr } = await execPromise(secondTokenCmd);
@@ -99,11 +137,19 @@ async function main() {
       } else {
         console.log('   ❌ Verification failed:', error.message);
         console.log('   💡 Manual Verification Steps:');
-        console.log('      1. Go to: https://polygonscan.com/address/' + SECOND_TOKEN + '#code');
+        console.log(
+          '      1. Go to: https://polygonscan.com/address/' +
+            SECOND_TOKEN +
+            '#code',
+        );
         console.log('      2. Click "Verify and Publish"');
         console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
         console.log('      4. License: MIT');
-        console.log('      5. Upload AetxToken.sol and constructor arg: ' + TEAM_WALLET + '\n');
+        console.log(
+          '      5. Upload AetxToken.sol and constructor arg: ' +
+            TEAM_WALLET +
+            '\n',
+        );
       }
     }
 
@@ -122,11 +168,19 @@ async function main() {
       } else {
         console.log('   ❌ Verification failed:', error.message);
         console.log('   💡 Manual Verification Steps:');
-        console.log('      1. Go to: https://polygonscan.com/address/' + STAKING + '#code');
+        console.log(
+          '      1. Go to: https://polygonscan.com/address/' +
+            STAKING +
+            '#code',
+        );
         console.log('      2. Click "Verify and Publish"');
         console.log('      3. Compiler: v0.8.20, Optimization: Yes (200 runs)');
         console.log('      4. License: MIT');
-        console.log('      5. Upload AetheronStaking.sol and constructor arg: ' + AETH_TOKEN + '\n');
+        console.log(
+          '      5. Upload AetheronStaking.sol and constructor arg: ' +
+            AETH_TOKEN +
+            '\n',
+        );
       }
     }
 

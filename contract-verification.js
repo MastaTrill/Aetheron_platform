@@ -8,7 +8,7 @@
 import { ethers } from 'ethers';
 
 // Contract addresses
-const AETHERON_ADDRESS = '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5';
+const AETHERON_ADDRESS = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
 const STAKING_ADDRESS = '0x896D9d37A67B0bBf81dde0005975DA7850FFa638';
 
 // Minimal ABIs for testing
