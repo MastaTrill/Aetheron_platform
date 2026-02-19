@@ -1,6 +1,6 @@
-// fund-wallets.js
+// fund-wallets.mjs
 // Script to send POL or Aetheron tokens to team and marketing wallets
-// Usage: node fund-wallets.js
+// Usage: node fund-wallets.mjs
 
 import { ethers } from "ethers";
 import dotenv from "dotenv";
@@ -80,7 +80,7 @@ async function main() {
     if (aetheronBalance < totalAethNeeded) {
       console.error(colors.red + "❌ ERROR: Insufficient AETH balance!" + colors.reset);
       console.error(colors.red + `   Available: ${aetheronBalanceFormatted} AETH` + colors.reset);
-      console.error(colors.red + `   Needed: ${AETH_AMOUNT * WALLET_COUNT} AETH (for ${WALLET_COUNT} wallets)` + colors.reset);
+      console.error(colors.red + `   Needed: ${String(Number(AETH_AMOUNT) * WALLET_COUNT)} AETH (for ${WALLET_COUNT} wallets)` + colors.reset);
       process.exit(1);
     }
 

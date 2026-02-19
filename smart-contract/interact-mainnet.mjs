@@ -16,6 +16,9 @@ const AETHERON_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 
 // Set up provider and signer
+if (!process.env.POLYGON_RPC_URL || !process.env.PRIVATE_KEY) {
+  throw new Error("Missing POLYGON_RPC_URL or PRIVATE_KEY in environment variables.");
+}
 const provider = new ethers.providers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
@@ -29,8 +32,12 @@ async function main() {
   // console.log("Minted 1000 tokens");
 
   // Transfer tokens
+  const RECIPIENT_ADDRESS = process.env.RECIPIENT_ADDRESS || "<REPLACE_WITH_VALID_ADDRESS>";
+  if (!ethers.utils.isAddress(RECIPIENT_ADDRESS) || RECIPIENT_ADDRESS === "<REPLACE_WITH_VALID_ADDRESS>") {
+    throw new Error("Please set RECIPIENT_ADDRESS in your environment variables or replace the placeholder with a valid Ethereum address.");
+  }
   console.log("Transferring tokens...");
-  const transferTx = await aetheron.transfer("<RECIPIENT_ADDRESS>", ethers.utils.parseUnits("10", 18));
+  const transferTx = await aetheron.transfer(RECIPIENT_ADDRESS, ethers.utils.parseUnits("10", 18));
   await transferTx.wait();
   console.log("Transferred 10 tokens");
 
