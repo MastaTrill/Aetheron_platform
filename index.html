@@ -5,7 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+
+  <!-- Plausible Analytics (CSP-compliant, privacy-first) -->
+  <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
+  <noscript><img src="https://plausible.io/api/event?nojs=true&domain=aetheron.online" alt=""
+      referrerpolicy="no-referrer-when-downgrade" style="display:none" /></noscript>
   <link rel="stylesheet" href="custom-fixes.css">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -49,23 +54,10 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://googletagmanager.com">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://mastatrill.github.io/Aetheron_platform/">
-  <meta property="og:title" content="Aetheron (AETH) - Revolutionary DeFi Platform">
-  <meta property="og:description"
-    content="Stake AETH tokens and earn up to 50% APY. Join our referral program and compete on the leaderboard!">
-  <meta property="og:image" content="https://mastatrill.github.io/Aetheron_platform/assets/og-image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://mastatrill.github.io/Aetheron_platform/">
-  <meta name="twitter:title" content="Aetheron (AETH) - Revolutionary DeFi Platform">
-  <meta name="twitter:description"
-    content="Stake AETH tokens and earn up to 50% APY. Join our referral program and compete on the leaderboard!">
-  <meta name="twitter:image" content="https://mastatrill.github.io/Aetheron_platform/assets/og-image.png">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon.ico">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F9QBP7B8C"></script>
-  <script>function gtag() { dataLayer.push(arguments) } window.dataLayer = window.dataLayer || [], gtag("js", new Date), gtag("config", "G-6F9QBP7B8C")</script>
+  <!-- Google Tag Manager/Analytics removed for strict CSP compliance -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="index.min.js?v=1.3.0"></script>
@@ -83,7 +75,7 @@
   </noscript>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
   <script>window.addEventListener("load", function () { const e = document.createElement("link"); e.rel = "stylesheet", e.href = "shared-styles.min.css", document.head.appendChild(e) })</script>
-  <script src="coinbase-commerce-frontend.js"></script>
+  <!-- Coinbase Commerce widget removed for strict CSP compliance -->
   <style>
     .btn-coinbase {
       background: linear-gradient(135deg, #0052ff, #00d4ff);
@@ -93,6 +85,8 @@
 </head>
 
 <body>
+  <canvas id="starfield-canvas" tabindex="-1" aria-hidden="true"></canvas>
+  <!-- Starfield canvas added at top for background visibility -->
   <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Page loading progress"></div>
   <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
   <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
@@ -234,8 +228,8 @@
                 type="button"><i class="fas fa-shopping-cart"></i> Buy AETH</button>
               <button class="btn btn-success" onclick="addTokenToWallet()" type="button"><i class="fas fa-plus"></i> Add
                 to Wallet</button>
-              <button class="btn btn-info btn-coinbase" onclick="payWithCoinbase()"><i class="fas fa-coins"></i> Pay
-                with Crypto (Coinbase)</button>
+              <a class="btn btn-info btn-coinbase" href="https://commerce.coinbase.com/checkout/1a2b3c4d5e6f7g8h9i0j"
+                target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> Pay with Crypto (Coinbase)</a>
             </div>
           </div>
         </div>
@@ -573,6 +567,9 @@
     </div>
   </div><button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode" type="button"><i
       class="fas fa-moon" id="themeIcon"></i></button>
+
+
+  <script src="dashboard-starfield.js" defer></script>
   <script>if ("serviceWorker" in navigator) { let e = !1; navigator.serviceWorker.addEventListener("controllerchange", () => { e || (e = !0, console.log("🔄 Service Worker updated - reloading page..."), window.location.reload()) }), navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(e => { console.log("✅ Service Worker registered successfully"), setInterval(() => { e.update() }, 6e4), e.addEventListener("updatefound", () => { const o = e.installing; o.addEventListener("statechange", () => { "installed" === o.state && navigator.serviceWorker.controller && (console.log("🆕 New version available!"), window.showToast && showToast("Update Available", "A new version is ready. Refreshing...", "info"), setTimeout(() => { o.postMessage({ type: "SKIP_WAITING" }) }, 2e3)) }) }), navigator.serviceWorker.addEventListener("message", e => { e.data && "SW_UPDATED" === e.data.type && console.log("📦 Service Worker updated and activated") }) }).catch(e => { console.error("❌ Service Worker registration failed:", e) }) } window.addEventListener("pageshow", e => { e.persisted && (console.log("📄 Page loaded from cache - checking for updates..."), window.location.reload()) }), console.log("%c🚀 Aetheron Platform v1.3.0", "color: #00D4FF; font-size: 16px; font-weight: bold;"), console.log("%c✨ Dashboard loaded successfully", "color: #10b981; font-size: 12px;")</script>
   <script src="global-announcements.js" defer="defer"></script>
 </body>

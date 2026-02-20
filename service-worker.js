@@ -131,12 +131,15 @@ self.addEventListener('fetch', (event) => {
   if (isHtmlRequest) {
     event.respondWith(
       fetch(event.request)
-        .then((response) => {
+        .then(async (response) => {
           if (response.status === 200) {
             const responseClone = response.clone();
-            caches
-              .open(RUNTIME_CACHE)
-              .then((cache) => cache.put(event.request, responseClone));
+            try {
+              const cache = await caches.open(RUNTIME_CACHE);
+              await cache.put(event.request, responseClone);
+            } catch (e) {
+              console.warn('Failed to cache HTML response', e);
+            }
           }
           return response;
         })
@@ -153,23 +156,33 @@ self.addEventListener('fetch', (event) => {
   if (isStaticAsset) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
+        // Serve from cache if available
         if (cachedResponse) {
+          // Update cache in background
+          fetch(event.request)
+            .then((response) => {
+              if (response && response.status === 200) {
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(event.request, response.clone());
+                });
+              }
+            })
+            .catch(() => {});
           return cachedResponse;
         }
-
-        return fetch(event.request).then((response) => {
-          if (response && response.status === 200) {
-            try {
-              const responseClone = response.clone();
-              caches
-                .open(CACHE_NAME)
-                .then((cache) => cache.put(event.request, responseClone));
-            } catch (e) {
-              console.warn('Failed to clone response for caching', e);
+        // If not cached, fetch from network and cache
+        return fetch(event.request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(event.request, response.clone());
+              });
+              return response;
             }
-          }
-          return response;
-        });
+            // Fallback to offline if fetch fails
+            return caches.match('./offline.html');
+          })
+          .catch(() => caches.match('./offline.html'));
       }),
     );
     return;
