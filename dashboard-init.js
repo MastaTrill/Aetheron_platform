@@ -33,4 +33,25 @@ document.addEventListener('DOMContentLoaded', function () {
   if (el && el.parentElement) {
     // ...existing code...
   }
+  // --- New Feature JS Hooks & Comments ---
+  // 1. Wallet Portfolio Breakdown
+  window.initWalletPortfolio && window.initWalletPortfolio();
+  // 2. Real-Time Notifications
+  window.initNotifications && window.initNotifications();
+  // 3. Theme Auto-Switch
+  window.initThemeSettings && window.initThemeSettings();
+  // 4. Staking History & Analytics
+  window.initStakingHistory && window.initStakingHistory();
+  // 5. Community Chat Widget
+  window.initCommunityChat && window.initCommunityChat();
+  // 6. NFT Gallery
+  window.initNFTGallery && window.initNFTGallery();
+  // 7. Gas Fee Estimator
+  window.initGasFeeEstimator && window.initGasFeeEstimator();
+  // 8. Referral Leaderboard
+  window.initReferralLeaderboard && window.initReferralLeaderboard();
+  // 9. Multi-Language Support
+  window.initLanguageSelector && window.initLanguageSelector();
+  // 10. Advanced Analytics
+  window.initAdvancedAnalytics && window.initAdvancedAnalytics();
 });

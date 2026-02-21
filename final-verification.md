@@ -140,15 +140,15 @@ node scripts/enable-trading.js
 
 ### Step 6: Add Initial Liquidity
 
-**Option A: Automated Script**
+#### Option A: Automated Script
 
 ```bash
 node scripts/add-liquidity.js
 ```
 
-**Option B: Manual via QuickSwap**
+#### Option B: Manual via QuickSwap
 
-1. Visit https://quickswap.exchange/#/pool
+1. Visit [https://quickswap.exchange/#/pool](https://quickswap.exchange/#/pool)
 2. Connect wallet with deployer account
 3. Select "Add Liquidity"
 4. Choose AETH token (paste contract address)
@@ -310,7 +310,7 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 
 ## Emergency Procedures
 
-### If deployment fails mid-process:
+### If deployment fails mid-process
 
 1. **Do not panic** - funds are safe if wallet key is secure
 2. Check wallet on PolygonScan for transaction history
@@ -318,7 +318,7 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 4. Review error messages and fix configuration
 5. Can redeploy if needed (new addresses will be generated)
 
-### If wrong addresses used:
+### If wrong addresses used
 
 1. **Cannot change after deployment** - addresses are immutable
 2. Options:
@@ -326,7 +326,7 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
    - Transfer ownership if ownership transfer is enabled
    - Use current setup and adjust processes
 
-### If trading enabled too early:
+### If trading enabled too early
 
 1. **Cannot disable** - trading is permanent once enabled
 2. Action plan:
@@ -383,10 +383,10 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 
 **External Resources:**
 
-- PolygonScan: https://polygonscan.com
-- QuickSwap: https://quickswap.exchange
-- Polygon RPC: https://rpc.polygon.technology/
-- Hardhat Docs: https://hardhat.org/getting-started/
+- [PolygonScan](https://polygonscan.com)
+- [QuickSwap](https://quickswap.exchange)
+- [Polygon RPC](https://rpc.polygon.technology/)
+- [Hardhat Docs](https://hardhat.org/getting-started/)
 
 **Getting Help:**
 
@@ -414,7 +414,7 @@ This sends 1 POL + 1000 AETH to each wallet for testing/operations.
 - Backup deployment logs
 - Never share private keys
 
-# ...existing code...
+## Additional Notes
 
 - Double-check all addresses before deploying
 

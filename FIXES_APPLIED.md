@@ -14,9 +14,11 @@ All major problems and errors in the Aetheron Platform have been identified and 
 ## ✅ Fixed Issues
 
 ### 1. ✅ Contract Address Consistency
+
 **Problem:** Multiple files contained outdated contract addresses (0x76A83...6784) instead of the current deployed addresses.
 
 **Fixed Files:**
+
 - ✅ `README.md` - Updated to current contract addresses
 - ✅ `CONTRACT_ADDRESSES.md` - Corrected token and wallet addresses
 - ✅ `smart-contract/.env` - Updated AETH_TOKEN_ADDRESS and TEAM_WALLET
@@ -29,7 +31,8 @@ All major problems and errors in the Aetheron Platform have been identified and 
 - ✅ `smart-contract/scripts/analyze-contracts.js` - Updated AETH_TOKEN
 
 **Current Correct Addresses:**
-```
+
+```text
 Token (AETH):    0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Staking:         0x896D9d37A67B0bBf81dde0005975DA7850FFa638
 Liquidity Pair:  0xd57c5E33ebDC1b565F99d06809debbf86142705D
@@ -97,9 +100,11 @@ Alternative fixes:
 ---
 
 ### 3. ✅ Dashboard Functionality
+
 **Status:** All features working correctly
 
 **Verified Features:**
+
 - ✅ Wallet connection with MetaMask
 - ✅ Balance display
 - ✅ Three staking pools (30/90/180 days)
@@ -112,6 +117,7 @@ Alternative fixes:
 - ✅ Add token to MetaMask
 
 **Contract Addresses in Dashboard:**
+
 ```javascript
 const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";

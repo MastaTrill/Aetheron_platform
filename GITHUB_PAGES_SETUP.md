@@ -16,14 +16,16 @@ Your Aetheron Platform is now configured for GitHub Pages deployment with:
 ### Step 1: Enable GitHub Pages
 
 1. Go to your repository settings:
-   ```
+
+   ```text
    https://github.com/MastaTrill/Aetheron_platform/settings/pages
    ```
 
 2. Under **"Build and deployment"**:
-   - Source: Select **"GitHub Actions"**
-   
-3. Click **"Save"**
+
+- Source: Select **"GitHub Actions"**
+
+1. Click **"Save"**
 
 ### Step 2: Push Your Changes
 
@@ -48,13 +50,15 @@ https://github.com/MastaTrill/Aetheron_platform/actions
 
 Once deployed, your dashboard will be available at:
 
-### Default GitHub Pages URL:
+### Default GitHub Pages URL
 ```
 https://mastatrill.github.io/Aetheron_platform/
 ```
 
-### Custom Domain (Optional):
+### Custom Domain (Optional)
+
 If you own `aetheron.platform`, update DNS:
+
 - Type: CNAME
 - Name: www
 - Value: mastatrill.github.io
@@ -66,6 +70,7 @@ Then wait 24-48 hours for DNS propagation.
 ## 📊 New Features Added
 
 ### 1. Live Price Data
+
 - ✅ Real-time AETH price from DexScreener
 - ✅ 24h price change percentage
 - ✅ Live market cap (FDV)
@@ -73,11 +78,13 @@ Then wait 24-48 hours for DNS propagation.
 - ✅ USD balance conversion
 
 ### 2. Automatic Updates
+
 - Price refreshes every 30 seconds
 - No manual intervention needed
 - Fallback to static data if API fails
 
 ### 3. Professional Presentation
+
 - Live data makes dashboard look active
 - Shows real market movement
 - Builds user confidence
@@ -93,7 +100,7 @@ cd "c:\Users\willi\OneDrive\Desktop\Aetheron platform\Aetheron_platform"
 npx http-server -p 3000
 ```
 
-Open: http://localhost:3000
+Open: [http://localhost:3000](http://localhost:3000)
 
 Check console (F12) for:
 ```
@@ -167,7 +174,7 @@ Once live, share these links:
 
 ## 💡 Pro Tips
 
-### Update Dashboard Anytime:
+### Update Dashboard Anytime
 ```bash
 # Make changes to index.html
 git add .
@@ -177,12 +184,14 @@ git push
 # Automatically redeploys in 2-3 minutes!
 ```
 
-### Monitor Performance:
+### Monitor Performance
+
 - Add Google Analytics (optional)
 - Check DexScreener for accurate data
 - Monitor PolygonScan for contract activity
 
-### Marketing:
+### Marketing
+
 - Tweet your dashboard link
 - Post on Reddit (r/CryptoMoonShots)
 - Share in Telegram/Discord

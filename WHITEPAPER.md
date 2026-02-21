@@ -1,9 +1,10 @@
 # AETHERON PLATFORM
+
 ## Technical Whitepaper v1.0
 
 **February 2026**
 
-*Building the Future of Decentralized Finance*
+_Building the Future of Decentralized Finance_
 
 ---
 
@@ -44,10 +45,13 @@ Aetheron Platform is a next-generation decentralized finance (DeFi) ecosystem bu
 ## Vision & Mission
 
 ### Vision
+
 To become the leading DeFi platform on Polygon, empowering users worldwide to access sustainable yield opportunities through innovative staking mechanisms and transparent tokenomics.
 
 ### Mission
+
 Democratize access to high-quality DeFi products by providing:
+
 - **Simple** - Intuitive interfaces for all experience levels
 - **Secure** - Audited smart contracts and best-practice security
 - **Profitable** - Competitive yields through efficient capital deployment
@@ -60,34 +64,44 @@ Democratize access to high-quality DeFi products by providing:
 The current DeFi landscape faces several critical challenges:
 
 ### 1. **Complexity Barrier**
+
 Most DeFi platforms require technical expertise, creating barriers for mainstream adoption. Users struggle with:
+
 - Complex wallet connections
 - Confusing user interfaces
 - Technical jargon
 - Multiple transaction steps
 
 ### 2. **High Transaction Costs**
+
 Ethereum mainnet gas fees make DeFi inaccessible for smaller investors:
+
 - Average transaction cost: $20-100+ on Ethereum L1
 - Multiple transactions needed for staking
 - Prohibitive for portfolios under $10,000
 
 ### 3. **Security Concerns**
+
 Frequent hacks and exploits erode user trust:
+
 - $3.1B stolen from DeFi in 2022
 - Unaudited smart contracts
 - Rug pulls and scams
 - Lack of transparency
 
 ### 4. **Poor User Experience**
+
 Existing platforms often sacrifice UX for features:
+
 - Slow loading times
 - Unclear reward calculations
 - Missing mobile optimization
 - No real-time data
 
 ### 5. **Limited Yield Options**
+
 Many platforms offer:
+
 - Single staking options
 - Inflexible lock periods
 - Unsustainable APY rates
@@ -100,33 +114,38 @@ Many platforms offer:
 Aetheron Platform addresses these challenges through:
 
 ### 1. **Polygon Integration**
+
 - **Low Fees**: $0.01-0.10 per transaction
 - **Fast Confirmation**: 2-3 second block times
 - **Ethereum Security**: Inherits Ethereum's security model
 - **EVM Compatible**: Works with existing Ethereum tools
 
 ### 2. **Multi-Tier Staking**
+
 Three staking pools with different risk/reward profiles:
 
-| Pool | Lock Period | APY | Risk Level |
-|------|------------|-----|------------|
-| **Pool 1** | 7 days | 8% | Low |
-| **Pool 2** | 30 days | 12% | Medium |
-| **Pool 3** | 90 days | 18% | Higher |
+| Pool       | Lock Period | APY | Risk Level |
+| ---------- | ----------- | --- | ---------- |
+| **Pool 1** | 7 days      | 8%  | Low        |
+| **Pool 2** | 30 days     | 12% | Medium     |
+| **Pool 3** | 90 days     | 18% | Higher     |
 
 ### 3. **User-Centric Design**
+
 - **One-Click Wallet Connection**: MetaMask, WalletConnect, Coinbase Wallet
 - **Real-Time Dashboard**: Live price, volume, and staking stats
 - **Mobile Optimized**: Responsive design for all devices
 - **Staking Calculator**: Project earnings before committing
 
 ### 4. **Advanced Features**
+
 - **Interactive Charts**: Price, volume, TVL, and staking metrics
 - **Analytics Dashboard**: Comprehensive platform insights
 - **Transaction History**: Complete on-chain transparency
 - **Reward Tracking**: Real-time reward calculations
 
 ### 5. **Security First**
+
 - **Verified Contracts**: All contracts verified on Polygonscan
 - **Open Source**: Full codebase available on GitHub
 - **Best Practices**: Following Solidity security patterns
@@ -137,6 +156,7 @@ Three staking pools with different risk/reward profiles:
 ## Technology Stack
 
 ### Blockchain Layer
+
 - **Network**: Polygon (Chain ID: 137)
 - **Consensus**: Proof of Stake (PoS)
 - **Block Time**: ~2 seconds
@@ -144,12 +164,14 @@ Three staking pools with different risk/reward profiles:
 - **Gas Token**: POL (formerly MATIC)
 
 ### Smart Contracts
+
 - **Language**: Solidity ^0.8.20
 - **Framework**: Hardhat
 - **Standards**: ERC-20, Ownable, ReentrancyGuard
 - **Upgradability**: Non-upgradeable (security by design)
 
 ### Frontend Technology
+
 - **Core**: HTML5, CSS3, JavaScript (ES6+)
 - **Web3 Library**: ethers.js v5.7.2
 - **Charts**: Chart.js v4.4.0
@@ -157,14 +179,16 @@ Three staking pools with different risk/reward profiles:
 - **Icons**: Font Awesome 6.4.0
 
 ### Infrastructure
+
 - **RPC Provider**: Polygon RPC (https://polygon-rpc.com/)
-- **APIs**: 
+- **APIs**:
   - DexScreener for market data
   - Polygon RPC for blockchain data
 - **Hosting**: GitHub Pages (decentralized)
 - **Development**: Git/GitHub for version control
 
 ### Testing & Quality
+
 - **Testing**: Hardhat + Chai + Waffle
 - **Coverage**: 37 comprehensive tests
 - **CI/CD**: GitHub Actions
@@ -175,6 +199,7 @@ Three staking pools with different risk/reward profiles:
 ## Smart Contract Architecture
 
 ### Overview
+
 Aetheron Platform consists of two primary smart contracts:
 
 1. **AETH Token Contract** (ERC-20)
@@ -187,6 +212,7 @@ Both contracts are deployed on Polygon Mainnet and verified on Polygonscan.
 **Address**: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 
 **Key Features**:
+
 - Standard ERC-20 implementation
 - Trading enabled at deployment
 - Owner-controlled trading toggle (emergency use only)
@@ -194,6 +220,7 @@ Both contracts are deployed on Polygon Mainnet and verified on Polygonscan.
 - No burning function (deflationary via staking only)
 
 **Core Functions**:
+
 ```solidity
 // Standard ERC-20
 function transfer(address to, uint256 amount) external returns (bool)
@@ -213,6 +240,7 @@ function tradingEnabled() external view returns (bool)
 ```
 
 **Supply Distribution**:
+
 - **Total Supply**: 1,000,000,000 AETH
   - Liquidity Pool: 9,500,000 AETH (0.95%)
   - Staking Rewards: 150,000,000 AETH (15%)
@@ -226,6 +254,7 @@ function tradingEnabled() external view returns (bool)
 **Address**: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 
 **Key Features**:
+
 - Three independent staking pools
 - Customizable APY and lock periods per pool
 - Reward calculation based on time and APY
@@ -233,6 +262,7 @@ function tradingEnabled() external view returns (bool)
 - Owner-controlled pool management
 
 **StakingPool Structure**:
+
 ```solidity
 struct StakingPool {
     uint256 duration;      // Lock period in seconds
@@ -243,6 +273,7 @@ struct StakingPool {
 ```
 
 **UserStake Structure**:
+
 ```solidity
 struct UserStake {
     uint256 amount;        // Amount of AETH staked
@@ -253,6 +284,7 @@ struct UserStake {
 ```
 
 **Core Functions**:
+
 ```solidity
 // Staking
 function stake(uint256 amount, uint256 poolId) external
@@ -280,11 +312,13 @@ function emergencyWithdraw(uint256 amount) external onlyOwner
 ```
 
 **Reward Calculation**:
+
 ```solidity
 reward = (stakedAmount × APY × timeElapsed) / (365 days × 10000)
 ```
 
 Where:
+
 - `stakedAmount`: Amount of AETH staked
 - `APY`: Pool APY in basis points (e.g., 1200 = 12%)
 - `timeElapsed`: Time since staking started
@@ -292,30 +326,36 @@ Where:
 
 ### Security Features
 
-**1. ReentrancyGuard**
+#### ReentrancyGuard
+
 - Prevents reentrancy attacks on all state-changing functions
 - Uses OpenZeppelin's battle-tested implementation
 
-**2. Ownable Pattern**
+#### Ownable Pattern
+
 - Administrative functions restricted to contract owner
 - Owner can be transferred for governance
 
-**3. SafeMath (Built-in)**
+#### SafeMath (Built-in)
+
 - Solidity 0.8+ includes automatic overflow/underflow protection
 - No need for external SafeMath library
 
-**4. Input Validation**
+#### Input Validation
+
 - All user inputs validated
 - Checks for zero addresses
 - Minimum stake amounts enforced
 - Pool existence verified
 
-**5. Pull Payment Pattern**
+#### Pull Payment Pattern
+
 - Users claim rewards themselves
 - Contract doesn't initiate transfers
 - Reduces attack surface
 
 ### Gas Optimization
+
 - Struct packing for storage efficiency
 - View functions for read-only operations
 - Minimal storage writes
@@ -327,15 +367,15 @@ Where:
 
 ### AETH Token Specifications
 
-| Parameter | Value |
-|-----------|-------|
-| **Name** | Aetheron |
-| **Symbol** | AETH |
-| **Decimals** | 18 |
-| **Total Supply** | 1,000,000,000 AETH |
-| **Standard** | ERC-20 |
-| **Network** | Polygon Mainnet |
-| **Contract** | 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e |
+| Parameter        | Value                                      |
+| ---------------- | ------------------------------------------ |
+| **Name**         | Aetheron                                   |
+| **Symbol**       | AETH                                       |
+| **Decimals**     | 18                                         |
+| **Total Supply** | 1,000,000,000 AETH                         |
+| **Standard**     | ERC-20                                     |
+| **Network**      | Polygon Mainnet                            |
+| **Contract**     | 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e |
 
 ### Supply Distribution
 
@@ -351,12 +391,14 @@ Total Supply: 1,000,000,000 AETH
 ```
 
 ### Team Vesting Schedule
+
 - **Total**: 100,000,000 AETH
 - **Cliff**: 6 months
 - **Linear Vesting**: 24 months
 - **Purpose**: Align team incentives with long-term success
 
 ### Staking Rewards Pool
+
 - **Total**: 150,000,000 AETH
 - **Distribution**: Based on pool participation
 - **Duration**: ~3-5 years at current APY rates
@@ -387,6 +429,7 @@ Total Supply: 1,000,000,000 AETH
 ### Deflationary Mechanisms
 
 **Planned**:
+
 - Transaction fees (0.1-0.5%) → Buyback & burn
 - Staking penalties → Burn
 - Inactive wallet cleanup → Burn
@@ -401,21 +444,24 @@ Total Supply: 1,000,000,000 AETH
 
 Aetheron offers three staking pools with different risk/reward profiles:
 
-#### **Pool 1: Conservative**
+#### Pool 1: Conservative
+
 - **Lock Period**: 7 days
 - **APY**: 8%
 - **Target User**: Risk-averse, short-term stakers
 - **Minimum Stake**: 100 AETH
 - **Early Unstake Penalty**: 5%
 
-#### **Pool 2: Balanced**
+#### Pool 2: Balanced
+
 - **Lock Period**: 30 days
 - **APY**: 12%
 - **Target User**: Moderate risk tolerance
 - **Minimum Stake**: 100 AETH
 - **Early Unstake Penalty**: 10%
 
-#### **Pool 3: Aggressive**
+#### Pool 3: Aggressive
+
 - **Lock Period**: 90 days
 - **APY**: 18%
 - **Target User**: Long-term holders
@@ -424,24 +470,29 @@ Aetheron offers three staking pools with different risk/reward profiles:
 
 ### Staking Process
 
-**Step 1: Connect Wallet**
+#### Step 1: Connect Wallet
+
 - Support for MetaMask, WalletConnect, Coinbase Wallet
 - Automatic network detection and switching
 
-**Step 2: Approve Token**
+#### Step 2: Approve Token
+
 - One-time approval for staking contract
 - User controls exact amount
 
-**Step 3: Select Pool**
+#### Step 3: Select Pool
+
 - Choose based on risk tolerance and timeline
 - View projected earnings in calculator
 
-**Step 4: Stake Tokens**
+#### Step 4: Stake Tokens
+
 - Enter amount (minimum 100 AETH)
 - Confirm transaction
 - Tokens locked for selected period
 
-**Step 5: Earn Rewards**
+#### Step 5: Earn Rewards
+
 - Rewards accrue every second
 - View real-time earnings on dashboard
 - Claim anytime after lock period
@@ -449,6 +500,7 @@ Aetheron offers three staking pools with different risk/reward profiles:
 ### Reward Calculation
 
 **Formula**:
+
 ```
 Daily Reward = (Staked Amount × APY) / 365
 Annual Reward = Staked Amount × APY
@@ -456,6 +508,7 @@ Total Reward = Daily Reward × Days Staked
 ```
 
 **Example**:
+
 ```
 Staked Amount: 10,000 AETH
 Pool: 2 (30 days, 12% APY)
@@ -471,11 +524,13 @@ APR = (98.7 / 10,000) × 100 ×  (365/30) = 12% (confirmed)
 ### Claiming Rewards
 
 **Normal Claim** (After lock period):
+
 - Full reward amount
 - Principal returned
 - No penalties
 
 **Emergency Unstake** (Before lock period):
+
 - Penalty deducted from principal
 - Forfeited rewards
 - Immediate unlock
@@ -483,12 +538,14 @@ APR = (98.7 / 10,000) × 100 ×  (365/30) = 12% (confirmed)
 ### Compound Staking
 
 Users can:
+
 1. Claim rewards
 2. Immediately restake rewards + principal
 3. Benefit from compound interest
 4. Maximize long-term yields
 
 **Compound Interest Example**:
+
 ```
 Initial Stake: 10,000 AETH
 Pool: 3 (90 days, 18% APY)
@@ -509,26 +566,30 @@ Effective APY: 19.25% (vs 18% simple)
 
 ### Security Measures
 
-**1. Smart Contract Security**
+#### Smart Contract Security
+
 - OpenZeppelin libraries
 - ReentrancyGuard on all state-changing functions
 - Ownable pattern for admin functions
 - Solidity 0.8+ overflow protection
 - Input validation on all parameters
 
-**2. Code Quality**
+#### Code Quality
+
 - Comprehensive test suite (37 tests)
 - 90%+ code coverage
 - ESLint and Solhint linting
 - GitHub Actions CI/CD
 
-**3. Deployment Security**
+#### Deployment Security
+
 - Verified contracts on Polygonscan
 - Immutable contract addresses
 - No upgrade mechanisms (security by design)
 - Multi-signature wallet (planned)
 
-**4. Operational Security**
+#### Operational Security
+
 - Private key management best practices
 - Hardware wallet for admin functions
 - Rate limiting on frontend
@@ -536,28 +597,32 @@ Effective APY: 19.25% (vs 18% simple)
 
 ### Audit Status
 
-**Current**: Internal security review completed
-**Planned**: External audit by reputable firm (Q2 2026)
+**Current**: Internal security review completed  
+**Planned**: External audit by reputable firm (Q2 2026)  
 **Bug Bounty**: Considering program post-audit
 
 ### Risk Disclosure
 
 **Smart Contract Risks**:
+
 - Software bugs despite best efforts
 - Unforeseen exploits
 - Economic attack vectors
 
 **Market Risks**:
+
 - Price volatility
 - Low liquidity periods
 - Market manipulation
 
 **Platform Risks**:
+
 - Polygon network issues
 - RPC provider downtime
 - Frontend attacks
 
 **Mitigation**:
+
 - Start with small amounts
 - Diversify across pools
 - Monitor platform updates
@@ -585,7 +650,7 @@ Effective APY: 19.25% (vs 18% simple)
 **Objectives**: Improve UX and add features
 
 - ✅ Interactive charts (price, volume, TVL)
-- ✅ Analytics dashboard  
+- ✅ Analytics dashboard
 - ✅ Staking calculator
 - ✅ Mobile optimization
 - ✅ Technical whitepaper
@@ -642,12 +707,14 @@ Effective APY: 19.25% (vs 18% simple)
 ### Current Team Structure
 
 **Development Team**:
+
 - Smart contract engineering
 - Frontend development
 - DevOps & infrastructure
 - QA & testing
 
 **Operations**:
+
 - Community management
 - Marketing & growth
 - Business development
@@ -656,16 +723,19 @@ Effective APY: 19.25% (vs 18% simple)
 ### Governance Model
 
 **Current** (Phase 1-2):
+
 - Centralized decision-making
 - Core team drives direction
 - Community feedback considered
 
 **Transition** (Phase 3-4):
+
 - Progressive decentralization
 - Introduction of voting mechanisms
 - Treasury management proposals
 
 **Future** (Phase 5+):
+
 - Full DAO governance
 - Token-weighted voting
 - Community-driven development
@@ -674,6 +744,7 @@ Effective APY: 19.25% (vs 18% simple)
 ### Voting Rights (Planned)
 
 **Proposal Types**:
+
 1. Pool parameter changes (APY, duration)
 2. Fee structure modifications
 3. Treasury fund allocation
@@ -681,11 +752,13 @@ Effective APY: 19.25% (vs 18% simple)
 5. Strategic partnerships
 
 **Voting Weight**:
+
 - 1 AETH = 1 vote (standard)
 - Staked AETH = 1.5x voting power (incentive)
 - Long-term stakers = Additional bonuses
 
 **Quorum Requirements**:
+
 - Standard proposals: 5% of circulating supply
 - Critical changes: 15% of circulating supply
 - Emergency actions: Multi-sig only
@@ -697,12 +770,14 @@ Effective APY: 19.25% (vs 18% simple)
 ### Regulatory Status
 
 **Current Approach**:
+
 - Utility token model
 - No investment contract claims
 - Decentralized infrastructure
 - User-owned wallets
 
 **Compliance Measures**:
+
 - No fiat currency handling
 - No central custody
 - Open-source codebase
@@ -711,6 +786,7 @@ Effective APY: 19.25% (vs 18% simple)
 ### Terms of Service
 
 **Key Points**:
+
 - Platform provided "as-is"
 - No financial advice given
 - Users responsible for tax obligations
@@ -720,6 +796,7 @@ Effective APY: 19.25% (vs 18% simple)
 ### Risk Warnings
 
 **Users acknowledge**:
+
 - Cryptocurrency volatility
 - Smart contract risks
 - No regulatory protections
@@ -729,11 +806,13 @@ Effective APY: 19.25% (vs 18% simple)
 ### Intellectual Property
 
 **Open Source Components**:
+
 - MIT License for smart contracts
 - Apache 2.0 for frontend code
 - Attribution required
 
 **Trademarks**:
+
 - "Aetheron" and "AETH" are trademarks
 - Logo and branding protected
 - Fair use for integrations allowed
@@ -743,6 +822,7 @@ Effective APY: 19.25% (vs 18% simple)
 ## Conclusion
 
 Aetheron Platform represents a new generation of DeFi applications that prioritize:
+
 - **User Experience**: Simple, intuitive interfaces
 - **Security**: Audited, transparent smart contracts
 - **Sustainability**: Realistic APY rates and tokenomics
@@ -752,6 +832,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 ### Why Aetheron?
 
 **For Users**:
+
 - Competitive yields (8-18% APY)
 - Low transaction costs ($0.01-0.10)
 - Multiple staking options
@@ -759,6 +840,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 - Mobile-friendly platform
 
 **For Investors**:
+
 - Strong fundamentals
 - Clear roadmap
 - Experienced team
@@ -766,6 +848,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 - Deflationary mechanisms
 
 **For Partners**:
+
 - Open integration API
 - Liquidity incentives
 - Co-marketing opportunities
@@ -773,7 +856,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 
 ### Get Started Today
 
-1. **Visit**: https://aetheronplatform.github.io
+1. **Visit**: <https://aetheronplatform.github.io>
 2. **Connect**: MetaMask or WalletConnect
 3. **Buy**: AETH on QuickSwap
 4. **Stake**: Choose your pool
@@ -781,8 +864,8 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 
 ### Join Our Community
 
-- **Website**: https://aetheronplatform.github.io
-- **GitHub**: https://github.com/MastaTrill/Aetheron_platform
+- **Website**: <https://aetheronplatform.github.io>
+- **GitHub**: <https://github.com/MastaTrill/Aetheron_platform>
 - **Twitter**: @AetheronPlatform (planned)
 - **Discord**: discord.gg/aetheron (planned)
 - **Telegram**: t.me/aetheron (planned)
@@ -790,12 +873,14 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 ### Smart Contract Addresses
 
 **Polygon Mainnet**:
+
 - **AETH Token**: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - **Staking Contract**: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - **Liquidity Pair**: `0xd57c5E33ebDC1b565F99d06809debbf86142705D`
 
 **Verified On**:
-- Polygonscan: https://polygonscan.com/
+
+- Polygonscan: <https://polygonscan.com/>
 
 ### Disclaimer
 
@@ -804,7 +889,7 @@ This whitepaper is for informational purposes only and does not constitute finan
 ---
 
 **Aetheron Platform**  
-*Building the Future of DeFi*
+_Building the Future of DeFi_
 
 **Document Version**: 1.0  
 **Last Updated**: February 8, 2026  

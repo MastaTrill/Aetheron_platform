@@ -18,15 +18,15 @@
 
 ### Tier 2: Aggregators (Week 2-3)
 
-5. **1inch** - DEX aggregator
-6. **ParaSwap** - Multi-chain DEX
-7. **Zapper** - DeFi portfolio tracker
-8. **DeBank** - DeFi wallet tracker
+1. **1inch** - DEX aggregator
+2. **ParaSwap** - Multi-chain DEX
+3. **Zapper** - DeFi portfolio tracker
+4. **DeBank** - DeFi wallet tracker
 
 ### Tier 3: Premium (After TVL > $100K)
 
-9. **Uniswap Labs Interface** - Official listing
-10. **Binance Listings** - Centralized but high visibility
+1. **Uniswap Labs Interface** - Official listing
+2. **Binance Listings** - Centralized but high visibility
 
 ---
 
@@ -38,15 +38,16 @@
 **Action**: Update & enhance listing
 
 **Steps**:
-1. Visit: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D
+
+1. Visit: [https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D](https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
 2. Click "Update Token Info" button
 3. Fill form:
    - **Token Name**: Aetheron
    - **Symbol**: AETH
    - **Description**: Next-generation DeFi staking platform on Polygon offering 8-18% APY with $0.01 transaction fees. Three flexible staking pools (7/30/90 days) with transparent, real-time analytics.
-   - **Website**: https://aetheronplatform.github.io
+   - **Website**: [https://aetheronplatform.github.io](https://aetheronplatform.github.io)
    - **Telegram**: [Your link]
-   - **Twitter**: https://x.com/William_McCoy_
+   - **Twitter**: [https://x.com/William*McCoy*](https://x.com/William_McCoy_)
    - **Discord**: [Your link]
    - **Logo URL**: [Your 200x200 PNG logo]
 4. Submit for review
@@ -59,7 +60,7 @@
 
 ### 2. CoinGecko (FREE - Submit This Week)
 
-**URL**: https://www.coingecko.com/en/coins/new
+**URL**: [https://www.coingecko.com/en/coins/new](https://www.coingecko.com/en/coins/new)
 
 **Requirements**:
 ✅ Deployed contract (DONE)
@@ -71,6 +72,7 @@
 **Submission Form Data**:
 
 **Basic Information**:
+
 ```
 Token Name: Aetheron
 Ticker: AETH
@@ -87,6 +89,7 @@ GitHub: https://github.com/MastaTrill/Aetheron_platform
 ```
 
 **Social Links**:
+
 ```
 Twitter: @William_McCoy_
 Telegram: [Your group]
@@ -96,6 +99,7 @@ Medium: [Your blog if exists]
 ```
 
 **Market Data**:
+
 ```
 Total Supply: 1,000,000,000 AETH
 Circulating Supply: [Your current number]
@@ -111,6 +115,7 @@ Token Distribution:
 ```
 
 **Trading Pairs**:
+
 ```
 Exchange: QuickSwap V2
 Pair: AETH/WMATIC
@@ -119,6 +124,7 @@ URL: https://quickswap.exchange/#/swap?currency0=0xAb5ae0D8f569d7c2B27574319b864
 ```
 
 **Contact**:
+
 ```
 Your Name: [Your name]
 Email: [your-email@domain.com]
@@ -126,6 +132,7 @@ Role: Founder / Core Team
 ```
 
 **Additional Documentation**:
+
 - [ ] Whitepaper PDF
 - [ ] Logo (200x200, transparent background)
 - [ ] Token icon (32x32)
@@ -140,7 +147,7 @@ Role: Founder / Core Team
 
 ### 3. CoinMarketCap (FREE - Submit This Week)
 
-**URL**: https://coinmarketcap.com/request/
+**URL**: [https://coinmarketcap.com/request/](https://coinmarketcap.com/request/)
 
 **Requirements** (Similar to CoinGecko):
 ✅ Permanently active project
@@ -152,11 +159,13 @@ Role: Founder / Core Team
 **Submission Form**:
 
 **Relationship**:
+
 ```
 ☑ I am the project owner/representative
 ```
 
 **Project Details**:
+
 ```
 Project Name: Aetheron Platform
 Cryptoasset Name: Aetheron
@@ -177,6 +186,7 @@ Category: DeFi, Staking, Polygon Ecosystem
 ```
 
 **Project Links**:
+
 ```
 Website: https://aetheronplatform.github.io
 Analytics: https://aetheronplatform.github.io/analytics-dashboard.html
@@ -198,6 +208,7 @@ Discord: [Your link]
 ```
 
 **Market Data**:
+
 ```
 Tags: DeFi, Staking, Polygon-Ecosystem, Yield-Farming
 
@@ -212,12 +223,14 @@ URL: https://quickswap.exchange/#/swap?currency0=0xAb5ae0D8f569d7c2B27574319b864
 ```
 
 **Contact**:
+
 ```
 Email: [your-email]
 Designation: Founder/CEO
 ```
 
 **Verification**:
+
 - [ ] Upload logo (200x200 PNG)
 - [ ] Verify email address
 - [ ] Complete CAPTCHA
@@ -231,14 +244,16 @@ Designation: Founder/CEO
 
 ### 4. DexTools (FREE Basic, Paid Premium)
 
-**URL**: https://www.dextools.io/app/
+**URL**: [https://www.dextools.io/app/](https://www.dextools.io/app/)
 
 **Option A: Free Listing** (Auto-indexed)
+
 - Your pair should already be on DexTools
-- Visit: https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D
+- Visit: [https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D](https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
 - Click "Update Info" to add socials
 
-**Option B: Paid  Premium Features** ($1K-$5K)
+**Option B: Paid Premium Features** ($1K-$5K)
+
 - Promoted listing
 - Trending algorithm boost
 - Premium charts
@@ -267,12 +282,14 @@ Designation: Founder/CEO
 ### Monitor Daily
 
 **Listing Status**:
+
 - Check CoinGecko application status
 - Check CMC request status
 - Monitor DexScreener page views
 - Track DexTools chart views
 
 **Key Metrics**:
+
 - Liquidity depth
 - Trading volume (24h)
 - Unique traders
@@ -285,12 +302,14 @@ Designation: Founder/CEO
 ### Logos & Graphics
 
 **Token Logo**:
+
 - [ ] 200x200 PNG (transparent background)
 - [ ] 32x32 PNG (icon)
 - [ ] SVG version (scalable)
 - [ ] Brand colors: Primary, Secondary
 
 **Banners**:
+
 - [ ] 1200x400 (Twitter/social header)
 - [ ] 1500x500 (website banner)
 
@@ -317,6 +336,7 @@ Designation: Founder/CEO
 ## 🎯 WEEK-BY-WEEK ACTION PLAN
 
 ### Week 1: Foundation
+
 **Focus**: Free listings + community setup
 
 - [ ] **Day 1**: Update DexScreener info
@@ -328,6 +348,7 @@ Designation: Founder/CEO
 - [ ] **Day 7**: First follow-up on applications
 
 ### Week 2: Aggregators
+
 **Focus**: DEX aggregators & portfolio trackers
 
 - [ ] **Day 8**: Submit to 1inch
@@ -339,6 +360,7 @@ Designation: Founder/CEO
 - [ ] **Day 14**: Second follow-up on CG/CMC
 
 ### Week 3: Optimization
+
 **Focus**: Improve existing listings
 
 - [ ] Monitor all listing analytics
@@ -348,6 +370,7 @@ Designation: Founder/CEO
 - [ ] Create "As Seen On" badge for website
 
 ### Week 4: Premium Options
+
 **Focus**: Evaluate paid promotions
 
 - [ ] Review DexTools premium features
@@ -360,6 +383,7 @@ Designation: Founder/CEO
 ## 💰 BUDGET CONSIDERATIONS
 
 ### Free Options (Do First)
+
 - CoinGecko: FREE ✅
 - CoinMarketCap: FREE ✅
 - DexScreener: FREE ✅
@@ -367,6 +391,7 @@ Designation: Founder/CEO
 - **Total: $0**
 
 ### Paid Options (After TVL > $50K)
+
 - CoinMarketCap Fast Track: $5,000
 - DexTools Premium: $1,000-$5,000
 - Coinpaprika Verified: $500
@@ -382,6 +407,7 @@ Designation: Founder/CEO
 Before submitting to ANY platform:
 
 **Technical**:
+
 - [ ] Contract verified on Polygonscan ✅
 - [ ] Liquidity pool active ✅
 - [ ] Pair address: 0xd57c5...
@@ -389,18 +415,21 @@ Before submitting to ANY platform:
 - [ ] Trading enabled ✅
 
 **Documentation**:
+
 - [ ] Website live ✅
 - [ ] Whitepaper published ✅
 - [ ] GitHub public ✅
 - [ ] Clear tokenomics ✅
 
 **Community**:
+
 - [ ] Twitter account (50+ followers recommended)
 - [ ] Telegram group (20+ members recommended)
 - [ ] Discord server (10+ members recommended)
 - [ ] Active social posts (10+ posts recommended)
 
 **Assets**:
+
 - [ ] Logo files ready
 - [ ] Banner images ready
 - [ ] Description text written
@@ -429,17 +458,21 @@ Before submitting to ANY platform:
 ## 📞 SUPPORT CONTACTS
 
 **CoinGecko**:
+
 - Email: hello@coingecko.com
 - Application Status: Check email for updates
 
 **CoinMarketCap**:
-- Support: https://support.coinmarketcap.com/
+
+- Support: [https://support.coinmarketcap.com/](https://support.coinmarketcap.com/)
 - Application: Check dashboard
 
 **DexTools**:
-- Support: https://www.dextools.io/app/support
+
+- Support: [https://www.dextools.io/app/support](https://www.dextools.io/app/support)
 
 **DexScreener**:
+
 - Update: Use platform's update form
 
 ---
@@ -447,17 +480,20 @@ Before submitting to ANY platform:
 ## 🎯 SUCCESS METRICS
 
 **Week 1 Goals**:
+
 - [ ] 2+ applications submitted
 - [ ] DexScreener info updated
 - [ ] 100+ DexTools chart views
 
 **Month 1 Goals**:
+
 - [ ] Listed on CoinGecko OR CoinMarketCap
 - [ ] 500+ DexTools views
 - [ ] 1,000+ DexScreener views
 - [ ] 2+ DEX aggregator listings
 
 **Month 3 Goals**:
+
 - [ ] Listed on both CG AND CMC
 - [ ] 5+ platform listings
 - [ ] 10K+ combined views
@@ -468,6 +504,7 @@ Before submitting to ANY platform:
 ## 🔗 QUICK COPY-PASTE DATA
 
 **For forms**:
+
 ```
 Token Name: Aetheron
 Symbol: AETH
@@ -499,5 +536,5 @@ Tags:
 
 **START TODAY!** DexScreener and DexTools take 10 minutes. CoinGecko and CMC take 30-45 minutes each. All are critical for visibility.
 
-*Document Version: 1.0*  
-*Last Updated: February 8, 2026*
+_Document Version: 1.0_  
+_Last Updated: February 8, 2026_

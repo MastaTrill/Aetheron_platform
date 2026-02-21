@@ -1,4 +1,4 @@
-const AETH_ADDRESS = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
+const AETH_ADDRESS = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
 const STAKING_ADDRESS = '0x896D9d37A67B0bBf81dde0005975DA7850FFa638';
 
 const POLYGON_CHAIN_ID = '0x89';
@@ -37,8 +37,16 @@ function showGlobalLoading(show) {
 }
 
 function showToast(message, options = {}) {
-  // Simple toast implementation
-  alert(message);
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, options);
+  } else if (window.Toastify) {
+    window.Toastify({ text: message, duration: 3000 }).showToast();
+  } else {
+    try {
+      console.log('Toast:', message, options);
+    } catch {}
+    alert(message);
+  }
 }
 
 async function switchToPolygon() {
@@ -59,44 +67,55 @@ async function switchToPolygon() {
 
 async function connectWallet(auto = false) {
   if (!window.ethereum) {
-    if (!auto) alert('Install MetaMask');
-
+    if (!auto) showToast('Install MetaMask', { type: 'error' });
     return;
   }
 
-  try {
-    showGlobalLoading(true);
-
-    if (!auto) {
-      await ethereum.request({
-        method: 'eth_requestAccounts',
+  let retries = 0;
+  let success = false;
+  showGlobalLoading(true);
+  while (retries < 3 && !success) {
+    try {
+      if (!auto) {
+        await ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+      }
+      await switchToPolygon();
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      account = await signer.getAddress();
+      localStorage.setItem('aetheron_connected', account);
+      aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
+      stakingContract = new ethers.Contract(
+        STAKING_ADDRESS,
+        STAKING_ABI,
+        signer,
+      );
+      document.getElementById('walletInfo').classList.add('active');
+      document.getElementById('accountAddress').textContent =
+        account.slice(0, 6) + '...' + account.slice(-4);
+      await updateBalances();
+      success = true;
+    } catch (err) {
+      retries++;
+      console.error('Wallet/contract connection failed:', err);
+      showToast('Connection failed. Retrying (' + retries + '/3)...', {
+        type: 'error',
       });
+      await new Promise((res) => setTimeout(res, 1500));
     }
-
-    await switchToPolygon();
-
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-
-    signer = provider.getSigner();
-
-    account = await signer.getAddress();
-
-    localStorage.setItem('aetheron_connected', account);
-
-    aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
-
-    stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
-
-    document.getElementById('walletInfo').classList.add('active');
-
-    document.getElementById('accountAddress').textContent =
-      account.slice(0, 6) + '...' + account.slice(-4);
-
-    updateBalances();
-  } catch (err) {
-    console.log(err);
   }
-
+  if (!success) {
+    showToast(
+      'Unable to connect wallet or contracts. Please check your network and try again.',
+      { type: 'error' },
+    );
+    // Fallback UI for stats
+    document.getElementById('ethBalance').textContent = '--';
+    document.getElementById('aethBalance').textContent = '--';
+    // Add more fallback for holders, staked, market cap, health if needed
+  }
   showGlobalLoading(false);
 }
 
@@ -109,17 +128,27 @@ async function autoReconnect() {
 }
 
 async function updateBalances() {
-  if (!account) return;
-
-  const matic = await provider.getBalance(account);
-
-  document.getElementById('ethBalance').textContent =
-    parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
-
-  const aeth = await aethContract.balanceOf(account);
-
-  document.getElementById('aethBalance').textContent =
-    parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
+  if (!account) {
+    document.getElementById('ethBalance').textContent = '--';
+    document.getElementById('aethBalance').textContent = '--';
+    return;
+  }
+  try {
+    const matic = await provider.getBalance(account);
+    document.getElementById('ethBalance').textContent =
+      parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
+  } catch (err) {
+    document.getElementById('ethBalance').textContent = '--';
+    console.error('Failed to fetch MATIC balance:', err);
+  }
+  try {
+    const aeth = await aethContract.balanceOf(account);
+    document.getElementById('aethBalance').textContent =
+      parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
+  } catch (err) {
+    document.getElementById('aethBalance').textContent = '--';
+    console.error('Failed to fetch AETH balance:', err);
+  }
 }
 
 async function transferTokens() {
@@ -136,13 +165,13 @@ async function transferTokens() {
 
     await tx.wait();
 
-    alert('Transfer successful');
+    showToast('Transfer successful', { type: 'success' });
 
     updateBalances();
   } catch (err) {
     console.error(err);
 
-    alert('Transfer failed');
+    showToast('Transfer failed', { type: 'error' });
   }
 
   showGlobalLoading(false);
@@ -163,46 +192,43 @@ async function stakeTokens() {
 
     await tx.wait();
 
-    alert('Stake successful');
+    showToast('Stake successful', { type: 'success' });
 
     updateBalances();
   } catch (err) {
     console.error(err);
 
-    alert('Stake failed');
+    showToast('Stake failed', { type: 'error' });
   }
 
   showGlobalLoading(false);
 }
 
-window.addEventListener('load', autoReconnect);
-
-document
-  .getElementById('connectBtn')
-  .addEventListener('click', () => connectWallet(false));
-
-// Add event listeners for other buttons
 window.addEventListener('load', () => {
+  autoReconnect();
+
+  const connectBtn = document.getElementById('connectBtn');
+  if (connectBtn)
+    connectBtn.addEventListener('click', () => connectWallet(false));
+
   // Refresh balances
   const refreshBtn = document.getElementById('refreshBalancesBtn');
   if (refreshBtn) refreshBtn.addEventListener('click', updateBalances);
 
   // Transfer
-  const transferBtn = document.querySelector('.card .action-btn');
-  if (transferBtn && transferBtn.textContent.includes('Transfer'))
-    transferBtn.addEventListener('click', transferTokens);
+  const transferBtn = document.getElementById('transferBtn');
+  if (transferBtn) transferBtn.addEventListener('click', transferTokens);
 
   // Stake
-  const stakeBtn = document.querySelectorAll('.card .action-btn')[1];
-  if (stakeBtn && stakeBtn.textContent.includes('Stake'))
-    stakeBtn.addEventListener('click', stakeTokens);
+  const stakeBtn = document.getElementById('stakeBtn');
+  if (stakeBtn) stakeBtn.addEventListener('click', stakeTokens);
 
   // Buy AETH
   const buyBtn = document.querySelector('.buy-btn');
   if (buyBtn)
     buyBtn.addEventListener('click', () => {
       window.open(
-        'https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+        'https://quickswap.exchange/#/swap?outputCurrency=' + AETH_ADDRESS,
         '_blank',
       );
     });
@@ -212,6 +238,6 @@ window.addEventListener('load', () => {
   if (coinbaseBtn)
     coinbaseBtn.addEventListener('click', () => {
       // Placeholder for Coinbase payment
-      alert('Coinbase payment integration coming soon!');
+      showToast('Coinbase payment integration coming soon!', { type: 'info' });
     });
 });

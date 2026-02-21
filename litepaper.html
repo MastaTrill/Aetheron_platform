@@ -108,7 +108,6 @@
       background: linear-gradient(135deg, #00d4ff, #8a2be2);
       -webkit-background-clip: text;
       background-clip: text;
-      background-clip: text;
       -webkit-text-fill-color: transparent
     }
 
@@ -681,7 +680,15 @@
         February 2026<br>Contract: <code>0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</code><br>Network: Polygon</p>
     </div>
   </div>
-  <script>"serviceWorker" in navigator && window.addEventListener("load", () => { navigator.serviceWorker.register("/service-worker.js").then(e => console.log("ServiceWorker registered:", e.scope)).catch(e => console.log("ServiceWorker registration failed:", e)) })</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+          .then(e => console.log("ServiceWorker registered:", e.scope))
+          .catch(e => console.log("ServiceWorker registration failed:", e));
+      });
+    }
+  </script>
   <script src="global-announcements.js"></script>
 </body>
 

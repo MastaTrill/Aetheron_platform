@@ -6,6 +6,7 @@
  */
 
 import { ethers } from 'ethers';
+import { Interface } from 'ethers/abi';
 
 // Contract addresses
 const AETHERON_ADDRESS = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
@@ -40,8 +41,8 @@ function testContractSetup() {
     // Test contract interface creation
     console.log('📝 Testing contract interfaces...');
 
-    const aetheronInterface = new ethers.Interface(AETHERON_ABI);
-    const stakingInterface = new ethers.Interface(STAKING_ABI);
+    const aetheronInterface = new Interface(AETHERON_ABI);
+    const stakingInterface = new Interface(STAKING_ABI);
 
     console.log('✅ Contract interfaces created successfully');
 

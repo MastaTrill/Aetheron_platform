@@ -2,9 +2,9 @@
 # Usage: ./finish-polygon.ps1 <DEPLOYED_CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
 
 param(
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$ContractAddress,
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [string[]]$ConstructorArgs
 )
 
@@ -15,9 +15,8 @@ if (!(Test-Path ".env")) {
     exit 1
 }
 
-# Compile and deploy
+# Compile contracts
 npx hardhat compile
-npx hardhat run scripts/deploy.js --network polygon
 
 # Verify contract
 $verifyCmd = "npx hardhat verify --network polygon $ContractAddress"

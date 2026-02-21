@@ -100,6 +100,10 @@ self.addEventListener('fetch', (event) => {
               if (response.status === 200) {
                 // Clone response and add custom header for cache freshness
                 try {
+                  if (response.bodyUsed) {
+                    // Avoid cloning if body is already used
+                    return response;
+                  }
                   const headers = new Headers(response.headers);
                   headers.set('sw-cache-time', new Date().toISOString());
                   response

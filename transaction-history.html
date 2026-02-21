@@ -32,7 +32,7 @@
         <h1><i class="fas fa-history"></i> Transaction History</h1>
         <p>Complete record of all your AETH transactions</p>
       </div>
-      <div class="wallet-status-card card" id="walletStatus"><button class="btn-primary btn-lg"
+      <div class="wallet-status-card card" id="walletStatus"><button type="button" class="btn-primary btn-lg"
           onclick="connectWallet()"><i class="fas fa-wallet"></i> Connect Wallet</button></div>
       <div id="historyContent" class="hidden">
         <div class="history-stats">
@@ -83,9 +83,9 @@
               <option value="30d">Last 30 Days</option>
               <option value="90d">Last 90 Days</option>
             </select></div>
-          <div class="filter-group"><button class="btn-secondary" onclick="refreshHistory()"><i
+          <div class="filter-group"><button type="button" class="btn-secondary" onclick="refreshHistory()"><i
                 class="fas fa-sync-alt"></i> Refresh</button></div>
-          <div class="filter-group"><button class="btn-secondary" onclick="exportHistory()"><i
+          <div class="filter-group"><button type="button" class="btn-secondary" onclick="exportHistory()"><i
                 class="fas fa-download"></i> Export CSV</button></div>
         </div>
         <div class="card transactions-table">
@@ -113,10 +113,10 @@
             </tbody>
           </table>
         </div>
-        <div class="pagination hidden" id="pagination"><button class="btn-secondary" onclick="previousPage()"
+        <div class="pagination hidden" id="pagination"><button type="button" class="btn-secondary" onclick="previousPage()"
             id="prevBtn" disabled="disabled"><i class="fas fa-chevron-left"></i>
             Previous</button> <span class="page-info">Page <span id="currentPage">1</span> of <span
-              id="totalPages">1</span> </span><button class="btn-secondary" onclick="nextPage()" id="nextBtn">Next <i
+              id="totalPages">1</span> </span><button type="button" class="btn-secondary" onclick="nextPage()" id="nextBtn">Next <i
               class="fas fa-chevron-right"></i></button></div>
       </div>
     </div>

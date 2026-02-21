@@ -1,3 +1,4 @@
+# 🌌 Aetheron Platform
 
 @MastaTrill
 
@@ -14,23 +15,23 @@
 ### Polygon Mumbai Testnet (Chain ID: 80001)
 
 - AETH Token: `0x44F9c15816bCe5d6691448F60DAD50355ABa40b5`
-  - View on PolygonScan: [Link](https://mumbai.polygonscan.com/token/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5)
+  - View on PolygonScan: [AETH Token on PolygonScan](https://mumbai.polygonscan.com/token/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5)
 - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
-  - View on PolygonScan: [Link](https://mumbai.polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
+  - View on PolygonScan: [Staking Contract on PolygonScan](https://mumbai.polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 
 ### Polygon Mainnet (Chain ID: 137)
 
 - AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
-  - View on PolygonScan: [Link](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
+  - View on PolygonScan: [AETH Token on PolygonScan](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
-  - View on PolygonScan: [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
+  - View on PolygonScan: [Staking Contract on PolygonScan](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 - Liquidity Pair: `0xd57c5E33ebDC1b565F99d06809debbf86142705D`
-  - View on PolygonScan: [Link](https://polygonscan.com/address/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
+  - View on PolygonScan: [Liquidity Pair on PolygonScan](https://polygonscan.com/address/0xd57c5E33ebDC1b565F99d06809debbf86142705D)
 
 ### Solana (if applicable for cross-chain or future features)
 
 - Solana Mint/Wallet/Program: `5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki`
-  - View on Solscan: [Link](https://solscan.io/account/5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki)
+  - View on Solscan: [Solana Account on Solscan](https://solscan.io/account/5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki)
 
 ---
 
@@ -78,7 +79,7 @@
 
 - **Buy Tax**: 5%
 - **Sell Tax**: 5% (reflected in buy tax for simplicity)
-- **Tax Distribution**: 
+- **Tax Distribution**:
   - 3% - Liquidity Pool
   - 2% - Marketing & Development
 
@@ -125,8 +126,7 @@ DevOps
 
 📁 Project Structure
 
-`
-aetheron-platform/
+`aetheron-platform/
 ├── admin-dashboard/     # Web admin interface
 ├── mobile-app/          # React Native mobile app
 ├── backend-api/         # Node.js API server
@@ -136,8 +136,7 @@ aetheron-platform/
 ├── assets/              # Media and design files
 ├── deployment/          # Infrastructure configurations
 ├── testing/             # Test suites
-└── tools/               # Development utilities
-`
+└── tools/               # Development utilities`
 
 ---
 
@@ -148,9 +147,9 @@ Keeper’s Lantern Wallet: 0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82
 
 Proof‑of‑Record Constellation
 
-- Herald’s Seal — Tx Hash: 0xb397…c82c94  
-- Steward’s Seal — Tx Hash: 0x8a3a…c3452 (Dec‑16‑2025 09:27:45 AM UTC)  
-- Lantern Seal — Wallet: 0x127C…AF82  
+- Herald’s Seal — Tx Hash: 0xb397…c82c94
+- Steward’s Seal — Tx Hash: 0x8a3a…c3452 (Dec‑16‑2025 09:27:45 AM UTC)
+- Lantern Seal — Wallet: 0x127C…AF82
 - Constellation Seal — Tx Hash: 0x428e…Be3E
 
 ✨ Four Seals, One Constellation — Eternal Proof.
@@ -159,24 +158,24 @@ Proof‑of‑Record Constellation
 
 🗺️ Roadmap
 
-- ✅ Platform structure created  
-- ✅ Smart contracts drafted (ERC20 upgradeable)  
-- 🔄 Source code verification on BaseScan/Etherscan  
-- 🔄 Security audit (third‑party)  
-- 🔜 Mobile app release (App Store & Google Play)  
-- 🔜 Exchange listings for AETH token  
+- ✅ Platform structure created
+- ✅ Smart contracts drafted (ERC20 upgradeable)
+- 🔄 Source code verification on BaseScan/Etherscan
+- 🔄 Security audit (third‑party)
+- 🔜 Mobile app release (App Store & Google Play)
+- 🔜 Exchange listings for AETH token
 - 🌌 Expansion into live mission tracking
 
 ---
 
 🤝 Contributing
-We welcome contributions!  
+We welcome contributions!
 
-1. Fork the repository  
-2. Create your feature branch (git checkout -b feature/YourFeature)  
-3. Commit changes (git commit -m 'Add new feature')  
-4. Push to branch (git push origin feature/YourFeature)  
-5. Open a Pull Request  
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/YourFeature)
+3. Commit changes (git commit -m 'Add new feature')
+4. Push to branch (git push origin feature/YourFeature)
+5. Open a Pull Request
 
 ---
 
@@ -316,40 +315,40 @@ node scripts/final-deployment-check.js
 
 ### Common Errors & Solutions
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `PRIVATE_KEY is not defined` | Missing or empty .env file | Copy `.env.example` to `.env` and fill in values |
-| `PRIVATE_KEY must start with 0x` | Missing 0x prefix | Add `0x` before your private key |
-| `Invalid address format` | Wrong address length or format | Ensure address is 42 characters (0x + 40 hex) |
-| `Insufficient funds for gas` | Not enough POL in wallet | Add at least 0.5 POL to deployer wallet |
-| `Cannot connect to RPC` | Invalid or rate-limited RPC URL | Use a valid RPC from Alchemy/Infura/QuickNode |
-| `AETH_TOKEN_ADDRESS not found` | Token not deployed yet | Deploy contracts first, then update .env |
-| `Ownable: caller is not the owner` | Wrong private key in .env | Use the deployer's private key |
+| Error                              | Cause                           | Solution                                         |
+| ---------------------------------- | ------------------------------- | ------------------------------------------------ |
+| `PRIVATE_KEY is not defined`       | Missing or empty .env file      | Copy `.env.example` to `.env` and fill in values |
+| `PRIVATE_KEY must start with 0x`   | Missing 0x prefix               | Add `0x` before your private key                 |
+| `Invalid address format`           | Wrong address length or format  | Ensure address is 42 characters (0x + 40 hex)    |
+| `Insufficient funds for gas`       | Not enough POL in wallet        | Add at least 0.5 POL to deployer wallet          |
+| `Cannot connect to RPC`            | Invalid or rate-limited RPC URL | Use a valid RPC from Alchemy/Infura/QuickNode    |
+| `AETH_TOKEN_ADDRESS not found`     | Token not deployed yet          | Deploy contracts first, then update .env         |
+| `Ownable: caller is not the owner` | Wrong private key in .env       | Use the deployer's private key                   |
 
 ### Environment Variable Reference
 
 #### Required Variables
 
-| Variable | Description | Format | Example |
-|----------|-------------|--------|---------|
-| `PRIVATE_KEY` | Deployer wallet private key | 0x + 64 hex chars | `0x1234...abcd` |
-| `POLYGON_RPC_URL` | Polygon RPC endpoint | HTTPS URL | `https://polygon-mainnet.g.alchemy.com/v2/...` |
-| `TEAM_WALLET` | Team wallet address | 0x + 40 hex chars | `0x1234...5678` |
-| `MARKETING_WALLET` | Marketing wallet address | 0x + 40 hex chars | `0xabcd...ef01` |
+| Variable           | Description                 | Format            | Example                                        |
+| ------------------ | --------------------------- | ----------------- | ---------------------------------------------- |
+| `PRIVATE_KEY`      | Deployer wallet private key | 0x + 64 hex chars | `0x1234...abcd`                                |
+| `POLYGON_RPC_URL`  | Polygon RPC endpoint        | HTTPS URL         | `https://polygon-mainnet.g.alchemy.com/v2/...` |
+| `TEAM_WALLET`      | Team wallet address         | 0x + 40 hex chars | `0x1234...5678`                                |
+| `MARKETING_WALLET` | Marketing wallet address    | 0x + 40 hex chars | `0xabcd...ef01`                                |
 
 #### Post-Deployment Variables
 
-| Variable | Description | When to Set |
-|----------|-------------|-------------|
-| `AETH_TOKEN_ADDRESS` | Deployed token contract address | After step 4 (deployment) |
+| Variable                   | Description                       | When to Set               |
+| -------------------------- | --------------------------------- | ------------------------- |
+| `AETH_TOKEN_ADDRESS`       | Deployed token contract address   | After step 4 (deployment) |
 | `STAKING_CONTRACT_ADDRESS` | Deployed staking contract address | After step 4 (deployment) |
 
 #### Optional Variables
 
-| Variable | Description | When Needed |
-|----------|-------------|-------------|
-| `POLYGONSCAN_API_KEY` | PolygonScan API key | For contract verification (step 6) |
-| `COINMARKETCAP_API_KEY` | CoinMarketCap API key | For gas reporting in tests |
+| Variable                | Description           | When Needed                        |
+| ----------------------- | --------------------- | ---------------------------------- |
+| `POLYGONSCAN_API_KEY`   | PolygonScan API key   | For contract verification (step 6) |
+| `COINMARKETCAP_API_KEY` | CoinMarketCap API key | For gas reporting in tests         |
 
 ### Troubleshooting Guide
 
@@ -418,10 +417,10 @@ If you encounter issues not covered in this guide:
 
 📞 Contact
 
-- GitHub: @Mastatrill  
-- Repository: github.com/Mastatrill/aetheron-platform  
-- Website: mastatrill.github.io/aetheron-platform  
-- Email: <contact@aetheron.space>  
+- GitHub: @Mastatrill
+- Repository: github.com/Mastatrill/aetheron-platform
+- Website: mastatrill.github.io/aetheron-platform
+- Email: <contact@aetheron.space>
 
 ---
 

@@ -11,7 +11,7 @@
   <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
   <noscript><img src="https://plausible.io/api/event?nojs=true&domain=aetheron.online" alt=""
       referrerpolicy="no-referrer-when-downgrade" style="display:none" /></noscript>
-  <link rel="stylesheet" href="custom-fixes.css">
+
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -252,7 +252,8 @@
                 <div><i class="fas fa-clock"></i> Lock: 30 days</div>
                 <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
               </div>
-              <div class="input-group"><input type="number" id="stakeAmount0" placeholder="Amount to stake" min="100">
+              <div class="input-group"><label for="stakeAmount0">Amount to stake</label><input type="number"
+                  id="stakeAmount0" placeholder="Amount to stake" min="100">
                 <button class="btn btn-primary" onclick="stakeTokens(0)" id="stakeBtn0" type="button"><i
                     class="fas fa-lock"></i> Stake</button>
               </div>
@@ -269,7 +270,8 @@
                 <div><i class="fas fa-clock"></i> Lock: 90 days</div>
                 <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
               </div>
-              <div class="input-group"><input type="number" id="stakeAmount1" placeholder="Amount to stake" min="500">
+              <div class="input-group"><label for="stakeAmount1">Amount to stake</label><input type="number"
+                  id="stakeAmount1" placeholder="Amount to stake" min="500">
                 <button class="btn btn-primary" onclick="stakeTokens(1)" id="stakeBtn1" type="button"><i
                     class="fas fa-lock"></i> Stake</button>
               </div>
@@ -286,7 +288,8 @@
                 <div><i class="fas fa-clock"></i> Lock: 180 days</div>
                 <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
               </div>
-              <div class="input-group"><input type="number" id="stakeAmount2" placeholder="Amount to stake" min="1000">
+              <div class="input-group"><label for="stakeAmount2">Amount to stake</label><input type="number"
+                  id="stakeAmount2" placeholder="Amount to stake" min="1000">
                 <button class="btn btn-primary" onclick="stakeTokens(2)" id="stakeBtn2" type="button"><i
                     class="fas fa-lock"></i> Stake</button>
               </div>
@@ -361,8 +364,9 @@
             <h2 class="card-title">Rewards Calculator</h2>
           </div>
           <div><label class="calc-label">Amount to Stake</label>
-            <div class="calculator-input"><input type="number" id="calcAmount" placeholder="Enter AETH amount"
-                class="calc-input"> <select id="calcPool" class="calc-select" aria-label="Select staking pool">
+            <div class="calculator-input"><label for="calcAmount">Enter AETH amount</label><input type="number"
+                id="calcAmount" placeholder="Enter AETH amount" class="calc-input"> <select id="calcPool"
+                class="calc-select" aria-label="Select staking pool">
                 <option value="0">30 Days (5% APY)</option>
                 <option value="1">90 Days (12% APY)</option>
                 <option value="2">180 Days (25% APY)</option>

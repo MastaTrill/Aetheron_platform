@@ -26,6 +26,7 @@
     </div>
     <ul class="nav-menu">
       <li><a href="#dashboard" class="sidebar-link nav-link active">📊 Dashboard</a></li>
+      <li><a href="#payments" class="sidebar-link nav-link">💸 Payments</a></li>
       <li><a href="#users" class="sidebar-link nav-link">👥 Users</a></li>
       <li><a href="#missions" class="sidebar-link nav-link">🎯 Missions</a></li>
       <li><a href="#blockchain" class="sidebar-link nav-link">⛓️ Blockchain</a></li>
@@ -142,7 +143,28 @@
         </tr>
       `).join('');
     }
-    window.addEventListener('DOMContentLoaded', renderAdminPayments);
+
+    // Navigation logic to switch sections
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAdminPayments();
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('.content-section');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          navLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          const target = this.getAttribute('href').replace('#', '');
+          sections.forEach(section => {
+            if (section.id === target) {
+              section.classList.add('active');
+            } else {
+              section.classList.remove('active');
+            }
+          });
+        });
+      });
+    });
   </script>
 </body>
 

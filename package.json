@@ -36,26 +36,26 @@
   },
   "homepage": "https://mastatrill.github.io/Aetheron_platform",
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.0",
-    "dotenv": "^16.3.1",
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.3.1",
     "ethers": "^6.16.0",
-    "express": "^4.18.2",
+    "express": "^5.2.1",
     "io-ts": "^2.2.22",
-    "next": "^14.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "^0.74.0",
+    "next": "^16.1.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-native": "^0.84.0",
     "stripe": "^20.3.1",
     "web3": "^4.16.0"
   },
   "devDependencies": {
-    "@jest/globals": "^30.2.0",
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.1.0",
-    "eslint": "^8.55.0",
-    "hardhat": "^2.22.0",
-    "jest": "^30.2.0",
-    "jsdom": "^28.0.0",
-    "prettier": "^3.1.0"
+    "@jest/globals": "^27.5.1",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.10",
+    "eslint": "^4.1.1",
+    "hardhat": "^3.1.9",
+    "jest": "^25.0.0",
+    "jsdom": "^28.1.0",
+    "prettier": "^3.8.1"
   }
 }

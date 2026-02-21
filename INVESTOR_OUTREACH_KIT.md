@@ -11,7 +11,8 @@
 **Subject**: Aetheron Platform - High-Yield DeFi Staking on Polygon [Investment Opportunity]
 
 **Body**:
-```
+
+````text
 Hi [First Name],
 
 I'm reaching out to share an exciting DeFi opportunity that aligns with your investment thesis in blockchain infrastructure.
@@ -43,9 +44,9 @@ I'm reaching out to share an exciting DeFi opportunity that aligns with your inv
 
 **Next Steps**:
 1. Review our whitepaper: [Link to WHITEPAPER.md]
-2. Explore live platform: https://aetheronplatform.github.io
-3. View analytics dashboard: https://aetheronplatform.github.io/analytics-dashboard.html
-4. Try staking calculator: https://aetheronplatform.github.io/staking-calculator.html
+2. Explore live platform: https://mastatrill.github.io/Aetheron_platform/
+3. View analytics dashboard: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+4. Try staking calculator: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
 
 I'd love to schedule a 20-minute call to walk through our roadmap and traction metrics.
 
@@ -62,7 +63,7 @@ X/Twitter: @William_McCoy_
 - Aetheron_Whitepaper_2026.pdf
 - Platform_Pitch_Deck.pdf
 - Smart_Contract_Addresses.txt
-```
+```text
 
 ---
 
@@ -71,7 +72,8 @@ X/Twitter: @William_McCoy_
 **Subject**: Re: Aetheron Platform - Additional Materials
 
 **Body**:
-```
+
+```text
 Hi [First Name],
 
 Thanks for your interest in Aetheron Platform! Here's the additional information you requested:
@@ -135,13 +137,13 @@ Best,
 [Your Name]
 
 P.S. Our analytics dashboard updates every 30 seconds with live on-chain data - check it out to see platform transparency in action!
-```
+````
 
 ---
 
 ## 📊 One-Pager: Investment Summary
 
-**AETHERON PLATFORM - INVESTMENT OPPORTUNITY**
+### AETHERON PLATFORM - INVESTMENT OPPORTUNITY
 
 **Problem**: DeFi on Ethereum L1 is too expensive ($50+ fees) for retail investors
 
@@ -188,54 +190,58 @@ P.S. Our analytics dashboard updates every 30 seconds with live on-chain data - 
 **Terms**: SAFE note or token allocation, flexible
 
 **Contact**:
-Website: https://aetheronplatform.github.io
-X/Twitter: @William_McCoy_
+Website: [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)
+X/Twitter: @William*McCoy*
 Email: [your-email]
-GitHub: https://github.com/MastaTrill/Aetheron_platform
+GitHub: [https://github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)
 
 **Links**:
 📄 Whitepaper: [Link]
-📊 Analytics: https://aetheronplatform.github.io/analytics-dashboard.html
-🧮 Calculator: https://aetheronplatform.github.io/staking-calculator.html
+📊 Analytics: [https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html](https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html)
+🧮 Calculator: [https://mastatrill.github.io/Aetheron_platform/staking-calculator.html](https://mastatrill.github.io/Aetheron_platform/staking-calculator.html)
 💻 Contracts: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 ---
 
 ## 📝 Whitepaper Sharing Guide
 
-### Where to Share:
+### Where to Share
 
-**1. Email Attachments**
+### 1. Email Attachments
+
 - Convert WHITEPAPER.md to PDF (use Markdown to PDF converter)
 - Name file: `Aetheron_Technical_Whitepaper_Feb2026.pdf`
 - Include in all investor emails
 
-**2. Website**
+### 2. Website
+
 - Upload PDF to GitHub repo
 - Link from main page: `<a href="/WHITEPAPER.pdf" download>Download Whitepaper</a>`
 - Create dedicated "Documentation" page
 
-**3. Social Media**
+### 3. Social Media
+
 - Tweet announcement with link
 - LinkedIn article
 - Reddit r/CryptoMoonShots post
 - Bitcointalk announcement thread
 
-**4. Crypto Platforms**
+### 4. Crypto Platforms
+
 - CoinGecko: Upload during listing request
 - CoinMarketCap: Include in application
 - DexTools: Add to project profile
 - DexScreener: Link in description
 
-### Sharing Script (Social Media):
+### Sharing Script (Social Media)
 
-```
+```text
 🚀 AETHERON WHITEPAPER RELEASED! 📄
 
 We're proud to release our comprehensive technical whitepaper covering:
 
 ✅ Smart contract architecture
-✅ Complete tokenomics breakdown  
+✅ Complete tokenomics breakdown
 ✅ Security measures & auditing
 ✅ 5-phase roadmap through 2027
 ✅ Staking mechanics & APY calculations
@@ -283,7 +289,7 @@ A: Smart contract bugs (mitigated by testing + audit), market volatility, compet
 A: Long-term: DAO governance transition. Short-term: Token liquidity on major CEXs. Potential: Strategic acquisition by larger DeFi protocol.
 
 **Q: Can I try the platform now?**
-A: Yes! Visit https://aetheronplatform.github.io, connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
+A: Yes! Visit [https://aetheronplatform.github.io](https://aetheronplatform.github.io), connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
 
 ---
 
@@ -292,9 +298,10 @@ A: Yes! Visit https://aetheronplatform.github.io, connect MetaMask, switch to Po
 **Day 1**: Initial outreach email  
 **Day 4**: Follow-up if no response  
 **Day 7**: Final follow-up with case study  
-**Day 14**: Move to long-term nurture list  
+**Day 14**: Move to long-term nurture list
 
 **After Interest**:
+
 - Day 1: Send detailed materials
 - Day 3: Schedule intro call
 - Day 7: Technical deep dive
@@ -307,12 +314,14 @@ A: Yes! Visit https://aetheronplatform.github.io, connect MetaMask, switch to Po
 ## 🎯 Target Investor Profiles
 
 **Ideal Investors**:
+
 1. **Crypto-Native VCs**: Polychain, Dragonfly, Multicoin
 2. **DeFi-Focused Funds**: DeFiance Capital, Framework Ventures
 3. **Angel Investors**: DeFi founders, successful crypto entrepreneurs
 4. **Strategic Partners**: DEX protocols, yield aggregators, wallets
 
 **Not a Fit**:
+
 - Traditional VCs without crypto experience
 - Investors requiring quick exits (<12 months)
 - Those uncomfortable with regulatory uncertainty
@@ -322,6 +331,7 @@ A: Yes! Visit https://aetheronplatform.github.io, connect MetaMask, switch to Po
 ## 📦 Email Attachment Checklist
 
 Before sending, attach:
+
 - [ ] Aetheron_Whitepaper_Feb2026.pdf
 - [ ] One_Pager_Investment_Summary.pdf
 - [ ] Pitch_Deck.pdf (if created)
@@ -332,18 +342,18 @@ Before sending, attach:
 
 ## 🔗 Quick Links for Copy/Paste
 
-**Platform**: https://aetheronplatform.github.io  
-**Analytics**: https://aetheronplatform.github.io/analytics-dashboard.html  
-**Calculator**: https://aetheronplatform.github.io/staking-calculator.html  
+**Platform**: [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)  
+**Analytics**: [https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html](https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html)  
+**Calculator**: [https://mastatrill.github.io/Aetheron_platform/staking-calculator.html](https://mastatrill.github.io/Aetheron_platform/staking-calculator.html)  
 **Whitepaper**: [Your hosting link]  
-**GitHub**: https://github.com/MastaTrill/Aetheron_platform  
+**GitHub**: [https://github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)  
 **AETH Contract**: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e  
 **Staking Contract**: 0x896D9d37A67B0bBf81dde0005975DA7850FFa638  
-**Verification**: https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+**Verification**: [https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e](https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 
 ---
 
 **Ready to send!** Copy these templates, personalize with your details, and start reaching out to investors today.
 
-*Document Version: 1.0*  
-*Last Updated: February 8, 2026*
+_Document Version: 1.0_
+_Last Updated: February 8, 2026_

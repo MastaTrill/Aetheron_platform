@@ -1,0 +1,76 @@
+/* dashboard-enhanced.css - Minimal restoration for enhanced dashboard */
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  color: #fff;
+  margin: 0;
+  min-height: 100vh;
+}
+.card {
+  background: rgba(26, 26, 46, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  margin: 2rem auto;
+  padding: 2rem;
+  max-width: 480px;
+}
+.btn {
+  background: #00d4ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 2em;
+  font-size: 1.1em;
+  cursor: pointer;
+  margin: 0.5em 0;
+  transition: background 0.2s;
+}
+.btn-primary {
+  background: #8a2be2;
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid #00d4ff;
+  color: #00d4ff;
+}
+.input-full {
+  width: 100%;
+  padding: 0.5em;
+  margin-bottom: 0.7em;
+  border-radius: 6px;
+  border: 1px solid #222;
+  background: #181828;
+  color: #fff;
+}
+.launch-result {
+  margin-top: 1em;
+  color: #10b981;
+}
+.whats-new-card {
+  background: rgba(138, 43, 226, 0.15);
+}
+.whats-new-title {
+  font-size: 1.3em;
+  margin-bottom: 1em;
+}
+.whats-new-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+.whats-new-feature-icon {
+  font-size: 2em;
+}
+.whats-new-feature-desc {
+  font-size: 1.05em;
+}
+.whats-new-actions {
+  margin-top: 1.5em;
+  text-align: center;
+}

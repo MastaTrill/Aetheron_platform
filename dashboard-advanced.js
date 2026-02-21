@@ -1836,17 +1836,6 @@ class AetheronDashboard {
 
     // Additional Helper Methods
 
-    refreshData() {
-        this.showNotification("info", "Refreshing", "Updating dashboard data...");
-        
-        // Simulate data refresh
-        setTimeout(() => {
-            this.renderActivityTable();
-            this.updateStats();
-            this.showNotification("success", "Data Updated", "Dashboard has been refreshed!");
-        }, 1500);
-    }
-
     logout() {
         this.showNotification("info", "Signing Out", "Goodbye! You have been signed out.");
         setTimeout(() => {
@@ -1856,13 +1845,6 @@ class AetheronDashboard {
 
     showHelp() {
         this.startTour();
-    }
-
-    openSettings() {
-        const settingsPanel = document.getElementById("settingsPanel");
-        if (settingsPanel) {
-            settingsPanel.classList.add("show");
-        }
     }
 }
 

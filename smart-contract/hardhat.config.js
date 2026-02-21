@@ -1,9 +1,10 @@
-require('@nomicfoundation/hardhat-toolbox');
-require('@nomicfoundation/hardhat-verify');
-require('dotenv').config();
+import '@nomicfoundation/hardhat-toolbox';
+import '@nomicfoundation/hardhat-verify';
+import dotenv from 'dotenv';
+dotenv.config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+export default {
   solidity: {
     version: '0.8.20',
     settings: {

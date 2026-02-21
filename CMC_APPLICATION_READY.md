@@ -1,4 +1,4 @@
-# 🚀 Aetheron Platform — Complete CoinMarketCap Submission Package
+🚀 Aetheron Platform — Complete CoinMarketCap Submission Package
 
 (All missing fields filled in for you)
 

@@ -65,7 +65,6 @@
 
 - **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Coinbase wallet)
 - **Role:** Contract owner, deployer, marketing, and staking pool
-- **Role:** Contract owner and deployer
 - **Allocation:** 200,000,000 AETH (20%)
 
 ### Keeper's Lantern Wallet

@@ -12,7 +12,7 @@
 
 ### Description
 
-```
+```text
 Aetheron (AETH) is a revolutionary DeFi token that bridges blockchain technology with space exploration. Built on Polygon for lightning-fast, low-cost transactions, AETH powers a comprehensive ecosystem featuring staking rewards, governance, and community-driven development.
 
 Key Features:
