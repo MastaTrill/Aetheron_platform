@@ -1,5 +1,6 @@
-const { expect } = require('chai');
-const { ethers } = require('hardhat');
+import { expect } from 'chai';
+import pkg from 'hardhat';
+const { ethers } = pkg;
 
 describe('AetheronMultiSigTreasury', function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
@@ -16,7 +17,7 @@ describe('AetheronMultiSigTreasury', function () {
 
   it('should allow the owner to submit a transaction', async function () {
     const to = addr1.address;
-    const value = ethers.parseEther('1');
+    const value = ethers.utils.parseEther('1');
     const data = '0x';
     await expect(multiSig.submitTransaction(to, value, data)).to.emit(
       multiSig,
@@ -26,10 +27,10 @@ describe('AetheronMultiSigTreasury', function () {
 
   it('should not allow non-owners to submit a transaction', async function () {
     const to = addr1.address;
-    const value = ethers.parseEther('1');
+    const value = ethers.utils.parseEther('1');
     const data = '0x';
     await expect(
       multiSig.connect(addr1).submitTransaction(to, value, data),
-    ).to.be.revertedWithCustomError(multiSig, 'OwnableUnauthorizedAccount');
+    ).to.be.revertedWith('Ownable: caller is not the owner');
   });
 });

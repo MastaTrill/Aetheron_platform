@@ -32,7 +32,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title AetheronStaking
@@ -46,33 +46,23 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *   This ensures only meaningful rewards can be claimed and avoids unnecessary transactions.
  */
 contract AetheronStaking is Ownable, ReentrancyGuard {
+        constructor(address _aetheronToken) {
+            require(_aetheronToken != address(0), "Invalid token address");
+            aetheronToken = IERC20(_aetheronToken);
+            // Create default pools
+            _createPool(30 days, 500); // 30 days, 5% APY
+            _createPool(90 days, 1200); // 90 days, 12% APY
+            _createPool(180 days, 2500); // 180 days, 25% APY
+        }
     uint256 public constant MIN_CLAIM_REWARD = 1e15; // 0.001 token (adjust as needed)
+    uint256 public constant MIN_STAKING_PERIOD = 1 hours;
     using SafeERC20 for IERC20;
     IERC20 public immutable aetheronToken;
 
-    // Staking pool info
-    struct Pool {
-        uint256 lockDuration; // Lock duration in seconds
-        uint256 rewardRate; // APY in basis points (100 = 1%)
-        uint256 totalStaked;
-        bool isActive;
-    }
-
-    // User stake info
-    struct Stake {
-        uint256 amount;
-        uint256 startTime;
-        uint256 lastClaimTime;
-        uint256 poolId;
-    }
-
-    // Minimum staking period to prevent timestamp manipulation exploits
-    uint256 public constant MIN_STAKING_PERIOD = 1 hours;
-
     // State variables
     mapping(uint256 => Pool) public pools;
-    mapping(address => Stake[]) public userStakes;
     uint256 public poolCount;
+    mapping(address => Stake[]) public userStakes;
     uint256 public totalStaked;
     uint256 public rewardBalance;
 
@@ -100,14 +90,20 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         uint256 amount
     );
 
-    constructor(address _aetheronToken) Ownable(msg.sender) {
-        require(_aetheronToken != address(0), "Invalid token address");
-        aetheronToken = IERC20(_aetheronToken);
+    // Staking pool info
+    struct Pool {
+        uint256 lockDuration; // Lock duration in seconds
+        uint256 rewardRate; // APY in basis points (100 = 1%)
+        uint256 totalStaked;
+        bool isActive;
+    }
 
-        // Create default pools
-        _createPool(30 days, 500); // 30 days, 5% APY
-        _createPool(90 days, 1200); // 90 days, 12% APY
-        _createPool(180 days, 2500); // 180 days, 25% APY
+    // User stake info
+    struct Stake {
+        uint256 amount;
+        uint256 startTime;
+        uint256 lastClaimTime;
+        uint256 poolId;
     }
 
     /**
@@ -201,7 +197,6 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     function claimRewards(uint256 stakeId) external nonReentrant {
         require(stakeId < userStakes[msg.sender].length, "Invalid stake");
         uint256 reward = calculateReward(msg.sender, stakeId);
-        // ...existing code...
         require(reward >= MIN_CLAIM_REWARD, "No rewards available");
         require(reward <= rewardBalance, "Insufficient reward balance");
         // Update last claim time

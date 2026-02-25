@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
@@ -11,8 +13,25 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
  * @notice Implements Gnosis Safe-style multi-signature functionality
  * with transaction queuing, confirmation, and execution
  */
-contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
-        constructor() Ownable(msg.sender) {}
+contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, UUPSUpgradeable {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+        function initialize(address[] memory _owners, uint256 _numConfirmationsRequired) public initializer {
+            __Ownable_init();
+            __ReentrancyGuard_init();
+            __Pausable_init();
+            __UUPSUpgradeable_init();
+            require(_owners.length > 0, "Owners required");
+            require(_numConfirmationsRequired > 0 && _numConfirmationsRequired <= _owners.length, "Invalid confirmations");
+            for (uint256 i = 0; i < _owners.length; i++) {
+                address owner = _owners[i];
+                require(owner != address(0), "Invalid owner");
+                require(!isOwner[owner], "Owner not unique");
+                isOwner[owner] = true;
+                owners.push(owner);
+            }
+            numConfirmationsRequired = _numConfirmationsRequired;
+        }
     using ECDSA for bytes32;
 
     // Events
@@ -62,7 +81,7 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
         require(!isConfirmed[_txIndex][msg.sender], "Transaction already confirmed");
         _;
     }
-    receive() external payable {
+    receive() external payable whenNotPaused {
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
 
@@ -77,9 +96,8 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
         address _to,
         uint256 _value,
         bytes memory _data
-    ) public onlyOwner returns (uint256 txIndex) {
+    ) public onlyOwner whenNotPaused returns (uint256 txIndex) {
         txIndex = transactions.length;
-
         transactions.push(
             Transaction({
                 to: _to,
@@ -89,7 +107,6 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
                 numConfirmations: 0
             })
         );
-
         emit SubmitTransaction(msg.sender, txIndex, _to, _value, _data);
     }
 
@@ -100,6 +117,7 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
     function confirmTransaction(uint256 _txIndex)
         public
         onlyOwner
+        whenNotPaused
         txExists(_txIndex)
         notExecuted(_txIndex)
         notConfirmed(_txIndex)
@@ -107,7 +125,6 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
         Transaction storage transaction = transactions[_txIndex];
         transaction.numConfirmations += 1;
         isConfirmed[_txIndex][msg.sender] = true;
-
         emit ConfirmTransaction(msg.sender, _txIndex);
     }
 
@@ -118,23 +135,20 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
     function executeTransaction(uint256 _txIndex)
         public
         onlyOwner
+        whenNotPaused
         txExists(_txIndex)
         notExecuted(_txIndex)
     {
         Transaction storage transaction = transactions[_txIndex];
-
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
             "Cannot execute transaction"
         );
-
         transaction.executed = true;
-
         (bool success, ) = transaction.to.call{value: transaction.value}(
             transaction.data
         );
         require(success, "Transaction failed");
-
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
 
@@ -145,16 +159,14 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
     function revokeConfirmation(uint256 _txIndex)
         public
         onlyOwner
+        whenNotPaused
         txExists(_txIndex)
         notExecuted(_txIndex)
     {
         Transaction storage transaction = transactions[_txIndex];
-
         require(isConfirmed[_txIndex][msg.sender], "Transaction not confirmed");
-
         transaction.numConfirmations -= 1;
         isConfirmed[_txIndex][msg.sender] = false;
-
         emit RevokeConfirmation(msg.sender, _txIndex);
     }
 
@@ -209,15 +221,18 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
      * @notice Allows owner to pause all operations in case of emergency
      */
     function emergencyPause() public onlyOwner {
-        // Implementation for emergency pause
-        // This would typically involve setting a paused state
+        _pause();
+    }
+
+    function emergencyUnpause() public onlyOwner {
+        _unpause();
     }
 
     /**
      * @dev Add new owner (requires multi-sig approval)
      * @param owner Address of new owner
      */
-    function addOwner(address owner) public onlyOwner {
+    function addOwner(address owner) public onlyOwner whenNotPaused {
         require(owner != address(0), "Invalid owner");
         require(!isOwner[owner], "Owner already exists");
 
@@ -232,7 +247,7 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
      * @notice Remove an owner from the wallet (requires multi-sig approval)
      * @param owner The address of the owner to remove
      */
-    function removeOwner(address owner) public onlyOwner {
+    function removeOwner(address owner) public onlyOwner whenNotPaused {
         require(isOwner[owner], "Not owner");
         require(owners.length > 1, "Cannot remove last owner");
         for (uint256 i = 0; i < owners.length; i++) {
@@ -253,10 +268,12 @@ contract AetheronMultiSigTreasury is Ownable, ReentrancyGuard {
      * @notice Change the number of required confirmations for transactions
      * @param _required The new number of required confirmations
      */
-    function changeRequirement(uint256 _required) public onlyOwner {
+    function changeRequirement(uint256 _required) public onlyOwner whenNotPaused {
         require(_required > 0, "Invalid requirement");
         require(_required <= owners.length, "Requirement too high");
         numConfirmationsRequired = _required;
         emit RequirementChange(_required);
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

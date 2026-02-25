@@ -1,10 +1,13 @@
-import '@nomicfoundation/hardhat-toolbox';
-import '@nomicfoundation/hardhat-verify';
-import dotenv from 'dotenv';
+require('@nomicfoundation/hardhat-verify');
+require('@nomiclabs/hardhat-ethers');
+require('@nomiclabs/hardhat-waffle');
+require('hardhat-gas-reporter');
+require('@openzeppelin/hardhat-upgrades');
+const dotenv = require('dotenv');
 dotenv.config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
-export default {
+module.exports = {
   solidity: {
     version: '0.8.20',
     settings: {
@@ -35,9 +38,22 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
     },
+    mainnet: {
+      url:
+        process.env.MAINNET_RPC_URL ||
+        'https://eth-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1,
+      gasPrice: 30000000000, // 30 gwei
+    },
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY || '',
+    apiKey: {
+      polygon: process.env.POLYGONSCAN_API_KEY || '',
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || '',
+      mainnet: process.env.ETHERSCAN_API_KEY || '',
+      sepolia: process.env.ETHERSCAN_API_KEY || '',
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS === 'true',

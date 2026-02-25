@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract AetheronPresale is Ownable, ReentrancyGuard {
     IERC20 public token;
@@ -22,7 +22,7 @@ contract AetheronPresale is Ownable, ReentrancyGuard {
     event PresaleStateChanged(bool isActive);
     event RateChanged(uint256 newRate);
 
-    constructor(address _token, uint256 _rate, uint256 _maxTokensForSale, uint256 _maxWeiRaised) Ownable(msg.sender) {
+    constructor(address _token, uint256 _rate, uint256 _maxTokensForSale, uint256 _maxWeiRaised) {
         token = IERC20(_token);
         rate = _rate;
         maxTokensForSale = _maxTokensForSale;

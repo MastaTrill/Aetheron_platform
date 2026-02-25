@@ -1,67 +1,107 @@
-<!-- All floating health/status widgets have been removed. No floating Platform Health widget is present. -->
-<link rel="stylesheet" href="dashboard-enhanced.css">
-<script src="stripe-launchpad-frontend.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
-<script src="stripe-frontend.js"></script>
-<script src="dashboard-enhanced.js"></script>
-<!-- ...existing code... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://js.stripe.com; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io https://js.stripe.com; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com https://js.stripe.com;" />
+  <title>Aetheron — Enhanced Dashboard</title>
+  <meta name="description" content="Aetheron Enhanced Dashboard: advanced portfolio tools, token scanner, and launchpad." />
+  <link rel="canonical" href="https://aetheron.online/dashboard-enhanced.html" />
 
-<!-- Token Launchpad Card -->
-<div class="card">
-  <h3>🚀 Token Launchpad</h3>
-  <form id="token-launch-form">
-    <input type="text" id="launch-token-name" placeholder="Token Name" required class="input-full">
-    <input type="text" id="launch-token-symbol" placeholder="Token Symbol" maxlength="8" required class="input-full">
-    <input type="number" id="launch-token-supply" placeholder="Total Supply (e.g. 1000000)" min="1" required
-      class="input-full">
-    <input type="text" id="launch-team-wallet" placeholder="Team Wallet Address (for allocation)" class="input-full">
-    <input type="number" id="launch-allocation" placeholder="Team Allocation % (e.g. 1)" min="0" max="100"
-      class="input-full">
-    <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)" class="input-full">
-    <input type="url" id="launch-website" placeholder="Project Website (optional)" class="input-full">
-    <textarea id="launch-description" placeholder="Project Description (optional)" class="input-full"></textarea>
-    <button type="submit" class="btn btn-block">Launch Token</button>
-  </form>
-  <div id="launch-result" class="launch-result"></div>
-</div>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 
-<!-- What's New Section -->
-<div class="card whats-new-card">
-  <h3 class="whats-new-title">
-    <span class="whats-new-icon">✨</span> What's New in Aetheron
-  </h3>
-  <div class="whats-new-features">
-    <div class="whats-new-feature">
-      <span class="whats-new-feature-icon">🔎</span>
-      <div>
-        <b>Token Security Scanner</b><br>
-        <span class="whats-new-feature-desc">Instantly scan any token for risks and vulnerabilities before you invest or
-          trade.</span>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+
+  <link rel="stylesheet" href="critical.min.css?v=1.3.1" />
+  <link rel="stylesheet" href="shared-styles.min.css?v=1.3.1" />
+  <link rel="stylesheet" href="dashboard-enhanced.css?v=1.3.1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+  <script src="https://js.stripe.com/v3/" defer></script>
+  <script src="stripe-launchpad-frontend.js?v=1.3.1" defer></script>
+  <script src="stripe-frontend.js?v=1.3.1" defer></script>
+  <script src="dashboard-enhanced.js?v=1.3.1" defer></script>
+  <script src="dom-bindings.js?v=1.3.1" defer></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <nav class="navbar" aria-label="Primary">
+    <div class="navbar-content">
+      <a href="index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+      <span class="nav-title">Enhanced Dashboard</span>
+    </div>
+  </nav>
+  <main id="main-content" role="main">
+
+    <!-- What's New Section -->
+    <div class="card whats-new-card">
+      <h3 class="whats-new-title">
+        <span class="whats-new-icon">✨</span> What's New in Aetheron
+      </h3>
+      <div class="whats-new-features">
+        <div class="whats-new-feature">
+          <span class="whats-new-feature-icon">🔎</span>
+          <div>
+            <b>Token Security Scanner</b><br />
+            <span class="whats-new-feature-desc">Instantly scan any token for risks and vulnerabilities before you invest or trade.</span>
+          </div>
+        </div>
+        <div class="whats-new-feature">
+          <span class="whats-new-feature-icon">🚀</span>
+          <div>
+            <b>Token Launchpad</b><br />
+            <span class="whats-new-feature-desc">Launch your own token on Polygon with onboarding, allocation, and payment integration—no coding required!</span>
+          </div>
+        </div>
+      </div>
+      <div class="whats-new-actions">
+        <a href="#token-launch-form" class="btn btn-primary whats-new-action">Try Launchpad</a>
+        <a href="#token-scan-form" class="btn btn-outline whats-new-action">Try Scanner</a>
       </div>
     </div>
-    <div class="whats-new-feature">
-      <span class="whats-new-feature-icon">🚀</span>
-      <div>
-        <b>Token Launchpad</b><br>
-        <span class="whats-new-feature-desc">Launch your own token on Polygon with onboarding, allocation, and payment
-          integration—no coding required!</span>
-      </div>
+
+    <!-- Token Launchpad Card -->
+    <div class="card">
+      <h3>🚀 Token Launchpad</h3>
+      <form id="token-launch-form">
+        <input type="text" id="launch-token-name" placeholder="Token Name" required class="input-full" />
+        <input type="text" id="launch-token-symbol" placeholder="Token Symbol" maxlength="8" required class="input-full" />
+        <input type="number" id="launch-token-supply" placeholder="Total Supply (e.g. 1000000)" min="1" required class="input-full" />
+        <input type="text" id="launch-team-wallet" placeholder="Team Wallet Address (for allocation)" class="input-full" />
+        <input type="number" id="launch-allocation" placeholder="Team Allocation % (e.g. 1)" min="0" max="100" class="input-full" />
+        <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)" class="input-full" />
+        <input type="url" id="launch-website" placeholder="Project Website (optional)" class="input-full" />
+        <textarea id="launch-description" placeholder="Project Description (optional)" class="input-full"></textarea>
+        <button type="submit" class="btn btn-block">Launch Token</button>
+      </form>
+      <div id="launch-result" class="launch-result"></div>
     </div>
-  </div>
-  <div class="whats-new-actions">
-    <a href="#token-launch-form" class="btn btn-primary whats-new-action">Try Launchpad</a>
-    <a href="#token-scan-form" class="btn btn-outline whats-new-action">Try Scanner</a>
-  </div>
-</div>
-<div class="card">
-  <h3>🔎 Token Security Scanner</h3>
-  <form id="token-scan-form">
-    <input type="text" id="scan-token-address" placeholder="Paste token address" class="input-full">
-    <select id="scan-type" class="input-full" title="Select scan type">
-      <option value="basic">Basic Scan (Free)</option>
-      <option value="full">Full Report ($9+)</option>
-    </select>
-    <button type="submit" class="btn btn-block">Scan Token</button>
-    <div id="scan-result"></div>
-  </form>
-</div>
+
+    <!-- Token Security Scanner Card -->
+    <div class="card">
+      <h3>🔎 Token Security Scanner</h3>
+      <form id="token-scan-form">
+        <input type="text" id="scan-token-address" placeholder="Paste token address" class="input-full" />
+        <select id="scan-type" class="input-full" title="Select scan type">
+          <option value="basic">Basic Scan (Free)</option>
+          <option value="full">Full Report ($9+)</option>
+        </select>
+        <button type="submit" class="btn btn-block">Scan Token</button>
+        <div id="scan-result"></div>
+      </form>
+    </div>
+
+  </main>
+  <footer class="footer">
+    <a href="index.html" class="footer-link">Home</a>
+  </footer>
+</body>
+</html>

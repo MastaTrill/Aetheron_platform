@@ -1,3 +1,159 @@
+/* Transaction History Controls */
+.tx-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 1em;
+}
+.tx-controls label {
+  font-size: 1em;
+  margin-right: 0.3em;
+}
+.tx-controls select,
+.tx-controls input[type='date'] {
+  padding: 0.3em 0.7em;
+  border-radius: 6px;
+  border: 1px solid #222;
+  background: #181828;
+  color: #fff;
+}
+/* Profile Modal Styles */
+.modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: #181828;
+  border-radius: 12px;
+  padding: 2em 1.5em;
+  min-width: 300px;
+  max-width: 90vw;
+  color: #fff;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.3);
+}
+.modal label {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+  font-size: 1em;
+}
+.modal input {
+  width: 100%;
+  padding: 0.5em;
+  border-radius: 6px;
+  border: 1px solid #222;
+  background: #22223a;
+  color: #fff;
+  margin-bottom: 0.5em;
+}
+.modal-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 1.5em;
+  justify-content: flex-end;
+}
+.profile-links {
+  margin-top: 0.5em;
+  font-size: 0.95em;
+}
+.profile-links a {
+  color: #00d4ff;
+  margin-right: 0.7em;
+  text-decoration: none;
+}
+/* Responsive/mobile polish */
+@media (max-width: 600px) {
+  body {
+    font-size: 1em;
+    padding: 0;
+  }
+  .card {
+    padding: 1rem;
+    margin: 1rem 0.5rem;
+    max-width: 100vw;
+    border-radius: 10px;
+  }
+  .btn,
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    font-size: 1em;
+    padding: 0.8em 0;
+  }
+  .input-full,
+  input,
+  select,
+  textarea {
+    font-size: 1em;
+    padding: 0.7em;
+  }
+  h1,
+  h2,
+  h3 {
+    font-size: 1.1em;
+  }
+  .spinner {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Accessibility improvements */
+.card,
+.btn,
+input,
+select,
+textarea {
+  outline-color: #00d4ff;
+  outline-width: 2px;
+  outline-style: auto;
+}
+.help-icon:focus,
+.help-icon:hover {
+  outline: 2px solid #8a2be2;
+  background: rgba(138, 43, 226, 0.08);
+  border-radius: 50%;
+}
+.action-btn:focus,
+.btn:focus {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+.status-message[aria-live] {
+  border-left: 4px solid #00d4ff;
+  padding-left: 0.7em;
+}
+/* Spinner styles for dashboard loading indicators */
+.spinner {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #00d4ff;
+  border-top: 4px solid #8a2be2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 /* dashboard-enhanced.css - Minimal restoration for enhanced dashboard */
 body {
   font-family:

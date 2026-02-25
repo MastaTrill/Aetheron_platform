@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title AetheronGovernance
@@ -87,7 +87,7 @@ contract AetheronGovernance is Ownable, ReentrancyGuard {
     event ProposalCanceled(uint256 indexed proposalId);
     event DelegateChanged(address indexed delegator, address indexed delegate);
 
-    constructor(address _aethToken) Ownable(msg.sender) {
+    constructor(address _aethToken) {
         require(_aethToken != address(0), "Invalid token address");
         aethToken = IERC20(_aethToken);
     }

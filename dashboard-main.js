@@ -240,4 +240,25 @@ window.addEventListener('load', () => {
       // Placeholder for Coinbase payment
       showToast('Coinbase payment integration coming soon!', { type: 'info' });
     });
+
+  // Mobile menu logic
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const body = document.body;
+  if (hamburger && overlay) {
+    function toggleMenu() {
+      const isActive = hamburger.classList.toggle('active');
+      overlay.classList.toggle('active');
+      hamburger.setAttribute('aria-expanded', isActive);
+      body.style.overflow = isActive ? 'hidden' : '';
+    }
+    function closeMenu() {
+      hamburger.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+      body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+  }
 });

@@ -1,26 +1,48 @@
 // Aetheron Dashboard JavaScript
 class AetheronDashboard {
-  constructor() {
-    this.currentSection = 'dashboard';
-    this.tradingVolume = 0;
-    this.communityStats = {
-      twitterFollowers: 0,
-      telegramMembers: 0,
-      discordMembers: 0,
-      totalHolders: 0,
-    };
-    this.referralCode = this.generateReferralCode();
-    this.init();
+  // Transaction history demo data (replace with real API integration)
+  getTxHistory() {
+    return JSON.parse(localStorage.getItem('aetheron-tx-history') || '[]');
   }
 
-  init() {
-    this.setupEventListeners();
-    this.setupSpaceBackground();
-    this.loadDashboardData();
-    this.setupTradingIncentives();
-    this.setupCommunityFeatures();
-    this.startRealTimeUpdates();
-    console.log('🌌 Aetheron Dashboard Initialized!');
+  setTxHistory(txs) {
+    localStorage.setItem('aetheron-tx-history', JSON.stringify(txs));
+  }
+
+  renderTxHistory() {
+    const table = document.getElementById('txHistoryTable').querySelector('tbody');
+    const type = document.getElementById('txTypeFilter').value;
+    const date = document.getElementById('txDateFilter').value;
+    let txs = this.getTxHistory();
+    if (type !== 'all') txs = txs.filter(tx => tx.type === type);
+    if (date) txs = txs.filter(tx => tx.date.startsWith(date));
+    table.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
+  }
+
+  exportTxCsv() {
+    // ... class methods ...
+  }
+
+  handleWalletConnected(account) {
+    // Example: Notify on wallet connect
+    this.notify('Wallet connected', 'success');
+    // Show wallet loading spinner
+    const spinner = document.getElementById('walletLoadingSpinner');
+    if (spinner) spinner.style.display = 'flex';
+    // Update wallet status bar and DOM with account info
+    if (!account && window.ethereum && window.ethereum.selectedAddress) {
+      account = window.ethereum.selectedAddress;
+    }
+    if (account) {
+      // Update account address in DOM if present
+      const accountEl = document.getElementById('accountAddress');
+      if (accountEl) accountEl.textContent = account;
+      this.updateWalletStatusBar(true);
+      setTimeout(() => { if (spinner) spinner.style.display = 'none'; }, 800);
+    } else {
+      this.updateWalletStatusBar(false);
+      if (spinner) spinner.style.display = 'none';
+    }
   }
 
   setupEventListeners() {
@@ -276,6 +298,9 @@ class AetheronDashboard {
   }
 
   async updateLiveStats() {
+    // Show quick stats loading spinner
+    const quickStatsSpinner = document.getElementById('quickStatsLoading');
+    if (quickStatsSpinner) quickStatsSpinner.style.display = 'flex';
     // Update live trading stats
     const priceElement = document.getElementById('live-price');
     const volumeElement = document.getElementById('live-volume');
@@ -314,6 +339,8 @@ class AetheronDashboard {
     if (holdersElement) {
       holdersElement.textContent = this.communityStats.totalHolders.toString();
     }
+    // Hide quick stats spinner after data loads
+    setTimeout(() => { if (quickStatsSpinner) quickStatsSpinner.style.display = 'none'; }, 800);
   }
 
   checkTradingMilestones() {
@@ -466,23 +493,75 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Real-Time Notifications
   function initNotifications() {
     const el = document.getElementById('notificationsPlaceholder');
-    if (el) el.textContent = 'No notifications yet (stub).';
-    // TODO: Integrate notification system for staking, proposals, price alerts
+    if (el) el.textContent = '';
+    // Example triggers (replace with real event hooks)
+    setTimeout(() => window.dashboard.notify('Staking reward received: +10 AETH', 'success'), 3000);
+    setTimeout(() => window.dashboard.notify('New governance proposal: Increase APY', 'info'), 6000);
+    setTimeout(() => window.dashboard.notify('Unstaking complete: -100 AETH', 'warning'), 9000);
   }
   // 3. Theme Auto-Switch
   function initThemeSettings() {
-    const el = document.getElementById('themeStatus');
-    if (el) el.textContent = 'Auto (stub)';
-    // TODO: Detect system theme, add toggle, save to localStorage
+    const themeStatus = document.getElementById('themeStatus');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleSwitch = document.getElementById('themeToggleSwitch');
+    // Helper: get preferred theme
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('aetheron-theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+      // System preference
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    // Helper: set theme
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('aetheron-theme', theme);
+      if (themeStatus) themeStatus.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+      if (themeToggleBtn) themeToggleBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      if (themeToggleSwitch) themeToggleSwitch.checked = theme === 'auto';
+    }
+    // Initialize theme
+    let theme = getPreferredTheme();
+    setTheme(theme);
+    // Button click toggles theme
+    if (themeToggleBtn) {
+      themeToggleBtn.onclick = function () {
+        theme = getPreferredTheme() === 'dark' ? 'light' : 'dark';
+        setTheme(theme);
+      };
+    }
+    // Switch toggles auto mode
+    if (themeToggleSwitch) {
+      themeToggleSwitch.onchange = function () {
+        if (themeToggleSwitch.checked) {
+          localStorage.removeItem('aetheron-theme');
+          setTheme(getPreferredTheme());
+        } else {
+          setTheme(getPreferredTheme());
+        }
+      };
+    }
+    // Listen for system theme changes if auto
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('aetheron-theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
   }
   // 4. Staking History & Analytics
-  function initStakingHistory() {
+  // ... rest of code ...
     const el = document.getElementById('stakingHistoryTable');
-    if (el)
-      el.querySelector('tbody').innerHTML =
-        '<tr><td colspan="5">No data (stub)</td></tr>';
+    const spinner = document.getElementById('stakingHistorySpinner');
+    if (spinner) spinner.style.display = 'flex';
+    setTimeout(() => {
+      if (el)
+        el.querySelector('tbody').innerHTML =
+          '<tr><td colspan="5">No data (stub)</td></tr>';
+      if (spinner) spinner.style.display = 'none';
+    }, 800);
     // TODO: Fetch staking/unstaking events, render table and chart
-  }
+
+  
   // 5. Community Chat Widget
   function initCommunityChat() {
     const el = document.getElementById('communityChatWidget');
@@ -516,10 +595,318 @@ document.addEventListener('DOMContentLoaded', () => {
   // 10. Advanced Analytics
   function initAdvancedAnalytics() {
     const el = document.getElementById('advancedAnalyticsPlaceholder');
-    if (el) el.textContent = 'Advanced analytics coming soon (stub).';
-    // TODO: Render more charts, fetch analytics data
+    const chartEl = document.getElementById('advancedAnalyticsChart');
+    if (!chartEl) {
+      if (el) el.textContent = 'Analytics chart not found.';
+      return;
+    }
+    if (el) el.textContent = '';
+
+    // Demo data for APY, wallet growth, protocol health
+    const labels = [
+      'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'
+    ];
+    const apyData = [5, 5.2, 5.1, 5.3, 5.4, 5.5, 5.6]; // %
+    const walletGrowthData = [100, 120, 140, 180, 210, 250, 300]; // # wallets
+    const protocolHealthData = [80, 82, 85, 87, 90, 92, 95]; // health score
+
+    // Destroy previous chart if exists
+    if (window.advancedAnalyticsChartInstance) {
+      window.advancedAnalyticsChartInstance.destroy();
+    }
+
+    window.advancedAnalyticsChartInstance = new Chart(chartEl, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'APY (%)',
+            data: apyData,
+            borderColor: 'rgba(34,197,94,1)',
+            backgroundColor: 'rgba(34,197,94,0.1)',
+            yAxisID: 'y',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Wallet Growth',
+            data: walletGrowthData,
+            borderColor: 'rgba(59,130,246,1)',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            yAxisID: 'y1',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Protocol Health',
+            data: protocolHealthData,
+            borderColor: 'rgba(234,179,8,1)',
+            backgroundColor: 'rgba(234,179,8,0.1)',
+            yAxisID: 'y2',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#fff' } },
+          title: {
+            display: true,
+            text: 'Advanced Analytics: APY, Wallet Growth, Protocol Health',
+            color: '#fff',
+            font: { size: 16, weight: 'bold' }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'APY (%)', color: '#fff' },
+            ticks: { color: '#fff', callback: v => v + '%' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Wallets', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          y2: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            offset: true,
+            title: { display: true, text: 'Health Score', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          }
+        }
+      }
+    });
+  // Stake action spinner logic
+  document.addEventListener('DOMContentLoaded', function () {
+    const stakeBtn = document.getElementById('stakeBtn');
+    const stakeSpinner = document.getElementById('stakeSpinner');
+    if (stakeBtn && stakeSpinner) {
+      stakeBtn.addEventListener('click', function () {
+        stakeSpinner.style.display = 'flex';
+        setTimeout(() => {
+          stakeSpinner.style.display = 'none';
+        }, 1200);
+      });
+    }
+  });
   }
 
+
+// === Dashboard Initialization Functions (outside class) ===
+(function() {
+  function initWalletPortfolio() {}
+  function initNotifications() {}
+  function initThemeSettings() {
+    // ... existing theme logic ...
+    const themeStatus = document.getElementById('themeStatus');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleSwitch = document.getElementById('themeToggleSwitch');
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('aetheron-theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('aetheron-theme', theme);
+      if (themeStatus) themeStatus.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+      if (themeToggleBtn) themeToggleBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      if (themeToggleSwitch) themeToggleSwitch.checked = theme === 'auto';
+    }
+    let theme = getPreferredTheme();
+    setTheme(theme);
+    if (themeToggleBtn) {
+      themeToggleBtn.onclick = function () {
+        theme = getPreferredTheme() === 'dark' ? 'light' : 'dark';
+        setTheme(theme);
+      };
+    }
+    if (themeToggleSwitch) {
+      themeToggleSwitch.onchange = function () {
+        if (themeToggleSwitch.checked) {
+          localStorage.removeItem('aetheron-theme');
+          setTheme(getPreferredTheme());
+        } else {
+          setTheme(getPreferredTheme());
+        }
+      };
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('aetheron-theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+  function initStakingHistory() {
+    const el = document.getElementById('stakingHistoryTable');
+    const spinner = document.getElementById('stakingHistorySpinner');
+    if (spinner) spinner.style.display = 'flex';
+    setTimeout(() => {
+      if (el)
+        el.querySelector('tbody').innerHTML =
+          '<tr><td colspan="5">No data (stub)</td></tr>';
+      if (spinner) spinner.style.display = 'none';
+    }, 800);
+  }
+  function initCommunityChat() {
+    const el = document.getElementById('communityChatWidget');
+    if (el) el.textContent = 'Chat widget coming soon (stub).';
+  }
+  function initNFTGallery() {
+    const el = document.getElementById('nftGalleryPlaceholder');
+    if (el) el.textContent = 'No NFTs found (stub).';
+  }
+  function initGasFeeEstimator() {
+    const el = document.getElementById('gasFeeEstimate');
+    if (el) el.textContent = 'Estimated gas fee: -- (stub)';
+  }
+  function initReferralLeaderboard() {
+    const el = document.getElementById('referralLeaderboardPlaceholder');
+    if (el) el.textContent = 'Leaderboard coming soon (stub).';
+  }
+  function initLanguageSelector() {
+    const el = document.getElementById('currentLanguage');
+    if (el) el.textContent = 'Current: English (stub)';
+  }
+  function initAdvancedAnalytics() {
+    const el = document.getElementById('advancedAnalyticsPlaceholder');
+    const chartEl = document.getElementById('advancedAnalyticsChart');
+    if (!chartEl) {
+      if (el) el.textContent = 'Analytics chart not found.';
+      return;
+    }
+    if (el) el.textContent = '';
+    const labels = [
+      'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'
+    ];
+    const apyData = [5, 5.2, 5.1, 5.3, 5.4, 5.5, 5.6];
+    const walletGrowthData = [100, 120, 140, 180, 210, 250, 300];
+    const protocolHealthData = [80, 82, 85, 87, 90, 92, 95];
+    if (window.advancedAnalyticsChartInstance) {
+      window.advancedAnalyticsChartInstance.destroy();
+    }
+    window.advancedAnalyticsChartInstance = new Chart(chartEl, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'APY (%)',
+            data: apyData,
+            borderColor: 'rgba(34,197,94,1)',
+            backgroundColor: 'rgba(34,197,94,0.1)',
+            yAxisID: 'y',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Wallet Growth',
+            data: walletGrowthData,
+            borderColor: 'rgba(59,130,246,1)',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            yAxisID: 'y1',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Protocol Health',
+            data: protocolHealthData,
+            borderColor: 'rgba(234,179,8,1)',
+            backgroundColor: 'rgba(234,179,8,0.1)',
+            yAxisID: 'y2',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#fff' } },
+          title: {
+            display: true,
+            text: 'Advanced Analytics: APY, Wallet Growth, Protocol Health',
+            color: '#fff',
+            font: { size: 16, weight: 'bold' }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'APY (%)', color: '#fff' },
+            ticks: { color: '#fff', callback: v => v + '%' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Wallets', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          y2: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            offset: true,
+            title: { display: true, text: 'Health Score', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          }
+        }
+      }
+    });
+  }
   // Call all placeholder initializers
   initWalletPortfolio();
   initNotifications();
@@ -531,10 +918,208 @@ document.addEventListener('DOMContentLoaded', () => {
   initReferralLeaderboard();
   initLanguageSelector();
   initAdvancedAnalytics();
-});
+})();
 
 // Add some startup animations
 window.addEventListener('load', () => {
   console.log('🚀 Aetheron Platform Loaded Successfully!');
   console.log('🌌 Welcome to the future of space exploration!');
 });
+
+// === Dashboard Initialization Functions (outside class) ===
+(function() {
+  function initWalletPortfolio() {}
+  function initNotifications() {}
+  function initThemeSettings() {
+    // ... existing theme logic ...
+    const themeStatus = document.getElementById('themeStatus');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleSwitch = document.getElementById('themeToggleSwitch');
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('aetheron-theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('aetheron-theme', theme);
+      if (themeStatus) themeStatus.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+      if (themeToggleBtn) themeToggleBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      if (themeToggleSwitch) themeToggleSwitch.checked = theme === 'auto';
+    }
+    let theme = getPreferredTheme();
+    setTheme(theme);
+    if (themeToggleBtn) {
+      themeToggleBtn.onclick = function () {
+        theme = getPreferredTheme() === 'dark' ? 'light' : 'dark';
+        setTheme(theme);
+      };
+    }
+    if (themeToggleSwitch) {
+      themeToggleSwitch.onchange = function () {
+        if (themeToggleSwitch.checked) {
+          localStorage.removeItem('aetheron-theme');
+          setTheme(getPreferredTheme());
+        } else {
+          setTheme(getPreferredTheme());
+        }
+      };
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('aetheron-theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+  function initStakingHistory() {
+    const el = document.getElementById('stakingHistoryTable');
+    const spinner = document.getElementById('stakingHistorySpinner');
+    if (spinner) spinner.style.display = 'flex';
+    setTimeout(() => {
+      if (el)
+        el.querySelector('tbody').innerHTML =
+          '<tr><td colspan="5">No data (stub)</td></tr>';
+      if (spinner) spinner.style.display = 'none';
+    }, 800);
+  }
+  function initCommunityChat() {
+    const el = document.getElementById('communityChatWidget');
+    if (el) el.textContent = 'Chat widget coming soon (stub).';
+  }
+  function initNFTGallery() {
+    const el = document.getElementById('nftGalleryPlaceholder');
+    if (el) el.textContent = 'No NFTs found (stub).';
+  }
+  function initGasFeeEstimator() {
+    const el = document.getElementById('gasFeeEstimate');
+    if (el) el.textContent = 'Estimated gas fee: -- (stub)';
+  }
+  function initReferralLeaderboard() {
+    const el = document.getElementById('referralLeaderboardPlaceholder');
+    if (el) el.textContent = 'Leaderboard coming soon (stub).';
+  }
+  function initLanguageSelector() {
+    const el = document.getElementById('currentLanguage');
+    if (el) el.textContent = 'Current: English (stub)';
+  }
+  function initAdvancedAnalytics() {
+    const el = document.getElementById('advancedAnalyticsPlaceholder');
+    const chartEl = document.getElementById('advancedAnalyticsChart');
+    if (!chartEl) {
+      if (el) el.textContent = 'Analytics chart not found.';
+      return;
+    }
+    if (el) el.textContent = '';
+    const labels = [
+      'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'
+    ];
+    const apyData = [5, 5.2, 5.1, 5.3, 5.4, 5.5, 5.6];
+    const walletGrowthData = [100, 120, 140, 180, 210, 250, 300];
+    const protocolHealthData = [80, 82, 85, 87, 90, 92, 95];
+    if (window.advancedAnalyticsChartInstance) {
+      window.advancedAnalyticsChartInstance.destroy();
+    }
+    window.advancedAnalyticsChartInstance = new Chart(chartEl, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'APY (%)',
+            data: apyData,
+            borderColor: 'rgba(34,197,94,1)',
+            backgroundColor: 'rgba(34,197,94,0.1)',
+            yAxisID: 'y',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Wallet Growth',
+            data: walletGrowthData,
+            borderColor: 'rgba(59,130,246,1)',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            yAxisID: 'y1',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          },
+          {
+            label: 'Protocol Health',
+            data: protocolHealthData,
+            borderColor: 'rgba(234,179,8,1)',
+            backgroundColor: 'rgba(234,179,8,0.1)',
+            yAxisID: 'y2',
+            tension: 0.4,
+            pointRadius: 4,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#fff' } },
+          title: {
+            display: true,
+            text: 'Advanced Analytics: APY, Wallet Growth, Protocol Health',
+            color: '#fff',
+            font: { size: 16, weight: 'bold' }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'APY (%)', color: '#fff' },
+            ticks: { color: '#fff', callback: v => v + '%' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Wallets', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          y2: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            offset: true,
+            title: { display: true, text: 'Health Score', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { drawOnChartArea: false }
+          },
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          }
+        }
+      }
+    });
+  }
+  // Call all placeholder initializers
+  initWalletPortfolio();
+  initNotifications();
+  initThemeSettings();
+  initStakingHistory();
+  initCommunityChat();
+  initNFTGallery();
+  initGasFeeEstimator();
+  initReferralLeaderboard();
+  initLanguageSelector();
+  initAdvancedAnalytics();
+})();

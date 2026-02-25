@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @dev ERC20 token for the Aetheron Platform
  */
 contract AetxToken is ERC20, Ownable {
-    constructor(address initialOwner) ERC20("Aetx Token", "AETX") Ownable(initialOwner) {
+    constructor(address initialOwner) ERC20("Aetx Token", "AETX") {
         _mint(initialOwner, 1_000_000_000 * 10**18);
     }
 }

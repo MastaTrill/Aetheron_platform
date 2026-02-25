@@ -4,5 +4,6 @@
   "dbt.profilesDir": "./dbt/profiles",
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "codium.codeCompletion.enable": true
 }

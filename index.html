@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
 
   <!-- Plausible Analytics (CSP-compliant, privacy-first) -->
   <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
   <noscript><img src="https://plausible.io/api/event?nojs=true&domain=aetheron.online" alt=""
-      referrerpolicy="no-referrer-when-downgrade" style="display:none" /></noscript>
+      referrerpolicy="no-referrer-when-downgrade" hidden /></noscript>
 
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="preconnect" href="https://www.googletagmanager.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="//polygon-rpc.com">
   <link rel="dns-prefetch" href="//polygonscan.com">
   <link rel="dns-prefetch" href="//quickswap.exchange">
@@ -50,47 +50,41 @@
   <meta name="twitter:creator" content="@AetherionCrypto">
   <link rel="canonical" href="https://aetheron.online/">
   <link rel="alternate" hreflang="en" href="https://aetheron.online/">
-  <meta name="robots" content="index, follow">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="dns-prefetch" href="https://googletagmanager.com">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="apple-touch-icon" href="./assets/icon-192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.ico">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <!-- Google Tag Manager/Analytics removed for strict CSP compliance -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="index.min.js?v=1.3.0"></script>
-  <script src="monitor.js?v=1.3.0"></script>
-  <script src="marketing-launch.js?v=1.3.0"></script>
-  <script src="performance-monitor.js?v=1.3.0"></script>
-  <script src="shared-utils.js?v=1.3.0"></script>
-  <link rel="stylesheet" href="critical.min.css">
-  <link rel="stylesheet" href="index.css">
-  <link rel="preload" href="shared-styles.min.css" as="style" onload='this.onload=null,this.rel="stylesheet"'>
-  <link rel="preload" href="mobile-optimization.min.css" as="style" onload='this.onload=null,this.rel="stylesheet"'>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="index.min.js?v=1.3.1" defer></script>
+  <script src="monitor.js?v=1.3.1" defer></script>
+  <script src="marketing-launch.js?v=1.3.1" defer></script>
+  <script src="performance-monitor.js?v=1.3.1" defer></script>
+  <script src="shared-utils.js?v=1.3.1" defer></script>
+  <link rel="stylesheet" href="critical.min.css?v=1.3.1">
+  <link rel="stylesheet" href="index.css?v=1.3.1">
+  <link rel="preload" href="shared-styles.min.css?v=1.3.1" as="style">
+  <link rel="preload" href="mobile-optimization.min.css?v=1.3.1" as="style">
+  <link rel="stylesheet" href="shared-styles.min.css?v=1.3.1">
+  <link rel="stylesheet" href="mobile-optimization.min.css?v=1.3.1">
   <noscript>
-    <link rel="stylesheet" href="shared-styles.min.css">
-    <link rel="stylesheet" href="mobile-optimization.min.css">
+    <link rel="stylesheet" href="shared-styles.min.css?v=1.3.1">
+    <link rel="stylesheet" href="mobile-optimization.min.css?v=1.3.1">
   </noscript>
-  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
-  <script>window.addEventListener("load", function () { const e = document.createElement("link"); e.rel = "stylesheet", e.href = "shared-styles.min.css", document.head.appendChild(e) })</script>
+  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.1">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
-  <style>
-    .btn-coinbase {
-      background: linear-gradient(135deg, #0052ff, #00d4ff);
-      margin-top: 10px;
-    }
-  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 
 <body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
   <canvas id="starfield-canvas" tabindex="-1" aria-hidden="true"></canvas>
   <!-- Starfield canvas added at top for background visibility -->
   <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Page loading progress"></div>
   <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
   <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-  <nav class="navbar" role="navigation">
+  <nav class="navbar" role="navigation" aria-label="Primary">
     <div class="navbar-content"><button class="hamburger" id="hamburger" aria-label="Toggle navigation menu"
         aria-expanded="false" type="button"><span></span> <span></span> <span></span></button>
       <div class="logo"><i class="fas fa-rocket" aria-hidden="true"></i> <span>Aetheron Platform</span></div>
@@ -112,470 +106,474 @@
       </div>
     </div>
   </nav>
-  <div class="container">
-    <div class="hero">
-      <h1>Welcome to Aetheron</h1>
-      <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
-      <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Polygon Mainnet (Chain ID: 137)</div>
-      <div class="quick-actions"><button id="addToMetaMaskBtn" class="quick-action-btn" title="Add AETH to MetaMask"
-          type="button"><i class="fas fa-plus-circle"></i> Add to MetaMask</button> <button id="copyContractBtn"
-          class="quick-action-btn" title="Copy Contract Address" type="button"><i class="fas fa-copy"></i> <span
-            id="copyBtnText">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span></button> <button id="qrCodeBtn"
-          class="quick-action-btn" title="Show QR Code" type="button"><i class="fas fa-qrcode"></i> QR Code</button>
-        <button id="shareBtn" class="quick-action-btn" title="Share Aetheron" type="button"><i
-            class="fas fa-share-alt"></i> Share</button>
-        <button id="viewOnScanBtn" class="quick-action-btn" type="button"
-          onclick='window.open("https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank")'><i
-            class="fas fa-external-link-alt"></i> PolygonScan</button>
-        <div class="quick-action-btn live-indicator"><span class="pulse-dot"></span> <span
-            id="liveHoldersCount">Loading...</span> Holders</div>
-      </div>
-    </div>
-    <div class="features-section">
-      <h2>Complete DeFi Ecosystem</h2>
-      <div class="features-grid"><a href="social-trading/index.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-users"></i></div>
-          <h3>Social Trading</h3>
-          <p>Connect with traders, share signals, and compete in trading competitions</p>
-        </a><a href="yield-aggregator/index.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-coins"></i></div>
-          <h3>Yield Aggregator</h3>
-          <p>Maximize returns across multiple DeFi protocols with intelligent recommendations</p>
-        </a><a href="analytics-dashboard.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
-          <h3>Advanced Analytics</h3>
-          <p>Real-time charts, price history, volume tracking, and staking metrics dashboard</p>
-        </a><a href="staking-calculator.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-calculator"></i></div>
-          <h3>Staking Calculator</h3>
-          <p>Calculate potential rewards, project earnings, and optimize your staking strategy</p>
-        </a><a href="nft-integration/index.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-gem"></i></div>
-          <h3>NFT Marketplace</h3>
-          <p>Trade, collect, and showcase NFTs in our integrated marketplace</p>
-        </a><a href="analytics/index.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-          <h3>Analytics Dashboard</h3>
-          <p>Track performance, analyze trends, and make data-driven decisions</p>
-        </a><a href="dashboard-enhanced.html" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-tachometer-alt"></i></div>
-          <h3>Enhanced Dashboard</h3>
-          <p>Comprehensive portfolio management with advanced trading tools</p>
-        </a><a href="#staking" class="feature-card">
-          <div class="feature-icon"><i class="fas fa-lock"></i></div>
-          <h3>Staking & Rewards</h3>
-          <p>Earn passive income by staking AETH tokens with competitive APYs</p>
-        </a></div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card primary">
-        <div class="icon"><i class="fas fa-coins"></i></div>
-        <div class="label">AETH Price</div>
-        <div class="value" id="priceValue">Loading...</div>
-        <div class="change" id="priceChange"><i class="fas fa-arrow-up" id="priceArrow"></i> <span
-            id="priceChangePercent">--</span></div>
-      </div>
-      <div class="stat-card success">
-        <div class="icon"><i class="fas fa-chart-line"></i></div>
-        <div class="label">Market Cap</div>
-        <div class="value" id="marketCapValue">Loading...</div>
-        <div class="change" id="marketCapChange">--</div>
-      </div>
-      <div class="stat-card warning">
-        <div class="icon"><i class="fas fa-fire"></i></div>
-        <div class="label">Total Staked</div>
-        <div class="value" id="stakedValue">Loading...</div>
-        <div class="change" id="stakedChange">150M AETH</div>
-      </div>
-      <div class="stat-card info">
-        <div class="icon"><i class="fas fa-users"></i></div>
-        <div class="label">Holders</div>
-        <div class="value" id="holdersValue">Loading...</div>
-        <div class="change positive" id="holdersChange">Growing</div>
-      </div>
-    </div>
-    <div class="main-grid">
-      <div>
-        <div class="card mb-2">
-          <div class="card-header">
-            <h2 class="card-title">Your Wallet</h2>
-          </div>
-          <div id="walletNotConnected" class="wallet-section"><i class="fas fa-wallet wallet-icon"></i>
-            <h3>Connect Your Wallet</h3>
-            <p class="text-gray paragraph-spacing">Connect your Ethereum wallet (MetaMask, Coinbase Wallet, etc.) to
-              start using Aetheron Platform</p>
-            <div id="walletStatus" class="wallet-status"><i class="fas fa-spinner fa-spin"></i> Checking for wallet...
-            </div><button class="btn btn-outline mt-05" onclick="recheckWallet()" type="button"><i
-                class="fas fa-sync-alt"></i> Refresh Detection</button>
-          </div>
-          <div id="walletConnected" class="hidden">
-            <div class="wallet-connected">
-              <div>
-                <div class="text-sm text-gray">Connected Wallet</div>
-                <div id="walletAddress" class="fw-600 font-mono"></div>
-              </div>
-              <button class="btn btn-outline" onclick="disconnectWallet()" type="button"><i
-                  class="fas fa-sign-out-alt"></i> Disconnect</button>
-            </div>
-            <div class="balance-display">
-              <div class="text-sm text-gray mb-05">Your AETH Balance</div>
-              <div class="amount" id="userBalance">0.00</div>
-              <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
-            </div>
-            <div class="d-grid grid-2 mt-1">
-              <button class="btn btn-primary"
-                onclick='window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank")'
-                type="button"><i class="fas fa-shopping-cart"></i> Buy AETH</button>
-              <button class="btn btn-success" onclick="addTokenToWallet()" type="button"><i class="fas fa-plus"></i> Add
-                to Wallet</button>
-              <a class="btn btn-info btn-coinbase" href="https://commerce.coinbase.com/checkout/1a2b3c4d5e6f7g8h9i0j"
-                target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> Pay with Crypto (Coinbase)</a>
-            </div>
-          </div>
-        </div>
-        <div class="card" id="staking">
-          <div class="card-header">
-            <h2 class="card-title">Staking Pools</h2><span class="text-gray text-sm">Earn up to 25% APY</span>
-          </div>
-          <div id="stakingAlert" class="alert alert-error hidden"></div>
-          <div id="stakingSuccess" class="alert alert-success hidden"></div>
-          <div class="staking-pools">
-            <div class="pool-card">
-              <div class="pool-header">
-                <div>
-                  <div class="pool-duration">30 Days</div>
-                  <div class="text-sm text-gray">Short-term staking</div>
-                </div>
-                <div class="pool-apy">5% APY</div>
-              </div>
-              <div class="pool-details">
-                <div><i class="fas fa-clock"></i> Lock: 30 days</div>
-                <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
-              </div>
-              <div class="input-group"><label for="stakeAmount0">Amount to stake</label><input type="number"
-                  id="stakeAmount0" placeholder="Amount to stake" min="100">
-                <button class="btn btn-primary" onclick="stakeTokens(0)" id="stakeBtn0" type="button"><i
-                    class="fas fa-lock"></i> Stake</button>
-              </div>
-            </div>
-            <div class="pool-card">
-              <div class="pool-header">
-                <div>
-                  <div class="pool-duration">90 Days</div>
-                  <div class="text-sm text-gray">Medium-term staking</div>
-                </div>
-                <div class="pool-apy">12% APY</div>
-              </div>
-              <div class="pool-details">
-                <div><i class="fas fa-clock"></i> Lock: 90 days</div>
-                <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
-              </div>
-              <div class="input-group"><label for="stakeAmount1">Amount to stake</label><input type="number"
-                  id="stakeAmount1" placeholder="Amount to stake" min="500">
-                <button class="btn btn-primary" onclick="stakeTokens(1)" id="stakeBtn1" type="button"><i
-                    class="fas fa-lock"></i> Stake</button>
-              </div>
-            </div>
-            <div class="pool-card">
-              <div class="pool-header">
-                <div>
-                  <div class="pool-duration">180 Days</div>
-                  <div class="text-sm text-gray">Long-term staking</div>
-                </div>
-                <div class="pool-apy pool-apy-orange">25% APY</div>
-              </div>
-              <div class="pool-details">
-                <div><i class="fas fa-clock"></i> Lock: 180 days</div>
-                <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
-              </div>
-              <div class="input-group"><label for="stakeAmount2">Amount to stake</label><input type="number"
-                  id="stakeAmount2" placeholder="Amount to stake" min="1000">
-                <button class="btn btn-primary" onclick="stakeTokens(2)" id="stakeBtn2" type="button"><i
-                    class="fas fa-lock"></i> Stake</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="card mb-2">
-          <div class="card-header">
-            <h2 class="card-title">Quick Links</h2>
-          </div>
-          <div class="quick-links"><a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-              target="_blank" rel="noopener" class="quick-link">
-              <div class="icon"><i class="fas fa-search"></i></div>
-              <div>
-                <div class="fw-600">View Contract</div>
-                <div class="text-sm text-gray">PolygonScan</div>
-              </div>
-            </a><a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
-              target="_blank" rel="noopener" class="quick-link">
-              <div class="icon"><i class="fas fa-chart-area"></i></div>
-              <div>
-                <div class="fw-600">Live Chart</div>
-                <div class="text-sm text-gray">DexTools</div>
-              </div>
-            </a><a href="https://quickswap.exchange/#/pool" target="_blank" rel="noopener" class="quick-link">
-              <div class="icon"><i class="fas fa-water"></i></div>
-              <div>
-                <div class="fw-600">Liquidity Pool</div>
-                <div class="text-sm text-gray">QuickSwap</div>
-              </div>
-            </a><a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-              target="_blank" rel="noopener" class="quick-link">
-              <div class="icon"><i class="fas fa-exchange-alt"></i></div>
-              <div>
-                <div class="fw-600">Trade AETH</div>
-                <div class="text-sm text-gray">Buy/Sell</div>
-              </div>
-            </a></div>
-        </div>
-        <div class="card mb-2">
-          <div class="card-header">
-            <h2 class="card-title">Token Info</h2>
-          </div>
-          <div class="info-grid">
-            <div>
-              <div class="text-sm text-gray info-label">Contract Address</div>
-              <div class="contract-address">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray info-label">Total Supply</div>
-              <div class="fw-600">1,000,000,000 AETH</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray info-label">Network</div>
-              <div class="fw-600">Polygon Mainnet</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray info-label">Decimals</div>
-              <div class="fw-600">18</div>
-            </div>
-            <div class="tax-structure mt-1">
-              <div class="fw-600 mb-05">Tax Structure</div>
-              <div class="text-sm text-gray">• Buy: 3% → Treasury<br>• Sell: 5% → Treasury<br>• Tax-free for staking
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card mb-2">
-          <div class="card-header">
-            <h2 class="card-title">Rewards Calculator</h2>
-          </div>
-          <div><label class="calc-label">Amount to Stake</label>
-            <div class="calculator-input"><label for="calcAmount">Enter AETH amount</label><input type="number"
-                id="calcAmount" placeholder="Enter AETH amount" class="calc-input"> <select id="calcPool"
-                class="calc-select" aria-label="Select staking pool">
-                <option value="0">30 Days (5% APY)</option>
-                <option value="1">90 Days (12% APY)</option>
-                <option value="2">180 Days (25% APY)</option>
-              </select></div><button class="btn btn-primary w-full" onclick="calculateRewards()" type="button"><i
-                class="fas fa-calculator"></i> Calculate Rewards</button>
-            <div id="calcResult" class="hidden">
-              <div class="calculator-result">
-                <div class="text-sm text-gray">Estimated Rewards</div>
-                <div class="big-number" id="rewardAmount">0 AETH</div>
-                <div class="text-sm text-gray">Total Return: <span id="totalReturn" class="fw-600">0 AETH</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card mb-2">
-      <div class="card-header">
-        <h2 class="card-title">Recent Transactions</h2><button class="btn btn-outline" onclick="refreshTransactions()"
-          type="button"><i class="fas fa-sync-alt"></i> Refresh</button>
-      </div>
-      <div id="txNotConnected" class="wallet-section"><i class="fas fa-receipt tx-icon"></i>
-        <p class="text-gray">Connect your wallet to view transaction history</p>
-      </div>
-      <div id="txConnected" class="hidden">
-        <div id="txLoading" class="wallet-section hidden">
-          <div class="loading loading-md"></div>
-          <p class="mt-1 text-gray">Loading transactions...</p>
-        </div>
-        <div id="txEmpty" class="wallet-section hidden"><i class="fas fa-inbox empty-icon"></i>
-          <p class="text-gray">No transactions yet</p>
-        </div>
-        <div id="txList" class="tx-list"></div>
-      </div>
-    </div>
-    <div id="adminPanel" class="card hidden mb-2">
-      <div class="card-header">
-        <h2 class="card-title admin-title"><i class="fas fa-shield-alt"></i> Admin Controls</h2>
-      </div>
-      <div class="admin-section">
-        <div class="fw-600 mb-1">⚠️ Owner Functions - Use with Caution</div>
-        <div class="admin-controls">
-          <div><label class="calc-label">Update Tax Rates</label>
-            <div class="control-row"><input type="number" id="buyTax" placeholder="Buy Tax %" min="0" max="10"> <input
-                type="number" id="sellTax" placeholder="Sell Tax %" min="0" max="10"> <button class="btn btn-warning"
-                onclick="updateTaxes()" type="button"><i class="fas fa-percent"></i> Update</button></div>
-          </div>
-          <div><label class="calc-label">Pause/Unpause Trading</label>
-            <div class="control-row"><button class="btn btn-danger flex-1" onclick="pauseTrading()" type="button"><i
-                  class="fas fa-pause"></i> Pause Trading</button> <button class="btn btn-success flex-1"
-                onclick="unpauseTrading()" type="button"><i class="fas fa-play"></i> Resume Trading</button></div>
-          </div>
-          <div><label class="calc-label">Withdraw Treasury</label>
-            <div class="control-row"><input type="text" id="withdrawAddress" placeholder="Recipient Address"> <input
-                type="number" id="withdrawAmount" placeholder="Amount"> <button class="btn btn-danger"
-                onclick="withdrawTreasury()" type="button"><i class="fas fa-wallet"></i> Withdraw</button></div>
-          </div>
-          <div><label class="calc-label">Emergency Functions</label>
-            <div class="control-row"><button class="btn btn-danger flex-1" onclick="emergencyWithdraw()"
-                type="button"><i class="fas fa-exclamation-triangle"></i> Emergency Withdraw</button> <button
-                class="btn btn-warning flex-1" onclick="rescueTokens()" type="button"><i class="fas fa-life-ring"></i>
-                Rescue Tokens</button></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="faq-section">
-      <h2 class="faq-title"><i class="fas fa-question-circle"></i> Frequently Asked Questions
-      </h2>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(0)">
-          <h3>How do I buy AETH tokens?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-0"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-0">
-          <p>To buy AETH tokens:</p>
-          <ol>
-            <li>Connect your wallet (MetaMask recommended)</li>
-            <li>Ensure you're on Polygon Mainnet (Chain ID: 137)</li>
-            <li>Get some MATIC for gas fees</li>
-            <li>Visit <a
-                href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-                target="_blank" rel="noopener" class="primary-link">QuickSwap</a> and swap MATIC for AETH</li>
-          </ol>
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(1)">
-          <h3>How does staking work?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-1"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-1">
-          <p>Staking allows you to earn passive income by locking your AETH tokens for a set period. We offer three
-            pools:</p>
-          <ul>
-            <li><strong>30 Days:</strong> 5% APY - Flexible short-term option</li>
-            <li><strong>90 Days:</strong> 12% APY - Medium-term commitment</li>
-            <li><strong>180 Days:</strong> 25% APY - Maximum rewards</li>
-          </ul>
-          <p>Rewards are automatically calculated and can be claimed at any time. Staking is tax-free!</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(2)">
-          <h3>What are the fees?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-2"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-2">
-          <p>AETH has a simple tax structure:</p>
-          <ul>
-            <li><strong>Buy Tax:</strong> 3% (goes to treasury for development)</li>
-            <li><strong>Sell Tax:</strong> 5% (supports platform sustainability)</li>
-            <li><strong>Staking:</strong> Tax-free transfers</li>
-            <li><strong>Gas Fees:</strong> Minimal on Polygon (usually $0.01-0.05)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(3)">
-          <h3>Is AETH secure and audited?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-3"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-3">
-          <p>Yes! Security is our top priority:</p>
-          <ul>
-            <li>Built using OpenZeppelin's battle-tested smart contracts</li>
-            <li>All contracts are verified on PolygonScan</li>
-            <li>Liquidity locked on QuickSwap</li>
-            <li>Multi-signature wallet for admin functions</li>
-            <li>Regular security audits and updates</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(4)">
-          <h3>Can I unstake early?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-4"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-4">
-          <p>Yes, but with conditions:</p>
-          <ul>
-            <li><strong>After Lock Period:</strong> Free unstaking with full rewards</li>
-            <li><strong>Before Lock Period:</strong> Use "Emergency Withdraw" - you'll get your principal back but
-              forfeit all rewards</li>
-            <li><strong>Recommendation:</strong> Plan your staking period carefully to maximize rewards</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFAQ(5)">
-          <h3>How do I add AETH to MetaMask?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-5"></i>
-        </div>
-        <div class="faq-answer" id="faq-answer-5">
-          <p>Easy! Just click the "Add to MetaMask" button at the top of this page, or manually add:</p>
-          <ul>
-            <li><strong>Network:</strong> Polygon Mainnet</li>
-            <li><strong>Contract:</strong> 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</li>
-            <li><strong>Symbol:</strong> AETH</li>
-            <li><strong>Decimals:</strong> 18</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="newsletter-section">
+  <main id="main-content" role="main">
     <div class="container">
-      <h2>📧 Stay Updated</h2>
-      <p>Get notified about governance votes, new features, and important updates</p>
-      <form id="newsletterForm" class="newsletter-form"><input type="email" id="emailInput"
-          placeholder="Enter your email address" required> <button type="submit" class="subscribe-btn"><i
-            class="fas fa-bell"></i> Subscribe</button></form>
-      <div id="newsletterMessage" class="newsletter-message"></div>
-      <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
-        <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
-            checked="checked"> Price Alerts</label> <label><input type="checkbox"> Weekly Digest</label>
+      <div class="hero">
+        <h1>Welcome to Aetheron</h1>
+        <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
+        <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
+        </div>
+        <div class="quick-actions"><button id="addToMetaMaskBtn" class="quick-action-btn" title="Add AETH to MetaMask"
+            type="button"><i class="fas fa-plus-circle"></i> Add to MetaMask</button> <button id="copyContractBtn"
+            class="quick-action-btn" title="Copy Contract Address" type="button"><i class="fas fa-copy"></i> <span
+              id="copyBtnText">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span></button> <button id="qrCodeBtn"
+            class="quick-action-btn" title="Show QR Code" type="button"><i class="fas fa-qrcode"></i> QR Code</button>
+          <button id="shareBtn" class="quick-action-btn" title="Share Aetheron" type="button"><i
+              class="fas fa-share-alt"></i> Share</button>
+          <button id="viewOnScanBtn" class="quick-action-btn" type="button"><i class="fas fa-external-link-alt"></i>
+            PolygonScan</button>
+          <div class="quick-action-btn live-indicator"><span class="pulse-dot"></span> <span
+              id="liveHoldersCount">Loading...</span> Holders</div>
+        </div>
+      </div>
+      <div class="features-section">
+        <h2>Complete DeFi Ecosystem</h2>
+        <div class="features-grid"><a href="social-trading/index.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-users"></i></div>
+            <h3>Social Trading</h3>
+            <p>Connect with traders, share signals, and compete in trading competitions</p>
+          </a><a href="yield-aggregator/index.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-coins"></i></div>
+            <h3>Yield Aggregator</h3>
+            <p>Maximize returns across multiple DeFi protocols with intelligent recommendations</p>
+          </a><a href="analytics-dashboard.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+            <h3>Advanced Analytics</h3>
+            <p>Real-time charts, price history, volume tracking, and staking metrics dashboard</p>
+          </a><a href="staking-calculator.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+            <h3>Staking Calculator</h3>
+            <p>Calculate potential rewards, project earnings, and optimize your staking strategy</p>
+          </a><a href="nft-integration/index.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-gem"></i></div>
+            <h3>NFT Marketplace</h3>
+            <p>Trade, collect, and showcase NFTs in our integrated marketplace</p>
+          </a><a href="analytics/index.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Analytics Dashboard</h3>
+            <p>Track performance, analyze trends, and make data-driven decisions</p>
+          </a><a href="dashboard-enhanced.html" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-tachometer-alt"></i></div>
+            <h3>Enhanced Dashboard</h3>
+            <p>Comprehensive portfolio management with advanced trading tools</p>
+          </a><a href="#staking" class="feature-card">
+            <div class="feature-icon"><i class="fas fa-lock"></i></div>
+            <h3>Staking & Rewards</h3>
+            <p>Earn passive income by staking AETH tokens with competitive APYs</p>
+          </a></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="icon"><i class="fas fa-coins"></i></div>
+          <div class="label">AETH Price</div>
+          <div class="value" id="priceValue">Loading...</div>
+          <div class="change" id="priceChange"><i class="fas fa-arrow-up" id="priceArrow"></i> <span
+              id="priceChangePercent">--</span></div>
+        </div>
+        <div class="stat-card success">
+          <div class="icon"><i class="fas fa-chart-line"></i></div>
+          <div class="label">Market Cap</div>
+          <div class="value" id="marketCapValue">Loading...</div>
+          <div class="change" id="marketCapChange">--</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="icon"><i class="fas fa-fire"></i></div>
+          <div class="label">Total Staked</div>
+          <div class="value" id="stakedValue">Loading...</div>
+          <div class="change" id="stakedChange">150M AETH</div>
+        </div>
+        <div class="stat-card info">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <div class="label">Holders</div>
+          <div class="value" id="holdersValue">Loading...</div>
+          <div class="change positive" id="holdersChange">Growing</div>
+        </div>
+      </div>
+      <div class="main-grid">
+        <div>
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Your Wallet</h2>
+            </div>
+            <div id="walletNotConnected" class="wallet-section"><i class="fas fa-wallet wallet-icon"></i>
+              <h3>Connect Your Wallet</h3>
+              <p class="text-gray paragraph-spacing">Connect your Ethereum wallet (MetaMask, Coinbase Wallet, etc.) to
+                start using Aetheron Platform</p>
+              <div id="walletStatus" class="wallet-status"><i class="fas fa-spinner fa-spin"></i> Checking for wallet...
+              </div><button class="btn btn-outline mt-05" id="refreshWalletBtn" type="button"><i
+                  class="fas fa-sync-alt"></i> Refresh Detection</button>
+            </div>
+            <div id="walletConnected" class="hidden">
+              <div class="wallet-connected">
+                <div>
+                  <div class="text-sm text-gray">Connected Wallet</div>
+                  <div id="walletAddress" class="fw-600 font-mono"></div>
+                </div>
+                <button class="btn btn-outline" id="disconnectBtn" type="button"><i class="fas fa-sign-out-alt"></i>
+                  Disconnect</button>
+              </div>
+              <div class="balance-display">
+                <div class="text-sm text-gray mb-05">Your AETH Balance</div>
+                <div class="amount" id="userBalance">0.00</div>
+                <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
+              </div>
+              <div class="d-grid grid-2 mt-1">
+                <button class="btn btn-primary" id="buyAethBtn" type="button"><i class="fas fa-shopping-cart"></i> Buy
+                  AETH</button>
+                <button class="btn btn-success" id="addToWalletBtn" type="button"><i class="fas fa-plus"></i> Add
+                  to Wallet</button>
+                <a class="btn btn-info btn-coinbase" href="https://commerce.coinbase.com/checkout/1a2b3c4d5e6f7g8h9i0j"
+                  target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> Pay with Crypto (Coinbase)</a>
+              </div>
+            </div>
+          </div>
+          <div class="card" id="staking">
+            <div class="card-header">
+              <h2 class="card-title">Staking Pools</h2><span class="text-gray text-sm">Earn up to 25% APY</span>
+            </div>
+            <div id="stakingAlert" class="alert alert-error hidden"></div>
+            <div id="stakingSuccess" class="alert alert-success hidden"></div>
+            <div class="staking-pools">
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">30 Days</div>
+                    <div class="text-sm text-gray">Short-term staking</div>
+                  </div>
+                  <div class="pool-apy">5% APY</div>
+                </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 30 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
+                </div>
+                <div class="input-group"><label for="stakeAmount0">Amount to stake</label><input type="number"
+                    id="stakeAmount0" placeholder="Amount to stake" min="100">
+                  <button class="btn btn-primary" id="stakeBtn0" type="button"><i class="fas fa-lock"></i>
+                    Stake</button>
+                </div>
+              </div>
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">90 Days</div>
+                    <div class="text-sm text-gray">Medium-term staking</div>
+                  </div>
+                  <div class="pool-apy">12% APY</div>
+                </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 90 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
+                </div>
+                <div class="input-group"><label for="stakeAmount1">Amount to stake</label><input type="number"
+                    id="stakeAmount1" placeholder="Amount to stake" min="500">
+                  <button class="btn btn-primary" id="stakeBtn1" type="button"><i class="fas fa-lock"></i>
+                    Stake</button>
+                </div>
+              </div>
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">180 Days</div>
+                    <div class="text-sm text-gray">Long-term staking</div>
+                  </div>
+                  <div class="pool-apy pool-apy-orange">25% APY</div>
+                </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 180 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
+                </div>
+                <div class="input-group"><label for="stakeAmount2">Amount to stake</label><input type="number"
+                    id="stakeAmount2" placeholder="Amount to stake" min="1000">
+                  <button class="btn btn-primary" id="stakeBtn2" type="button"><i class="fas fa-lock"></i>
+                    Stake</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Quick Links</h2>
+            </div>
+            <div class="quick-links"><a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+                target="_blank" rel="noopener" class="quick-link">
+                <div class="icon"><i class="fas fa-search"></i></div>
+                <div>
+                  <div class="fw-600">View Contract</div>
+                  <div class="text-sm text-gray">PolygonScan</div>
+                </div>
+              </a><a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
+                target="_blank" rel="noopener noreferrer" class="quick-link">
+                <div class="icon"><i class="fas fa-chart-area"></i></div>
+                <div>
+                  <div class="fw-600">Live Chart</div>
+                  <div class="text-sm text-gray">DexTools</div>
+                </div>
+              </a><a href="https://quickswap.exchange/#/pool" target="_blank" rel="noopener noreferrer"
+                class="quick-link">
+                <div class="icon"><i class="fas fa-water"></i></div>
+                <div>
+                  <div class="fw-600">Liquidity Pool</div>
+                  <div class="text-sm text-gray">QuickSwap</div>
+                </div>
+              </a><a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+                target="_blank" rel="noopener noreferrer" class="quick-link">
+                <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+                <div>
+                  <div class="fw-600">Trade AETH</div>
+                  <div class="text-sm text-gray">Buy/Sell</div>
+                </div>
+              </a></div>
+          </div>
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Token Info</h2>
+            </div>
+            <div class="info-grid">
+              <div>
+                <div class="text-sm text-gray info-label">Contract Address</div>
+                <div class="contract-address">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray info-label">Total Supply</div>
+                <div class="fw-600">1,000,000,000 AETH</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray info-label">Network</div>
+                <div class="fw-600">Polygon Mainnet</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray info-label">Decimals</div>
+                <div class="fw-600">18</div>
+              </div>
+              <div class="tax-structure mt-1">
+                <div class="fw-600 mb-05">Tax Structure</div>
+                <div class="text-sm text-gray">• Buy: 3% → Treasury<br>• Sell: 5% → Treasury<br>• Tax-free for staking
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Rewards Calculator</h2>
+            </div>
+            <div><label class="calc-label">Amount to Stake</label>
+              <div class="calculator-input"><label for="calcAmount">Enter AETH amount</label><input type="number"
+                  id="calcAmount" placeholder="Enter AETH amount" class="calc-input"> <select id="calcPool"
+                  class="calc-select" aria-label="Select staking pool">
+                  <option value="0">30 Days (5% APY)</option>
+                  <option value="1">90 Days (12% APY)</option>
+                  <option value="2">180 Days (25% APY)</option>
+                </select></div><button class="btn btn-primary w-full" id="calcBtn" type="button"><i
+                  class="fas fa-calculator"></i> Calculate Rewards</button>
+              <div id="calcResult" class="hidden">
+                <div class="calculator-result">
+                  <div class="text-sm text-gray">Estimated Rewards</div>
+                  <div class="big-number" id="rewardAmount">0 AETH</div>
+                  <div class="text-sm text-gray">Total Return: <span id="totalReturn" class="fw-600">0 AETH</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-2">
+        <div class="card-header">
+          <h2 class="card-title">Recent Transactions</h2><button class="btn btn-outline" id="refreshTxBtn"
+            type="button"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div id="txNotConnected" class="wallet-section"><i class="fas fa-receipt tx-icon"></i>
+          <p class="text-gray">Connect your wallet to view transaction history</p>
+        </div>
+        <div id="txConnected" class="hidden">
+          <div id="txLoading" class="wallet-section hidden">
+            <div class="loading loading-md"></div>
+            <p class="mt-1 text-gray">Loading transactions...</p>
+          </div>
+          <div id="txEmpty" class="wallet-section hidden"><i class="fas fa-inbox empty-icon"></i>
+            <p class="text-gray">No transactions yet</p>
+          </div>
+          <div id="txList" class="tx-list"></div>
+        </div>
+      </div>
+      <div id="adminPanel" class="card hidden mb-2">
+        <div class="card-header">
+          <h2 class="card-title admin-title"><i class="fas fa-shield-alt"></i> Admin Controls</h2>
+        </div>
+        <div class="admin-section">
+          <div class="fw-600 mb-1">⚠️ Owner Functions - Use with Caution</div>
+          <div class="admin-controls">
+            <div><label class="calc-label">Update Tax Rates</label>
+              <div class="control-row"><input type="number" id="buyTax" placeholder="Buy Tax %" min="0" max="10"> <input
+                  type="number" id="sellTax" placeholder="Sell Tax %" min="0" max="10"> <button class="btn btn-warning"
+                  id="updateTaxesBtn" type="button"><i class="fas fa-percent"></i> Update</button></div>
+            </div>
+            <div><label class="calc-label">Pause/Unpause Trading</label>
+              <div class="control-row"><button class="btn btn-danger flex-1" id="pauseTradingBtn" type="button"><i
+                    class="fas fa-pause"></i> Pause Trading</button> <button class="btn btn-success flex-1"
+                  id="unpauseTradingBtn" type="button"><i class="fas fa-play"></i> Resume Trading</button></div>
+            </div>
+            <div><label class="calc-label">Withdraw Treasury</label>
+              <div class="control-row"><input type="text" id="withdrawAddress" placeholder="Recipient Address"> <input
+                  type="number" id="withdrawAmount" placeholder="Amount"> <button class="btn btn-danger"
+                  id="withdrawTreasuryBtn" type="button"><i class="fas fa-wallet"></i> Withdraw</button></div>
+            </div>
+            <div><label class="calc-label">Emergency Functions</label>
+              <div class="control-row"><button class="btn btn-danger flex-1" id="emergencyWithdrawBtn" type="button"><i
+                    class="fas fa-exclamation-triangle"></i> Emergency Withdraw</button> <button
+                  class="btn btn-warning flex-1" id="rescueTokensBtn" type="button"><i class="fas fa-life-ring"></i>
+                  Rescue Tokens</button></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="container">
+      <div class="faq-section">
+        <h2 class="faq-title"><i class="fas fa-question-circle"></i> Frequently Asked Questions
+        </h2>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How do I buy AETH tokens?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-0"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-0">
+            <p>To buy AETH tokens:</p>
+            <ol>
+              <li>Connect your wallet (MetaMask recommended)</li>
+              <li>Ensure you're on Polygon Mainnet (Chain ID: 137)</li>
+              <li>Get some MATIC for gas fees</li>
+              <li>Visit <a
+                  href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+                  target="_blank" rel="noopener noreferrer" class="primary-link">QuickSwap</a> and swap MATIC for AETH
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How does staking work?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-1"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-1">
+            <p>Staking allows you to earn passive income by locking your AETH tokens for a set period. We offer three
+              pools:</p>
+            <ul>
+              <li><strong>30 Days:</strong> 5% APY - Flexible short-term option</li>
+              <li><strong>90 Days:</strong> 12% APY - Medium-term commitment</li>
+              <li><strong>180 Days:</strong> 25% APY - Maximum rewards</li>
+            </ul>
+            <p>Rewards are automatically calculated and can be claimed at any time. Staking is tax-free!</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What are the fees?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-2"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-2">
+            <p>AETH has a simple tax structure:</p>
+            <ul>
+              <li><strong>Buy Tax:</strong> 3% (goes to treasury for development)</li>
+              <li><strong>Sell Tax:</strong> 5% (supports platform sustainability)</li>
+              <li><strong>Staking:</strong> Tax-free transfers</li>
+              <li><strong>Gas Fees:</strong> Minimal on Polygon (usually $0.01-0.05)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Is AETH secure and audited?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-3"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-3">
+            <p>Yes! Security is our top priority:</p>
+            <ul>
+              <li>Built using OpenZeppelin's battle-tested smart contracts</li>
+              <li>All contracts are verified on PolygonScan</li>
+              <li>Liquidity locked on QuickSwap</li>
+              <li>Multi-signature wallet for admin functions</li>
+              <li>Regular security audits and updates</li>
+            </ul>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Can I unstake early?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-4"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-4">
+            <p>Yes, but with conditions:</p>
+            <ul>
+              <li><strong>After Lock Period:</strong> Free unstaking with full rewards</li>
+              <li><strong>Before Lock Period:</strong> Use "Emergency Withdraw" - you'll get your principal back but
+                forfeit all rewards</li>
+              <li><strong>Recommendation:</strong> Plan your staking period carefully to maximize rewards</li>
+            </ul>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How do I add AETH to MetaMask?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-5"></i>
+          </div>
+          <div class="faq-answer" id="faq-answer-5">
+            <p>Easy! Just click the "Add to MetaMask" button at the top of this page, or manually add:</p>
+            <ul>
+              <li><strong>Network:</strong> Polygon Mainnet</li>
+              <li><strong>Contract:</strong> 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</li>
+              <li><strong>Symbol:</strong> AETH</li>
+              <li><strong>Decimals:</strong> 18</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="newsletter-section">
+      <div class="container">
+        <h2>📧 Stay Updated</h2>
+        <p>Get notified about governance votes, new features, and important updates</p>
+        <form id="newsletterForm" class="newsletter-form"><input type="email" id="emailInput"
+            placeholder="Enter your email address" required> <button type="submit" class="subscribe-btn"><i
+              class="fas fa-bell"></i> Subscribe</button></form>
+        <div id="newsletterMessage" class="newsletter-message"></div>
+        <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
+          <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
+              checked="checked"> Price Alerts</label> <label><input type="checkbox"> Weekly Digest</label>
+        </div>
+      </div>
+    </div>
+  </main>
   <footer>
     <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
     <p class="mt-05 text-sm"><a href="#" class="footer-link">Terms</a> <a href="#" class="footer-link">Privacy</a> <a
-        href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener"
+        href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener noreferrer"
         class="footer-link">GitHub</a></p>
   </footer>
   <div id="qrModal" class="modal">
-    <div class="modal-content"><span class="close-modal" onclick="closeQRModal()">&times;</span>
+    <div class="modal-content"><span class="close-modal" id="closeQRModalBtn">&times;</span>
       <h2>AETH Contract Address</h2>
       <div id="qrcode" class="qrcode-box"></div>
       <p class="contract-address-info">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</p>
-      <button onclick="copyContractAddress()" class="quick-action-btn copy-address-btn" type="button"><i
+      <button id="copyContractAddressBtn" class="quick-action-btn copy-address-btn" type="button"><i
           class="fas fa-copy"></i> Copy Address</button>
     </div>
   </div>
   <div id="shareModal" class="modal">
-    <div class="modal-content"><span class="close-modal" onclick="closeShareModal()">&times;</span>
+    <div class="modal-content"><span class="close-modal" id="closeShareModalBtn">&times;</span>
       <h2>Share Aetheron</h2>
-      <div class="share-buttons"><button onclick="shareTwitter()" class="share-btn twitter" type="button"><i
-            class="fab fa-twitter"></i> Share on Twitter</button> <button onclick="shareFacebook()"
+      <div class="share-buttons"><button id="shareTwitterBtn" class="share-btn twitter" type="button"><i
+            class="fab fa-twitter"></i> Share on Twitter</button> <button id="shareFacebookBtn"
           class="share-btn facebook" type="button"><i class="fab fa-facebook"></i> Share on Facebook</button> <button
-          onclick="shareTelegram()" class="share-btn telegram" type="button"><i class="fab fa-telegram"></i> Share on
-          Telegram</button> <button onclick="shareLinkedIn()" class="share-btn linkedin" type="button"><i
+          id="shareTelegramBtn" class="share-btn telegram" type="button"><i class="fab fa-telegram"></i> Share on
+          Telegram</button> <button id="shareLinkedInBtn" class="share-btn linkedin" type="button"><i
             class="fab fa-linkedin"></i>
-          Share on LinkedIn</button> <button onclick="copyShareLink()" class="share-btn copy" type="button"><i
+          Share on LinkedIn</button> <button id="copyShareLinkBtn" class="share-btn copy" type="button"><i
             class="fas fa-link"></i> Copy Link</button></div>
     </div>
   </div><button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode" type="button"><i
       class="fas fa-moon" id="themeIcon"></i></button>
 
 
-  <script src="dashboard-starfield.js" defer></script>
-  <script>if ("serviceWorker" in navigator) { let e = !1; navigator.serviceWorker.addEventListener("controllerchange", () => { e || (e = !0, console.log("🔄 Service Worker updated - reloading page..."), window.location.reload()) }), navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(e => { console.log("✅ Service Worker registered successfully"), setInterval(() => { e.update() }, 6e4), e.addEventListener("updatefound", () => { const o = e.installing; o.addEventListener("statechange", () => { "installed" === o.state && navigator.serviceWorker.controller && (console.log("🆕 New version available!"), window.showToast && showToast("Update Available", "A new version is ready. Refreshing...", "info"), setTimeout(() => { o.postMessage({ type: "SKIP_WAITING" }) }, 2e3)) }) }), navigator.serviceWorker.addEventListener("message", e => { e.data && "SW_UPDATED" === e.data.type && console.log("📦 Service Worker updated and activated") }) }).catch(e => { console.error("❌ Service Worker registration failed:", e) }) } window.addEventListener("pageshow", e => { e.persisted && (console.log("📄 Page loaded from cache - checking for updates..."), window.location.reload()) }), console.log("%c🚀 Aetheron Platform v1.3.0", "color: #00D4FF; font-size: 16px; font-weight: bold;"), console.log("%c✨ Dashboard loaded successfully", "color: #10b981; font-size: 12px;")</script>
-  <script src="global-announcements.js" defer="defer"></script>
+  <script src="dashboard-starfield.js?v=1.3.1" defer></script>
+  <script src="sw-init.js?v=1.3.1" defer></script>
+  <script src="dom-bindings.js?v=1.3.1" defer></script>
+  <script src="global-announcements.js?v=1.3.1" defer="defer"></script>
 </body>
 
 </html>

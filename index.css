@@ -107,3 +107,32 @@ body > *:not(#starfield-canvas) {
   position: relative;
   z-index: 1;
 }
+
+/* Accessibility: Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  background: #000;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 8px;
+  outline: 2px solid var(--primary);
+}
+
+/* Restored styles previously inline */
+.btn-coinbase {
+  background: linear-gradient(135deg, #0052ff, #00d4ff);
+  margin-top: 10px;
+}
+
+/* Prevent background scroll when modal is open */
+html.no-scroll,
+body.no-scroll {
+  overflow: hidden !important;
+}
