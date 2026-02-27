@@ -8,7 +8,7 @@
     content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
   <title>Aetheron Platform</title>
   <link rel="canonical" href="https://aetheron.online/dashboard.html">
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -597,11 +597,30 @@
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.1">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.3.1">
   <link rel="stylesheet" href="dashboard-enhanced.css?v=1.3.1">
-</head>
 
-<body>
-  <!-- Skip to main content for accessibility -->
-  <a href="#mainContent" class="skip-link">Skip to main content</a>
+  <head>
+    ...existing code...
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #16161a;
+        overflow-x: hidden;
+      }
+
+      #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+      }
+    </style>
+    ...existing code...
+  </head>
   <div id="criticalAlerts" class="critical-alerts"></div>
   <!-- Hamburger menu for mobile navigation -->
   <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false"
@@ -624,6 +643,20 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" aria-live="polite" aria-atomic="true" class="toast-container"></div>
   <div class="container">
+    <!-- Home Screen Welcome/Overview -->
+    <div class="card home-welcome-card prominent-welcome" aria-label="Welcome to Aetheron Platform">
+      <h2 class="logo" tabindex="0">🌌 Welcome to Aetheron Platform</h2>
+      <p class="home-overview">Your decentralized hub for token management, staking, analytics, and community
+        engagement.<br>
+        <span class="text-gray">Connect your wallet to unlock full features.</span>
+      </p>
+      <button id="onboardingBtnHome" class="btn onboarding-btn" type="button" aria-label="Start onboarding tour">❓ Start
+        Tour</button>
+      <div class="onboarding-info">
+        <strong>New here?</strong> <span class="text-gray">Explore the dashboard features, connect your wallet, and join
+          the community chat. Use <kbd>Tab</kbd> to navigate.</span>
+      </div>
+    </div>
     <!-- Quick Stats Card -->
     <div class="card" id="quickStatsCard">
       <h2>🚀 Quick Stats</h2>
@@ -637,7 +670,6 @@
           id="quickTreasury">-</span></div>
       <div class="info-row"><span class="info-label">Rewards:</span> <span class="info-value" id="quickRewards">-</span>
       </div>
-      <!-- Loading spinner for quick stats -->
       <div id="quickStatsLoading" class="loading-spinner center-spinner" hidden>
         <svg width="28" height="28" viewBox="0 0 50 50">
           <circle cx="25" cy="25" r="20" fill="none" stroke="#00d4ff" stroke-width="5" stroke-linecap="round"
@@ -661,12 +693,12 @@
         <div class="global-loading-text">Loading...</div>
       </div>
     </div>
+    <!-- Header and Wallet Section -->
     <div class="header" aria-label="Aetheron Platform Header">
       <h1 class="logo" tabindex="0">🌌 Aetheron Platform</h1>
       <p>Decentralized Token & Staking Platform</p>
       <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark/light mode" type="button">🌙</button>
     </div>
-    <!-- Wallet Status Bar -->
     <div id="walletStatusBar" class="wallet-status-bar status-bar" aria-live="polite">
       <span id="walletStatusIcon">🔴</span>
       <span id="walletStatusText">Wallet not connected</span>
@@ -675,8 +707,8 @@
       <button id="connectBtn" type="button" class="connect-btn" aria-label="Connect Wallet">🔗 Connect Wallet</button>
       <button type="button" class="btn buy-btn" aria-label="Buy AETH"><i class="fas fa-shopping-cart"></i> Buy
         AETH</button>
-      <button type="button" class="btn coinbase-btn" aria-label="Pay with Crypto (Coinbase)">💳 Pay with
-        Crypto (Coinbase)</button>
+      <button type="button" class="btn coinbase-btn" aria-label="Pay with Crypto (Coinbase)">💳 Pay with Crypto
+        (Coinbase)</button>
       <button id="refreshBalancesBtn" type="button" class="btn refresh-btn" aria-label="Refresh Balances">🔄
         Refresh</button>
       <div id="walletInfo" class="wallet-info" aria-live="polite">
@@ -695,6 +727,7 @@
             AETH</span></div>
       </div>
     </div>
+    <!-- Cards Grid and Features -->
     <div class="cards-grid">
       <div class="card">
         <h2>💰 Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
@@ -715,14 +748,13 @@
             id="liveHoldersCount">Loading...</span> Holders</div>
       </div>
     </div>
-
     <!-- --- BEGIN: New Feature Scaffolding --- -->
     <section id="wallet-portfolio-section" class="card mb-2">
       <h2 class="card-title">Wallet Portfolio Breakdown</h2>
       <canvas id="walletPortfolioChart" width="400" height="200"></canvas>
       <div id="walletPortfolioPlaceholder" class="text-gray">Connect your wallet to view all token balances.</div>
     </section>
-
+    ...existing code...
     <section id="notifications-section" class="card mb-2">
       <h2 class="card-title">Real-Time Notifications</h2>
       <div id="notificationsPlaceholder" class="text-gray" aria-live="polite">Notifications will appear here.</div>
@@ -752,306 +784,454 @@
             <th>Rewards</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td colspan="5" class="text-gray">No staking history yet.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
 
-    <section id="community-chat-section" class="card mb-2">
-      <h2 class="card-title">Community Chat</h2>
-      <div id="communityChatWidget" class="text-gray">Chat widget will load here.</div>
-    </section>
-
-    <section id="nft-gallery-section" class="card mb-2">
-      <h2 class="card-title">NFT Gallery</h2>
-      <div id="nftGalleryPlaceholder" class="text-gray" aria-live="polite">Connect your wallet to view your Aetheron
-        NFTs.</div>
-    </section>
-
-    <section id="gas-fee-section" class="card mb-2">
-      <h2 class="card-title">Gas Fee Estimator</h2>
-      <div>
-        <label for="gasSpeedSelect">Speed:</label>
-        <select id="gasSpeedSelect">
-          <option value="fast">Fast</option>
-          <option value="average" selected>Average</option>
-          <option value="slow">Slow</option>
-        </select>
-        <span id="gasFeeEstimate" class="text-gray">Estimated gas fee: --</span>
-      </div>
-    </section>
-
-    <section id="referral-leaderboard-section" class="card mb-2">
-      <h2 class="card-title">Referral Leaderboard <span class="help-icon" tabindex="0"
-          aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">❔</span></h2>
-      <div id="referralLeaderboardPlaceholder" class="text-gray" aria-live="polite">Leaderboard will appear here.</div>
-      <div id="referralLinkSection">
-        <label for="referralLink">Your Referral Link: <span class="help-icon" tabindex="0"
-            aria-label="Help: Referral Link" title="Share this link to invite others and earn rewards.">❔</span></label>
-        <input type="text" id="referralLink" readonly value="https://aetheron.online/?ref=YOURADDRESS"
-          title="Your referral link" placeholder="Referral link">
-        <button class="btn btn-outline" id="copyReferralBtn" type="button"
-          title="Copy your referral link to clipboard">Copy</button>
-      </div>
-    </section>
-
-    <section id="language-section" class="card mb-2">
-      <h2 class="card-title">Language</h2>
-      <label for="languageSelect" class="sr-only">Select language</label>
-      <select id="languageSelect" title="Select language">
-        <option value="en" selected>English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <!-- Add more languages as needed -->
-      </select>
-      <span id="currentLanguage" class="text-gray">Current: English</span>
-    </section>
-
-    <section id="advanced-analytics-section" class="card mb-2">
-      <h2 class="card-title">Advanced Analytics</h2>
-      <canvas id="advancedAnalyticsChart" width="400" height="200"></canvas>
-      <div id="advancedAnalyticsPlaceholder" class="text-gray" aria-live="polite">More charts and analytics coming soon.
-      </div>
-    </section>
-    <!-- --- END: New Feature Scaffolding --- -->
-    <div class="card" aria-label="Stake AETH Section">
-      <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
-          title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
-      <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake"
-        title="Processing stake..."></div>
-      <form aria-label="Stake Form" onsubmit="return false;">
-        <div class="input-group">
-          <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
-              title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
-          <input type="number" id="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
-        </div>
-        <div class="input-group">
-          <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
-              title="Enter the amount of AETH you want to stake.">❔</span></label>
-          <input type="number" id="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
-        </div>
-        <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
-          title="Stake your AETH tokens">Stake</button>
-      </form>
-      <div id="stakeStatus" class="status-message" aria-live="polite"></div>
-      <div class="pools-list" aria-label="Staking Pools">
-        <div class="pool-item" aria-label="Short Term Pool">
-          <h3>Pool 0: Short Term</h3>
-          <div class="pool-details"><span>Lock: 30 days</span> <span>APY: 5%</span></div>
-        </div>
-        <div class="pool-item" aria-label="Medium Term Pool">
-          <h3>Pool 1: Medium Term</h3>
-          <div class="pool-details"><span>Lock: 90 days</span> <span>APY: 12%</span></div>
-        </div>
-        <div class="pool-item" aria-label="Long Term Pool">
-          <h3>Pool 2: Long Term</h3>
-          <div class="pool-details"><span>Lock: 180 days</span> <span>APY: 25%</span></div>
-        </div>
-      </div>
-      <div id="transferStatus" class="status-message"></div>
-    </div>
-    <div class="card" aria-label="Contract Information">
-      <h2>📊 Contract Information</h2>
-      <div class="info-row">
-        <span class="info-label">AETH Token Address:</span>
-        <span class="info-value font-08" aria-label="AETH Token Address"
-          tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
-        <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
-          onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Staking Contract Address:</span>
-        <span class="info-value font-08" aria-label="Staking Contract Address"
-          tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
-        <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
-          onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Network:</span>
-        <span class="info-value" aria-label="Network Name" tabindex="0">Polygon Mainnet</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Chain ID:</span>
-        <span class="info-value" aria-label="Chain ID" tabindex="0">137</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Explorer:</span>
-        <span class="info-value"><a href="https://polygonscan.com/token/0x072091F554df794852E0A9d1c809F2B2bBda171E"
-            target="_blank" rel="noopener noreferrer" aria-label="View AETH Token on PolygonScan">View AETH Token on
-            PolygonScan</a></span>
-      </div>
-    </div>
-    <div class="card payment-history-card">
-      <h2 class="payment-history-title">Payment History</h2>
-      <div class="payment-history-table-wrap">
-        <table class="payment-history-table">
-          <thead>
-            <tr class="payment-history-header-row">
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Receipt</th>
-              <th>Gateway</th>
-            </tr>
-          </thead>
-          <tbody id="paymentHistoryTableBody">
-            <tr>
-              <td colspan="5">Loading...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Analytics/Engagement Chart Card -->
-    <div class="card" id="analyticsCard">
-      <h2>📈 Engagement Analytics</h2>
-      <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
-        title="Loading analytics data..."></div>
-      <canvas id="engagementChart" class="chart-canvas"></canvas>
-    </div>
-    <!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
-    <div class="card" id="treasuryCard">
-      <h2>💼 Treasury & Revenue</h2>
-      <div class="info-row">
-        <span class="info-label">Total Treasury:</span>
-        <span class="info-value" id="treasuryTotal">- AETH</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Staking Rewards:</span>
-        <span class="info-value" id="stakingRewards">- AETH</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Protocol Fees:</span>
-        <span class="info-value" id="protocolFees">- MATIC</span>
-      </div>
-      <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
-    </div>
-    <div class="card">
-      <h2>📊 Treasury & Revenue Chart</h2>
-      <canvas id="treasuryChart" class="chart-canvas"></canvas>
-    </div>
-    <!-- User Profile Section -->
-    <div class="card" id="userProfileCard">
-      <h2>👤 User Profile</h2>
-      <div class="profile-flex">
-        <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
-        <div>
-          <div id="profileName" class="profile-name">Guest</div>
-          <div id="profileEmail" class="profile-email">Not signed in</div>
-          <div id="profileLinks" class="profile-links"></div>
-        </div>
-      </div>
-      <button id="editProfileBtn" class="btn" type="button">Edit Profile</button>
-      <!-- Profile Edit Modal -->
-      <div id="profileModal" class="modal-bg" hidden>
-        <div class="modal">
-          <button type="button" class="close-modal-btn" aria-label="Close Profile Modal">&times;</button>
-          <h3>Edit Profile</h3>
-          <form id="profileForm">
-            <label for="avatarInput">Avatar Emoji</label>
-            <input id="avatarInput" maxlength="2" placeholder="🧑" />
-            <label for="nicknameInput">Nickname</label>
-            <input id="nicknameInput" maxlength="24" placeholder="Your nickname" />
-            <label for="emailInput">Email (optional)</label>
-            <input id="emailInput" type="email" placeholder="you@email.com" />
-            <label for="twitterInput">Twitter</label>
-            <input id="twitterInput" placeholder="@yourhandle" />
-            <label for="discordInput">Discord</label>
-            <input id="discordInput" placeholder="your#1234" />
-            <div class="modal-actions">
-              <button type="submit" class="btn">Save</button>
-              <button type="button" id="closeProfileModal" class="btn-outline">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <script>
-        // Profile modal close button logic
-        document.addEventListener('DOMContentLoaded', function () {
-          var modal = document.getElementById('profileModal');
-          var closeBtn = modal?.querySelector('.close-modal-btn');
-          if (closeBtn) {
-            closeBtn.addEventListener('click', function () {
-              modal.hidden = true;
-            });
-          }
+<body>
+  <canvas id="starfield"></canvas>
+  <script>
+    // Starfield animation
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    const starCount = 120;
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    function createStars() {
+      stars = [];
+      for (let i = 0; i < starCount; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: 1 + Math.random() * 2,
+          speed: 0.2 + Math.random() * 0.5
         });
-      </script>
+      }
+    }
+    createStars();
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.globalAlpha = 0.7;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.x = Math.random() * canvas.width;
+          star.y = 0;
+          star.r = 1 + Math.random() * 2;
+          star.speed = 0.2 + Math.random() * 0.5;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+  ...existing code...
+</body>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="community-chat-section" class="card mb-2">
+  <h2 class="card-title">Community Chat</h2>
+  <div id="communityChatWidget" class="text-gray">Chat widget will load here.</div>
+</section>
+
+<section id="nft-gallery-section" class="card mb-2">
+  <h2 class="card-title">NFT Gallery</h2>
+  <div id="nftGalleryPlaceholder" class="text-gray" aria-live="polite">Connect your wallet to view your Aetheron
+    NFTs.</div>
+</section>
+
+<section id="gas-fee-section" class="card mb-2">
+  <h2 class="card-title">Gas Fee Estimator</h2>
+  <div>
+    <label for="gasSpeedSelect">Speed:</label>
+    <select id="gasSpeedSelect">
+      <option value="fast">Fast</option>
+      <option value="average" selected>Average</option>
+      <option value="slow">Slow</option>
+    </select>
+    <span id="gasFeeEstimate" class="text-gray">Estimated gas fee: --</span>
+  </div>
+</section>
+
+<section id="referral-leaderboard-section" class="card mb-2">
+  <h2 class="card-title">Referral Leaderboard <span class="help-icon" tabindex="0"
+      aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">❔</span></h2>
+  <div id="referralLeaderboardPlaceholder" class="text-gray" aria-live="polite">Leaderboard will appear here.</div>
+  <div id="referralLinkSection">
+    <label for="referralLink">Your Referral Link: <span class="help-icon" tabindex="0" aria-label="Help: Referral Link"
+        title="Share this link to invite others and earn rewards.">❔</span></label>
+    <input type="text" id="referralLink" readonly value="https://aetheron.online/?ref=YOURADDRESS"
+      title="Your referral link" placeholder="Referral link">
+    <button class="btn btn-outline" id="copyReferralBtn" type="button"
+      title="Copy your referral link to clipboard">Copy</button>
+  </div>
+</section>
+
+<section id="language-section" class="card mb-2">
+  <h2 class="card-title">Language</h2>
+  <label for="languageSelect" class="sr-only">Select language</label>
+  <select id="languageSelect" title="Select language">
+    <option value="en" selected>English</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <!-- Add more languages as needed -->
+  </select>
+  <span id="currentLanguage" class="text-gray">Current: English</span>
+</section>
+
+<section id="advanced-analytics-section" class="card mb-2">
+  <h2 class="card-title">Advanced Analytics</h2>
+  <canvas id="advancedAnalyticsChart" width="400" height="200"></canvas>
+  <div id="advancedAnalyticsPlaceholder" class="text-gray" aria-live="polite">More charts and analytics coming soon.
+  </div>
+</section>
+<!-- --- END: New Feature Scaffolding --- -->
+<div class="card" aria-label="Stake AETH Section">
+  <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
+      title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
+  <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake" title="Processing stake...">
+  </div>
+  <form aria-label="Stake Form" onsubmit="return false;">
+    <div class="input-group">
+      <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
+          title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
+      <input type="number" id="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
     </div>
-    <!-- Onboarding Tour Button -->
-    <button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
-    <!-- Payment Status Modal -->
-    <div id="paymentStatusModal" class="payment-status-modal-bg">
-      <div class="payment-status-modal">
-        <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
-        <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
-        <button class="btn-outline payment-status-close-btn" type="button">Close</button>
+    <div class="input-group">
+      <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
+          title="Enter the amount of AETH you want to stake.">❔</span></label>
+      <input type="number" id="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
+    </div>
+    <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
+      title="Stake your AETH tokens">Stake</button>
+  </form>
+  <div id="stakeStatus" class="status-message" aria-live="polite"></div>
+  <div class="pools-list" aria-label="Staking Pools">
+    <div class="pool-item" aria-label="Short Term Pool">
+      <h3>Pool 0: Short Term</h3>
+      <div class="pool-details"><span>Lock: 30 days</span> <span>APY: 5%</span></div>
+    </div>
+    <div class="pool-item" aria-label="Medium Term Pool">
+      <h3>Pool 1: Medium Term</h3>
+      <div class="pool-details"><span>Lock: 90 days</span> <span>APY: 12%</span></div>
+    </div>
+    <div class="pool-item" aria-label="Long Term Pool">
+      <h3>Pool 2: Long Term</h3>
+      <div class="pool-details"><span>Lock: 180 days</span> <span>APY: 25%</span></div>
+    </div>
+  </div>
+  <div id="transferStatus" class="status-message"></div>
+</div>
+<div class="card" aria-label="Contract Information">
+  <h2>📊 Contract Information</h2>
+  <div class="info-row">
+    <span class="info-label">AETH Token Address:</span>
+    <span class="info-value font-08" aria-label="AETH Token Address"
+      tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
+    <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
+      onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Staking Contract Address:</span>
+    <span class="info-value font-08" aria-label="Staking Contract Address"
+      tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
+    <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
+      onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Network:</span>
+    <span class="info-value" aria-label="Network Name" tabindex="0">Polygon Mainnet</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Chain ID:</span>
+    <span class="info-value" aria-label="Chain ID" tabindex="0">137</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Explorer:</span>
+    <span class="info-value"><a href="https://polygonscan.com/token/0x072091F554df794852E0A9d1c809F2B2bBda171E"
+        target="_blank" rel="noopener noreferrer" aria-label="View AETH Token on PolygonScan">View AETH Token on
+        PolygonScan</a></span>
+  </div>
+</div>
+<div class="card payment-history-card">
+  <h2 class="payment-history-title">Payment History</h2>
+  <div class="payment-history-table-wrap">
+    <table class="payment-history-table">
+      <thead>
+        <tr class="payment-history-header-row">
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Receipt</th>
+          <th>Gateway</th>
+        </tr>
+      </thead>
+      <tbody id="paymentHistoryTableBody">
+        <tr>
+          <td colspan="5">Loading...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- Analytics/Engagement Chart Card -->
+<div class="card" id="analyticsCard">
+  <h2>📈 Engagement Analytics</h2>
+  <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
+    title="Loading analytics data..."></div>
+  <canvas id="engagementChart" class="chart-canvas"></canvas>
+</div>
+<!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
+<div class="card" id="treasuryCard">
+  <h2>💼 Treasury & Revenue</h2>
+  <div class="info-row">
+    <span class="info-label">Total Treasury:</span>
+    <span class="info-value" id="treasuryTotal">- AETH</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Staking Rewards:</span>
+    <span class="info-value" id="stakingRewards">- AETH</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Protocol Fees:</span>
+    <span class="info-value" id="protocolFees">- MATIC</span>
+  </div>
+  <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
+</div>
+<div class="card">
+  <h2>📊 Treasury & Revenue Chart</h2>
+  <canvas id="treasuryChart" class="chart-canvas"></canvas>
+</div>
+<!-- User Profile Section -->
+<div class="card" id="userProfileCard">
+  <h2>👤 User Profile</h2>
+  <div class="profile-flex">
+    <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
+    <div>
+      <div id="profileName" class="profile-name">Guest</div>
+      <div id="profileEmail" class="profile-email">Not signed in</div>
+      <div id="profileLinks" class="profile-links"></div>
+    </div>
+  </div>
+  <button id="editProfileBtn" class="btn" type="button">Edit Profile</button>
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal-bg" hidden>
+    <div class="modal">
+      <button type="button" class="close-modal-btn" aria-label="Close Profile Modal">&times;</button>
+      <h3>Edit Profile</h3>
+      <form id="profileForm">
+        <label for="avatarInput">Avatar Emoji</label>
+        <input id="avatarInput" maxlength="2" placeholder="🧑" />
+        <label for="nicknameInput">Nickname</label>
+        <input id="nicknameInput" maxlength="24" placeholder="Your nickname" />
+        <label for="emailInput">Email (optional)</label>
+        <input id="emailInput" type="email" placeholder="you@email.com" />
+        <label for="twitterInput">Twitter</label>
+        <input id="twitterInput" placeholder="@yourhandle" />
+        <label for="discordInput">Discord</label>
+        <input id="discordInput" placeholder="your#1234" />
+        <div class="modal-actions">
+          <button type="submit" class="btn">Save</button>
+          <button type="button" id="closeProfileModal" class="btn-outline">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Profile modal close button logic
+    document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('profileModal');
+      var closeBtn = modal?.querySelector('.close-modal-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+          modal.hidden = true;
+        });
+      }
+    });
+  </script>
+</div>
+<!-- Onboarding Tour Button -->
+<button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
+<!-- Payment Status Modal -->
+<div id="paymentStatusModal" class="payment-status-modal-bg">
+  <div class="payment-status-modal">
+    <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
+    <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
+    <button class="btn-outline payment-status-close-btn" type="button">Close</button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+<script src="dashboard-main.js?v=1.3.1" defer></script>
+<script>
+  // Quick Stats Card live update logic
+  function updateQuickStats() {
+    // Try to get wallet/account info from existing DOM
+    const account = document.getElementById('accountAddress')?.textContent?.trim() || '-';
+    const aeth = document.getElementById('aethBalance')?.textContent?.trim() || '-';
+    const staked = document.getElementById('stakingHistoryTable')?.querySelector('tbody tr:not(.text-gray) td:nth-child(3)')?.textContent?.trim() || '0';
+    const treasury = document.getElementById('treasuryTotal')?.textContent?.trim() || '-';
+    const rewards = document.getElementById('stakingRewards')?.textContent?.trim() || '-';
+    document.getElementById('quickWallet').textContent = account;
+    document.getElementById('quickAeth').textContent = aeth;
+    document.getElementById('quickStaked').textContent = staked;
+    document.getElementById('quickTreasury').textContent = treasury;
+    document.getElementById('quickRewards').textContent = rewards;
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    updateQuickStats();
+    // Also update on wallet or treasury refresh
+    document.getElementById('refreshBalancesBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+    document.getElementById('refreshTreasuryBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+  });
+</script>
+<script src="global-announcements.js?v=1.3.1" defer></script>
+<script src="coinbase-commerce-frontend.js?v=1.3.1" defer></script>
+<script src="payment-history.js?v=1.3.1" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script src="dashboard-features.js?v=1.3.1" defer></script>
+<!-- Language Selector -->
+<!-- Removed duplicate language selector to avoid multiple elements with the same ID -->
+<!-- Localization/i18n -->
+<!-- Accessibility: ARIA landmarks and improved focus -->
+<main id="mainContent" tabindex="-1" aria-label="Dashboard main content" role="main">
+  <!-- Whitepaper Section with Interactive Features -->
+  <section class="card whitepaper-card" id="whitepaperCard">
+    <div class="whitepaper-header">
+      <h2 class="card-title">Aetheron Platform Technical Whitepaper</h2>
+      <button class="btn-outline" id="toggleWhitepaperBtn" type="button" aria-expanded="true">Collapse</button>
+    </div>
+    <nav class="whitepaper-nav">
+      <button class="btn-outline" type="button" onclick="showWhitepaperSection('summary')">Executive
+        Summary</button>
+      <button class="btn-outline" type="button" onclick="showWhitepaperSection('tokenomics')">Tokenomics</button>
+      <button class="btn-outline" type="button" onclick="showWhitepaperSection('staking')">Staking</button>
+      <button class="btn-outline" type="button" onclick="showWhitepaperSection('security')">Security</button>
+      <button class="btn-outline" type="button" onclick="showWhitepaperSection('roadmap')">Roadmap</button>
+      <button class="btn whitepaper-download-btn" type="button" onclick="window.open('WHITEPAPER.md','_blank')">Download
+        Full
+        Whitepaper</button>
+    </nav>
+    <div class="whitepaper-content" id="whitepaperContent">
+      <!-- Default section: Executive Summary -->
+      <div id="whitepaper-summary">
+        <h3>Technical Whitepaper v1.0</h3>
+        <p><strong>February 2026</strong></p>
+        <p><em>Building the Future of Decentralized Finance</em></p>
+        <hr>
+        <h4>Executive Summary</h4>
+        <p>Aetheron Platform is a next-generation decentralized finance (DeFi) ecosystem built on Polygon that
+          combines high-yield staking, efficient token trading, and advanced analytics into a unified, user-friendly
+          platform. Our mission is to democratize access to DeFi yield opportunities while maintaining the highest
+          standards of security, transparency, and user experience.</p>
+        <ul>
+          <li><strong>Native Token:</strong> AETH (ERC-20) on Polygon Mainnet</li>
+          <li><strong>Total Supply:</strong> 1,000,000,000 AETH</li>
+          <li><strong>Staking Pools:</strong> Three tiers (8%, 12%, 18% APY)</li>
+          <li><strong>Network:</strong> Polygon (Layer 2 solution for Ethereum)</li>
+          <li><strong>Smart Contracts:</strong> Verified on Polygonscan</li>
+          <li><strong>Liquidity:</strong> QuickSwap V2 Integration</li>
+        </ul>
+        <hr>
+        <p class="whitepaper-details-text">For full details, <a href="WHITEPAPER.md" target="_blank"
+            rel="noopener">download the complete whitepaper</a>.</p>
+      </div>
+      <div id="whitepaper-tokenomics" class="whitepaper-section-hidden">
+        <h4>Tokenomics</h4>
+        <ul>
+          <li>Total Supply: 1,000,000,000 AETH</li>
+          <li>Initial Distribution: 50% Liquidity, 20% Team, 15% Marketing, 15% Staking Rewards</li>
+          <li>Deflationary Mechanisms: Buy/Sell Tax, Burn Events</li>
+          <li>Liquidity Pool: QuickSwap V2</li>
+        </ul>
+      </div>
+      <div id="whitepaper-staking" class="whitepaper-section-hidden">
+        <h4>Staking Mechanics</h4>
+        <ul>
+          <li>Three Pools: 8%, 12%, 18% APY</li>
+          <li>Flexible Lock Periods</li>
+          <li>Rewards Distributed in AETH</li>
+          <li>Smart Contract Controlled</li>
+        </ul>
+      </div>
+      <div id="whitepaper-security" class="whitepaper-section-hidden">
+        <h4>Security & Auditing</h4>
+        <ul>
+          <li>OpenZeppelin Contracts</li>
+          <li>Slither Static Analysis</li>
+          <li>External Audit Complete</li>
+          <li>Bug Bounty Program</li>
+        </ul>
+      </div>
+      <div id="whitepaper-roadmap" class="whitepaper-section-hidden">
+        <h4>Roadmap</h4>
+        <ul>
+          <li>Q1 2026: Launch, Staking Pools, Analytics</li>
+          <li>Q2 2026: DEX Integration, Governance</li>
+          <li>Q3 2026: Mobile App, Partnerships</li>
+          <li>Q4 2026: Expansion, New Pools</li>
+        </ul>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
-    <script src="dashboard-main.js?v=1.3.1" defer></script>
-    <script>
-      // Quick Stats Card live update logic
-      function updateQuickStats() {
-        // Try to get wallet/account info from existing DOM
-        const account = document.getElementById('accountAddress')?.textContent?.trim() || '-';
-        const aeth = document.getElementById('aethBalance')?.textContent?.trim() || '-';
-        const staked = document.getElementById('stakingHistoryTable')?.querySelector('tbody tr:not(.text-gray) td:nth-child(3)')?.textContent?.trim() || '0';
-        const treasury = document.getElementById('treasuryTotal')?.textContent?.trim() || '-';
-        const rewards = document.getElementById('stakingRewards')?.textContent?.trim() || '-';
-        document.getElementById('quickWallet').textContent = account;
-        document.getElementById('quickAeth').textContent = aeth;
-        document.getElementById('quickStaked').textContent = staked;
-        document.getElementById('quickTreasury').textContent = treasury;
-        document.getElementById('quickRewards').textContent = rewards;
+  </section>
+  <script>
+    // Expand/Collapse
+    document.getElementById('toggleWhitepaperBtn').addEventListener('click', function () {
+      const content = document.getElementById('whitepaperContent');
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        content.style.display = 'none';
+        this.textContent = 'Expand';
+        this.setAttribute('aria-expanded', 'false');
+      } else {
+        content.style.display = '';
+        this.textContent = 'Collapse';
+        this.setAttribute('aria-expanded', 'true');
       }
-      document.addEventListener('DOMContentLoaded', function () {
-        updateQuickStats();
-        // Also update on wallet or treasury refresh
-        document.getElementById('refreshBalancesBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
-        document.getElementById('refreshTreasuryBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+    });
+    // Section Navigation
+    window.showWhitepaperSection = function (section) {
+      const sections = ['summary', 'tokenomics', 'staking', 'security', 'roadmap'];
+      sections.forEach(s => {
+        document.getElementById('whitepaper-' + s).style.display = (s === section) ? '' : 'none';
       });
-    </script>
-    <script src="global-announcements.js?v=1.3.1" defer></script>
-    <script src="coinbase-commerce-frontend.js?v=1.3.1" defer></script>
-    <script src="payment-history.js?v=1.3.1" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="dashboard-features.js?v=1.3.1" defer></script>
-    <!-- Language Selector -->
-    <!-- Removed duplicate language selector to avoid multiple elements with the same ID -->
-    <!-- Localization/i18n -->
-    <!-- Accessibility: ARIA landmarks and improved focus -->
-    <main id="mainContent" tabindex="-1" aria-label="Dashboard main content" role="main">
-      <!-- Existing content for the main dashboard -->
-      <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options">
-        <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect">🔗
-          WalletConnect</button>
-        <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google">G
-          <span class="google-btn-text">oogle</span></button>
-      </section>
-      <!-- Sticky mobile bottom navigation -->
-      <nav class="mobile-bottom-nav" id="mobileBottomNav">
-        <a href="#quickStatsCard" aria-label="Quick Stats"><i class="fas fa-tachometer-alt"></i><span>Stats</span></a>
-        <a href="#staking-history-section" aria-label="Staking"><i class="fas fa-coins"></i><span>Staking</span></a>
-        <a href="#advanced-analytics-section" aria-label="Analytics"><i
-            class="fas fa-chart-line"></i><span>Analytics</span></a>
-        <a href="#community-chat-section" aria-label="Chat"><i class="fas fa-comments"></i><span>Chat</span></a>
-        <a href="#wallet-portfolio-section" aria-label="Portfolio"><i
-            class="fas fa-wallet"></i><span>Portfolio</span></a>
-      </nav>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js" defer></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="dashboard-wallet.js?v=1.3.1" defer></script>
-    <script src="dashboard-accessibility.js?v=1.3.1" defer></script>
-    <!-- Onboarding Tour Disabled - CSP Compliance -->
-    <!-- New Features Scripts -->
-    <script src="dashboard-treasury-chart.js?v=1.3.1" defer></script>
-    <script src="dashboard-starfield.js?v=1.3.1" defer></script>
+    };
+  </script>
+  <!-- Existing content for the main dashboard -->
+  <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options">
+    <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect">🔗
+      WalletConnect</button>
+    <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google">G
+      <span class="google-btn-text">oogle</span></button>
+  </section>
+  <!-- Sticky mobile bottom navigation -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <a href="#quickStatsCard" aria-label="Quick Stats"><i class="fas fa-tachometer-alt"></i><span>Stats</span></a>
+    <a href="#staking-history-section" aria-label="Staking"><i class="fas fa-coins"></i><span>Staking</span></a>
+    <a href="#advanced-analytics-section" aria-label="Analytics"><i
+        class="fas fa-chart-line"></i><span>Analytics</span></a>
+    <a href="#community-chat-section" aria-label="Chat"><i class="fas fa-comments"></i><span>Chat</span></a>
+    <a href="#wallet-portfolio-section" aria-label="Portfolio"><i class="fas fa-wallet"></i><span>Portfolio</span></a>
+  </nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js" defer></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="dashboard-wallet.js?v=1.3.1" defer></script>
+<script src="dashboard-accessibility.js?v=1.3.1" defer></script>
+<!-- Onboarding Tour Disabled - CSP Compliance -->
+<!-- New Features Scripts -->
+<script src="dashboard-treasury-chart.js?v=1.3.1" defer></script>
+<script src="dashboard-starfield.js?v=1.3.1" defer></script>
 </body>
 
 </html>
