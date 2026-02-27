@@ -1,4 +1,4 @@
-// send-email.js - Utility for sending emails (Node.js, using nodemailer)
+// send-email.mjs - Utility for sending emails (Node.js, using nodemailer)
 import nodemailer from 'nodemailer';
 
 const smtpPort = Number(process.env.SMTP_PORT) || 587;
@@ -7,12 +7,6 @@ const smtpSecure =
   typeof smtpSecureEnv !== 'undefined'
     ? smtpSecureEnv === 'true' || smtpSecureEnv === '1'
     : smtpPort === 465;
-
-// Remove unused smtpRequireTls
-// const smtpRequireTlsEnv = process.env.SMTP_REQUIRE_TLS;
-// const smtpRequireTls = typeof smtpRequireTlsEnv !== 'undefined'
-//   ? smtpRequireTlsEnv === 'true' || smtpRequireTlsEnv === '1'
-//   : (!smtpSecure && smtpPort === 587);
 
 const smtpUser = process.env.SMTP_USER || '';
 const smtpPass = process.env.SMTP_PASS || '';

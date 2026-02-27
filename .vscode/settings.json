@@ -5,5 +5,9 @@
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "java.configuration.updateBuildConfiguration": "interactive",
-  "codium.codeCompletion.enable": true
+  "codium.codeCompletion.enable": true,
+  "circleci.filters.branchFilter": "allBranches",
+  "circleci.persistedProjectSelection": [
+    "gh/MastaTrill/Aetheron_platform-1"
+  ]
 }

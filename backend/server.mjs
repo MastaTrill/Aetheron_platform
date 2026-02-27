@@ -1,19 +1,19 @@
 // Simple Express server to mount scanner and launchpad APIs
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
 
-const scannerApi = require('./scanner/scanner-api.mjs');
-const launchpadApi = require('./scanner/launchpad-api.mjs');
-const coinbaseCommerceApi = require('./scanner/coinbase-commerce.mjs');
-const paymentHistoryApi = require('./scanner/payment-history-backend.mjs');
-const allPaymentsApi = require('./scanner/all-payments-backend.mjs');
+import scannerApi from './scanner/scanner-api.mjs';
+import launchpadApi from './scanner/launchpad-api.mjs';
+import coinbaseCommerceApi from './scanner/coinbase-commerce.mjs';
+import paymentHistoryApi from './scanner/payment-history-backend.mjs';
+import allPaymentsApi from './scanner/all-payments-backend.mjs';
 
-const path = require('path');
+import path from 'path';
 const app = express();
 app.use(bodyParser.json());
 
 // Serve static files from the root project directory
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(path.resolve(), '..')));
 
 // API routes
 app.use('/api', scannerApi);
@@ -25,7 +25,7 @@ app.use('/api', allPaymentsApi);
 // Fallback: serve index.html for unknown (non-API) routes (SPA support)
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+  res.sendFile(path.join(path.resolve(), '..', 'index.html'));
 });
 
 const PORT = process.env.PORT || 4000;

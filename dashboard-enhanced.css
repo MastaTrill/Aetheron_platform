@@ -1,3 +1,30 @@
+/* Home Welcome Card Styles (moved from inline) */
+.prominent-welcome {
+  background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.18);
+}
+.prominent-welcome .logo {
+  font-size: 2.2em;
+  margin-bottom: 10px;
+}
+.prominent-welcome .home-overview {
+  font-size: 1.18em;
+  margin-bottom: 18px;
+}
+.prominent-welcome .text-gray {
+  color: #e0e0e0;
+}
+.prominent-welcome .onboarding-btn {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+.prominent-welcome .onboarding-info {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  padding: 12px;
+}
 /* Transaction History Controls */
 .tx-controls {
   display: flex;

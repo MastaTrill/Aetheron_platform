@@ -60,7 +60,9 @@ async function main() {
   console.log(colors.bold + '📜 Deploying Aetheron Token...' + colors.reset);
 
   try {
-    const Aetheron = await ethers.getContractFactory('Aetheron');
+    const Aetheron = await ethers.getContractFactory(
+      'contracts/Aetheron.sol:Aetheron',
+    );
 
     // We'll use deployer as staking pool initially, then update after staking contract is deployed
     const aetheron = await Aetheron.deploy(
@@ -69,8 +71,8 @@ async function main() {
       deployer.address, // Temporary staking pool address
     );
 
-    await aetheron.waitForDeployment();
-    const aetheronAddress = await aetheron.getAddress();
+    await aetheron.deployed();
+    const aetheronAddress = aetheron.address;
     console.log(
       colors.green +
         '✅ Aetheron Token deployed to: ' +
@@ -82,11 +84,13 @@ async function main() {
     console.log(
       '\n' + colors.bold + '📜 Deploying Aetheron Staking...' + colors.reset,
     );
-    const AetheronStaking = await ethers.getContractFactory('AetheronStaking');
+    const AetheronStaking = await ethers.getContractFactory(
+      'contracts/AetheronStaking.sol:AetheronStaking',
+    );
     const staking = await AetheronStaking.deploy(aetheronAddress);
 
-    await staking.waitForDeployment();
-    const stakingAddress = await staking.getAddress();
+    await staking.deployed();
+    const stakingAddress = staking.address;
     console.log(
       colors.green +
         '✅ Aetheron Staking deployed to: ' +
@@ -111,12 +115,14 @@ async function main() {
       colors.green + '✅ Staking pool address updated' + colors.reset,
     );
 
+
     // Deposit rewards into staking contract
-    console.log(
-      colors.bold +
-        '💰 Depositing rewards into staking contract...' +
-        colors.reset,
-    );
+    const stakingRewards = ethers.utils.parseEther('1000000'); // 1,000,000 tokens
+    console.log(colors.bold + '📝 Approving staking contract to spend reward tokens...' + colors.reset);
+    const approveTx = await aetheron.approve(stakingAddress, stakingRewards);
+    await approveTx.wait();
+    console.log(colors.green + '✅ Staking contract approved for rewards' + colors.reset);
+    console.log(colors.bold + '💰 Depositing rewards into staking contract...' + colors.reset);
     const depositTx = await staking.depositRewards(stakingRewards);
     await depositTx.wait();
     console.log(colors.green + '✅ Rewards deposited' + colors.reset);

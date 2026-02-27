@@ -2,9 +2,9 @@
 
 ## Technical Whitepaper v1.0
 
-**February 2026**
+### February 2026
 
-_Building the Future of Decentralized Finance_
+#### Building the Future of Decentralized Finance
 
 ---
 
@@ -180,7 +180,7 @@ Three staking pools with different risk/reward profiles:
 
 ### Infrastructure
 
-- **RPC Provider**: Polygon RPC (https://polygon-rpc.com/)
+- **RPC Provider**: Polygon RPC ([https://polygon-rpc.com/](https://polygon-rpc.com/))
 - **APIs**:
   - DexScreener for market data
   - Polygon RPC for blockchain data

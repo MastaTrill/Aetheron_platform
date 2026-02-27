@@ -1,13 +1,10 @@
-// payment-history-backend.js - Express route for user payment history
-const express = require('express');
+// payment-history-backend.mjs - Express route for user payment history
+import express from 'express';
+import fs from 'fs';
+import path from 'path';
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
 
-// For demo: store payment history in a JSON file (replace with DB in production)
-// Renamed to support ES module syntax
-// payment-history-backend.mjs
-const HISTORY_FILE = path.join(__dirname, 'payment-history.json');
+const HISTORY_FILE = path.join(path.resolve(), 'payment-history.json');
 
 function getUserHistory(userId) {
   if (!fs.existsSync(HISTORY_FILE)) return [];
@@ -23,4 +20,4 @@ router.get('/payment-history', (req, res) => {
   res.json({ history });
 });
 
-module.exports = router;
+export default router;

@@ -13,25 +13,37 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
  * @notice Implements Gnosis Safe-style multi-signature functionality
  * with transaction queuing, confirmation, and execution
  */
-contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, UUPSUpgradeable {
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
-        function initialize(address[] memory _owners, uint256 _numConfirmationsRequired) public initializer {
-            __Ownable_init();
-            __ReentrancyGuard_init();
-            __Pausable_init();
-            __UUPSUpgradeable_init();
-            require(_owners.length > 0, "Owners required");
-            require(_numConfirmationsRequired > 0 && _numConfirmationsRequired <= _owners.length, "Invalid confirmations");
-            for (uint256 i = 0; i < _owners.length; i++) {
-                address owner = _owners[i];
-                require(owner != address(0), "Invalid owner");
-                require(!isOwner[owner], "Owner not unique");
-                isOwner[owner] = true;
-                owners.push(owner);
-            }
-            numConfirmationsRequired = _numConfirmationsRequired;
+
+contract AetheronMultiSigTreasury is
+    OwnableUpgradeable,
+    ReentrancyGuardUpgradeable,
+    PausableUpgradeable,
+    UUPSUpgradeable
+{
+    function initialize(
+        address[] memory _owners,
+        uint256 _numConfirmationsRequired
+    ) public initializer {
+        __Ownable_init();
+        __ReentrancyGuard_init();
+        __Pausable_init();
+        __UUPSUpgradeable_init();
+        require(_owners.length > 0, "Owners required");
+        require(
+            _numConfirmationsRequired > 0 &&
+                _numConfirmationsRequired <= _owners.length,
+            "Invalid confirmations"
+        );
+        for (uint256 i = 0; i < _owners.length; i++) {
+            address owner = _owners[i];
+            require(owner != address(0), "Invalid owner");
+            require(!isOwner[owner], "Owner not unique");
+            isOwner[owner] = true;
+            owners.push(owner);
         }
+        numConfirmationsRequired = _numConfirmationsRequired;
+    }
+
     using ECDSA for bytes32;
 
     // Events
@@ -73,14 +85,21 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
     }
 
     modifier notExecuted(uint256 _txIndex) {
-        require(!transactions[_txIndex].executed, "Transaction already executed");
+        require(
+            !transactions[_txIndex].executed,
+            "Transaction already executed"
+        );
         _;
     }
 
     modifier notConfirmed(uint256 _txIndex) {
-        require(!isConfirmed[_txIndex][msg.sender], "Transaction already confirmed");
+        require(
+            !isConfirmed[_txIndex][msg.sender],
+            "Transaction already confirmed"
+        );
         _;
     }
+
     receive() external payable whenNotPaused {
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
@@ -114,7 +133,9 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
      * @dev Confirm a transaction
      * @param _txIndex Transaction index
      */
-    function confirmTransaction(uint256 _txIndex)
+    function confirmTransaction(
+        uint256 _txIndex
+    )
         public
         onlyOwner
         whenNotPaused
@@ -132,13 +153,9 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
      * @dev Execute a confirmed transaction
      * @param _txIndex Transaction index
      */
-    function executeTransaction(uint256 _txIndex)
-        public
-        onlyOwner
-        whenNotPaused
-        txExists(_txIndex)
-        notExecuted(_txIndex)
-    {
+    function executeTransaction(
+        uint256 _txIndex
+    ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
         Transaction storage transaction = transactions[_txIndex];
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
@@ -156,13 +173,9 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
      * @dev Revoke confirmation for a transaction
      * @param _txIndex Transaction index
      */
-    function revokeConfirmation(uint256 _txIndex)
-        public
-        onlyOwner
-        whenNotPaused
-        txExists(_txIndex)
-        notExecuted(_txIndex)
-    {
+    function revokeConfirmation(
+        uint256 _txIndex
+    ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
         Transaction storage transaction = transactions[_txIndex];
         require(isConfirmed[_txIndex][msg.sender], "Transaction not confirmed");
         transaction.numConfirmations -= 1;
@@ -195,7 +208,9 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
      * @return executed Whether transaction is executed
      * @return numConfirmations Number of confirmations
      */
-    function getTransaction(uint256 _txIndex)
+    function getTransaction(
+        uint256 _txIndex
+    )
         public
         view
         returns (
@@ -242,7 +257,6 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
         emit OwnerAddition(owner);
     }
 
-
     /**
      * @notice Remove an owner from the wallet (requires multi-sig approval)
      * @param owner The address of the owner to remove
@@ -268,12 +282,16 @@ contract AetheronMultiSigTreasury is OwnableUpgradeable, ReentrancyGuardUpgradea
      * @notice Change the number of required confirmations for transactions
      * @param _required The new number of required confirmations
      */
-    function changeRequirement(uint256 _required) public onlyOwner whenNotPaused {
+    function changeRequirement(
+        uint256 _required
+    ) public onlyOwner whenNotPaused {
         require(_required > 0, "Invalid requirement");
         require(_required <= owners.length, "Requirement too high");
         numConfirmationsRequired = _required;
         emit RequirementChange(_required);
     }
 
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 }

@@ -1,6 +1,7 @@
+// No setup import needed; Hardhat registers matchers
 import { expect } from 'chai';
 import pkg from 'hardhat';
-const { ethers } = pkg;
+const { ethers, upgrades } = pkg;
 
 describe('AetheronMultiSigTreasury', function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
@@ -8,7 +9,11 @@ describe('AetheronMultiSigTreasury', function () {
   beforeEach(async function () {
     [owner, addr1, addr2, addr3] = await ethers.getSigners();
     MultiSig = await ethers.getContractFactory('AetheronMultiSigTreasury');
-    multiSig = await MultiSig.deploy();
+    multiSig = await upgrades.deployProxy(
+      MultiSig,
+      [[owner.address, addr1.address, addr2.address], 2],
+      { initializer: 'initialize' },
+    );
   });
 
   it('should deploy with the owner set', async function () {

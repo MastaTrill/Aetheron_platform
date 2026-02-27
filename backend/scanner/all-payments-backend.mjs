@@ -1,10 +1,10 @@
-// all-payments-backend.js - Express route for admin to view all payments
-const express = require('express');
-const router = express.Router();
-const fs = require('fs');
-const path = require('path');
+// all-payments-backend.mjs - Express route for admin to view all payments
+import express from 'express';
+import fs from 'fs';
+import path from 'path';
 
-const HISTORY_FILE = path.join(__dirname, 'payment-history.json');
+const router = express.Router();
+const HISTORY_FILE = path.join(path.resolve(), 'payment-history.json');
 
 // GET /api/all-payments
 router.get('/all-payments', (req, res) => {
@@ -18,4 +18,4 @@ router.get('/all-payments', (req, res) => {
   res.json({ payments });
 });
 
-module.exports = router;
+export default router;
