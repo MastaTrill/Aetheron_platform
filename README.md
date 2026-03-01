@@ -430,4 +430,80 @@ Created by Mastatrill — Building the future of space exploration 🌌🚀
 
 ---
 
-✨
+# Aetheron Platform Dashboard
+
+## Overview
+
+Aetheron Platform is a decentralized dashboard for token management, staking, analytics, and community engagement on Polygon.
+
+## Features
+
+- User profile management (edit, save)
+- Real-time notifications (push, email, in-app)
+- Onboarding flows (video walkthrough, gamified tutorial)
+- Language and RTL support
+- Accessibility settings (screen reader, dyslexia mode)
+- DeFi integrations (staking, lending, yield farming)
+- Analytics and AI-powered insights
+
+## Getting Started
+
+1. Clone the repo: `git clone https://github.com/MastaTrill/Aetheron_platform.git`
+2. Install dependencies: `npm install`
+3. Start the dashboard: `npm start`
+4. Open `http://localhost:3000/dashboard.html` in your browser
+
+## Testing
+
+- Frontend: Run `npm test` (Jest, dashboard.test.js)
+- Smart contracts: Run `npm run test:smart-contract`
+
+## Documentation
+
+- See inline comments in dashboard.js and dashboard.html
+- For API and contract docs, see the `smart-contract` folder
+
+## Deployment
+
+- Static site: Deploy manually to GitHub Pages or your preferred host
+- Contracts: See smart-contract/README.md for deployment steps
+
+## Deployment Automation
+
+### Static Site (Dashboard)
+
+You can automate deployment to GitHub Pages using the following steps:
+
+1. Ensure your repository is connected to GitHub.
+2. Push your latest changes to the `main` or `gh-pages` branch.
+3. In your repository settings, enable GitHub Pages and set the source to `/ (root)` or `/docs` as needed.
+4. Optionally, use GitHub Actions for CI/CD. Example workflow:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy Dashboard to GitHub Pages
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+```
+
+### Smart Contracts
+
+Automate contract deployment and verification using Hardhat scripts:
+
+- Deploy: `npm run deploy:polygon` or `npm run deploy:mumbai`
+- Verify: `npm run verify:polygon` or `npm run verify:mumbai`
+
+You can also add a GitHub Actions workflow for contract deployment (with secrets for RPC and private key).
+
+---

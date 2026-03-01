@@ -17,6 +17,7 @@ const STATIC_ASSETS = [
   './announcements.json',
   './referral-leaderboard.json',
   './manifest.json',
+  './offline.html',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
   'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
@@ -106,17 +107,15 @@ self.addEventListener('fetch', (event) => {
                   }
                   const headers = new Headers(response.headers);
                   headers.set('sw-cache-time', new Date().toISOString());
-                  response
-                    .clone()
-                    .blob()
-                    .then((blob) => {
-                      const cachedResponse = new Response(blob, {
-                        status: response.status,
-                        statusText: response.statusText,
-                        headers: headers,
-                      });
-                      cache.put(event.request, cachedResponse);
+                  const clonedResponse = response.clone();
+                  clonedResponse.blob().then((blob) => {
+                    const cachedResponse = new Response(blob, {
+                      status: clonedResponse.status,
+                      statusText: clonedResponse.statusText,
+                      headers: headers,
                     });
+                    cache.put(event.request, cachedResponse);
+                  });
                 } catch (e) {
                   console.warn('Failed to clone response for caching', e);
                 }
@@ -147,7 +146,15 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(event.request)),
+        .catch(() => {
+          // Show offline notification if available
+          self.registration.showNotification &&
+            self.registration.showNotification('You are offline', {
+              body: 'Some features may be unavailable.',
+              icon: './assets/aetheron-og-image.png',
+            });
+          return caches.match('./offline.html');
+        }),
     );
     return;
   }

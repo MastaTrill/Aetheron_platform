@@ -8,7 +8,8 @@
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
     "build": "echo 'Static site - no build needed'",
-    "test": "cd smart-contract && npm test",
+    "test": "jest",
+    "test:dashboard": "jest dashboard.test.js",
     "test:smart-contract": "cd smart-contract && npm test",
     "deploy": "echo 'Deploy manually to GitHub Pages'",
     "verify": "cd smart-contract && node scripts/verify-contracts.mjs",
@@ -58,7 +59,7 @@
     "ethereum-waffle": "^4.0.10",
     "ethers": "^5.7.2",
     "hardhat": "^3.1.9",
-    "jest": "^25.0.0",
+    "jest": "^25.5.4",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1"
   }

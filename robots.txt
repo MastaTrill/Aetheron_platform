@@ -15,8 +15,9 @@ Allow: /*.jpg$
 Allow: /*.svg$
 Allow: /*.webp$
 
-# Sitemap location
-Sitemap: https://mastatrill.github.io/Aetheron_platform/sitemap.xml
+# SEO: Crawl delay and sitemap
+Crawl-delay: 10
+Sitemap: https://aetheron.online/sitemap.xml
 
 # Crawl delay (optional, 1 second)
 Crawl-delay: 1

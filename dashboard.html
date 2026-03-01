@@ -4,12 +4,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <!-- Localization/i18n Support -->
+  <script src="https://unpkg.com/i18next@21.6.16/dist/umd/i18next.min.js" defer></script>
+  <!-- Onboarding/Help Interactive Guide -->
+  <script src="https://cdn.jsdelivr.net/npm/intro.js/minified/intro.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
+  <!-- FAQ Structured Data: JSON-LD -->
+  <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do I transfer AETH?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the Transfer AETH card, enter the recipient address and amount, then click Transfer."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I stake tokens?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Go to the Staking section, enter the amount, and confirm the transaction in your wallet."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I enable notifications?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Click the Enable Push Notifications button in the Notifications section."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I install the app?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the Install banner or your browser's install option for PWAs."
+                }
+              }
+            ]
+          }
+        </script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX'); // TODO: Replace with your GA4 Measurement ID
+  </script>
+  <!-- Structured Data: JSON-LD -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Aetheron Platform",
+        "url": "https://aetheron.online/dashboard.html",
+        "description": "Decentralized token management, staking, analytics, and community engagement on Polygon.",
+        "image": "https://aetheron.online/assets/aetheron-og-image.png",
+        "sameAs": [
+          "https://twitter.com/AetheronPlatform",
+          "https://discord.gg/aetheron"
+        ]
+      }
+    </script>
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Aetheron Platform: Decentralized token management, staking, analytics, and community engagement on Polygon.">
+  <meta name="keywords" content="Aetheron, DeFi, Polygon, staking, analytics, crypto, token, dashboard">
+  <meta name="author" content="Aetheron Team">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Aetheron Platform Dashboard">
+  <meta property="og:description"
+    content="Your decentralized hub for token management, staking, analytics, and community engagement.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aetheron.online/dashboard.html">
+  <meta property="og:image" content="https://aetheron.online/assets/aetheron-og-image.png">
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aetheron Platform Dashboard">
+  <meta name="twitter:description"
+    content="Your decentralized hub for token management, staking, analytics, and community engagement.">
+  <meta name="twitter:image" content="https://aetheron.online/assets/aetheron-og-image.png">
+  <meta name="twitter:site" content="@AetheronPlatform">
+  <!-- Sitemap Link -->
+  <link rel="sitemap" type="application/xml" href="https://aetheron.online/sitemap.xml">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://accounts.google.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net/npm/chart.js https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider https://accounts.google.com/gsi/client; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
   <title>Aetheron Platform</title>
   <link rel="canonical" href="https://aetheron.online/dashboard.html">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -591,6 +681,16 @@
     #quickStatsCard {
       margin-bottom: 24px;
     }
+
+    /* Screen reader only class */
+    .sr-only {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
   </style>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
     crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -599,13 +699,243 @@
   <link rel="stylesheet" href="dashboard-enhanced.css?v=1.3.1">
 
   <head>
+    <style>
+      /* Button feedback animation */
+      .btn.loading {
+        pointer-events: none;
+        opacity: 0.7;
+        position: relative;
+      }
+
+      .btn.loading:after {
+        content: '';
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border: 2px solid #00d4ff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+        margin-left: 0.5em;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          animation: spinFrame 1s linear infinite;
+        }
+      }
+
+      @keyframes spinFrame {
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Success/failure states */
+      .btn.success {
+        background: #28a745 !important;
+        color: #fff !important;
+        border-color: #28a745 !important;
+      }
+
+      .btn.failure {
+        background: #dc3545 !important;
+        color: #fff !important;
+        border-color: #dc3545 !important;
+      }
+
+      /* Smooth transitions for modals/cards */
+      .modal,
+      .card {
+        transition: box-shadow 0.3s, transform 0.3s, opacity 0.3s;
+      }
+
+      .modal.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.98);
+      }
+
+      .modal:not(.hidden) {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      /* Dark mode styles */
+      body.dark-mode,
+      .dark-mode .container,
+      .dark-mode .card,
+      .dark-mode .modal-content {
+        background: #181a1b !important;
+        color: #e0e0e0 !important;
+      }
+
+      .dark-mode .btn,
+      .dark-mode .btn-outline,
+      .dark-mode .theme-toggle-btn,
+      .dark-mode .connect-btn {
+        background: #222 !important;
+        color: #00d4ff !important;
+        border: 2px solid #00d4ff !important;
+      }
+
+      .dark-mode .btn-outline {
+        background: #181a1b !important;
+        color: #00d4ff !important;
+        border: 2px solid #00d4ff !important;
+      }
+
+      .dark-mode .text-gray {
+        color: #aaa !important;
+      }
+    </style>
+    <script>
+      // Dark mode toggle logic
+      document.addEventListener('DOMContentLoaded', function () {
+        var themeBtn = document.getElementById('themeToggleBtn');
+        themeBtn && themeBtn.addEventListener('click', function () {
+          document.body.classList.toggle('dark-mode');
+        });
+      });
+      // Example ARIA live region update for balance
+      function updateBalanceLive(newBalance) {
+        var balanceLive = document.getElementById('balanceLiveRegion');
+        if (balanceLive) {
+          balanceLive.textContent = 'Balance updated: ' + newBalance;
+        }
+      }
+    </script>
+    <style>
+      /* Responsive design tweaks for mobile/tablet */
+      @media (max-width: 900px) {
+
+        .container,
+        .card,
+        .cards-grid,
+        .header,
+        .wallet-section {
+          width: 100% !important;
+          max-width: 100vw;
+          padding: 0.5em;
+        }
+
+        .cards-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        .card {
+          margin-bottom: 1.5em;
+        }
+
+        .modal-content {
+          width: 95vw !important;
+          min-width: unset;
+        }
+      }
+
+      /* Improved color contrast for readability */
+      body,
+      .container,
+      .card,
+      .modal-content {
+        background: #fff;
+        color: #222;
+      }
+
+      .btn,
+      .btn-outline,
+      .theme-toggle-btn,
+      .connect-btn {
+        background: #00d4ff;
+        color: #222;
+        border: 2px solid #222;
+      }
+
+      .btn-outline {
+        background: #fff;
+        color: #00d4ff;
+        border: 2px solid #00d4ff;
+      }
+
+      .text-gray {
+        color: #555 !important;
+      }
+
+      /* Visually distinct focus outline for accessibility */
+      .focus-visible:focus,
+      button:focus,
+      a:focus,
+      input:focus,
+      select:focus {
+        outline: 3px solid #00d4ff !important;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 2px #fff, 0 0 8px #00d4ff;
+        z-index: 2;
+      }
+
+      /* Tooltip styling */
+      .help-icon {
+        cursor: help;
+        border-bottom: 1px dotted #00d4ff;
+        color: #00d4ff;
+        font-size: 1em;
+        margin-left: 0.25em;
+      }
+
+      .help-icon[title]:hover:after {
+        content: attr(title);
+        position: absolute;
+        background: #222;
+        color: #fff;
+        padding: 0.5em 1em;
+        border-radius: 4px;
+        font-size: 0.95em;
+        white-space: pre-line;
+        z-index: 9999;
+        left: 0;
+        top: 2em;
+      }
+    </style>
+    <style>
+      /* Visually distinct focus outline for accessibility */
+      .focus-visible:focus,
+      button:focus,
+      a:focus,
+      input:focus,
+      select:focus {
+        outline: 3px solid #00d4ff !important;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 2px #fff, 0 0 8px #00d4ff;
+        z-index: 2;
+      }
+    </style>
+    <!-- Sentry Error Tracking (fill in your DSN) -->
+    <script src="https://browser.sentry-cdn.com/7.92.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
+    <script>
+      Sentry.init({
+        dsn: 'YOUR_SENTRY_DSN', // TODO: Replace with your Sentry DSN
+        integrations: [new Sentry.BrowserTracing()],
+        tracesSampleRate: 1.0,
+      });
+    </script>
+    <!-- Google Analytics 4 (GA4) (fill in your Measurement ID) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX'); // TODO: Replace with your GA4 Measurement ID
+    </script>
+    <script type="module" src="firebase-messaging-init.js"></script>
     ...existing code...
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.min.css">
     <style>
       body {
         margin: 0;
         min-height: 100vh;
-        background: #16161a;
+        background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
         overflow-x: hidden;
       }
 
@@ -639,18 +969,21 @@
       });
     });
   </script>
+  <a href="#mainContent" class="skip-to-content" tabindex="0" aria-label="Skip to main content">Skip to main content</a>
   <canvas id="starfield-canvas"></canvas>
   <!-- Toast Notification Container -->
-  <div id="toastContainer" aria-live="polite" aria-atomic="true" class="toast-container"></div>
+  <div id="toastContainer" aria-live="assertive" aria-atomic="true" class="toast-container" role="alert"></div>
   <div class="container">
     <!-- Home Screen Welcome/Overview -->
-    <div class="card home-welcome-card prominent-welcome" aria-label="Welcome to Aetheron Platform">
+    <div class="card home-welcome-card prominent-welcome" aria-label="Welcome to Aetheron Platform" role="region"
+      tabindex="0">
       <h2 class="logo" tabindex="0">🌌 Welcome to Aetheron Platform</h2>
       <p class="home-overview">Your decentralized hub for token management, staking, analytics, and community
         engagement.<br>
         <span class="text-gray">Connect your wallet to unlock full features.</span>
       </p>
-      <button id="onboardingBtnHome" class="btn onboarding-btn" type="button" aria-label="Start onboarding tour">❓ Start
+      <button id="onboardingBtnHome" class="btn onboarding-btn focus-visible" type="button"
+        aria-label="Start onboarding tour">❓ Start
         Tour</button>
       <div class="onboarding-info">
         <strong>New here?</strong> <span class="text-gray">Explore the dashboard features, connect your wallet, and join
@@ -658,7 +991,7 @@
       </div>
     </div>
     <!-- Quick Stats Card -->
-    <div class="card" id="quickStatsCard">
+    <div class="card" id="quickStatsCard" role="region" aria-label="Quick Stats" tabindex="0">
       <h2>🚀 Quick Stats</h2>
       <div class="info-row"><span class="info-label">Wallet:</span> <span class="info-value" id="quickWallet">-</span>
       </div>
@@ -681,37 +1014,45 @@
       </div>
     </div>
     <!-- Loading Spinner -->
-    <div id="globalLoading" class="loading global-loading-bg" hidden>
+    <div id="globalLoading" class="loading global-loading-bg" hidden role="status" aria-live="polite"
+      aria-label="Global Loading Spinner">
       <div class="global-loading-center">
-        <svg width="60" height="60" viewBox="0 0 50 50">
+        <svg width="60" height="60" viewBox="0 0 50 50" aria-hidden="true">
           <circle cx="25" cy="25" r="20" fill="none" stroke="#00d4ff" stroke-width="5" stroke-linecap="round"
             stroke-dasharray="31.4 31.4" transform="rotate(-90 25 25)">
             <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s"
               repeatCount="indefinite" />
           </circle>
         </svg>
-        <div class="global-loading-text">Loading...</div>
+        <div class="global-loading-text" aria-label="Loading...">Loading...</div>
       </div>
     </div>
     <!-- Header and Wallet Section -->
-    <div class="header" aria-label="Aetheron Platform Header">
+    <div class="header" aria-label="Aetheron Platform Header" role="banner" tabindex="0">
       <h1 class="logo" tabindex="0">🌌 Aetheron Platform</h1>
       <p>Decentralized Token & Staking Platform</p>
-      <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark/light mode" type="button">🌙</button>
+      <button id="themeToggleBtn" class="theme-toggle-btn focus-visible" aria-label="Toggle dark/light mode"
+        type="button"><span aria-label="Toggle dark/light mode" role="img">🌙</span></button>
     </div>
-    <div id="walletStatusBar" class="wallet-status-bar status-bar" aria-live="polite">
+    <div id="walletStatusBar" class="wallet-status-bar status-bar" aria-live="polite" role="status"
+      aria-label="Wallet Status Bar" tabindex="0">
       <span id="walletStatusIcon">🔴</span>
       <span id="walletStatusText">Wallet not connected</span>
     </div>
-    <div class="wallet-section" aria-label="Wallet Section">
-      <button id="connectBtn" type="button" class="connect-btn" aria-label="Connect Wallet">🔗 Connect Wallet</button>
-      <button type="button" class="btn buy-btn" aria-label="Buy AETH"><i class="fas fa-shopping-cart"></i> Buy
+    <div class="wallet-section" aria-label="Wallet Section" role="region" tabindex="0">
+      <button id="connectBtn" type="button" class="connect-btn focus-visible" aria-label="Connect Wallet"><span
+          aria-label="Connect Wallet" role="img">🔗</span> Connect Wallet</button>
+      <button type="button" class="btn buy-btn focus-visible" aria-label="Buy AETH"><span aria-label="Buy AETH"
+          role="img">🛒</span> Buy
         AETH</button>
-      <button type="button" class="btn coinbase-btn" aria-label="Pay with Crypto (Coinbase)">💳 Pay with Crypto
+      <button type="button" class="btn coinbase-btn focus-visible" aria-label="Pay with Crypto (Coinbase)"><span
+          aria-label="Pay with Crypto (Coinbase)" role="img">💳</span> Pay with Crypto
         (Coinbase)</button>
-      <button id="refreshBalancesBtn" type="button" class="btn refresh-btn" aria-label="Refresh Balances">🔄
+      <button id="refreshBalancesBtn" type="button" class="btn refresh-btn focus-visible"
+        aria-label="Refresh Balances"><span aria-label="Refresh Balances" role="img">🔄</span>
         Refresh</button>
-      <div id="walletInfo" class="wallet-info" aria-live="polite">
+      <div id="walletInfo" class="wallet-info" aria-live="polite" role="status">
+        <div id="balanceLiveRegion" aria-live="assertive" class="sr-only">Balance updated.</div>
         <div class="info-row"><span class="info-label">Wallet Type:</span> <span class="info-value"
             id="walletType">-</span></div>
         <div class="info-row"><span class="info-label">Connected Account:</span> <span class="info-value"
@@ -729,509 +1070,986 @@
     </div>
     <!-- Cards Grid and Features -->
     <div class="cards-grid">
-      <div class="card">
+      <div class="card" role="region" aria-label="DeFi Aggregator" tabindex="0">
+        <h2>🔄 DeFi Aggregator</h2>
+        <p>Compare rates and swap tokens across multiple DEXs.</p>
+        <button class="btn" id="openAggregatorBtn" type="button" aria-label="Open Aggregator">Open Aggregator</button>
+      </div>
+      <div class="card" role="region" aria-label="Staking Analytics" tabindex="0">
+        <h2>📊 Staking Analytics</h2>
+        <canvas id="stakingAnalyticsChart" width="400" height="200" role="img"
+          aria-label="Staking Analytics Chart"></canvas>
+        <div id="stakingAnalyticsPlaceholder" class="text-gray" role="img" aria-label="Staking Analytics Placeholder">
+          Connect your wallet to view staking analytics.</div>
+      </div>
+      <div class="card card-right-align" role="region" tabindex="0">
+        <button id="startTourBtn" class="btn btn-outline mb-10" type="button">Start Guided Tour</button>
+        <button id="openHelpCenterBtn" class="btn btn-outline mb-10 ml-10" type="button">Help Center</button>
+      </div>
+      <!-- Help Center Modal -->
+      <div id="helpCenterModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpCenterTitle"
+        tabindex="-1">
+        <div class="modal-content help-modal-content">
+          <button class="close-modal-btn" id="closeHelpCenterModal" aria-label="Close Help Center" type="button">&times;</button>
+          <h2 class="modal-title" id="helpCenterTitle">Help Center</h2>
+          <h3>Frequently Asked Questions</h3>
+          <ul class="mb-2em">
+            <li><b>How do I transfer AETH?</b> Use the Transfer AETH card, enter the recipient address and amount, then
+              click Transfer.</li>
+            <li><b>How do I stake tokens?</b> Go to the Staking section, enter the amount, and confirm the transaction
+              in your wallet.</li>
+            <li><b>How do I enable notifications?</b> Click the Enable Push Notifications button in the Notifications
+              section.</li>
+            <li><b>How do I install the app?</b> Use the Install banner or your browser's install option for PWAs.</li>
+          </ul>
+          <h3>Contact & Support</h3>
+          <p>For further help, join our <a href="https://discord.gg/aetheron" target="_blank" rel="noopener"
+              class="modal-link">Discord</a> or email <a href="mailto:support@aetheron.com"
+              class="modal-link">support@aetheron.com</a>.</p>
+        </div>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Start Tour button
+          const tourBtn = document.getElementById('startTourBtn');
+          if (tourBtn && window.dashboard && typeof window.dashboard.startTour === 'function') {
+            tourBtn.addEventListener('click', function () {
+              window.dashboard.startTour();
+            });
+          }
+          // Help Center modal logic
+          const helpBtn = document.getElementById('openHelpCenterBtn');
+          const helpModal = document.getElementById('helpCenterModal');
+          const closeHelp = document.getElementById('closeHelpCenterModal');
+          if (helpBtn && helpModal) {
+            helpBtn.addEventListener('click', function () {
+              helpModal.style.display = 'block';
+            });
+          }
+          if (closeHelp && helpModal) {
+            closeHelp.addEventListener('click', function () {
+              helpModal.style.display = 'none';
+            });
+          }
+          window.addEventListener('click', function (event) {
+            if (event.target === helpModal) {
+              helpModal.style.display = 'none';
+            }
+          });
+        });
+      </script>
+      <div class="card" role="region" aria-label="Transfer AETH" tabindex="0">
         <h2>💰 Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
             title="Send AETH tokens to another wallet. Enter the recipient address and amount, then click Transfer.">❔</span>
         </h2>
         <div class="input-group"><label for="transferTo">Recipient Address: <span class="help-icon" tabindex="0"
               aria-label="Help: Recipient Address"
               title="Paste the wallet address you want to send AETH to.">❔</span></label> <input type="text"
-            id="transferTo" placeholder="0x..."></div>
+            id="transferTo" name="transferTo" placeholder="0x..." aria-label="Recipient Address"></div>
         <div class="input-group">
           <label for="transferAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Amount"
               title="Enter the number of AETH tokens to transfer.">❔</span></label>
           <input type="number" id="transferAmount" name="transferAmount" title="Amount of AETH to transfer"
-            placeholder="Enter amount">
+            placeholder="Enter amount" aria-label="Amount to Transfer">
         </div>
-        <button class="btn" id="transferBtn" type="button" title="Send AETH to the recipient address">Transfer</button>
-        <div class="quick-action-btn live-indicator"><span class="pulse-dot"></span> <span
-            id="liveHoldersCount">Loading...</span> Holders</div>
+        <button class="btn" id="transferBtn" type="button" title="Send AETH to the recipient address"
+          aria-label="Transfer AETH">Transfer</button>
+        <div class="quick-action-btn live-indicator" role="status" aria-label="Live Holders Count"><span
+            class="pulse-dot"></span> <span id="liveHoldersCount">Loading...</span> Holders</div>
       </div>
     </div>
     <!-- --- BEGIN: New Feature Scaffolding --- -->
     <section id="wallet-portfolio-section" class="card mb-2">
       <h2 class="card-title">Wallet Portfolio Breakdown</h2>
       <canvas id="walletPortfolioChart" width="400" height="200"></canvas>
-      <div id="walletPortfolioPlaceholder" class="text-gray">Connect your wallet to view all token balances.</div>
+      <div id="walletPortfolioPlaceholder" class="text-gray" role="img" aria-label="Wallet Portfolio Placeholder">
+        Connect your wallet to view all token balances.</div>
     </section>
-    ...existing code...
-    <section id="notifications-section" class="card mb-2">
-      <h2 class="card-title">Real-Time Notifications</h2>
-      <div id="notificationsPlaceholder" class="text-gray" aria-live="polite">Notifications will appear here.</div>
+    <section id="nft-analytics-section" class="card mb-2">
+      <h2 class="card-title">NFT Analytics</h2>
+      <canvas id="nftAnalyticsChart" width="400" height="200"></canvas>
+      <div id="nftAnalyticsPlaceholder" class="text-gray" role="img" aria-label="NFT Analytics Placeholder">Connect your
+        wallet to view NFT holdings and stats.</div>
     </section>
 
-    <section id="theme-section" class="card mb-2">
-      <h2 class="card-title">Theme Settings</h2>
-      <div>
-        <label for="themeToggleSwitch">Auto-switch theme based on system:</label>
-        <input type="checkbox" id="themeToggleSwitch"> <span id="themeStatus">Auto</span>
+    <section id="governance-voting-section" class="card mb-2" role="region" aria-label="Governance Voting" tabindex="0">
+      <h2 class="card-title">Governance Voting</h2>
+      <div id="governanceVotingPlaceholder" class="text-gray" role="status" aria-label="Governance Voting Placeholder">
+        Connect your wallet to participate in governance votes.
+      </div>
+      <button id="openGovernanceVoteBtn" class="btn mt-1em" aria-label="Open Governance Portal" type="button">Open Governance
+        Portal</button>
+    </section>
+
+  <section id="portfolio-tracker-section" class="card mb-2">
+    <h2 class="card-title">Portfolio Tracker</h2>
+    <canvas id="portfolioTrackerChart" width="400" height="200"></canvas>
+    <div id="portfolioTrackerPlaceholder" class="text-gray" role="img" aria-label="Portfolio Tracker Placeholder">
+      Connect your wallet to track your assets and performance.</div>
+  </section>
+  <!-- DeFi Integrations -->
+  <section id="defi-lending-section" class="card mb-2" role="region" aria-label="DeFi Lending & Borrowing" tabindex="0">
+    <h2 class="card-title">DeFi Lending & Borrowing</h2>
+    <div id="defiLendingPlaceholder" class="text-gray" role="status" aria-label="DeFi Lending Placeholder">Connect your
+      wallet to lend or borrow assets.</div>
+    <button id="openLendingBtn" class="btn mt-1em" aria-label="Open Lending Portal" type="button">Open Lending Portal</button>
+  </section>
+
+  <section id="yield-farming-section" class="card mb-2" role="region" aria-label="Yield Farming" tabindex="0">
+    <h2 class="card-title">Yield Farming</h2>
+    <div id="yieldFarmingPlaceholder" class="text-gray" role="status" aria-label="Yield Farming Placeholder">Connect
+      your wallet to view farming opportunities.</div>
+    <button id="openYieldFarmingBtn" class="btn mt-1em" aria-label="Explore Farms" type="button">Explore Farms</button>
+  </section>
+
+  <section id="cross-chain-swaps-section" class="card mb-2" role="region" aria-label="Cross-Chain Swaps" tabindex="0">
+    <h2 class="card-title">Cross-Chain Swaps</h2>
+    <div id="crossChainSwapsPlaceholder" class="text-gray" role="status" aria-label="Cross-Chain Swaps Placeholder">
+      Connect your wallet to swap assets across chains.</div>
+    <button id="openCrossChainSwapBtn" class="btn mt-1em" aria-label="Start Swap" type="button">Start Swap</button>
+  </section>
+  <!-- Uniswap Integration -->
+  <section id="uniswap-section" class="card mb-2" role="region" aria-label="Uniswap DEX & Liquidity" tabindex="0">
+    <h2 class="card-title">Uniswap (DEX & Liquidity)</h2>
+    <div id="uniswapPlaceholder" class="text-gray" role="status" aria-label="Uniswap Placeholder">Connect your wallet to
+      swap tokens or provide liquidity via
+      Uniswap.</div>
+    <button id="openUniswapSwapBtn" class="btn mt-1em" aria-label="Swap Tokens on Uniswap" type="button">Swap Tokens</button>
+    <button id="openUniswapLiquidityBtn" class="btn mt-1em ml-10" aria-label="Provide Liquidity on Uniswap" type="button">Provide
+      Liquidity</button>
+  </section>
+  <!-- SushiSwap Integration -->
+  <section id="sushiswap-section-1" class="card mb-2" role="region" aria-label="SushiSwap DEX, Liquidity, Yield"
+    tabindex="0">
+    <h2 class="card-title">SushiSwap (DEX, Liquidity, Yield)</h2>
+    <div id="sushiswapPlaceholder" class="text-gray" role="status" aria-label="SushiSwap Placeholder">Connect your
+      wallet to swap tokens, provide liquidity, or yield
+      farm via SushiSwap.</div>
+    <button id="openSushiSwapDexBtn" class="btn mt-1em" aria-label="Swap Tokens on SushiSwap" type="button">Swap Tokens</button>
+    <button id="openSushiLiquidityBtn1" class="btn mt-1em ml-10" aria-label="Provide Liquidity on SushiSwap" type="button">Provide
+      Liquidity</button>
+    <button id="openSushiYieldBtn" class="btn mt-1em ml-10" aria-label="Yield Farm on SushiSwap" type="button">Yield Farm</button>
+  </section>
+  <!-- Advanced Security Features -->
+  <!-- Curve Finance Integration -->
+  <section id="curve-section-1" class="card mb-2" role="region" aria-label="Curve Finance Stablecoin Swaps & Yield"
+    tabindex="0">
+    <h2 class="card-title">Curve Finance (Stablecoin Swaps & Yield)</h2>
+    <div id="curvePlaceholderStable" class="text-gray" role="status" aria-label="Curve Finance Placeholder">Connect your
+      wallet to swap stablecoins, deposit, or withdraw
+      via
+      Curve.</div>
+    <button id="openCurveSwapStableBtn" class="btn mt-1em" aria-label="Swap Stablecoins on Curve" type="button">Swap
+      Stablecoins</button>
+    <button id="openCurveDepositBtn" class="btn mt-1em ml-10" aria-label="Deposit on Curve" type="button">Deposit</button>
+    <button id="openCurveWithdrawStableBtn" class="btn mt-1em ml-10" aria-label="Withdraw on Curve" type="button">Withdraw</button>
+  </section>
+
+  <!-- Curve Integration -->
+  <section id="curve-section-2" class="card mb-2">
+    <h2 class="card-title">Curve (Stablecoin Pools)</h2>
+    <div id="curvePlaceholderToken" class="text-gray">Connect your wallet to swap stablecoins, provide liquidity, or
+      withdraw from Curve pools.</div>
+    <button id="openCurveSwapTokenBtn" class="btn mt-1em" type="button">Swap Tokens</button>
+    <button id="openCurveLiquidityBtn" class="btn mt-1em ml-10" type="button">Provide Liquidity</button>
+    <button id="openCurveWithdrawTokenBtn" class="btn mt-1em ml-10" type="button">Withdraw</button>
+  </section>
+  <section id="biometric-login-section" class="card mb-2">
+    <!-- Balancer Integration -->
+    <section id="balancer-section" class="card mb-2" role="region" aria-label="Balancer Multi-Asset Pools & DEX"
+      tabindex="0">
+      <h2 class="card-title">Balancer (Multi-Asset Pools & DEX)</h2>
+      <div id="balancerPlaceholder" class="text-gray" role="status" aria-label="Balancer Placeholder">Connect your
+        wallet to swap tokens, provide liquidity, or
+        withdraw from Balancer pools.</div>
+      <button id="openBalancerSwapBtn" class="btn mt-1em" aria-label="Swap Tokens on Balancer" type="button">Swap Tokens</button>
+      <button id="openBalancerLiquidityBtn" class="btn mt-1em ml-10" aria-label="Provide Liquidity on Balancer" type="button">Provide
+        Liquidity</button>
+      <button id="openBalancerWithdrawBtn" class="btn mt-1em ml-10"
+        aria-label="Withdraw from Balancer" type="button">Withdraw</button>
+    </section>
+
+    <!-- Aave Integration -->
+    <section id="aave-section" class="card mb-2" role="region" aria-label="Aave Lending & Borrowing" tabindex="0">
+      <h2 class="card-title">Aave (Lending & Borrowing)</h2>
+      <div id="aavePlaceholder" class="text-gray" role="status" aria-label="Aave Placeholder">Connect your wallet to
+        lend, borrow, or repay assets via Aave.</div>
+      <button id="openAaveLendBtn" class="btn mt-1em" aria-label="Lend Assets on Aave" type="button">Lend Assets</button>
+      <button id="openAaveBorrowBtn" class="btn mt-1em ml-10" aria-label="Borrow Assets on Aave" type="button">Borrow Assets</button>
+      <button id="openAaveRepayBtn" class="btn mt-1em ml-10" aria-label="Repay Loan on Aave" type="button">Repay Loan</button>
+    </section>
+
+    <!-- Compound Integration -->
+    <section id="compound-section" class="card mb-2" role="region" aria-label="Compound Lending & Borrowing"
+      tabindex="0">
+      <h2 class="card-title">Compound (Lending & Borrowing)</h2>
+      <div id="compoundPlaceholder" class="text-gray" role="status" aria-label="Compound Placeholder">Connect your
+        wallet to supply, borrow, or repay assets via
+        Compound.</div>
+      <button id="openCompoundSupplyBtn" class="btn mt-1em" aria-label="Supply Assets on Compound" type="button">Supply
+        Assets</button>
+      <button id="openCompoundBorrowBtn" class="btn mt-1em ml-10" aria-label="Borrow Assets on Compound" type="button">Borrow
+        Assets</button>
+      <button id="openCompoundRepayBtn" class="btn mt-1em ml-10" aria-label="Repay Loan on Compound" type="button">Repay Loan</button>
+    </section>
+
+    <!-- Yearn Finance Integration -->
+    <section id="yearn-section" class="card mb-2" role="region" aria-label="Yearn Finance Vaults & Yield" tabindex="0">
+      <h2 class="card-title">Yearn Finance (Vaults & Yield)</h2>
+      <div id="yearnPlaceholder" class="text-gray" role="status" aria-label="Yearn Finance Placeholder">Connect your
+        wallet to deposit, withdraw, or view yield strategies
+        via Yearn.</div>
+      <button id="openYearnDepositBtn" class="btn mt-1em" aria-label="Deposit to Vault on Yearn" type="button">Deposit to
+        Vault</button>
+      <button id="openYearnWithdrawBtn" class="btn mt-1em ml-10" aria-label="Withdraw from Vault on Yearn" type="button">Withdraw from
+        Vault</button>
+      <button id="openYearnViewYieldBtn" class="btn mt-1em ml-10" aria-label="View Yield on Yearn" type="button">View Yield</button>
+    </section>
+
+    <!-- MakerDAO Integration -->
+    <section id="makerdao-section" class="card mb-2" role="region" aria-label="MakerDAO Vaults & DAI" tabindex="0">
+      <h2 class="card-title">MakerDAO (Vaults & DAI)</h2>
+      <div id="makerdaoPlaceholder" class="text-gray" role="status" aria-label="MakerDAO Placeholder">Connect your
+        wallet to open vaults, generate DAI, or repay via
+        MakerDAO.</div>
+      <button id="openMakerOpenVaultBtn" class="btn mt-1em" aria-label="Open Vault on MakerDAO" type="button">Open Vault</button>
+      <button id="openMakerGenerateDaiBtn" class="btn mt-1em ml-10" aria-label="Generate DAI on MakerDAO" type="button">Generate
+        DAI</button>
+      <button id="openMakerRepayBtn" class="btn mt-1em ml-10" aria-label="Repay Vault on MakerDAO" type="button">Repay Vault</button>
+    </section>
+
+    <!-- dYdX Integration -->
+    <section id="dydx-section" class="card mb-2" role="region" aria-label="dYdX Perpetuals & Margin Trading"
+      tabindex="0">
+      <h2 class="card-title">dYdX (Perpetuals & Margin Trading)</h2>
+      <div id="dydxPlaceholder" class="text-gray" role="status" aria-label="dYdX Placeholder">Connect your wallet to
+        trade perpetuals, open margin positions, or
+        manage collateral via dYdX.</div>
+      <button id="openDydxTradeBtn" class="btn mt-1em" aria-label="Trade Perpetuals on dYdX" type="button">Trade Perpetuals</button>
+      <button id="openDydxMarginBtn" class="btn mt-1em ml-10" aria-label="Open Margin Position on dYdX" type="button">Open Margin
+        Position</button>
+      <button id="openDydxCollateralBtn" class="btn mt-1em ml-10" aria-label="Manage Collateral on dYdX" type="button">Manage
+        Collateral</button>
+    </section>
+
+    <!-- NFT Management -->
+    <section id="nft-section" class="card mb-2">
+      <h2 class="card-title">NFT Management</h2>
+      <div id="nftPlaceholder" class="text-gray">Connect your wallet to view, mint, transfer, or list NFTs.</div>
+      <button id="viewNftsBtn" class="btn mt-1em" type="button">View My NFTs</button>
+      <button id="mintNftBtn" class="btn mt-1em ml-10" type="button">Mint NFT</button>
+      <button id="transferNftBtn" class="btn mt-1em ml-10" type="button">Transfer NFT</button>
+      <button id="listNftBtn" class="btn mt-1em ml-10" type="button">List NFT for Sale</button>
+    </section>
+
+    <!-- Cross-chain Bridge -->
+    <section id="bridge-section" class="card mb-2">
+      <h2 class="card-title">Cross-chain Bridge</h2>
+      <div id="bridgePlaceholder" class="text-gray">Move assets between blockchains securely.</div>
+      <button id="openBridgeBtn" class="btn mt-1em" type="button">Bridge Assets</button>
+      <!-- Bridge Modal -->
+      <div id="bridgeModal" class="modal hidden">
+        <div class="modal-content">
+          <span id="closeBridgeModal" class="close">&times;</span>
+          <h3>Bridge Assets</h3>
+          <form id="bridgeForm">
+            <label for="bridgeAsset">Asset:</label>
+            <select id="bridgeAsset">
+              <option value="ETH">ETH</option>
+              <option value="USDC">USDC</option>
+              <option value="DAI">DAI</option>
+            </select>
+            <label for="bridgeAmount">Amount:</label>
+            <input type="number" id="bridgeAmount" min="0" step="any" required>
+            <label for="bridgeFromChain">From Chain:</label>
+            <select id="bridgeFromChain">
+              <option value="Ethereum">Ethereum</option>
+              <option value="Polygon">Polygon</option>
+              <option value="BSC">BSC</option>
+            </select>
+            <label for="bridgeToChain">To Chain:</label>
+            <select id="bridgeToChain">
+              <option value="Polygon">Polygon</option>
+              <option value="Ethereum">Ethereum</option>
+              <option value="BSC">BSC</option>
+            </select>
+            <button type="submit" class="btn mt-1em">Bridge Now</button>
+          </form>
+        </div>
       </div>
     </section>
 
-    <section id="staking-history-section" class="card mb-2">
-      <h2 class="card-title">Staking History & Analytics</h2>
-      <div id="stakingHistorySpinner" class="spinner center-spinner" hidden aria-label="Loading Staking History"
-        title="Loading staking history..."></div>
-      <div id="stakingHistoryPlaceholder" aria-live="polite"></div>
-      <canvas id="stakingHistoryChart" width="400" height="200"></canvas>
-      <table id="stakingHistoryTable" class="w-full">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Action</th>
-            <th>Amount</th>
-            <th>APY</th>
-            <th>Rewards</th>
-          </tr>
-        </thead>
+    <!-- On-chain Governance -->
+    <section id="governance-section" class="card mb-2">
+      <h2 class="card-title">On-chain Governance</h2>
+      <div id="governancePlaceholder" class="text-gray">Vote on proposals and participate in DAO governance.</div>
+      <button id="openGovernanceMainBtn" class="btn mt-1em" type="button">Open Governance Portal</button>
+    </section>
 
-<body>
-  <canvas id="starfield"></canvas>
-  <script>
-    // Starfield animation
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-    const starCount = 120;
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    function createStars() {
-      stars = [];
-      for (let i = 0; i < starCount; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          r: 1 + Math.random() * 2,
-          speed: 0.2 + Math.random() * 0.5
-        });
-      }
-    }
-    createStars();
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let star of stars) {
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
-        ctx.fillStyle = 'white';
-        ctx.globalAlpha = 0.7;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        star.y += star.speed;
-        if (star.y > canvas.height) {
+    <!-- Portfolio Analytics -->
+    <section id="portfolio-section" class="card mb-2">
+      <h2 class="card-title">Portfolio Analytics</h2>
+      <div id="portfolioPlaceholder" class="text-gray">Track your DeFi and NFT holdings and performance.</div>
+      <button id="openPortfolioBtn" class="btn mt-1em" type="button">View Portfolio</button>
+    </section>
+
+    <!-- Fiat On/Off Ramp -->
+    <section id="fiat-section" class="card mb-2">
+      <h2 class="card-title">Fiat On/Off Ramp</h2>
+      <div id="fiatPlaceholder" class="text-gray">Buy or sell crypto with fiat currency.</div>
+      <button id="openFiatBtn" class="btn mt-1em" type="button">Buy/Sell Crypto</button>
+    </section>
+
+    <!-- Social Trading -->
+    <section id="socialtrading-section" class="card mb-2">
+      <h2 class="card-title">Social Trading</h2>
+      <div id="socialTradingPlaceholder" class="text-gray">Copy top traders and view leaderboards.</div>
+      <button id="openSocialTradingBtn" class="btn mt-1em" type="button">Explore Social Trading</button>
+    </section>
+
+    <!-- DAO Management -->
+    <section id="dao-section" class="card mb-2">
+      <h2 class="card-title">DAO Management Tools</h2>
+      <div id="daoPlaceholder" class="text-gray">Manage DAOs, members, and proposals.</div>
+      <button id="openDaoBtn" class="btn mt-1em" type="button">Manage DAO</button>
+    </section>
+
+    <!-- Token Launchpad -->
+    <section id="launchpad-section" class="card mb-2">
+      <h2 class="card-title">Token Launchpad</h2>
+      <div id="launchpadPlaceholder" class="text-gray">Participate in IDOs and token launches.</div>
+      <button id="openLaunchpadBtn" class="btn mt-1em" type="button">View Launchpad</button>
+    </section>
+
+    <!-- Wallet Security Enhancements -->
+    <section id="walletsecurity-section" class="card mb-2">
+      <h2 class="card-title">Wallet Security</h2>
+      <div id="walletSecurityPlaceholder" class="text-gray">Enable 2FA, multisig, and advanced security features.
+      </div>
+      <button id="openWalletSecurityBtn" class="btn mt-1em" type="button">Manage Security</button>
+    </section>
+
+    <!-- Real-time Alerts -->
+    <section id="alerts-section" class="card mb-2">
+      <h2 class="card-title">Real-time Alerts</h2>
+      <div id="alertsPlaceholder" class="text-gray">Get notified about price, liquidation, and governance events.
+      </div>
+      <button id="openAlertsBtn" class="btn mt-1em" type="button">Configure Alerts</button>
+    </section>
+
+    <!-- NFT Marketplace Aggregator -->
+    <section id="nft-aggregator-section" class="card mb-2">
+      <h2 class="card-title">NFT Marketplace Aggregator</h2>
+      <div id="nftAggregatorPlaceholder" class="text-gray">Browse and compare NFTs across multiple marketplaces.</div>
+      <button id="openNftAggregatorBtn" class="btn mt-1em" type="button">Browse NFT Marketplaces</button>
+    </section>
+
+    <!-- SushiSwap Integration -->
+    <section id="sushiswap-section-2" class="card mb-2">
+      <h2 class="card-title">SushiSwap (DEX & Yield)</h2>
+      <div id="sushiswapPlaceholder" class="text-gray">Connect your wallet to swap tokens, provide liquidity, or
+        withdraw from SushiSwap pools.</div>
+      <button id="openSushiSwapMainBtn" class="btn mt-1em" type="button">Swap Tokens</button>
+      <button id="openSushiLiquidityBtn" class="btn mt-1em ml-10" type="button">Provide Liquidity</button>
+      <button id="openSushiWithdrawBtn" class="btn mt-1em ml-10" type="button">Withdraw</button>
+    </section>
+    <h2 class="card-title">Biometric Login</h2>
+    <div id="biometricLoginPlaceholder" class="text-gray">Enable fingerprint or face authentication for your account.
+    </div>
+    <button id="enableBiometricBtn" class="btn mt-1em" type="button">Enable Biometric Login</button>
+  </section>
+
+  <section id="device-trust-section" class="card mb-2">
+    <h2 class="card-title">Device Trust Management</h2>
+    <div id="deviceTrustPlaceholder" class="text-gray">Manage trusted devices for secure access.</div>
+    <button id="manageDeviceTrustBtn" class="btn mt-1em" type="button">Manage Devices</button>
+  </section>
+
+  <section id="anti-phishing-section" class="card mb-2">
+    <h2 class="card-title">Anti-Phishing Protection</h2>
+    <div id="antiPhishingPlaceholder" class="text-gray">Protect your account from phishing attacks.</div>
+    <button id="enableAntiPhishingBtn" class="btn mt-1em" type="button">Enable Protection</button>
+  </section>
+  <!-- Social/Community Features -->
+  <section id="live-chat-section" class="card mb-2">
+    <h2 class="card-title">Live Community Chat</h2>
+    <div id="liveChatPlaceholder" class="text-gray">Join the conversation with other users.</div>
+    <button id="openLiveChatBtn" class="btn mt-1em" type="button">Open Chat</button>
+  </section>
+
+  <section id="user-profiles-section" class="card mb-2">
+    <h2 class="card-title">User Profiles</h2>
+    <div id="userProfilesPlaceholder" class="text-gray">View and edit your profile.</div>
+    <button id="editProfileBtn1" class="btn mt-1em" type="button">Edit Profile</button>
+  </section>
+
+  <section id="leaderboard-section" class="card mb-2">
+    <h2 class="card-title">Community Leaderboard</h2>
+    <div id="leaderboardPlaceholder" class="text-gray">See top contributors and achievements.</div>
+    <button id="viewLeaderboardBtn" class="btn mt-1em" type="button">View Leaderboard</button>
+  </section>
+  <!-- AI-Powered Analytics -->
+  <section id="predictive-trends-section" class="card mb-2">
+    <h2 class="card-title">Predictive Trends</h2>
+    <canvas id="predictiveTrendsChart" width="400" height="200"></canvas>
+    <div id="predictiveTrendsPlaceholder" class="text-gray">AI-powered predictions for token price and volume.</div>
+    <button id="runPredictiveTrendsBtn" class="btn mt-1em" type="button">Run Prediction</button>
+  </section>
+
+  <section id="anomaly-detection-section" class="card mb-2">
+    <h2 class="card-title">Anomaly Detection</h2>
+    <canvas id="anomalyDetectionChart" width="400" height="200"></canvas>
+    <div id="anomalyDetectionPlaceholder" class="text-gray">Detect unusual activity in your wallet and transactions.
+    </div>
+    <button id="runAnomalyDetectionBtn" class="btn mt-1em" type="button">Detect Anomalies</button>
+  </section>
+  <!-- Onboarding Enhancements -->
+  <section id="video-walkthrough-section" class="card mb-2">
+    <h2 class="card-title">Video Walkthrough</h2>
+    <div id="videoWalkthroughPlaceholder" class="text-gray">Watch a guided video tour of the platform.</div>
+    <button id="playVideoWalkthroughBtn" class="btn mt-1em" type="button">Play Walkthrough</button>
+  </section>
+
+  <section id="gamified-tutorial-section" class="card mb-2">
+    <h2 class="card-title">Gamified Tutorial</h2>
+    <div id="gamifiedTutorialPlaceholder" class="text-gray">Complete interactive challenges to learn features.</div>
+    <button id="startGamifiedTutorialBtn" class="btn mt-1em" type="button">Start Tutorial</button>
+  </section>
+  <!-- Localization & RTL Support -->
+  <section id="localization-section" class="card mb-2">
+    <h2 class="card-title">Language & RTL Settings</h2>
+    <div id="localizationPlaceholder" class="text-gray">Select your preferred language and layout direction.</div>
+    <select id="languageSelector" class="mt-1em" title="Select language">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="ar">العربية (Arabic)</option>
+      <option value="zh">中文 (Chinese)</option>
+    </select>
+    <label class="mt-1em" for="rtlToggle">
+      <input type="checkbox" id="rtlToggle"> Enable RTL (Right-to-Left)
+    </label>
+  </section>
+  <!-- Accessibility Upgrades -->
+  <section id="accessibility-section" class="card mb-2">
+    <h2 class="card-title">Accessibility Settings</h2>
+    <div id="accessibilityPlaceholder" class="text-gray">Optimize for screen readers and enable dyslexia-friendly
+      mode.</div>
+    <label class="mt-1em" for="screenReaderToggle">
+      <input type="checkbox" id="screenReaderToggle"> Enable Screen Reader Optimization
+    </label>
+    <label class="mt-1em" for="dyslexiaToggle">
+      <input type="checkbox" id="dyslexiaToggle"> Enable Dyslexia-Friendly Mode
+    </label>
+  </section>
+  <!-- Custom Notifications -->
+  <section id="notifications-settings-section" class="card mb-2">
+    <h2 class="card-title">Notification Settings</h2>
+    <div id="notificationsSettingsPlaceholder" class="text-gray">Choose how you want to receive updates.</div>
+    <label class="mt-1em" for="pushToggle">
+      <input type="checkbox" id="pushToggle"> Enable Push Notifications
+    </label>
+    <label class="mt-1em" for="emailToggle">
+      <input type="checkbox" id="emailToggle"> Enable Email Notifications
+    </label>
+    <label class="mt-1em" for="inAppToggle">
+      <input type="checkbox" id="inAppToggle"> Enable In-App Notifications
+    </label>
+  </section>
+  <!-- Developer Tools -->
+  <section id="developer-tools-section" class="card mb-2">
+    <h2 class="card-title">Developer Tools</h2>
+    <div id="developerToolsPlaceholder" class="text-gray">Explore APIs and interact with smart contracts.</div>
+    <button id="openApiExplorerBtn" class="btn mt-1em" type="button">Open API Explorer</button>
+    <button id="openContractPlaygroundBtn" class="btn mt-1em" type="button">Open Contract Playground</button>
+  </section>
+  <section id="notifications-section" class="card mb-2">
+    <h2 class="card-title">Real-Time Notifications</h2>
+    <div id="notificationsPlaceholder" class="text-gray" aria-live="polite">Notifications will appear here.</div>
+    <button id="enablePushBtn" class="btn mt-1em" type="button">Enable Push Notifications</button>
+    <script>
+      import { requestNotificationPermission } from './firebase-messaging-init.js';
+      document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('enablePushBtn');
+        if (btn) {
+          btn.addEventListener('click', () => {
+            requestNotificationPermission();
+          });
+        }
+      });
+    </script>
+  </section>
+
+  <section id="theme-section" class="card mb-2">
+    <h2 class="card-title">Theme Settings</h2>
+    <div>
+      <label for="themeToggleSwitch">Auto-switch theme based on system:</label>
+      <input type="checkbox" id="themeToggleSwitch"> <span id="themeStatus">Auto</span>
+    </div>
+  </section>
+
+  <section id="staking-history-section" class="card mb-2">
+    <h2 class="card-title">Staking History & Analytics</h2>
+    <div id="stakingHistorySpinner" class="spinner center-spinner" hidden aria-label="Loading Staking History"
+      title="Loading staking history..."></div>
+    <div id="stakingHistoryPlaceholder" aria-live="polite"></div>
+    <canvas id="stakingHistoryChart" width="400" height="200"></canvas>
+    <table id="stakingHistoryTable" class="w-full" role="table" aria-label="Staking History Table">
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Action</th>
+          <th scope="col">Amount</th>
+          <!DOCTYPE html>
+          <html lang="en">
+          {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+          {
+          "@type": "Question",
+          "name": "How do I transfer AETH?",
+          "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use the Transfer AETH card, enter the recipient address and amount, then click Transfer."
+          }
+          },
+          {
+          "@type": "Question",
+          "name": "How do I stake tokens?",
+          "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Go to the Staking section, enter the amount, and confirm the transaction in your wallet."
+          }
+          },
+          ...existing code...
+          ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+          ctx.fillStyle = 'white';
+          ctx.globalAlpha = 0.7;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          star.y += star.speed;
+          if (star.y > canvas.height) {
           star.x = Math.random() * canvas.width;
           star.y = 0;
           star.r = 1 + Math.random() * 2;
           star.speed = 0.2 + Math.random() * 0.5;
-        }
-      }
-      requestAnimationFrame(animate);
-    }
-    animate();
-  </script>
-  ...existing code...
-</body>
-</tr>
-</tbody>
-</table>
-</section>
-
-<section id="community-chat-section" class="card mb-2">
-  <h2 class="card-title">Community Chat</h2>
-  <div id="communityChatWidget" class="text-gray">Chat widget will load here.</div>
-</section>
-
-<section id="nft-gallery-section" class="card mb-2">
-  <h2 class="card-title">NFT Gallery</h2>
-  <div id="nftGalleryPlaceholder" class="text-gray" aria-live="polite">Connect your wallet to view your Aetheron
-    NFTs.</div>
-</section>
-
-<section id="gas-fee-section" class="card mb-2">
-  <h2 class="card-title">Gas Fee Estimator</h2>
-  <div>
-    <label for="gasSpeedSelect">Speed:</label>
-    <select id="gasSpeedSelect">
-      <option value="fast">Fast</option>
-      <option value="average" selected>Average</option>
-      <option value="slow">Slow</option>
-    </select>
-    <span id="gasFeeEstimate" class="text-gray">Estimated gas fee: --</span>
-  </div>
-</section>
-
-<section id="referral-leaderboard-section" class="card mb-2">
-  <h2 class="card-title">Referral Leaderboard <span class="help-icon" tabindex="0"
-      aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">❔</span></h2>
-  <div id="referralLeaderboardPlaceholder" class="text-gray" aria-live="polite">Leaderboard will appear here.</div>
-  <div id="referralLinkSection">
-    <label for="referralLink">Your Referral Link: <span class="help-icon" tabindex="0" aria-label="Help: Referral Link"
-        title="Share this link to invite others and earn rewards.">❔</span></label>
-    <input type="text" id="referralLink" readonly value="https://aetheron.online/?ref=YOURADDRESS"
-      title="Your referral link" placeholder="Referral link">
-    <button class="btn btn-outline" id="copyReferralBtn" type="button"
-      title="Copy your referral link to clipboard">Copy</button>
-  </div>
-</section>
-
-<section id="language-section" class="card mb-2">
-  <h2 class="card-title">Language</h2>
-  <label for="languageSelect" class="sr-only">Select language</label>
-  <select id="languageSelect" title="Select language">
-    <option value="en" selected>English</option>
-    <option value="es">Español</option>
-    <option value="fr">Français</option>
-    <option value="de">Deutsch</option>
-    <!-- Add more languages as needed -->
-  </select>
-  <span id="currentLanguage" class="text-gray">Current: English</span>
-</section>
-
-<section id="advanced-analytics-section" class="card mb-2">
-  <h2 class="card-title">Advanced Analytics</h2>
-  <canvas id="advancedAnalyticsChart" width="400" height="200"></canvas>
-  <div id="advancedAnalyticsPlaceholder" class="text-gray" aria-live="polite">More charts and analytics coming soon.
-  </div>
-</section>
-<!-- --- END: New Feature Scaffolding --- -->
-<div class="card" aria-label="Stake AETH Section">
-  <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
-      title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
-  <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake" title="Processing stake...">
-  </div>
-  <form aria-label="Stake Form" onsubmit="return false;">
-    <div class="input-group">
-      <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
-          title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
-      <input type="number" id="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
-    </div>
-    <div class="input-group">
-      <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
-          title="Enter the amount of AETH you want to stake.">❔</span></label>
-      <input type="number" id="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
-    </div>
-    <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
-      title="Stake your AETH tokens">Stake</button>
-  </form>
-  <div id="stakeStatus" class="status-message" aria-live="polite"></div>
-  <div class="pools-list" aria-label="Staking Pools">
-    <div class="pool-item" aria-label="Short Term Pool">
-      <h3>Pool 0: Short Term</h3>
-      <div class="pool-details"><span>Lock: 30 days</span> <span>APY: 5%</span></div>
-    </div>
-    <div class="pool-item" aria-label="Medium Term Pool">
-      <h3>Pool 1: Medium Term</h3>
-      <div class="pool-details"><span>Lock: 90 days</span> <span>APY: 12%</span></div>
-    </div>
-    <div class="pool-item" aria-label="Long Term Pool">
-      <h3>Pool 2: Long Term</h3>
-      <div class="pool-details"><span>Lock: 180 days</span> <span>APY: 25%</span></div>
-    </div>
-  </div>
-  <div id="transferStatus" class="status-message"></div>
-</div>
-<div class="card" aria-label="Contract Information">
-  <h2>📊 Contract Information</h2>
-  <div class="info-row">
-    <span class="info-label">AETH Token Address:</span>
-    <span class="info-value font-08" aria-label="AETH Token Address"
-      tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
-    <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
-      onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Staking Contract Address:</span>
-    <span class="info-value font-08" aria-label="Staking Contract Address"
-      tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
-    <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
-      onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Network:</span>
-    <span class="info-value" aria-label="Network Name" tabindex="0">Polygon Mainnet</span>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Chain ID:</span>
-    <span class="info-value" aria-label="Chain ID" tabindex="0">137</span>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Explorer:</span>
-    <span class="info-value"><a href="https://polygonscan.com/token/0x072091F554df794852E0A9d1c809F2B2bBda171E"
-        target="_blank" rel="noopener noreferrer" aria-label="View AETH Token on PolygonScan">View AETH Token on
-        PolygonScan</a></span>
-  </div>
-</div>
-<div class="card payment-history-card">
-  <h2 class="payment-history-title">Payment History</h2>
-  <div class="payment-history-table-wrap">
-    <table class="payment-history-table">
-      <thead>
-        <tr class="payment-history-header-row">
-          <th>Date</th>
-          <th>Amount</th>
-          <th>Status</th>
-          <th>Receipt</th>
-          <th>Gateway</th>
+          }
+          }
+          requestAnimationFrame(animate);
+          }
+          animate();
+          </script>
+          ...existing code...
+          </body>
         </tr>
-      </thead>
-      <tbody id="paymentHistoryTableBody">
-        <tr>
-          <td colspan="5">Loading...</td>
-        </tr>
-      </tbody>
+        </tbody>
     </table>
-  </div>
-</div>
-<!-- Analytics/Engagement Chart Card -->
-<div class="card" id="analyticsCard">
-  <h2>📈 Engagement Analytics</h2>
-  <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
-    title="Loading analytics data..."></div>
-  <canvas id="engagementChart" class="chart-canvas"></canvas>
-</div>
-<!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
-<div class="card" id="treasuryCard">
-  <h2>💼 Treasury & Revenue</h2>
-  <div class="info-row">
-    <span class="info-label">Total Treasury:</span>
-    <span class="info-value" id="treasuryTotal">- AETH</span>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Staking Rewards:</span>
-    <span class="info-value" id="stakingRewards">- AETH</span>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Protocol Fees:</span>
-    <span class="info-value" id="protocolFees">- MATIC</span>
-  </div>
-  <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
-</div>
-<div class="card">
-  <h2>📊 Treasury & Revenue Chart</h2>
-  <canvas id="treasuryChart" class="chart-canvas"></canvas>
-</div>
-<!-- User Profile Section -->
-<div class="card" id="userProfileCard">
-  <h2>👤 User Profile</h2>
-  <div class="profile-flex">
-    <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
+  </section>
+
+  <section id="community-chat-section" class="card mb-2">
+    <h2 class="card-title">Community Chat</h2>
+    <div id="communityChatWidget" class="text-gray">Chat widget will load here.</div>
+  </section>
+
+  <section id="nft-gallery-section" class="card mb-2">
+    <h2 class="card-title">NFT Gallery</h2>
+    <div id="nftGalleryPlaceholder" class="text-gray" aria-live="polite">Connect your wallet to view your Aetheron
+      NFTs.</div>
+  </section>
+
+  <section id="gas-fee-section" class="card mb-2">
+    <h2 class="card-title">Gas Fee Estimator</h2>
     <div>
-      <div id="profileName" class="profile-name">Guest</div>
-      <div id="profileEmail" class="profile-email">Not signed in</div>
-      <div id="profileLinks" class="profile-links"></div>
-    </div>
-  </div>
-  <button id="editProfileBtn" class="btn" type="button">Edit Profile</button>
-  <!-- Profile Edit Modal -->
-  <div id="profileModal" class="modal-bg" hidden>
-    <div class="modal">
-      <button type="button" class="close-modal-btn" aria-label="Close Profile Modal">&times;</button>
-      <h3>Edit Profile</h3>
-      <form id="profileForm">
-        <label for="avatarInput">Avatar Emoji</label>
-        <input id="avatarInput" maxlength="2" placeholder="🧑" />
-        <label for="nicknameInput">Nickname</label>
-        <input id="nicknameInput" maxlength="24" placeholder="Your nickname" />
-        <label for="emailInput">Email (optional)</label>
-        <input id="emailInput" type="email" placeholder="you@email.com" />
-        <label for="twitterInput">Twitter</label>
-        <input id="twitterInput" placeholder="@yourhandle" />
-        <label for="discordInput">Discord</label>
-        <input id="discordInput" placeholder="your#1234" />
-        <div class="modal-actions">
-          <button type="submit" class="btn">Save</button>
-          <button type="button" id="closeProfileModal" class="btn-outline">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <script>
-    // Profile modal close button logic
-    document.addEventListener('DOMContentLoaded', function () {
-      var modal = document.getElementById('profileModal');
-      var closeBtn = modal?.querySelector('.close-modal-btn');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function () {
-          modal.hidden = true;
-        });
-      }
-    });
-  </script>
-</div>
-<!-- Onboarding Tour Button -->
-<button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
-<!-- Payment Status Modal -->
-<div id="paymentStatusModal" class="payment-status-modal-bg">
-  <div class="payment-status-modal">
-    <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
-    <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
-    <button class="btn-outline payment-status-close-btn" type="button">Close</button>
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
-<script src="dashboard-main.js?v=1.3.1" defer></script>
-<script>
-  // Quick Stats Card live update logic
-  function updateQuickStats() {
-    // Try to get wallet/account info from existing DOM
-    const account = document.getElementById('accountAddress')?.textContent?.trim() || '-';
-    const aeth = document.getElementById('aethBalance')?.textContent?.trim() || '-';
-    const staked = document.getElementById('stakingHistoryTable')?.querySelector('tbody tr:not(.text-gray) td:nth-child(3)')?.textContent?.trim() || '0';
-    const treasury = document.getElementById('treasuryTotal')?.textContent?.trim() || '-';
-    const rewards = document.getElementById('stakingRewards')?.textContent?.trim() || '-';
-    document.getElementById('quickWallet').textContent = account;
-    document.getElementById('quickAeth').textContent = aeth;
-    document.getElementById('quickStaked').textContent = staked;
-    document.getElementById('quickTreasury').textContent = treasury;
-    document.getElementById('quickRewards').textContent = rewards;
-  }
-  document.addEventListener('DOMContentLoaded', function () {
-    updateQuickStats();
-    // Also update on wallet or treasury refresh
-    document.getElementById('refreshBalancesBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
-    document.getElementById('refreshTreasuryBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
-  });
-</script>
-<script src="global-announcements.js?v=1.3.1" defer></script>
-<script src="coinbase-commerce-frontend.js?v=1.3.1" defer></script>
-<script src="payment-history.js?v=1.3.1" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<script src="dashboard-features.js?v=1.3.1" defer></script>
-<!-- Language Selector -->
-<!-- Removed duplicate language selector to avoid multiple elements with the same ID -->
-<!-- Localization/i18n -->
-<!-- Accessibility: ARIA landmarks and improved focus -->
-<main id="mainContent" tabindex="-1" aria-label="Dashboard main content" role="main">
-  <!-- Whitepaper Section with Interactive Features -->
-  <section class="card whitepaper-card" id="whitepaperCard">
-    <div class="whitepaper-header">
-      <h2 class="card-title">Aetheron Platform Technical Whitepaper</h2>
-      <button class="btn-outline" id="toggleWhitepaperBtn" type="button" aria-expanded="true">Collapse</button>
-    </div>
-    <nav class="whitepaper-nav">
-      <button class="btn-outline" type="button" onclick="showWhitepaperSection('summary')">Executive
-        Summary</button>
-      <button class="btn-outline" type="button" onclick="showWhitepaperSection('tokenomics')">Tokenomics</button>
-      <button class="btn-outline" type="button" onclick="showWhitepaperSection('staking')">Staking</button>
-      <button class="btn-outline" type="button" onclick="showWhitepaperSection('security')">Security</button>
-      <button class="btn-outline" type="button" onclick="showWhitepaperSection('roadmap')">Roadmap</button>
-      <button class="btn whitepaper-download-btn" type="button" onclick="window.open('WHITEPAPER.md','_blank')">Download
-        Full
-        Whitepaper</button>
-    </nav>
-    <div class="whitepaper-content" id="whitepaperContent">
-      <!-- Default section: Executive Summary -->
-      <div id="whitepaper-summary">
-        <h3>Technical Whitepaper v1.0</h3>
-        <p><strong>February 2026</strong></p>
-        <p><em>Building the Future of Decentralized Finance</em></p>
-        <hr>
-        <h4>Executive Summary</h4>
-        <p>Aetheron Platform is a next-generation decentralized finance (DeFi) ecosystem built on Polygon that
-          combines high-yield staking, efficient token trading, and advanced analytics into a unified, user-friendly
-          platform. Our mission is to democratize access to DeFi yield opportunities while maintaining the highest
-          standards of security, transparency, and user experience.</p>
-        <ul>
-          <li><strong>Native Token:</strong> AETH (ERC-20) on Polygon Mainnet</li>
-          <li><strong>Total Supply:</strong> 1,000,000,000 AETH</li>
-          <li><strong>Staking Pools:</strong> Three tiers (8%, 12%, 18% APY)</li>
-          <li><strong>Network:</strong> Polygon (Layer 2 solution for Ethereum)</li>
-          <li><strong>Smart Contracts:</strong> Verified on Polygonscan</li>
-          <li><strong>Liquidity:</strong> QuickSwap V2 Integration</li>
-        </ul>
-        <hr>
-        <p class="whitepaper-details-text">For full details, <a href="WHITEPAPER.md" target="_blank"
-            rel="noopener">download the complete whitepaper</a>.</p>
-      </div>
-      <div id="whitepaper-tokenomics" class="whitepaper-section-hidden">
-        <h4>Tokenomics</h4>
-        <ul>
-          <li>Total Supply: 1,000,000,000 AETH</li>
-          <li>Initial Distribution: 50% Liquidity, 20% Team, 15% Marketing, 15% Staking Rewards</li>
-          <li>Deflationary Mechanisms: Buy/Sell Tax, Burn Events</li>
-          <li>Liquidity Pool: QuickSwap V2</li>
-        </ul>
-      </div>
-      <div id="whitepaper-staking" class="whitepaper-section-hidden">
-        <h4>Staking Mechanics</h4>
-        <ul>
-          <li>Three Pools: 8%, 12%, 18% APY</li>
-          <li>Flexible Lock Periods</li>
-          <li>Rewards Distributed in AETH</li>
-          <li>Smart Contract Controlled</li>
-        </ul>
-      </div>
-      <div id="whitepaper-security" class="whitepaper-section-hidden">
-        <h4>Security & Auditing</h4>
-        <ul>
-          <li>OpenZeppelin Contracts</li>
-          <li>Slither Static Analysis</li>
-          <li>External Audit Complete</li>
-          <li>Bug Bounty Program</li>
-        </ul>
-      </div>
-      <div id="whitepaper-roadmap" class="whitepaper-section-hidden">
-        <h4>Roadmap</h4>
-        <ul>
-          <li>Q1 2026: Launch, Staking Pools, Analytics</li>
-          <li>Q2 2026: DEX Integration, Governance</li>
-          <li>Q3 2026: Mobile App, Partnerships</li>
-          <li>Q4 2026: Expansion, New Pools</li>
-        </ul>
-      </div>
+      <label for="gasSpeedSelect">Speed:</label>
+      <select id="gasSpeedSelect">
+        <option value="fast">Fast</option>
+        <option value="average" selected>Average</option>
+        <option value="slow">Slow</option>
+      </select>
+      <span id="gasFeeEstimate" class="text-gray">Estimated gas fee: --</span>
     </div>
   </section>
-  <script>
-    // Expand/Collapse
-    document.getElementById('toggleWhitepaperBtn').addEventListener('click', function () {
-      const content = document.getElementById('whitepaperContent');
-      const expanded = this.getAttribute('aria-expanded') === 'true';
-      if (expanded) {
-        content.style.display = 'none';
-        this.textContent = 'Expand';
-        this.setAttribute('aria-expanded', 'false');
-      } else {
-        content.style.display = '';
-        this.textContent = 'Collapse';
-        this.setAttribute('aria-expanded', 'true');
-      }
-    });
-    // Section Navigation
-    window.showWhitepaperSection = function (section) {
-      const sections = ['summary', 'tokenomics', 'staking', 'security', 'roadmap'];
-      sections.forEach(s => {
-        document.getElementById('whitepaper-' + s).style.display = (s === section) ? '' : 'none';
+
+  <section id="referral-leaderboard-section" class="card mb-2">
+    <h2 class="card-title">Referral Leaderboard <span class="help-icon" tabindex="0"
+        aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">❔</span></h2>
+    <div id="referralLeaderboardPlaceholder" class="text-gray" aria-live="polite">Leaderboard will appear here.</div>
+    <div id="referralLinkSection">
+      <label for="referralLink">Your Referral Link: <span class="help-icon" tabindex="0"
+          aria-label="Help: Referral Link" title="Share this link to invite others and earn rewards.">❔</span></label>
+      <input type="text" id="referralLink" readonly value="https://aetheron.online/?ref=YOURADDRESS"
+        title="Your referral link" placeholder="Referral link">
+      <button class="btn btn-outline" id="copyReferralBtn" type="button"
+        title="Copy your referral link to clipboard">Copy</button>
+    </div>
+  </section>
+
+  <section id="language-section" class="card mb-2">
+    <h2 class="card-title">Language</h2>
+    <label for="languageSelect" class="sr-only">Select language</label>
+    <select id="languageSelect" title="Select language">
+      <option value="en" selected>English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <!-- Add more languages as needed -->
+    </select>
+    <span id="currentLanguage" class="text-gray">Current: English</span>
+  </section>
+
+  <section id="advanced-analytics-section" class="card mb-2">
+    <h2 class="card-title">Advanced Analytics</h2>
+    <canvas id="advancedAnalyticsChart" width="400" height="200"></canvas>
+    <div id="advancedAnalyticsPlaceholder" class="text-gray" aria-live="polite">More charts and analytics coming soon.
+    </div>
+  </section>
+  <!-- --- END: New Feature Scaffolding --- -->
+  <div class="card" aria-label="Stake AETH Section">
+    <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
+        title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
+    <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake" title="Processing stake...">
+    </div>
+    <form aria-label="Stake Form" onsubmit="return false;" role="form" tabindex="0">
+      <div class="input-group">
+        <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
+            title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
+        <input type="number" id="poolId" name="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
+      </div>
+      <div class="input-group">
+        <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
+            title="Enter the amount of AETH you want to stake.">❔</span></label>
+        <input type="number" id="stakeAmount" name="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
+      </div>
+      <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
+        title="Stake your AETH tokens">Stake</button>
+    </form>
+    <div id="stakeStatus" class="status-message" aria-live="polite"></div>
+    <div class="pools-list" aria-label="Staking Pools">
+      <div class="pool-item" aria-label="Short Term Pool">
+        <h3>Pool 0: Short Term</h3>
+        <div class="pool-details"><span>Lock: 30 days</span> <span>APY: 5%</span></div>
+      </div>
+      <div class="pool-item" aria-label="Medium Term Pool">
+        <h3>Pool 1: Medium Term</h3>
+        <div class="pool-details"><span>Lock: 90 days</span> <span>APY: 12%</span></div>
+      </div>
+      <div class="pool-item" aria-label="Long Term Pool">
+        <h3>Pool 2: Long Term</h3>
+        <div class="pool-details"><span>Lock: 180 days</span> <span>APY: 25%</span></div>
+      </div>
+    </div>
+    <div id="transferStatus" class="status-message"></div>
+  </div>
+  <div class="card" aria-label="Contract Information">
+    <h2>📊 Contract Information</h2>
+    <div class="info-row">
+      <span class="info-label">AETH Token Address:</span>
+      <span class="info-value font-08" aria-label="AETH Token Address"
+        tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
+      <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
+        onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Staking Contract Address:</span>
+      <span class="info-value font-08" aria-label="Staking Contract Address"
+        tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
+      <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
+        onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Network:</span>
+      <span class="info-value" aria-label="Network Name" tabindex="0">Polygon Mainnet</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Chain ID:</span>
+      <span class="info-value" aria-label="Chain ID" tabindex="0">137</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Explorer:</span>
+      <span class="info-value"><a href="https://polygonscan.com/token/0x072091F554df794852E0A9d1c809F2B2bBda171E"
+          target="_blank" rel="noopener noreferrer" aria-label="View AETH Token on PolygonScan">View AETH Token on
+          PolygonScan</a></span>
+    </div>
+  </div>
+  <div class="card payment-history-card">
+    <h2 class="payment-history-title">Payment History</h2>
+    <div class="payment-history-table-wrap">
+      <table class="payment-history-table" role="table" aria-label="Payment History Table">
+        <thead>
+          <tr class="payment-history-header-row">
+            <th scope="col">Date</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Receipt</th>
+            <th scope="col">Gateway</th>
+          </tr>
+        </thead>
+        <tbody id="paymentHistoryTableBody">
+          <tr>
+            <td colspan="5">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Analytics/Engagement Chart Card -->
+  <div class="card" id="analyticsCard">
+    <h2>📈 Engagement Analytics</h2>
+    <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
+      title="Loading analytics data..."></div>
+    <canvas id="engagementChart" class="chart-canvas"></canvas>
+  </div>
+  <!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
+  <div class="card" id="treasuryCard">
+    <h2>💼 Treasury & Revenue</h2>
+    <div class="info-row">
+      <span class="info-label">Total Treasury:</span>
+      <span class="info-value" id="treasuryTotal">- AETH</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Staking Rewards:</span>
+      <span class="info-value" id="stakingRewards">- AETH</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Protocol Fees:</span>
+      <span class="info-value" id="protocolFees">- MATIC</span>
+    </div>
+    <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
+  </div>
+  <div class="card">
+    <h2>📊 Treasury & Revenue Chart</h2>
+    <canvas id="treasuryChart" class="chart-canvas"></canvas>
+  </div>
+  <!-- User Profile Section -->
+  <div class="card" id="userProfileCard">
+    <h2>👤 User Profile</h2>
+    <div class="profile-flex">
+      <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
+      <div>
+        <div id="profileName" class="profile-name">Guest</div>
+        <div id="profileEmail" class="profile-email">Not signed in</div>
+        <div id="profileLinks" class="profile-links"></div>
+      </div>
+    </div>
+    <button id="editProfileBtn2" class="btn" type="button">Edit Profile</button>
+    <!-- Profile Edit Modal -->
+    <div id="profileModal" class="modal-bg" hidden>
+      <div class="modal">
+        <button type="button" class="close-modal-btn" aria-label="Close Profile Modal">&times;</button>
+        <h3>Edit Profile</h3>
+        <form id="profileForm" aria-label="Profile Form" role="form" tabindex="0">
+          <label for="avatarInput">Avatar Emoji</label>
+          <input id="avatarInput" name="avatarInput" maxlength="2" placeholder="🧑" aria-label="Avatar Emoji" />
+          <label for="nicknameInput">Nickname</label>
+          <input id="nicknameInput" name="nicknameInput" maxlength="24" placeholder="Your nickname"
+            aria-label="Nickname" />
+          <label for="emailInput">Email (optional)</label>
+          <input id="emailInput" name="emailInput" type="email" placeholder="you@email.com"
+            aria-label="Email (optional)" />
+          <label for="twitterInput">Twitter</label>
+          <input id="twitterInput" name="twitterInput" placeholder="@yourhandle" aria-label="Twitter" />
+          <label for="discordInput">Discord</label>
+          <input id="discordInput" name="discordInput" placeholder="your#1234" aria-label="Discord" />
+          <div class="modal-actions">
+            <button type="submit" class="btn">Save</button>
+            <button type="button" id="closeProfileModal" class="btn-outline">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      // Profile modal close button logic
+      document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('profileModal');
+        var closeBtn = modal?.querySelector('.close-modal-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function () {
+            modal.hidden = true;
+          });
+        }
       });
-    };
+    </script>
+  </div>
+  <!-- Onboarding Tour Button -->
+  <button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
+  <!-- Payment Status Modal -->
+  <div id="paymentStatusModal" class="payment-status-modal-bg">
+    <div class="payment-status-modal">
+      <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
+      <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
+      <button class="btn-outline payment-status-close-btn" type="button">Close</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" async></script>
+  <script src="dashboard-main.js?v=1.3.1" async></script>
+  <script src="dashboard.min.js" async></script>
+  <script>
+    // Quick Stats Card live update logic
+    function updateQuickStats() {
+      // Try to get wallet/account info from existing DOM
+      const account = document.getElementById('accountAddress')?.textContent?.trim() || '-';
+      const aeth = document.getElementById('aethBalance')?.textContent?.trim() || '-';
+      const staked = document.getElementById('stakingHistoryTable')?.querySelector('tbody tr:not(.text-gray) td:nth-child(3)')?.textContent?.trim() || '0';
+      const treasury = document.getElementById('treasuryTotal')?.textContent?.trim() || '-';
+      const rewards = document.getElementById('stakingRewards')?.textContent?.trim() || '-';
+      document.getElementById('quickWallet').textContent = account;
+      document.getElementById('quickAeth').textContent = aeth;
+      document.getElementById('quickStaked').textContent = staked;
+      document.getElementById('quickTreasury').textContent = treasury;
+      document.getElementById('quickRewards').textContent = rewards;
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      updateQuickStats();
+      // Also update on wallet or treasury refresh
+      document.getElementById('refreshBalancesBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+      document.getElementById('refreshTreasuryBtn')?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+    });
   </script>
-  <!-- Existing content for the main dashboard -->
-  <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options">
-    <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect">🔗
-      WalletConnect</button>
-    <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google">G
-      <span class="google-btn-text">oogle</span></button>
-  </section>
-  <!-- Sticky mobile bottom navigation -->
-  <nav class="mobile-bottom-nav" id="mobileBottomNav">
-    <a href="#quickStatsCard" aria-label="Quick Stats"><i class="fas fa-tachometer-alt"></i><span>Stats</span></a>
-    <a href="#staking-history-section" aria-label="Staking"><i class="fas fa-coins"></i><span>Staking</span></a>
-    <a href="#advanced-analytics-section" aria-label="Analytics"><i
-        class="fas fa-chart-line"></i><span>Analytics</span></a>
-    <a href="#community-chat-section" aria-label="Chat"><i class="fas fa-comments"></i><span>Chat</span></a>
-    <a href="#wallet-portfolio-section" aria-label="Portfolio"><i class="fas fa-wallet"></i><span>Portfolio</span></a>
-  </nav>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js" defer></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="dashboard-wallet.js?v=1.3.1" defer></script>
-<script src="dashboard-accessibility.js?v=1.3.1" defer></script>
-<!-- Onboarding Tour Disabled - CSP Compliance -->
-<!-- New Features Scripts -->
-<script src="dashboard-treasury-chart.js?v=1.3.1" defer></script>
-<script src="dashboard-starfield.js?v=1.3.1" defer></script>
-</body>
+  <script type="module" src="global-announcements.js" async></script>
+  <script src="coinbase-commerce-frontend.js?v=1.3.1" async></script>
+  <script src="payment-history.js?v=1.3.1" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" async></script>
+  <script src="dashboard-features.js?v=1.3.1" async></script>
+  <!-- Language Selector -->
+  <!-- Removed duplicate language selector to avoid multiple elements with the same ID -->
+  <!-- Localization/i18n -->
+  <!-- Accessibility: ARIA landmarks and improved focus -->
+  <main id="mainContent" tabindex="-1" aria-label="Dashboard main content" role="main">
+    <!-- Whitepaper Section with Interactive Features -->
+    <section class="card whitepaper-card" id="whitepaperCard">
+      <div class="whitepaper-header">
+        <h2 class="card-title">Aetheron Platform Technical Whitepaper</h2>
+        <button class="btn-outline" id="toggleWhitepaperBtn" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <nav class="whitepaper-nav">
+        <button class="btn-outline" type="button" onclick="showWhitepaperSection('summary')">Executive
+          Summary</button>
+        <button class="btn-outline" type="button" onclick="showWhitepaperSection('tokenomics')">Tokenomics</button>
+        <button class="btn-outline" type="button" onclick="showWhitepaperSection('staking')">Staking</button>
+        <button class="btn-outline" type="button" onclick="showWhitepaperSection('security')">Security</button>
+        <button class="btn-outline" type="button" onclick="showWhitepaperSection('roadmap')">Roadmap</button>
+        <button class="btn whitepaper-download-btn" type="button"
+          onclick="window.open('WHITEPAPER.md','_blank')">Download
+          Full
+          Whitepaper</button>
+      </nav>
+      <div class="whitepaper-content" id="whitepaperContent">
+        <!-- Default section: Executive Summary -->
+        <div id="whitepaper-summary">
+          <h3>Technical Whitepaper v1.0</h3>
+          <p><strong>February 2026</strong></p>
+          <p><em>Building the Future of Decentralized Finance</em></p>
+          <hr>
+          <h4>Executive Summary</h4>
+          <p>Aetheron Platform is a next-generation decentralized finance (DeFi) ecosystem built on Polygon that
+            combines high-yield staking, efficient token trading, and advanced analytics into a unified, user-friendly
+            platform. Our mission is to democratize access to DeFi yield opportunities while maintaining the highest
+            standards of security, transparency, and user experience.</p>
+          <ul>
+            <li><strong>Native Token:</strong> AETH (ERC-20) on Polygon Mainnet</li>
+            <li><strong>Total Supply:</strong> 1,000,000,000 AETH</li>
+            <li><strong>Staking Pools:</strong> Three tiers (8%, 12%, 18% APY)</li>
+            <li><strong>Network:</strong> Polygon (Layer 2 solution for Ethereum)</li>
+            <li><strong>Smart Contracts:</strong> Verified on Polygonscan</li>
+            <li><strong>Liquidity:</strong> QuickSwap V2 Integration</li>
+          </ul>
+          <hr>
+          <p class="whitepaper-details-text">For full details, <a href="WHITEPAPER.md" target="_blank"
+              rel="noopener">download the complete whitepaper</a>.</p>
+        </div>
+        <div id="whitepaper-tokenomics" class="whitepaper-section-hidden">
+          <h4>Tokenomics</h4>
+          <ul>
+            <li>Total Supply: 1,000,000,000 AETH</li>
+            <li>Initial Distribution: 50% Liquidity, 20% Team, 15% Marketing, 15% Staking Rewards</li>
+            <li>Deflationary Mechanisms: Buy/Sell Tax, Burn Events</li>
+            <li>Liquidity Pool: QuickSwap V2</li>
+          </ul>
+        </div>
+        <div id="whitepaper-staking" class="whitepaper-section-hidden">
+          <h4>Staking Mechanics</h4>
+          <ul>
+            <li>Three Pools: 8%, 12%, 18% APY</li>
+            <li>Flexible Lock Periods</li>
+            <li>Rewards Distributed in AETH</li>
+            <li>Smart Contract Controlled</li>
+          </ul>
+        </div>
+        <div id="whitepaper-security" class="whitepaper-section-hidden">
+          <h4>Security & Auditing</h4>
+          <ul>
+            <li>OpenZeppelin Contracts</li>
+            <li>Slither Static Analysis</li>
+            <li>External Audit Complete</li>
+            <li>Bug Bounty Program</li>
+          </ul>
+        </div>
+        <div id="whitepaper-roadmap" class="whitepaper-section-hidden">
+          <h4>Roadmap</h4>
+          <ul>
+            <li>Q1 2026: Launch, Staking Pools, Analytics</li>
+            <li>Q2 2026: DEX Integration, Governance</li>
+            <li>Q3 2026: Mobile App, Partnerships</li>
+            <li>Q4 2026: Expansion, New Pools</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <script>
+      // Expand/Collapse
+      document.getElementById('toggleWhitepaperBtn').addEventListener('click', function () {
+        const content = document.getElementById('whitepaperContent');
+        const expanded = this.getAttribute('aria-expanded') === 'true';
+        if (expanded) {
+          content.style.display = 'none';
+          this.textContent = 'Expand';
+          this.setAttribute('aria-expanded', 'false');
+        } else {
+          content.style.display = '';
+          this.textContent = 'Collapse';
+          this.setAttribute('aria-expanded', 'true');
+        }
+      });
+      // Section Navigation
+      window.showWhitepaperSection = function (section) {
+        const sections = ['summary', 'tokenomics', 'staking', 'security', 'roadmap'];
+        sections.forEach(s => {
+          document.getElementById('whitepaper-' + s).style.display = (s === section) ? '' : 'none';
+        });
+      };
+    </script>
+    <!-- Existing content for the main dashboard -->
+    <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options" role="region">
+      <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect"
+        tabindex="0">🔗
+        WalletConnect</button>
+      <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google"
+        tabindex="0">G
+        <span class="google-btn-text">oogle</span></button>
+    </section>
+    <!-- Sticky mobile bottom navigation -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Main navigation" role="navigation">
+      <a href="#quickStatsCard" aria-label="Quick Stats" tabindex="0"><i
+          class="fas fa-tachometer-alt"></i><span>Stats</span></a>
+      <a href="#staking-history-section" aria-label="Staking" tabindex="0"><i
+          class="fas fa-coins"></i><span>Staking</span></a>
+      <a href="#advanced-analytics-section" aria-label="Analytics" tabindex="0"><i
+          class="fas fa-chart-line"></i><span>Analytics</span></a>
+      <a href="#community-chat-section" aria-label="Chat" tabindex="0"><i
+          class="fas fa-comments"></i><span>Chat</span></a>
+      <a href="#wallet-portfolio-section" aria-label="Portfolio" tabindex="0"><i
+          class="fas fa-wallet"></i><span>Portfolio</span></a>
+    </nav>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js" defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="dashboard-wallet.js?v=1.3.1" defer></script>
+  <script src="dashboard-accessibility.js?v=1.3.1" defer></script>
+  <!-- Onboarding Tour Disabled - CSP Compliance -->
+  <!-- New Features Scripts -->
+  <script src="dashboard-treasury-chart.js?v=1.3.1" defer></script>
+  <script src="dashboard-starfield.js?v=1.3.1" defer></script>
+  </body>
 
 </html>
