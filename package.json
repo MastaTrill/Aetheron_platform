@@ -11,7 +11,7 @@
     "test": "npm run test:smoke",
     "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
-      "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
+    "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",
     "test:smart-contract": "cd smart-contract && npm test",
     "deploy": "echo 'Deploy manually to GitHub Pages'",
