@@ -1154,7 +1154,7 @@ async function handleNewsletterSignup(event) {
                 try {
                     const subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY') // Replace with real VAPID key
+                        applicationServerKey: urlBase64ToUint8Array('BKY6WcJ8...') // Replace with real VAPID key
                     });
                     console.log('Push subscription:', subscription);
                 } catch (err) {

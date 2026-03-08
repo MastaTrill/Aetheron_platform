@@ -15,11 +15,11 @@
 
 #### Staking Contract
 
-- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
+- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
 - **Type:** Staking Contract
 - **Manages:** AETH token staking rewards
 - **Pools:** 3 (30/90/180 days)
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
+- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82)
 
 ---
 

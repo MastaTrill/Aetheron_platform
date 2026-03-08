@@ -9,15 +9,15 @@ async function main() {
   console.log('='.repeat(60) + '\n');
 
   // Setup provider and wallet
-  const provider = new ethers.JsonRpcProvider(
-    process.env.POLYGON_RPC || 'https://polygon-rpc.com',
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com',
   );
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   console.log('📍 Deploying from account:', wallet.address);
 
   const balance = await provider.getBalance(wallet.address);
-  console.log('💰 Account balance:', ethers.formatEther(balance), 'POL');
+  console.log('💰 Account balance:', ethers.utils.formatEther(balance), 'POL');
   if (balance === 0n) {
     console.error('\n❌ ERROR: Deployer account has no POL!');
     process.exit(1);
@@ -55,9 +55,9 @@ async function main() {
   console.log('📤 Sending governance deployment transaction...');
   const governance = await GovernanceFactory.deploy(AETH_TOKEN_ADDRESS);
   console.log('⏳ Waiting for governance deployment...');
-  await governance.waitForDeployment();
+  await governance.deployed();
 
-  const governanceAddress = await governance.getAddress();
+  const governanceAddress = governance.address;
   console.log('✅ Governance Contract deployed to:', governanceAddress);
 
   // Save deployment info
