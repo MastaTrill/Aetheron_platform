@@ -1,3 +1,294 @@
+/* Subtle animated starfield background (canvas already present) */
+#starfield-canvas {
+  animation: starfieldMove 60s linear infinite;
+}
+@keyframes starfieldMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100vw 100vh;
+  }
+}
+
+/* Card shadow and hover depth */
+.card {
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.18),
+    0 1.5px 8px rgba(0, 212, 255, 0.08);
+  transition:
+    box-shadow 0.3s,
+    transform 0.2s;
+}
+.card:hover {
+  box-shadow:
+    0 8px 48px rgba(0, 212, 255, 0.18),
+    0 2px 16px rgba(0, 0, 0, 0.18);
+  transform: translateY(-6px) scale(1.02);
+}
+
+/* Button styling improvements */
+.btn,
+button {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.08);
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.btn:hover,
+button:hover {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.15);
+  transform: scale(1.04);
+}
+.btn i,
+button i {
+  font-size: 1.3em;
+  margin-right: 8px;
+}
+
+/* Section spacing for readability */
+.features-section,
+.stats-grid,
+.main-grid,
+.newsletter-section,
+.faq-section {
+  margin-bottom: 48px;
+}
+.card:not(:last-child) {
+  margin-bottom: 40px;
+}
+
+/* Branded accent highlights */
+.primary-link {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.primary-link:hover {
+  color: var(--primary);
+}
+
+/* Modal transitions */
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-content {
+  border-radius: 18px;
+  box-shadow: 0 8px 48px rgba(0, 212, 255, 0.18);
+  background: var(--card-bg);
+  padding: 32px;
+  transition: transform 0.3s;
+  transform: scale(0.98);
+}
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .container {
+    padding: 16px 8px;
+  }
+}
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card {
+    padding: 16px;
+  }
+}
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  background: linear-gradient(
+    135deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-mid),
+    var(--bg-gradient-end)
+  );
+  color: var(--text);
+  min-height: 100vh;
+  transition:
+    background 0.3s,
+    color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-mid),
+    var(--bg-gradient-end)
+  );
+  opacity: 0.7;
+  z-index: -1;
+}
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  margin-bottom: 32px;
+  padding: 32px;
+  backdrop-filter: blur(6px);
+}
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 48px 0 32px 0;
+  background: rgba(26, 26, 46, 0.7);
+  border-radius: 24px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+}
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+.hero p {
+  font-size: 1.25rem;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+.features-section {
+  margin-bottom: 40px;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.feature-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.feature-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.15);
+}
+.feature-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+}
+.stat-card .icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.stat-card .label {
+  font-size: 1.1rem;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.stat-card .change {
+  font-size: 1rem;
+  color: var(--accent);
+}
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+.card-header {
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+.footer-link {
+  color: var(--primary);
+  text-decoration: none;
+  margin-right: 12px;
+}
+.footer-link:hover {
+  text-decoration: underline;
+}
 /* Embedded CSS from index.html moved here for best practices */
 body {
   font-family:
