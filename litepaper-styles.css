@@ -1,0 +1,45 @@
+/* litepaper-styles.css - extracted from inline <style> in litepaper.html */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.aeth-link {
+  color: #00d4ff;
+}
+
+.aeth-link-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00d4ff, #8a2be2);
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0.5rem;
+}
+
+.aeth-link-btn-alt {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: rgba(0, 212, 255, 0.2);
+  border: 1px solid #00d4ff;
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0.5rem;
+}
+
+.highlight.centered {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.aeth-join-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #00d4ff;
+}

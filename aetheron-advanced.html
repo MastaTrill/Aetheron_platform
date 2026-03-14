@@ -10,239 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
     crossorigin="anonymous" referrerpolicy="no-referrer">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    :root {
-      --primary: #667eea;
-      --secondary: #764ba2;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --dark: #1f2937
-    }
-
-    body {
-      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, var(--primary) 0, var(--secondary) 100%);
-      min-height: 100vh;
-      color: #fff
-    }
-
-    .navbar {
-      background: rgba(255, 255, 255, .1);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      padding: 1rem 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, .1)
-    }
-
-    .navbar-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: .5rem
-    }
-
-    .btn {
-      padding: .75rem 1.5rem;
-      border-radius: 12px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .3s;
-      font-size: 1rem
-    }
-
-    .btn-primary {
-      background: #fff;
-      color: var(--primary)
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, .2)
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem
-    }
-
-    .d-grid {
-      display: grid
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem
-    }
-
-    .text-sm {
-      font-size: .875rem
-    }
-
-    .text-gray {
-      color: rgba(255, 255, 255, .7)
-    }
-
-    .mt-05 {
-      margin-top: .5rem
-    }
-
-    .mt-1 {
-      margin-top: 1rem
-    }
-
-    .mt-2 {
-      margin-top: 2rem
-    }
-
-    .amount {
-      font-size: 2rem;
-      font-weight: 700
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, .1);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, .2);
-      border-radius: 15px;
-      padding: 1.5rem;
-      text-align: center
-    }
-
-    .stat-card .icon {
-      font-size: 2rem;
-      margin-bottom: 1rem
-    }
-
-    .stat-card .label {
-      font-size: .875rem;
-      color: rgba(255, 255, 255, .7);
-      margin-bottom: .5rem
-    }
-
-    .stat-card .value {
-      font-size: 1.5rem;
-      font-weight: 700
-    }
-  </style>
-  <style>
-    .advanced-features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin: 2rem 0
-    }
-
-    .feature-card {
-      background: rgba(255, 255, 255, .05);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, .1);
-      border-radius: 15px;
-      padding: 2rem;
-      transition: all .3s
-    }
-
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, .3)
-    }
-
-    .feature-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent
-    }
-
-    .portfolio-summary {
-      background: linear-gradient(135deg, rgba(102, 126, 234, .1), rgba(118, 75, 162, .1));
-      border-radius: 15px;
-      padding: 2rem;
-      margin: 2rem 0
-    }
-
-    .risk-meter {
-      height: 10px;
-      background: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-      margin: 1rem 0
-    }
-
-    .risk-level {
-      height: 100%;
-      background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
-      transition: width .3s;
-      width: 30%
-    }
-
-    .recommendation-card {
-      background: rgba(16, 185, 129, .1);
-      border-left: 4px solid #10b981;
-      padding: 1rem;
-      margin: .5rem 0;
-      border-radius: 8px
-    }
-
-    .market-indicator {
-      display: inline-block;
-      padding: .5rem 1rem;
-      border-radius: 20px;
-      font-size: .9rem;
-      font-weight: 600
-    }
-
-    .indicator-bullish {
-      background: rgba(16, 185, 129, .2);
-      color: #10b981
-    }
-
-    .indicator-bearish {
-      background: rgba(239, 68, 68, .2);
-      color: #ef4444
-    }
-
-    .chart-container {
-      background: rgba(255, 255, 255, .05);
-      border-radius: 15px;
-      padding: 2rem;
-      margin: 2rem 0;
-      min-height: 300px
-    }
-
-    .hidden {
-      display: none
-    }
-  </style>
+  <link rel="stylesheet" href="aetheron-advanced-styles.css?v=1.0.0">
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
 </head>
 
@@ -251,10 +19,11 @@
     <div class="navbar-content">
       <div class="logo"><i class="fas fa-cube"></i> Aetheron Advanced</div>
       <div class="navbar-buttons">
-        <button class="btn btn-primary"
+        <button type="button" class="btn btn-primary"
           onclick='window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank")'><i
             class="fas fa-shopping-cart"></i> Buy AETH</button>
-        <button class="btn btn-primary" id="connectBtn" onclick="connectWallet()"><i class="fas fa-wallet"></i> Connect
+        <button type="button" class="btn btn-primary" id="connectBtn" onclick="connectWallet()"><i
+            class="fas fa-wallet"></i> Connect
           Wallet</button>
       </div>
     </div>
@@ -266,7 +35,7 @@
         <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
         <h3>Advanced Analytics</h3>
         <p>Real-time portfolio tracking, performance metrics, and market analysis powered by Aetheron.io</p>
-        <button class="btn btn-primary" onclick="openAnalytics()"><i class="fas fa-chart-bar"></i> View
+        <button type="button" class="btn btn-primary" onclick="openAnalytics()"><i class="fas fa-chart-bar"></i> View
           Analytics</button>
       </article>
 
@@ -274,21 +43,24 @@
         <div class="feature-icon"><i class="fas fa-robot"></i></div>
         <h3>AI Portfolio Optimizer</h3>
         <p>Machine learning algorithms optimize your staking strategy for maximum returns</p>
-        <button class="btn btn-primary" onclick="optimizePortfolio()"><i class="fas fa-brain"></i> Optimize Now</button>
+        <button type="button" class="btn btn-primary" onclick="optimizePortfolio()"><i class="fas fa-brain"></i>
+          Optimize Now</button>
       </article>
 
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
         <h3>Risk Management</h3>
         <p>Advanced risk analysis, diversification recommendations, and portfolio protection</p>
-        <button class="btn btn-primary" onclick="analyzeRisk()"><i class="fas fa-shield"></i> Analyze Risk</button>
+        <button type="button" class="btn btn-primary" onclick="analyzeRisk()"><i class="fas fa-shield"></i> Analyze
+          Risk</button>
       </article>
 
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
         <h3>DeFi Integration</h3>
         <p>Seamless integration with QuickSwap, liquidity pools, and yield farming</p>
-        <button class="btn btn-primary" onclick="openDeFi()"><i class="fas fa-coins"></i> Explore DeFi</button>
+        <button type="button" class="btn btn-primary" onclick="openDeFi()"><i class="fas fa-coins"></i> Explore
+          DeFi</button>
       </article>
     </section>
 
@@ -358,7 +130,7 @@
     </div>
   </footer>
   <script src="aetheron-integration.js"></script>
-  <script>let aetheron, provider, signer, userAddress; const AETH_ADDRESS = "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5", STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638"; async function connectWallet() { if (void 0 === window.ethereum) return alert("No Ethereum wallet detected! Please install MetaMask or Coinbase Wallet to use this application."), void window.open("https://metamask.io/download/", "_blank"); try { const e = await window.ethereum.request({ method: "eth_requestAccounts" }); userAddress = e[0], provider = new ethers.providers.Web3Provider(window.ethereum), signer = provider.getSigner(); if (137 !== (await provider.getNetwork()).chainId) try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x89" }] }) } catch (e) { 4902 === e.code && await window.ethereum.request({ method: "wallet_addEthereumChain", params: [{ chainId: "0x89", chainName: "Polygon Mainnet", nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 }, rpcUrls: ["https://polygon-rpc.com"], blockExplorerUrls: ["https://polygonscan.com"] }] }) } document.getElementById("connectBtn").innerHTML = `<i class="fas fa-wallet"></i> ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`, aetheron = new AetheronIntegration, await aetheron.initialize(AETH_ADDRESS, STAKING_ADDRESS), await loadAdvancedFeatures(), alert("✅ Wallet connected successfully!") } catch (e) { console.error("Connection error:", e), alert("Failed to connect wallet: " + e.message) } } async function loadAdvancedFeatures() { if (userAddress && aetheron) try { const e = await aetheron.getPortfolioValue(userAddress); e && updatePortfolioDisplay(e); const t = await aetheron.getMarketStats(); t && updateMarketDisplay(t) } catch (e) { console.error("Error loading features:", e) } } function updatePortfolioDisplay(e) { document.getElementById("portfolioSummary").classList.remove("hidden"), document.getElementById("portfolioValue").textContent = e.totalValue.toFixed(2) + " AETH"; const t = aetheron.analyzeRisk(e), o = document.getElementById("recommendations"); o.innerHTML = "", t.recommendations.forEach(e => { const t = document.createElement("div"); t.className = "recommendation-card", t.innerHTML = `<i class="fas fa-lightbulb"></i> ${e}`, o.appendChild(t) }); const n = "Low" === t.diversification ? 70 : "Medium" === t.volatilityRisk ? 50 : 30; document.getElementById("riskLevel").style.width = n + "%", document.getElementById("riskDescription").textContent = `Diversification: ${t.diversification} | Volatility: ${t.volatilityRisk}` } function updateMarketDisplay(e) { document.getElementById("marketAnalytics").classList.remove("hidden"), document.getElementById("currentPrice").textContent = "$" + e.price.toFixed(6), document.getElementById("totalSupply").textContent = (e.totalSupply / 1e9).toFixed(2) + "B AETH" } function openAnalytics() { document.getElementById("marketAnalytics").scrollIntoView({ behavior: "smooth" }) } async function optimizePortfolio() { if (userAddress && aetheron) try { const e = await aetheron.getPortfolioValue(userAddress); await aetheron.getStakingPools(); let t = "🤖 AI Optimization Suggestions:\n\n"; const o = e.tokens[0].balance; o > 1e3 ? (t += `• Stake ${(.6 * o).toFixed(0)} AETH in 180-day pool (25% APY)\n`, t += `• Stake ${(.3 * o).toFixed(0)} AETH in 90-day pool (12% APY)\n`, t += `• Keep ${(.1 * o).toFixed(0)} AETH liquid for opportunities\n`) : o > 100 ? (t += `• Stake ${(.7 * o).toFixed(0)} AETH in 90-day pool (12% APY)\n`, t += `• Keep ${(.3 * o).toFixed(0)} AETH for flexibility\n`) : (t += "• Acquire more AETH to unlock higher yield opportunities\n", t += "• Current balance too small for optimal diversification\n"), alert(t) } catch (e) { console.error("Error optimizing:", e), alert("Error: " + e.message) } else alert("Please connect your wallet first") } async function analyzeRisk() { if (userAddress && aetheron) try { const e = await aetheron.getPortfolioValue(userAddress), t = aetheron.analyzeRisk(e); document.getElementById("portfolioSummary").scrollIntoView({ behavior: "smooth" }), alert(`🛡️ Risk Analysis:\n\nDiversification: ${t.diversification}\nVolatility: ${t.volatilityRisk}\nLiquidity: ${t.liquidityRisk}\n\nCheck the recommendations below!`) } catch (e) { console.error("Error analyzing:", e), alert("Error: " + e.message) } else alert("Please connect your wallet first") } function openDeFi() { window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e", "_blank") } window.addEventListener("load", async () => { if (void 0 !== window.ethereum) { (await window.ethereum.request({ method: "eth_accounts" })).length > 0 && await connectWallet() } }), void 0 !== window.ethereum && (window.ethereum.on("accountsChanged", e => { e.length > 0 ? window.location.reload() : document.getElementById("connectBtn").innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet' }), window.ethereum.on("chainChanged", () => { window.location.reload() }))</script>
+  <script src="aetheron-advanced-init.js"></script>
   <script src="global-announcements.js"></script>
 </body>
 
