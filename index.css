@@ -1,3 +1,29 @@
+/* Price action row for Buy/Chart buttons */
+.price-action-row {
+  margin-top: 0.5em;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.buy-quickswap-btn {
+  font-size: 1em;
+  padding: 0.5em 1.2em;
+  font-weight: 600;
+}
+.dexscreener-btn {
+  font-size: 0.95em;
+  padding: 0.4em 1em;
+  font-weight: 500;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+}
+/* Ensure .btn-info overrides .btn styles for DexScreener */
+.btn-info.dexscreener-btn:hover {
+  background: #334155;
+  color: #fff;
+}
 /* Subtle animated starfield background (canvas already present) */
 #starfield-canvas {
   animation: starfieldMove 60s linear infinite;
@@ -20,8 +46,8 @@
     0 1.5px 8px rgba(0, 212, 255, 0.08);
   margin-bottom: 32px;
   padding: 32px;
-  backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   transition:
     box-shadow 0.3s,
     transform 0.2s;
