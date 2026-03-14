@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,7 +8,7 @@
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
   <title>Analytics Dashboard - Aetheron Platform</title>
   <link rel="canonical" href="https://aetheron.online/analytics-dashboard.html">
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +22,8 @@
   <link rel="stylesheet" href="mobile-optimization.css?v=1.3.1">
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.1">
   <link rel="stylesheet" href="analytics-dashboard.css?v=1.3.1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
   <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
@@ -43,82 +45,82 @@
     </div>
   </nav>
   <main id="main-content" role="main">
-  <div class="container">
-    <header>
-      <h1>📊 Analytics Dashboard</h1>
-      <p class="subtitle">Real-time data and insights for Aetheron Platform</p>
-    </header>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Current Price</div>
-        <div class="stat-value" id="current-price">Loading...</div>
-        <div class="stat-change" id="price-change"><span>--</span></div>
+    <div class="container">
+      <header>
+        <h1>📊 Analytics Dashboard</h1>
+        <p class="subtitle">Real-time data and insights for Aetheron Platform</p>
+      </header>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Current Price</div>
+          <div class="stat-value" id="current-price">Loading...</div>
+          <div class="stat-change" id="price-change"><span>--</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">24h Volume</div>
+          <div class="stat-value" id="volume-24h">Loading...</div>
+          <div class="stat-change"><span id="volume-info">--</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Value Locked</div>
+          <div class="stat-value" id="tvl-value">Loading...</div>
+          <div class="stat-change"><span id="tvl-info">Liquidity + Staking</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Staked</div>
+          <div class="stat-value" id="staked-value">Loading...</div>
+          <div class="stat-change"><span id="staked-percent">--</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Stakers</div>
+          <div class="stat-value" id="stakers-count">Loading...</div>
+          <div class="stat-change"><span id="stakers-info">Unique wallets</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Reward Pool</div>
+          <div class="stat-value" id="reward-pool">Loading...</div>
+          <div class="stat-change"><span id="reward-info">Available rewards</span></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">24h Volume</div>
-        <div class="stat-value" id="volume-24h">Loading...</div>
-        <div class="stat-change"><span id="volume-info">--</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Value Locked</div>
-        <div class="stat-value" id="tvl-value">Loading...</div>
-        <div class="stat-change"><span id="tvl-info">Liquidity + Staking</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Staked</div>
-        <div class="stat-value" id="staked-value">Loading...</div>
-        <div class="stat-change"><span id="staked-percent">--</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Active Stakers</div>
-        <div class="stat-value" id="stakers-count">Loading...</div>
-        <div class="stat-change"><span id="stakers-info">Unique wallets</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Reward Pool</div>
-        <div class="stat-value" id="reward-pool">Loading...</div>
-        <div class="stat-change"><span id="reward-info">Available rewards</span></div>
-      </div>
-    </div>
-    <div class="charts-grid">
-      <div class="chart-container">
-        <div class="chart-header">
-          <div class="chart-title">💰 Price History</div>
-          <div class="timeframe-selector">
-            <button type="button" class="timeframe-btn active" data-timeframe="1H">1H</button>
-            <button type="button" class="timeframe-btn" data-timeframe="24H">24H</button>
-            <button type="button" class="timeframe-btn" data-timeframe="7D">7D</button>
-            <button type="button" class="timeframe-btn" data-timeframe="30D">30D</button>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">💰 Price History</div>
+            <div class="timeframe-selector">
+              <button type="button" class="timeframe-btn active" data-timeframe="1H">1H</button>
+              <button type="button" class="timeframe-btn" data-timeframe="24H">24H</button>
+              <button type="button" class="timeframe-btn" data-timeframe="7D">7D</button>
+              <button type="button" class="timeframe-btn" data-timeframe="30D">30D</button>
+            </div>
           </div>
+          <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
         </div>
-        <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">📊 Trading Volume</div>
+          </div>
+          <div class="chart-wrapper"><canvas id="volumeChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">💎 Total Value Locked</div>
+          </div>
+          <div class="chart-wrapper"><canvas id="tvlChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">🎯 Staking Metrics</div>
+          </div>
+          <div class="chart-wrapper"><canvas id="stakingChart"></canvas></div>
+        </div>
       </div>
-      <div class="chart-container">
-        <div class="chart-header">
-          <div class="chart-title">📊 Trading Volume</div>
+      <div class="insights-section">
+        <h3 class="insights-title">💡 Platform Insights</h3>
+        <div id="insights-container">
+          <div class="loading">Loading insights</div>
         </div>
-        <div class="chart-wrapper"><canvas id="volumeChart"></canvas></div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-header">
-          <div class="chart-title">💎 Total Value Locked</div>
-        </div>
-        <div class="chart-wrapper"><canvas id="tvlChart"></canvas></div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-header">
-          <div class="chart-title">🎯 Staking Metrics</div>
-        </div>
-        <div class="chart-wrapper"><canvas id="stakingChart"></canvas></div>
       </div>
     </div>
-    <div class="insights-section">
-      <h3 class="insights-title">💡 Platform Insights</h3>
-      <div id="insights-container">
-        <div class="loading">Loading insights</div>
-      </div>
-    </div>
-  </div>
   </main>
   <script src="index.js?v=1.3.1" defer></script>
   <script src="charts.js?v=1.3.1" defer></script>
