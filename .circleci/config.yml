@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:18
+      - image: cimg/node:18.17.0
     steps:
       - checkout
       - run:
@@ -10,11 +10,16 @@ jobs:
           command: npm ci
       - run:
           name: Run linting
-          command: npm run lint || echo "No lint script defined"
+          command: |
+            if npm run 2>/dev/null | grep -q "^\s*lint"; then
+              npm run lint
+            else
+              echo "No lint script defined - skipping linting"
+            fi
       - run:
           name: Check for build script
           command: |
-            if npm run | grep -q "build"; then
+            if npm run 2>/dev/null | grep -q "^\s*build"; then
               npm run build
             else
               echo "No build script found - static site detected"
@@ -22,7 +27,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            if npm run | grep -q "test"; then
+            if npm run 2>/dev/null | grep -q "^\s*test"; then
               npm test
             else
               echo "No test script found"
