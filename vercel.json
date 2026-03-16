@@ -1,6 +1,6 @@
 {
   "version": 2,
-  // builds section removed for standard Next.js deployment
+
   "headers": [
     {
       "source": "/(.*)",
