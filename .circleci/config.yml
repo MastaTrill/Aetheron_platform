@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: cimg/node:20.11.0
+    environment:
+      CACHE_BUST: "2026-03-16-force-node20"
     steps:
       - checkout
       - run:
