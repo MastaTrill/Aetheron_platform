@@ -1,11 +1,6 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
+  // builds section removed for standard Next.js deployment
   "headers": [
     {
       "source": "/(.*)",
@@ -30,4 +25,3 @@
     }
   ]
 }
-

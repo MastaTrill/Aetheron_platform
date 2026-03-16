@@ -7,8 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "echo 'No tests configured'",
-    "deploy": "echo 'Deploy manually to GitHub Pages'"
+    "export": "next build",
+    "gh-pages": "npm run export && cp -r out/* docs/ || xcopy /E /I /Y out docs",
+    "deploy": "npm run gh-pages && git add docs && git commit -m \"Update GitHub Pages\" && git push"
   },
   "keywords": [
     "blockchain",
