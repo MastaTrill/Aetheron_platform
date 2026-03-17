@@ -1,30 +1,69 @@
-import { task } from 'hardhat/config';
-import '@nomiclabs/hardhat-ethers';
-import '@openzeppelin/hardhat-upgrades';
+import { defineConfig } from 'hardhat/config';
+import hardhatNodeTestRunner from '@nomicfoundation/hardhat-node-test-runner';
+import hardhatUpgrades from '@openzeppelin/hardhat-upgrades';
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
-const POLYGON_RPC_URL =
-  process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com';
+dotenv.config();
 
-module.exports = {
-  solidity: '0.8.20',
+const config = defineConfig({
+  plugins: [hardhatNodeTestRunner, hardhatUpgrades],
+  solidity: {
+    version: '0.8.20',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   networks: {
+    hardhat: {
+      type: 'edr-simulated',
+      chainId: 1337,
+    },
     polygon: {
-      url: POLYGON_RPC_URL,
-      accounts: [PRIVATE_KEY],
+      type: 'http',
+      url: process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 137,
     },
     mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com',
-      accounts: [PRIVATE_KEY],
+      type: 'http',
+      url: process.env.MUMBAI_RPC_URL || 'https://rpc-amoy.polygon.technology',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 80002,
+      gasPrice: 30000000000,
+    },
+    sepolia: {
+      type: 'http',
+      url: process.env.SEPOLIA_RPC_URL || 'https://rpc.sepolia.org',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
+    mainnet: {
+      type: 'http',
+      url:
+        process.env.MAINNET_RPC_URL ||
+        'https://eth-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1,
+      gasPrice: 30000000000,
     },
   },
   etherscan: {
     apiKey: {
-      polygon: POLYGONSCAN_API_KEY,
-      mumbai: POLYGONSCAN_API_KEY,
+      polygon: process.env.POLYGONSCAN_API_KEY || '',
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || '',
+      mainnet: process.env.ETHERSCAN_API_KEY || '',
+      sepolia: process.env.ETHERSCAN_API_KEY || '',
     },
   },
-};
+  paths: {
+    sources: './contracts',
+    tests: './test',
+    cache: './cache',
+    artifacts: './artifacts',
+  },
+});
+
+export default config;

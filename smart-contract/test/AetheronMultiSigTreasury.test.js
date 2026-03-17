@@ -1,42 +1,51 @@
-// No setup import needed; Hardhat registers matchers
-import { expect } from 'chai';
-import pkg from 'hardhat';
-const { ethers, upgrades } = pkg;
+import assert from 'node:assert/strict';
+import { before, beforeEach, describe, it } from 'node:test';
+import hre from 'hardhat';
+import { upgrades } from '@openzeppelin/hardhat-upgrades';
 
-describe('AetheronMultiSigTreasury', function () {
+const connection = await hre.network.connect();
+const { ethers } = connection;
+const upgradesApi = await upgrades(hre, connection);
+
+describe('AetheronMultiSigTreasury', { concurrency: false }, function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
 
-  beforeEach(async function () {
+  before(async function () {
     [owner, addr1, addr2, addr3] = await ethers.getSigners();
+  });
+
+  beforeEach(async function () {
     MultiSig = await ethers.getContractFactory('AetheronMultiSigTreasury');
-    multiSig = await upgrades.deployProxy(
+    multiSig = await upgradesApi.deployProxy(
       MultiSig,
       [[owner.address, addr1.address, addr2.address], 2],
-      { initializer: 'initialize' },
+      { initializer: 'initialize', kind: 'uups' },
     );
+    await multiSig.waitForDeployment();
   });
 
   it('should deploy with the owner set', async function () {
-    expect(await multiSig.owner()).to.equal(owner.address);
+    assert.equal(await multiSig.owner(), owner.address);
   });
 
   it('should allow the owner to submit a transaction', async function () {
     const to = addr1.address;
-    const value = ethers.utils.parseEther('1');
+    const value = ethers.parseEther('1');
     const data = '0x';
     const tx = await multiSig.submitTransaction(to, value, data);
-    const receipt = await tx.wait();
+    await tx.wait();
 
-    const submitEvent = receipt.events.find(
-      (event) => event.event === 'SubmitTransaction',
-    );
+    assert.equal(await multiSig.getTransactionCount(), 1n);
+    const transaction = await multiSig.getTransaction(0);
 
-    expect(submitEvent).to.not.equal(undefined);
+    assert.equal(transaction.to, to);
+    assert.equal(transaction.value, value);
+    assert.equal(transaction.executed, false);
   });
 
   it('should not allow non-owners to submit a transaction', async function () {
     const to = addr1.address;
-    const value = ethers.utils.parseEther('1');
+    const value = ethers.parseEther('1');
     const data = '0x';
     let errorMessage = '';
 
@@ -46,6 +55,6 @@ describe('AetheronMultiSigTreasury', function () {
       errorMessage = error.message;
     }
 
-    expect(errorMessage).to.contain('Ownable: caller is not the owner');
+    assert.match(errorMessage, /Ownable: caller is not the owner/);
   });
 });

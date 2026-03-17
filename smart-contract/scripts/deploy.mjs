@@ -1,5 +1,4 @@
 import hre from 'hardhat';
-const { ethers } = hre;
 import dotenv from 'dotenv';
 dotenv.config();
 import {
@@ -10,6 +9,9 @@ import {
 import fs from 'fs';
 
 async function main() {
+  const connection = await hre.network.connect();
+  const { ethers } = connection;
+
   console.log(
     '\n' +
       colors.bold +
@@ -35,7 +37,7 @@ async function main() {
 
   // Check balance using the new utility
   const balance = await deployer.provider.getBalance(deployer.address);
-  const balanceInEther = ethers.utils.formatEther(balance);
+  const balanceInEther = ethers.formatEther(balance);
   console.log(
     'Account balance:',
     colors.cyan + balanceInEther + ' POL' + colors.reset,
@@ -116,7 +118,7 @@ async function main() {
     );
 
     // Deposit rewards into staking contract
-    const stakingRewards = ethers.utils.parseEther('1000000'); // 1,000,000 tokens
+    const stakingRewards = ethers.parseEther('1000000'); // 1,000,000 tokens
     console.log(
       colors.bold +
         '📝 Approving staking contract to spend reward tokens...' +
