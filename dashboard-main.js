@@ -34,6 +34,7 @@ let dashboardMainInitialized = false;
 let walletEventsBound = false;
 let walletEventsProvider = null;
 let activeInjectedProvider = null;
+let activeWalletType = null;
 
 function showGlobalLoading(show) {
   const spinner = document.getElementById('globalLoading');
@@ -125,8 +126,21 @@ function getInjectedProviderLabel(injectedProvider) {
   return 'Browser Wallet';
 }
 
+function getWalletDisplayLabel(walletType, injectedProvider) {
+  if (walletType === 'walletconnect') {
+    return 'WalletConnect';
+  }
+
+  return getInjectedProviderLabel(injectedProvider);
+}
+
 function getWalletStorageKey(walletType, injectedProvider) {
-  if (walletType === 'metamask' || walletType === 'coinbase' || walletType === 'browser') {
+  if (
+    walletType === 'metamask' ||
+    walletType === 'coinbase' ||
+    walletType === 'browser' ||
+    walletType === 'walletconnect'
+  ) {
     return walletType;
   }
 
@@ -381,13 +395,19 @@ async function connectWallet(request = false) {
   showGlobalLoading(true);
   while (retries < 3 && !success) {
     try {
-      if (!auto) {
+      const hasWalletConnectSession =
+        walletType === 'walletconnect' &&
+        Array.isArray(injectedProvider.accounts) &&
+        injectedProvider.accounts.length > 0;
+
+      if (!auto && !hasWalletConnectSession) {
         await injectedProvider.request({
           method: 'eth_requestAccounts',
         });
       }
       await switchToPolygon(injectedProvider);
       activeInjectedProvider = injectedProvider;
+      activeWalletType = walletType || getWalletStorageKey(walletType, injectedProvider);
       bindWalletEvents(injectedProvider);
       provider = new ethers.providers.Web3Provider(injectedProvider);
       signer = provider.getSigner();
@@ -411,12 +431,15 @@ async function connectWallet(request = false) {
       }
       const walletTypeElement = document.getElementById('walletType');
       if (walletTypeElement) {
-        walletTypeElement.textContent = getInjectedProviderLabel(injectedProvider);
+        walletTypeElement.textContent = getWalletDisplayLabel(
+          activeWalletType,
+          injectedProvider,
+        );
       }
       syncLegacyDashboard(account);
       dispatchWalletEvent('aetheron:wallet-connected', {
         account,
-        walletType: getInjectedProviderLabel(injectedProvider),
+        walletType: getWalletDisplayLabel(activeWalletType, injectedProvider),
       });
       await updateBalances();
       success = true;
@@ -452,6 +475,13 @@ window.updateDashboardBalances = updateBalances;
 async function autoReconnect() {
   const saved = localStorage.getItem('aetheron_connected');
   const savedWalletType = localStorage.getItem('aetheron_connected_wallet');
+
+  if (savedWalletType === 'walletconnect' && typeof window.connectWalletConnect === 'function') {
+    window.connectWalletConnect({ auto: true }).catch((err) => {
+      console.warn('WalletConnect auto reconnect failed:', err);
+    });
+    return;
+  }
 
   if (saved && window.ethereum) {
     connectWallet({
@@ -498,10 +528,20 @@ async function updateBalances() {
 function handleAccountsChanged(accounts) {
   if (Array.isArray(accounts) && accounts.length > 0) {
     account = accounts[0];
+    const walletTypeElement = document.getElementById('walletType');
+    if (walletTypeElement) {
+      walletTypeElement.textContent = getWalletDisplayLabel(
+        activeWalletType,
+        activeInjectedProvider || window.ethereum,
+      );
+    }
     syncLegacyDashboard(account);
     dispatchWalletEvent('aetheron:wallet-connected', {
       account,
-      walletType: getInjectedProviderLabel(activeInjectedProvider || window.ethereum),
+      walletType: getWalletDisplayLabel(
+        activeWalletType,
+        activeInjectedProvider || window.ethereum,
+      ),
     });
     updateBalances();
     return;
@@ -513,6 +553,7 @@ function handleAccountsChanged(accounts) {
   aethContract = undefined;
   stakingContract = undefined;
   activeInjectedProvider = null;
+  activeWalletType = null;
   localStorage.removeItem('aetheron_connected');
   localStorage.removeItem('aetheron_connected_wallet');
 

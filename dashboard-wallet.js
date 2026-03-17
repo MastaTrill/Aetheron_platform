@@ -20,7 +20,6 @@ const connectBtn = document.getElementById('connectBtn');
 const walletStatusText = document.getElementById('walletStatusText');
 const walletStatusIcon = document.getElementById('walletStatusIcon');
 const walletTypeEl = document.getElementById('walletType');
-const walletInfo = document.getElementById('walletInfo');
 
 function dispatchWalletEvent(name, detail = {}) {
   window.dispatchEvent(
@@ -50,26 +49,36 @@ function createInjectedProvider(injectedProvider) {
   throw new Error('Compatible ethers provider API not found.');
 }
 
+function setWalletState(nextAccount, nextType, nextProvider) {
+  walletAccount = nextAccount || null;
+  walletType = nextType || null;
+  walletProvider = nextProvider || null;
+  updateWalletUI();
+}
+
 // --- Wallet Connectors ---
 async function connectMetaMask() {
   if (
     typeof window.connectWallet === 'function' &&
     window.connectWallet !== connectMetaMask
   ) {
-    return window.connectWallet(false);
+    return window.connectWallet({
+      auto: false,
+      walletType: 'metamask',
+    });
   }
 
   if (!window.ethereum) {
     alert('MetaMask not detected.');
     return;
   }
+
   walletProvider = createInjectedProvider(window.ethereum);
   walletType = 'MetaMask';
   const accounts = await window.ethereum.request({
     method: 'eth_requestAccounts',
   });
-  walletAccount = accounts[0];
-  updateWalletUI();
+  setWalletState(accounts[0], walletType, walletProvider);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
@@ -77,21 +86,49 @@ async function connectMetaMask() {
   });
 }
 
-async function connectWalletConnect() {
+async function connectWalletConnect(options = {}) {
   if (!window.WalletConnectProvider) {
     alert('WalletConnectProvider not loaded.');
     return;
   }
+
   wcProvider = new window.WalletConnectProvider.default({
     rpc: { 137: 'https://polygon-rpc.com' },
     chainId: 137,
   });
+
+  wcProvider.on?.('disconnect', () => {
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    dispatchWalletEvent('aetheron:wallet-disconnected');
+  });
+
   await wcProvider.enable();
-  walletProvider = createInjectedProvider(wcProvider);
-  walletType = 'WalletConnect';
-  const accounts = wcProvider.accounts;
-  walletAccount = accounts[0];
-  updateWalletUI();
+
+  if (typeof window.connectWallet === 'function') {
+    const result = await window.connectWallet({
+      auto: Boolean(options.auto),
+      walletType: 'walletconnect',
+      provider: wcProvider,
+    });
+
+    const currentAccount =
+      window.localStorage?.getItem('aetheron_connected') ||
+      wcProvider.accounts?.[0] ||
+      null;
+
+    setWalletState(
+      currentAccount,
+      'WalletConnect',
+      createInjectedProvider(wcProvider),
+    );
+    syncLegacyDashboard(currentAccount);
+    return result;
+  }
+
+  const providerInstance = createInjectedProvider(wcProvider);
+  const accounts = wcProvider.accounts || [];
+  setWalletState(accounts[0] || null, 'WalletConnect', providerInstance);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
@@ -106,19 +143,31 @@ function updateWalletUI() {
 
   if (walletAccount) {
     walletStatusText.textContent = 'Wallet connected';
-    walletStatusIcon.textContent = '🟢';
+    walletStatusIcon.textContent = 'Connected';
     walletTypeEl.textContent = walletType;
-    // Show account in wallet info
     const accountEl = document.getElementById('accountAddress');
-    if (accountEl) accountEl.textContent = walletAccount;
+    if (accountEl) {
+      accountEl.textContent = walletAccount;
+    }
   } else {
     walletStatusText.textContent = 'Wallet not connected';
-    walletStatusIcon.textContent = '🔴';
+    walletStatusIcon.textContent = 'Disconnected';
     walletTypeEl.textContent = '-';
-    if (document.getElementById('accountAddress'))
-      document.getElementById('accountAddress').textContent = '-';
+    const accountEl = document.getElementById('accountAddress');
+    if (accountEl) {
+      accountEl.textContent = '-';
+    }
   }
 }
+
+window.addEventListener('aetheron:wallet-connected', (event) => {
+  const detail = event.detail || {};
+  setWalletState(detail.account || null, detail.walletType || walletType, walletProvider);
+});
+
+window.addEventListener('aetheron:wallet-disconnected', () => {
+  setWalletState(null, null, null);
+});
 
 // --- DEX Aggregator Swap (1inch) ---
 async function swapTokens(fromToken, toToken, amount) {
@@ -126,13 +175,10 @@ async function swapTokens(fromToken, toToken, amount) {
     alert('Connect a wallet first.');
     return;
   }
-  // Get quote
   const url = `${AGGREGATOR_API}/quote?fromTokenAddress=${fromToken}&toTokenAddress=${toToken}&amount=${amount}`;
-  const quote = await fetch(url).then((r) => r.json());
-  // Get swap tx data
+  await fetch(url).then((r) => r.json());
   const swapUrl = `${AGGREGATOR_API}/swap?fromTokenAddress=${fromToken}&toTokenAddress=${toToken}&amount=${amount}&fromAddress=${walletAccount}&slippage=1`;
   const swapData = await fetch(swapUrl).then((r) => r.json());
-  // Send tx
   const signer = await walletProvider.getSigner();
   const tx = await signer.sendTransaction({
     to: swapData.tx.to,
@@ -154,7 +200,11 @@ function initWalletBindings() {
   }
 
   if (walletConnectBtn) {
-    walletConnectBtn.addEventListener('click', connectWalletConnect);
+    walletConnectBtn.addEventListener('click', () => {
+      connectWalletConnect().catch((error) => {
+        console.error('WalletConnect failed:', error);
+      });
+    });
   }
 }
 
@@ -166,7 +216,6 @@ if (document.readyState === 'loading') {
   initWalletBindings();
 }
 
-// Expose for debugging
 window.connectMetaMask = connectMetaMask;
 window.connectWalletConnect = connectWalletConnect;
 window.swapTokens = swapTokens;
