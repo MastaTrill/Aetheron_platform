@@ -607,10 +607,11 @@ body > *:not(#starfield-canvas) {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  color: #d9fdff;
+  color: #7ceeff;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.14);
 }
 
 .hero-panel-title i {
@@ -931,6 +932,8 @@ body > *:not(#starfield-canvas) {
   font-size: 1.02rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: #7ceeff;
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.14);
 }
 
 .feature-card p,
@@ -1013,6 +1016,8 @@ body > *:not(#starfield-canvas) {
   font-size: 1.2rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: #7ceeff;
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.14);
 }
 
 .wallet-section,
@@ -1174,6 +1179,8 @@ body > *:not(#starfield-canvas) {
   margin: 0.8rem 0 0.65rem;
   font-size: clamp(1.7rem, 3.5vw, 2.2rem);
   letter-spacing: 0.03em;
+  color: #7ceeff;
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.14);
 }
 
 .newsletter-copy h2 i {
@@ -1356,7 +1363,8 @@ body > *:not(#starfield-canvas) {
 .faq-question h3 {
   margin: 0;
   font-size: 0.96rem;
-  color: #efffff;
+  color: #7ceeff;
+  text-shadow: 0 0 14px rgba(110, 231, 255, 0.12);
 }
 
 .faq-toggle {
