@@ -620,15 +620,21 @@ async function loadTreasury() {
       totalTreasury += parseFloat(ethers.utils.formatEther(pool[0]));
       stakingRewards += parseFloat(ethers.utils.formatEther(pool[1]));
     }
-    document.getElementById('treasuryTotal').textContent =
-      totalTreasury.toFixed(2) + ' AETH';
-    document.getElementById('stakingRewards').textContent =
-      stakingRewards.toFixed(2) + ' AETH';
+    setTextIfPresent(
+      document.getElementById('treasuryTotal'),
+      totalTreasury.toFixed(2) + ' AETH',
+    );
+    setTextIfPresent(
+      document.getElementById('stakingRewards'),
+      stakingRewards.toFixed(2) + ' AETH',
+    );
     // Example: Protocol fees stored in contract
     // If you track fees in MATIC:
     const fees = await provider.getBalance(AETH_ADDRESS); // Replace with actual contract method if exists
-    document.getElementById('protocolFees').textContent =
-      parseFloat(ethers.utils.formatEther(fees)).toFixed(4) + ' MATIC';
+    setTextIfPresent(
+      document.getElementById('protocolFees'),
+      parseFloat(ethers.utils.formatEther(fees)).toFixed(4) + ' MATIC',
+    );
   } catch (e) {
     console.error('Error loading treasury:', e);
   }

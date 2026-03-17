@@ -35,10 +35,16 @@ document.addEventListener('DOMContentLoaded', function () {
   if (bridgeForm) {
     bridgeForm.onsubmit = async function (e) {
       e.preventDefault();
-      const asset = document.getElementById('bridgeAsset').value;
-      const amount = document.getElementById('bridgeAmount').value;
-      const fromChain = document.getElementById('bridgeFromChain').value;
-      const toChain = document.getElementById('bridgeToChain').value;
+      const asset = document.getElementById('bridgeAsset')?.value;
+      const amount = document.getElementById('bridgeAmount')?.value;
+      const fromChain = document.getElementById('bridgeFromChain')?.value;
+      const toChain = document.getElementById('bridgeToChain')?.value;
+
+      if (!asset || !amount || !fromChain || !toChain) {
+        alert('Bridge form is missing required fields.');
+        return;
+      }
+
       // TODO: Integrate with real bridge API (e.g., Wormhole, Synapse)
       alert(`Bridge request: ${amount} ${asset} from ${fromChain} to ${toChain}. Integration coming soon.`);
       bridgeModal.style.display = 'none';
