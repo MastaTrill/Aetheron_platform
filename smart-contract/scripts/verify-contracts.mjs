@@ -1,25 +1,44 @@
 import fs from 'fs';
-import hre from 'hardhat';
 import dotenv from 'dotenv';
-import { verifyContract } from '@nomicfoundation/hardhat-verify/verify';
+import {
+  submitStandardJsonVerification,
+  NETWORK_CONFIG,
+} from '../utils/explorer-verify.mjs';
 
 dotenv.config();
 
 const cliArgs = process.argv.slice(2);
+const allNetworks = ['polygon', 'mumbai', 'mainnet', 'sepolia'];
 const allContractTypes = ['Aetheron', 'AetxToken', 'AetheronStaking'];
-const explorerBaseUrls = {
-  polygon: 'https://polygonscan.com',
-  mumbai: 'https://amoy.polygonscan.com',
-  goerli: 'https://goerli.etherscan.io',
-  mainnet: 'https://etherscan.io',
-  sepolia: 'https://sepolia.etherscan.io',
+const contractDefinitions = {
+  Aetheron: {
+    sourceName: 'contracts/Aetheron.sol',
+    contractName: 'Aetheron',
+  },
+  AetxToken: {
+    sourceName: 'contracts/AetxToken.sol',
+    contractName: 'AetxToken',
+  },
+  AetheronStaking: {
+    sourceName: 'contracts/AetheronStaking.sol',
+    contractName: 'AetheronStaking',
+  },
 };
 
-const requestedContractTypes = cliArgs.filter((arg) =>
-  allContractTypes.includes(arg),
-);
-const contractTypes =
-  requestedContractTypes.length > 0 ? requestedContractTypes : allContractTypes;
+let network = process.env.NETWORK || 'polygon';
+let contractTypes = [];
+
+for (const arg of cliArgs) {
+  if (allNetworks.includes(arg.toLowerCase())) {
+    network = arg.toLowerCase();
+  } else if (allContractTypes.includes(arg)) {
+    contractTypes.push(arg);
+  }
+}
+
+if (contractTypes.length === 0) {
+  contractTypes = allContractTypes;
+}
 
 const TEAM_WALLET = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
 const MARKETING_WALLET = '0x8D3442424F8F6BEEd97496C7E54e056166f96746';
@@ -30,7 +49,7 @@ function fail(message, code = 1) {
   process.exit(code);
 }
 
-function readContractAddresses(network) {
+function readContractAddresses(selectedNetwork) {
   const candidateFiles = ['deployment-info.json', 'deployment.json'];
 
   for (const fileName of candidateFiles) {
@@ -41,8 +60,8 @@ function readContractAddresses(network) {
     const deploymentData = JSON.parse(fs.readFileSync(fileName, 'utf8'));
     let networkData = deploymentData;
 
-    if (deploymentData.networks?.[network]) {
-      networkData = deploymentData.networks[network];
+    if (deploymentData.networks?.[selectedNetwork]) {
+      networkData = deploymentData.networks[selectedNetwork];
     }
 
     if (
@@ -92,16 +111,8 @@ function getConstructorArgs(contractType, contractAddresses) {
   return [];
 }
 
-function getApiKeyForNetwork(network) {
-  if (network === 'polygon' || network === 'mumbai') {
-    return process.env.POLYGONSCAN_API_KEY || process.env.ETHERSCAN_API_KEY || '';
-  }
-
-  return process.env.ETHERSCAN_API_KEY || '';
-}
-
-function printVerificationTarget(network, contractType, address, constructorArgs) {
-  const explorerBaseUrl = explorerBaseUrls[network] || explorerBaseUrls.polygon;
+function printVerificationTarget(contractType, address, constructorArgs) {
+  const explorerBaseUrl = NETWORK_CONFIG[network]?.explorerBaseUrl || NETWORK_CONFIG.polygon.explorerBaseUrl;
 
   console.log(`Verification target for ${contractType}:`);
   console.log(`  Explorer page: ${explorerBaseUrl}/address/${address}#code`);
@@ -117,21 +128,9 @@ function printVerificationTarget(network, contractType, address, constructorArgs
 }
 
 async function main() {
-  const network = hre.network.name;
-  const results = [];
-  const apiKey = getApiKeyForNetwork(network);
-
-  console.log(`\nVerification Run for network: ${network}`);
-  console.log('='.repeat(60));
-
-  if (!apiKey) {
-    fail(
-      `Missing explorer API key for network "${network}". Set ETHERSCAN_API_KEY or POLYGONSCAN_API_KEY before verifying.`,
-      2,
-    );
-  }
-
   const contractAddresses = readContractAddresses(network);
+  const results = [];
+
   if (
     !contractAddresses.Aetheron?.address ||
     !contractAddresses.AetxToken?.address ||
@@ -140,47 +139,49 @@ async function main() {
     fail(`Missing contract addresses for network "${network}".`, 2);
   }
 
+  console.log(`\nVerification Run for network: ${network}`);
+  console.log('='.repeat(60));
+
   for (const contractType of contractTypes) {
     const address = contractAddresses[contractType]?.address;
     if (!address) {
-      console.error(`Address for ${contractType} not found. Skipping.`);
+      results.push({
+        network,
+        contract: contractType,
+        address: '(missing)',
+        status: 'failed',
+        message: 'Contract address not found',
+      });
       continue;
     }
 
     const constructorArgs = getConstructorArgs(contractType, contractAddresses);
-    printVerificationTarget(network, contractType, address, constructorArgs);
+    const definition = contractDefinitions[contractType];
+    printVerificationTarget(contractType, address, constructorArgs);
 
     try {
-      await verifyContract(
-        {
-          address,
-          constructorArgs,
-          provider: 'etherscan',
-        },
-        hre,
-      );
+      const result = await submitStandardJsonVerification({
+        network,
+        sourceName: definition.sourceName,
+        contractName: definition.contractName,
+        contractAddress: address,
+        constructorArgs,
+      });
 
       results.push({
         network,
         contract: contractType,
         address,
-        status: 'verified',
-        message: 'Verified through Hardhat verify',
+        status: result.status,
+        message: result.message,
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      const normalizedMessage = message.toLowerCase();
-      const alreadyVerified =
-        normalizedMessage.includes('already verified') ||
-        normalizedMessage.includes('already been verified') ||
-        normalizedMessage.includes('source code already verified');
-
       results.push({
         network,
         contract: contractType,
         address,
-        status: alreadyVerified ? 'already-verified' : 'failed',
-        message: alreadyVerified ? 'Explorer already has verified source' : message,
+        status: 'failed',
+        message: error instanceof Error ? error.message : String(error),
       });
     }
   }
