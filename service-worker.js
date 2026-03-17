@@ -155,7 +155,7 @@ self.addEventListener('fetch', (event) => {
           self.registration.showNotification &&
             self.registration.showNotification('You are offline', {
               body: 'Some features may be unavailable.',
-              icon: './assets/aetheron-og-image.png',
+              icon: './apple-touch-icon.png',
             });
           return caches.match('./offline.html');
         }),

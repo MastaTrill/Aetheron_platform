@@ -1207,8 +1207,8 @@ async function handleNewsletterSignup(event) {
         if (Notification.permission === 'granted') {
             new Notification('Welcome to Aetheron! 🚀', {
                 body: 'You\'ll now receive updates about governance votes and platform features.',
-                icon: '/assets/icon-192.png',
-                badge: '/assets/icon-72.png'
+                icon: './apple-touch-icon.png',
+                badge: './favicon.ico'
             });
         }
     }, 1000);
