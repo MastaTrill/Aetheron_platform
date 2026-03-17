@@ -36,6 +36,19 @@ function notifyDashboard(message, type = 'info') {
   console[type === 'error' ? 'error' : 'log'](message);
 }
 
+function renderChartInstance(key, chartEl, config) {
+  if (!chartEl || !window.Chart) {
+    return null;
+  }
+
+  if (window[key] && typeof window[key].destroy === 'function') {
+    window[key].destroy();
+  }
+
+  window[key] = new Chart(chartEl, config);
+  return window[key];
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -1185,7 +1198,15 @@ class AetheronDashboard {
 
   setupSpaceBackground() {
     const canvas = document.getElementById('space-bg');
+    if (!canvas) {
+      return;
+    }
+
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -1292,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chartEl && data.data.items.length > 0 && window.Chart) {
           const labels = data.data.items.map(t => t.contract_ticker_symbol);
           const values = data.data.items.map(t => t.balance / Math.pow(10, t.contract_decimals));
-          new Chart(chartEl, {
+          renderChartInstance('walletPortfolioBreakdownChart', chartEl, {
             type: 'pie',
             data: {
               labels,
@@ -1314,7 +1335,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.textContent = 'NFTs loaded: 3 collections.';
         const chartEl = document.getElementById('nftAnalyticsChart');
         if (chartEl && window.Chart) {
-          new Chart(chartEl, {
+          renderChartInstance('nftAnalyticsChartInstance', chartEl, {
             type: 'bar',
             data: {
               labels: ['CryptoPunks', 'BoredApe', 'AetheronArt'],
@@ -1367,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (chartEl && data.prices && window.Chart) {
             const labels = data.prices.map(p => new Date(p[0]).toLocaleDateString());
             const values = data.prices.map(p => p[1]);
-            new Chart(chartEl, {
+            renderChartInstance('portfolioTrackerChartInstance', chartEl, {
               type: 'line',
               data: {
                 labels,
