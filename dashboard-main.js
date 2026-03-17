@@ -32,6 +32,8 @@ let aethContract;
 let stakingContract;
 let dashboardMainInitialized = false;
 let walletEventsBound = false;
+let walletEventsProvider = null;
+let activeInjectedProvider = null;
 
 function showGlobalLoading(show) {
   const spinner = document.getElementById('globalLoading');
@@ -71,15 +73,273 @@ function syncLegacyDashboard(accountAddress = null) {
   }
 }
 
-async function switchToPolygon() {
+function normalizeConnectRequest(request = false) {
+  if (typeof request === 'boolean') {
+    return { auto: request };
+  }
+
+  if (typeof request === 'string') {
+    return { auto: false, walletType: request };
+  }
+
+  if (typeof request === 'object' && request !== null) {
+    return {
+      auto: Boolean(request.auto),
+      walletType: request.walletType || null,
+      provider: request.provider || null,
+    };
+  }
+
+  return { auto: false };
+}
+
+function getInjectedProviders() {
+  if (!window.ethereum) {
+    return [];
+  }
+
+  if (Array.isArray(window.ethereum.providers) && window.ethereum.providers.length > 0) {
+    return window.ethereum.providers;
+  }
+
+  return [window.ethereum];
+}
+
+function getInjectedProviderLabel(injectedProvider) {
+  if (!injectedProvider) {
+    return 'Browser Wallet';
+  }
+
+  if (injectedProvider.isMetaMask && !injectedProvider.isCoinbaseWallet) {
+    return 'MetaMask';
+  }
+
+  if (injectedProvider.isCoinbaseWallet) {
+    return 'Coinbase Wallet';
+  }
+
+  if (injectedProvider.isRabby) {
+    return 'Rabby';
+  }
+
+  return 'Browser Wallet';
+}
+
+function getWalletStorageKey(walletType, injectedProvider) {
+  if (walletType === 'metamask' || walletType === 'coinbase' || walletType === 'browser') {
+    return walletType;
+  }
+
+  const label = getInjectedProviderLabel(injectedProvider);
+  if (label === 'MetaMask') {
+    return 'metamask';
+  }
+
+  if (label === 'Coinbase Wallet') {
+    return 'coinbase';
+  }
+
+  return 'browser';
+}
+
+function getPreferredInjectedProvider(walletType = null) {
+  const injectedProviders = getInjectedProviders();
+  if (injectedProviders.length === 0) {
+    return null;
+  }
+
+  if (!walletType || walletType === 'browser') {
+    return injectedProviders[0];
+  }
+
+  if (walletType === 'metamask') {
+    return (
+      injectedProviders.find(
+        (providerOption) =>
+          providerOption.isMetaMask && !providerOption.isCoinbaseWallet,
+      ) || null
+    );
+  }
+
+  if (walletType === 'coinbase') {
+    return (
+      injectedProviders.find((providerOption) => providerOption.isCoinbaseWallet) ||
+      null
+    );
+  }
+
+  return injectedProviders[0];
+}
+
+function ensureWalletChooser() {
+  let modal = document.getElementById('walletChooserModal');
+  if (modal) {
+    return modal;
+  }
+
+  const chooserMarkup = `
+    <div id="walletChooserModal" class="modal-bg" hidden>
+      <div class="modal wallet-chooser-modal" role="dialog" aria-modal="true" aria-labelledby="walletChooserTitle">
+        <button type="button" class="close-modal-btn" id="closeWalletChooserBtn" aria-label="Close Wallet Chooser">&times;</button>
+        <h3 id="walletChooserTitle">Choose a wallet</h3>
+        <p class="text-muted">Connect with an installed wallet or use WalletConnect.</p>
+        <div id="walletChooserOptions" class="modal-actions wallet-chooser-options"></div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', chooserMarkup);
+  modal = document.getElementById('walletChooserModal');
+  const closeButton = document.getElementById('closeWalletChooserBtn');
+
+  if (closeButton) {
+    closeButton.addEventListener('click', closeWalletChooser);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeWalletChooser();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeWalletChooser();
+    }
+  });
+
+  return modal;
+}
+
+function closeWalletChooser() {
+  const modal = document.getElementById('walletChooserModal');
+  if (modal) {
+    modal.hidden = true;
+  }
+}
+
+function renderWalletChooserOptions() {
+  const optionsContainer = document.getElementById('walletChooserOptions');
+  if (!optionsContainer) {
+    return;
+  }
+
+  const injectedProviders = getInjectedProviders();
+  const chooserOptions = [];
+  const seenChoices = new Set();
+
+  injectedProviders.forEach((providerOption) => {
+    const label = getInjectedProviderLabel(providerOption);
+    const choice =
+      label === 'MetaMask'
+        ? 'metamask'
+        : label === 'Coinbase Wallet'
+          ? 'coinbase'
+          : 'browser';
+
+    if (seenChoices.has(choice)) {
+      return;
+    }
+
+    seenChoices.add(choice);
+    chooserOptions.push({
+      choice,
+      label,
+      helper: `Connect with ${label}`,
+    });
+  });
+
+  chooserOptions.push({
+    choice: 'walletconnect',
+    label: 'WalletConnect',
+    helper: 'Scan with a mobile wallet',
+  });
+
+  if (chooserOptions.length === 1 && chooserOptions[0].choice === 'walletconnect') {
+    chooserOptions.unshift(
+      {
+        choice: 'install-metamask',
+        label: 'Get MetaMask',
+        helper: 'Install the MetaMask browser extension',
+      },
+      {
+        choice: 'install-coinbase',
+        label: 'Get Coinbase Wallet',
+        helper: 'Install the Coinbase Wallet extension',
+      },
+    );
+  }
+
+  optionsContainer.innerHTML = chooserOptions
+    .map(
+      (option) => `
+        <button
+          type="button"
+          class="btn wallet-choice-btn"
+          data-wallet-choice="${option.choice}"
+          aria-label="${option.label}"
+        >
+          <strong>${option.label}</strong>
+          <span>${option.helper}</span>
+        </button>
+      `,
+    )
+    .join('');
+
+  optionsContainer.querySelectorAll('[data-wallet-choice]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const { walletChoice } = button.dataset;
+      closeWalletChooser();
+
+      if (walletChoice === 'walletconnect') {
+        if (typeof window.connectWalletConnect === 'function') {
+          await window.connectWalletConnect();
+        } else {
+          showToast('WalletConnect is still loading. Please try again.', {
+            type: 'error',
+          });
+        }
+        return;
+      }
+
+      if (walletChoice === 'install-metamask') {
+        window.open('https://metamask.io/download/', '_blank', 'noopener');
+        return;
+      }
+
+      if (walletChoice === 'install-coinbase') {
+        window.open('https://www.coinbase.com/wallet/downloads', '_blank', 'noopener');
+        return;
+      }
+
+      await connectWallet({
+        auto: false,
+        walletType: walletChoice,
+      });
+    });
+  });
+}
+
+function openWalletChooser() {
+  ensureWalletChooser();
+  renderWalletChooserOptions();
+  const modal = document.getElementById('walletChooserModal');
+  if (modal) {
+    modal.hidden = false;
+  }
+}
+
+async function switchToPolygon(injectedProvider) {
   try {
-    await window.ethereum.request({
+    await injectedProvider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: POLYGON_CHAIN_ID }],
     });
   } catch (err) {
     if (err.code === 4902) {
-      await window.ethereum.request({
+      await injectedProvider.request({
         method: 'wallet_addEthereumChain',
         params: [POLYGON_PARAMS],
       });
@@ -87,9 +347,19 @@ async function switchToPolygon() {
   }
 }
 
-async function connectWallet(auto = false) {
-  if (!window.ethereum) {
-    if (!auto) showToast('Install MetaMask', { type: 'error' });
+async function connectWallet(request = false) {
+  const { auto, walletType = null, provider: requestedProvider = null } =
+    normalizeConnectRequest(request);
+  const injectedProvider =
+    requestedProvider || getPreferredInjectedProvider(walletType) || window.ethereum;
+
+  if (!injectedProvider) {
+    if (!auto) {
+      showToast('No browser wallet detected. Choose WalletConnect or install a wallet.', {
+        type: 'error',
+      });
+      openWalletChooser();
+    }
     return;
   }
 
@@ -112,15 +382,21 @@ async function connectWallet(auto = false) {
   while (retries < 3 && !success) {
     try {
       if (!auto) {
-        await window.ethereum.request({
+        await injectedProvider.request({
           method: 'eth_requestAccounts',
         });
       }
-      await switchToPolygon();
-      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await switchToPolygon(injectedProvider);
+      activeInjectedProvider = injectedProvider;
+      bindWalletEvents(injectedProvider);
+      provider = new ethers.providers.Web3Provider(injectedProvider);
       signer = provider.getSigner();
       account = await signer.getAddress();
       localStorage.setItem('aetheron_connected', account);
+      localStorage.setItem(
+        'aetheron_connected_wallet',
+        getWalletStorageKey(walletType, injectedProvider),
+      );
       aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
       stakingContract = new ethers.Contract(
         STAKING_ADDRESS,
@@ -133,14 +409,14 @@ async function connectWallet(auto = false) {
       if (accountAddress) {
         accountAddress.textContent = account.slice(0, 6) + '...' + account.slice(-4);
       }
-      const walletType = document.getElementById('walletType');
-      if (walletType) {
-        walletType.textContent = 'MetaMask';
+      const walletTypeElement = document.getElementById('walletType');
+      if (walletTypeElement) {
+        walletTypeElement.textContent = getInjectedProviderLabel(injectedProvider);
       }
       syncLegacyDashboard(account);
       dispatchWalletEvent('aetheron:wallet-connected', {
         account,
-        walletType: 'MetaMask',
+        walletType: getInjectedProviderLabel(injectedProvider),
       });
       await updateBalances();
       success = true;
@@ -175,9 +451,13 @@ window.updateDashboardBalances = updateBalances;
 
 async function autoReconnect() {
   const saved = localStorage.getItem('aetheron_connected');
+  const savedWalletType = localStorage.getItem('aetheron_connected_wallet');
 
   if (saved && window.ethereum) {
-    connectWallet(true);
+    connectWallet({
+      auto: true,
+      walletType: savedWalletType || 'browser',
+    });
   }
 }
 
@@ -221,7 +501,7 @@ function handleAccountsChanged(accounts) {
     syncLegacyDashboard(account);
     dispatchWalletEvent('aetheron:wallet-connected', {
       account,
-      walletType: 'MetaMask',
+      walletType: getInjectedProviderLabel(activeInjectedProvider || window.ethereum),
     });
     updateBalances();
     return;
@@ -232,7 +512,9 @@ function handleAccountsChanged(accounts) {
   signer = undefined;
   aethContract = undefined;
   stakingContract = undefined;
+  activeInjectedProvider = null;
   localStorage.removeItem('aetheron_connected');
+  localStorage.removeItem('aetheron_connected_wallet');
 
   const walletInfo = document.getElementById('walletInfo');
   if (walletInfo) {
@@ -249,18 +531,35 @@ function handleAccountsChanged(accounts) {
   dispatchWalletEvent('aetheron:wallet-disconnected');
 }
 
-function bindWalletEvents() {
-  if (walletEventsBound || !window.ethereum || typeof window.ethereum.on !== 'function') {
+function handleChainChanged() {
+  if (account) {
+    updateBalances();
+  }
+}
+
+function bindWalletEvents(injectedProvider = activeInjectedProvider || window.ethereum) {
+  if (!injectedProvider || typeof injectedProvider.on !== 'function') {
+    return;
+  }
+
+  if (
+    walletEventsProvider &&
+    walletEventsProvider !== injectedProvider &&
+    typeof walletEventsProvider.removeListener === 'function'
+  ) {
+    walletEventsProvider.removeListener('accountsChanged', handleAccountsChanged);
+    walletEventsProvider.removeListener('chainChanged', handleChainChanged);
+    walletEventsBound = false;
+  }
+
+  if (walletEventsBound && walletEventsProvider === injectedProvider) {
     return;
   }
 
   walletEventsBound = true;
-  window.ethereum.on('accountsChanged', handleAccountsChanged);
-  window.ethereum.on('chainChanged', () => {
-    if (account) {
-      updateBalances();
-    }
-  });
+  walletEventsProvider = injectedProvider;
+  injectedProvider.on('accountsChanged', handleAccountsChanged);
+  injectedProvider.on('chainChanged', handleChainChanged);
 }
 
 async function transferTokens() {
@@ -327,7 +626,7 @@ function initDashboardMain() {
 
   const connectBtn = document.getElementById('connectBtn');
   if (connectBtn)
-    connectBtn.addEventListener('click', () => connectWallet(false));
+    connectBtn.addEventListener('click', openWalletChooser);
 
   // Refresh balances
   const refreshBtn = document.getElementById('refreshBalancesBtn');
@@ -381,6 +680,7 @@ function initDashboardMain() {
   }
 }
 
+window.openWalletChooser = openWalletChooser;
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDashboardMain, {
     once: true,

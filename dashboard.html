@@ -310,6 +310,33 @@
       justify-content: flex-end;
     }
 
+    .wallet-chooser-modal {
+      width: min(420px, 92vw);
+    }
+
+    .wallet-chooser-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .wallet-choice-btn {
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+      min-height: 72px;
+      text-align: left;
+    }
+
+    .wallet-choice-btn span {
+      color: var(--text-secondary, #b8d6ff);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
     /* --- End UI/UX Polish Additions --- */
     /* Accessibility: Focus outline for keyboard navigation */
     * {
