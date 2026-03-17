@@ -35,7 +35,6 @@ jobs:
               echo "No test script found"
             fi
 workflows:
-  version: 2
   build_and_test:
     jobs:
       - build
