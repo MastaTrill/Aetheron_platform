@@ -924,14 +924,13 @@
     <!-- Home Screen Welcome/Overview -->
     <div class="card home-welcome-card prominent-welcome" aria-label="Welcome to Aetheron Platform" role="region"
       tabindex="0">
-      <h2 class="logo" tabindex="0">🌌 Welcome to Aetheron Platform</h2>
+      <h2 class="logo" tabindex="0">Welcome to Aetheron Platform</h2>
       <p class="home-overview">Your decentralized hub for token management, staking, analytics, and community
         engagement.<br>
         <span class="text-gray">Connect your wallet to unlock full features.</span>
       </p>
       <button id="onboardingBtnHome" class="btn onboarding-btn focus-visible" type="button"
-        aria-label="Start onboarding tour">❓ Start
-        Tour</button>
+        aria-label="Start onboarding tour">Start Tour</button>
       <div class="onboarding-info">
         <strong>New here?</strong> <span class="text-gray">Explore the dashboard features, connect your wallet, and join
           the community chat. Use <kbd>Tab</kbd> to navigate.</span>
@@ -939,7 +938,7 @@
     </div>
     <!-- Quick Stats Card -->
     <div class="card" id="quickStatsCard" role="region" aria-label="Quick Stats" tabindex="0">
-      <h2>🚀 Quick Stats</h2>
+      <h2>Quick Stats</h2>
       <div class="info-row"><span class="info-label">Wallet:</span> <span class="info-value" id="quickWallet">-</span>
       </div>
       <div class="info-row"><span class="info-label">AETH Balance:</span> <span class="info-value"
@@ -976,27 +975,27 @@
     </div>
     <!-- Header and Wallet Section -->
     <div class="header" aria-label="Aetheron Platform Header" role="banner" tabindex="0">
-      <h1 class="logo" tabindex="0">🌌 Aetheron Platform</h1>
+      <h1 class="logo" tabindex="0">Aetheron Platform</h1>
       <p>Decentralized Token & Staking Platform</p>
       <button id="themeToggleBtn" class="theme-toggle-btn focus-visible" aria-label="Toggle dark/light mode"
-        type="button"><span aria-label="Toggle dark/light mode" role="img">🌙</span></button>
+        type="button"><span aria-label="Toggle dark/light mode" role="img">Theme</span></button>
     </div>
     <div id="walletStatusBar" class="wallet-status-bar status-bar" aria-live="polite" role="status"
       aria-label="Wallet Status Bar" tabindex="0">
-      <span id="walletStatusIcon">🔴</span>
+      <span id="walletStatusIcon">Disconnected</span>
       <span id="walletStatusText">Wallet not connected</span>
     </div>
     <div class="wallet-section" aria-label="Wallet Section" role="region" tabindex="0">
       <button id="connectBtn" type="button" class="connect-btn focus-visible" aria-label="Connect Wallet"><span
-          aria-label="Connect Wallet" role="img">🔗</span> Connect Wallet</button>
+          aria-label="Connect Wallet" role="img">Connect</span> Wallet</button>
       <button type="button" class="btn buy-btn focus-visible" aria-label="Buy AETH"><span aria-label="Buy AETH"
-          role="img">🛒</span> Buy
+          role="img">Buy</span> Buy
         AETH</button>
       <button type="button" class="btn coinbase-btn focus-visible" aria-label="Pay with Crypto (Coinbase)"><span
-          aria-label="Pay with Crypto (Coinbase)" role="img">💳</span> Pay with Crypto
+          aria-label="Pay with Crypto (Coinbase)" role="img">Pay</span> Pay with Crypto
         (Coinbase)</button>
       <button id="refreshBalancesBtn" type="button" class="btn refresh-btn focus-visible"
-        aria-label="Refresh Balances"><span aria-label="Refresh Balances" role="img">🔄</span>
+        aria-label="Refresh Balances"><span aria-label="Refresh Balances" role="img">Refresh</span>
         Refresh</button>
       <div id="walletInfo" class="wallet-info" aria-live="polite" role="status">
         <div id="balanceLiveRegion" aria-live="assertive" class="sr-only">Balance updated.</div>
@@ -1005,7 +1004,7 @@
         <div class="info-row"><span class="info-label">Connected Account:</span> <span class="info-value"
             id="accountAddress">-</span>
           <button id="copyAccountBtn" class="btn-outline copy-account-btn" aria-label="Copy Account Address"
-            type="button">📋</button>
+            type="button">Copy</button>
         </div>
         <div class="info-row"><span class="info-label">Network:</span> <span class="info-value" id="networkName">Polygon
             Mainnet</span></div>
@@ -1018,12 +1017,12 @@
     <!-- Cards Grid and Features -->
     <div class="cards-grid">
       <div class="card" role="region" aria-label="DeFi Aggregator" tabindex="0">
-        <h2>🔄 DeFi Aggregator</h2>
+        <h2>DeFi Aggregator</h2>
         <p>Compare rates and swap tokens across multiple DEXs.</p>
         <button class="btn" id="openAggregatorBtn" type="button" aria-label="Open Aggregator">Open Aggregator</button>
       </div>
       <div class="card" role="region" aria-label="Staking Analytics" tabindex="0">
-        <h2>📊 Staking Analytics</h2>
+        <h2>Staking Analytics</h2>
         <canvas id="stakingAnalyticsChart" width="400" height="200" role="img"
           aria-label="Staking Analytics Chart"></canvas>
         <div id="stakingAnalyticsPlaceholder" class="text-gray" role="img" aria-label="Staking Analytics Placeholder">
@@ -1058,16 +1057,16 @@
       </div>
       <script src="dashboard-helpcenter-init.js"></script>
       <div class="card" role="region" aria-label="Transfer AETH" tabindex="0">
-        <h2>💰 Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
-            title="Send AETH tokens to another wallet. Enter the recipient address and amount, then click Transfer.">❔</span>
+        <h2>Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
+            title="Send AETH tokens to another wallet. Enter the recipient address and amount, then click Transfer.">?</span>
         </h2>
         <div class="input-group"><label for="transferTo">Recipient Address: <span class="help-icon" tabindex="0"
               aria-label="Help: Recipient Address"
-              title="Paste the wallet address you want to send AETH to.">❔</span></label> <input type="text"
+              title="Paste the wallet address you want to send AETH to.">?</span></label> <input type="text"
             id="transferTo" name="transferTo" placeholder="0x..." aria-label="Recipient Address"></div>
         <div class="input-group">
           <label for="transferAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Amount"
-              title="Enter the number of AETH tokens to transfer.">❔</span></label>
+              title="Enter the number of AETH tokens to transfer.">?</span></label>
           <input type="number" id="transferAmount" name="transferAmount" title="Amount of AETH to transfer"
             placeholder="Enter amount" aria-label="Amount to Transfer">
         </div>
@@ -1612,20 +1611,20 @@
     </section>
     <!-- --- END: New Feature Scaffolding --- -->
     <div class="card" aria-label="Stake AETH Section">
-      <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
-          title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
+      <h2>Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
+          title="Stake your AETH tokens in different pools to earn rewards.">?</span></h2>
       <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake"
         title="Processing stake...">
       </div>
       <form aria-label="Stake Form" onsubmit="return false;" role="form" tabindex="0">
         <div class="input-group">
           <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
-              title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
+              title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">?</span></label>
           <input type="number" id="poolId" name="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
         </div>
         <div class="input-group">
           <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
-              title="Enter the amount of AETH you want to stake.">❔</span></label>
+              title="Enter the amount of AETH you want to stake.">?</span></label>
           <input type="number" id="stakeAmount" name="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
         </div>
         <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
@@ -1649,7 +1648,7 @@
       <div id="transferStatus" class="status-message"></div>
     </div>
     <div class="card" aria-label="Contract Information">
-      <h2>📊 Contract Information</h2>
+      <h2>Contract Information</h2>
       <div class="info-row">
         <span class="info-label">AETH Token Address:</span>
         <span class="info-value font-08" aria-label="AETH Token Address"
@@ -1702,14 +1701,14 @@
     </div>
     <!-- Analytics/Engagement Chart Card -->
     <div class="card" id="analyticsCard">
-      <h2>📈 Engagement Analytics</h2>
+      <h2>Engagement Analytics</h2>
       <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
         title="Loading analytics data..."></div>
       <canvas id="engagementChart" class="chart-canvas"></canvas>
     </div>
     <!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
     <div class="card" id="treasuryCard">
-      <h2>💼 Treasury & Revenue</h2>
+      <h2>Treasury & Revenue</h2>
       <div class="info-row">
         <span class="info-label">Total Treasury:</span>
         <span class="info-value" id="treasuryTotal">- AETH</span>
@@ -1725,14 +1724,14 @@
       <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
     </div>
     <div class="card">
-      <h2>📊 Treasury & Revenue Chart</h2>
+      <h2>Treasury & Revenue Chart</h2>
       <canvas id="treasuryChart" class="chart-canvas"></canvas>
     </div>
     <!-- User Profile Section -->
     <div class="card" id="userProfileCard">
-      <h2>👤 User Profile</h2>
+      <h2>User Profile</h2>
       <div class="profile-flex">
-        <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
+        <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">User</div>
         <div>
           <div id="profileName" class="profile-name">Guest</div>
           <div id="profileEmail" class="profile-email">Not signed in</div>
@@ -1747,7 +1746,7 @@
           <h3>Edit Profile</h3>
           <form id="profileForm" aria-label="Profile Form" role="form" tabindex="0">
             <label for="avatarInput">Avatar Emoji</label>
-            <input id="avatarInput" name="avatarInput" maxlength="2" placeholder="🧑" aria-label="Avatar Emoji" />
+            <input id="avatarInput" name="avatarInput" maxlength="12" placeholder="User" aria-label="Avatar Emoji" />
             <label for="nicknameInput">Nickname</label>
             <input id="nicknameInput" name="nicknameInput" maxlength="24" placeholder="Your nickname"
               aria-label="Nickname" />
@@ -1768,11 +1767,11 @@
       <script src="dashboard-profilemodal-init.js?v=1.4.2" defer></script>
     </div>
     <!-- Onboarding Tour Button -->
-    <button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
+    <button id="onboardingBtn" class="btn onboarding-btn" type="button">Tour</button>
     <!-- Payment Status Modal -->
     <div id="paymentStatusModal" class="payment-status-modal-bg">
       <div class="payment-status-modal">
-        <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
+        <div id="paymentStatusIcon" class="payment-status-icon">Pay</div>
         <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
         <button class="btn-outline payment-status-close-btn" type="button">Close</button>
       </div>
@@ -1875,8 +1874,7 @@
       <!-- Existing content for the main dashboard -->
       <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options" role="region">
         <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect"
-          tabindex="0">🔗
-          WalletConnect</button>
+          tabindex="0">WalletConnect</button>
         <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google"
           tabindex="0">G
           <span class="google-btn-text">oogle</span></button>
