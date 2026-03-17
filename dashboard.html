@@ -12,9 +12,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
   <!-- FAQ Structured Data: JSON-LD -->
   <script type="application/ld+json" src="dashboard-faq-ldjson.js"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script src="dashboard-gtag-init.js"></script>
   <!-- Structured Data: JSON-LD -->
   <script type="application/ld+json" src="dashboard-ldjson.js"></script>
   <!-- SEO Meta Tags -->
@@ -338,50 +335,22 @@
     }
 
     /* --- End UI/UX Polish Additions --- */
-    /* Accessibility: Focus outline for keyboard navigation */
-    * {
-      .header h1 {
-        color: #00d4ff;
-        font-size: 2.5em;
-        margin-bottom: 10px;
-      }
-
-      .logo {
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .header p {
-        color: #fff;
-        font-size: 1.1em;
-      }
-
-      .wallet-section {
-        background: rgba(26, 26, 46, .9);
-        -webkit-backdrop-filter: blur(10px);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 212, 255, .2);
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 0 30px rgba(0, 212, 255, .1);
-        margin-bottom: 30px;
-      }
-
-      /* Nebula orange */
+    :root {
+      --primary: #00d4ff;
+      --secondary: #8a2be2;
+      --accent: #ff6b35;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
       --dark: #0a0a0a;
-      /* Deep space black */
       --light: #1a1a2e;
-      /* Dark blue-gray */
       --text: #ffffff;
       --card-bg: rgba(26, 26, 46, 0.8);
       --bg-gradient-start: #0a0a0a;
       --bg-gradient-mid: #1a1a2e;
       --bg-gradient-end: #16213e;
+      --border-main: rgba(0, 212, 255, 0.3);
+      --shadow-main: 0 0 24px rgba(0, 212, 255, 0.14);
     }
 
     [data-theme="light"] {
@@ -849,19 +818,6 @@
         z-index: 9999;
         left: 0;
         top: 2em;
-      }
-    </style>
-    <style>
-      /* Visually distinct focus outline for accessibility */
-      .focus-visible:focus,
-      button:focus,
-      a:focus,
-      input:focus,
-      select:focus {
-        outline: 3px solid #00d4ff !important;
-        outline-offset: 2px;
-        box-shadow: 0 0 0 2px #fff, 0 0 8px #00d4ff;
-        z-index: 2;
       }
     </style>
     <!-- Sentry Error Tracking (fill in your DSN) -->
