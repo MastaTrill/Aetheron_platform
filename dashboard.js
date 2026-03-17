@@ -49,6 +49,30 @@ function renderChartInstance(key, chartEl, config) {
   return window[key];
 }
 
+async function fetchGovernanceProposals(space = 'aetheron.eth') {
+  const response = await fetch('https://hub.snapshot.org/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
+      variables: { space },
+    }),
+  });
+
+  const result = await response.json();
+  return Array.isArray(result?.data?.proposals) ? result.data.proposals : [];
+}
+
+function formatGovernanceProposalSummary(proposals) {
+  let message = 'Active Governance Proposals:\n';
+
+  proposals.forEach((proposal) => {
+    message += `\n${proposal.title}\n${proposal.body}\nChoices: ${proposal.choices.join(', ')}\nStatus: ${proposal.state}\n`;
+  });
+
+  return message;
+}
+
 function normalizeDeFiRates(rawRates = {}) {
   const supplyApy = Number(rawRates.supplyApy ?? rawRates.supplyAPY ?? 0);
   const borrowApy = Number(rawRates.borrowApy ?? rawRates.borrowAPY ?? 0);
@@ -860,26 +884,13 @@ class AetheronDashboard {
         e.preventDefault();
         notifyDashboard('Loading governance proposals...', 'info');
         try {
-          const res = await fetch('https://hub.snapshot.org/graphql', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
-              variables: { space: 'aetheron.eth' }
-            })
-          });
-          const result = await res.json();
-          const proposals = result.data?.proposals || [];
+          const proposals = await fetchGovernanceProposals();
           if (proposals.length === 0) {
             notifyDashboard('No governance proposals found.', 'info');
             return;
           }
           // Render proposals in a modal (simple alert for now)
-          let msg = 'Active Governance Proposals:\n';
-          proposals.forEach(p => {
-            msg += `\n${p.title}\n${p.body}\nChoices: ${p.choices.join(', ')}\nStatus: ${p.state}\n`;
-          });
-          alert(msg);
+          alert(formatGovernanceProposalSummary(proposals));
         } catch (err) {
           notifyDashboard('Failed to load governance proposals.', 'error');
         }
@@ -1369,17 +1380,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function initGovernanceVoting() {
       const el = document.getElementById('governanceVotingPlaceholder');
       if (el) el.textContent = 'Loading governance proposals...';
-      fetch('https://hub.snapshot.org/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
-          variables: { space: 'aetheron.eth' }
-        })
-      })
-        .then(res => res.json())
-        .then(result => {
-          const proposals = result.data?.proposals || [];
+      fetchGovernanceProposals()
+        .then((proposals) => {
           if (el) el.textContent = proposals.length > 0 ? `Proposals loaded: ${proposals.length}` : 'No proposals found.';
           // TODO: Render proposals and enable voting
         })
