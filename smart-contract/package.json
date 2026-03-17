@@ -12,8 +12,8 @@
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
     "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
-    "verify:mumbai": "hardhat verify --network mumbai",
-    "verify:polygon": "hardhat verify --network polygon",
+    "verify:mumbai": "node scripts/verify-contracts.mjs mumbai",
+    "verify:polygon": "node scripts/verify-contracts.mjs polygon",
     "node": "hardhat node",
     "clean": "hardhat clean"
   },
@@ -30,9 +30,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.6",
     "@nomicfoundation/hardhat-node-test-runner": "^3.0.11",
-    "@nomicfoundation/hardhat-verify": "^3.0.12",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
-    "@openzeppelin/hardhat-upgrades": "4.0.0-alpha.0",
     "ethers": "^6.16.0",
     "hardhat": "^3.1.12"
   },

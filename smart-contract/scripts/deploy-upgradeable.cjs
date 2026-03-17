@@ -3,10 +3,11 @@
 
 async function main() {
   const hre = await import('hardhat');
-  const { upgrades } = await import('@openzeppelin/hardhat-upgrades');
+  const { deployUupsProxy, getImplementationAddress } = await import(
+    '../utils/uups.mjs'
+  );
   const connection = await hre.default.network.connect();
   const { ethers } = connection;
-  const upgradesApi = await upgrades(hre.default, connection);
 
   const [deployer] = await ethers.getSigners();
   console.log('Deploying contracts with the account:', deployer.address);
@@ -15,21 +16,15 @@ async function main() {
   const numConfirmationsRequired = 1; // TODO: Set required confirmations
 
   const Treasury = await ethers.getContractFactory('AetheronMultiSigTreasury');
-  const proxy = await upgradesApi.deployProxy(
-    Treasury,
-    [owners, numConfirmationsRequired],
-    {
-      initializer: 'initialize',
-      kind: 'uups',
-    },
-  );
-  await proxy.waitForDeployment();
-  const proxyAddress = await proxy.getAddress();
+  const { proxyAddress } = await deployUupsProxy(Treasury, [
+    owners,
+    numConfirmationsRequired,
+  ]);
 
   console.log('AetheronMultiSigTreasury (proxy) deployed to:', proxyAddress);
   console.log(
     'Implementation address:',
-    await upgradesApi.erc1967.getImplementationAddress(proxyAddress),
+    await getImplementationAddress(ethers.provider, proxyAddress),
   );
 }
 

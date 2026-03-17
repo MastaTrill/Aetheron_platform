@@ -1,11 +1,10 @@
 import assert from 'node:assert/strict';
 import { before, beforeEach, describe, it } from 'node:test';
 import hre from 'hardhat';
-import { upgrades } from '@openzeppelin/hardhat-upgrades';
+import { deployUupsProxy } from '../utils/uups.mjs';
 
 const connection = await hre.network.connect();
 const { ethers } = connection;
-const upgradesApi = await upgrades(hre, connection);
 
 describe('AetheronMultiSigTreasury', { concurrency: false }, function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
@@ -16,12 +15,10 @@ describe('AetheronMultiSigTreasury', { concurrency: false }, function () {
 
   beforeEach(async function () {
     MultiSig = await ethers.getContractFactory('AetheronMultiSigTreasury');
-    multiSig = await upgradesApi.deployProxy(
-      MultiSig,
-      [[owner.address, addr1.address, addr2.address], 2],
-      { initializer: 'initialize', kind: 'uups' },
-    );
-    await multiSig.waitForDeployment();
+    ({ instance: multiSig } = await deployUupsProxy(MultiSig, [
+      [owner.address, addr1.address, addr2.address],
+      2,
+    ]));
   });
 
   it('should deploy with the owner set', async function () {

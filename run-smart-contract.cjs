@@ -18,37 +18,43 @@ const env = {
 };
 
 let command;
-let args;
 let cwd = smartContractDir;
+let steps;
 
 switch (action) {
   case 'test':
-    command = 'npm';
-    args = ['test'];
+    steps = [{ command: 'npm', args: ['test'] }];
     break;
   case 'compile':
-    command = 'npx';
-    args = ['hardhat', 'compile'];
+    steps = [
+      { command: 'npx', args: ['hardhat', 'clean'] },
+      { command: 'npx', args: ['hardhat', 'compile'] },
+    ];
     break;
   case 'verify':
-    command = 'node';
-    args = ['scripts/verify-contracts.mjs'];
+    steps = [{ command: 'node', args: ['scripts/verify-contracts.mjs'] }];
     break;
   default:
     console.error(`Unknown action: ${action || '(missing)'}`);
     process.exit(1);
 }
 
-const result = spawnSync(command, args, {
-  cwd,
-  env,
-  stdio: 'inherit',
-  shell: true,
-});
+for (const step of steps) {
+  const result = spawnSync(step.command, step.args, {
+    cwd,
+    env,
+    stdio: 'inherit',
+    shell: true,
+  });
 
-if (result.error) {
-  console.error(result.error.message);
-  process.exit(1);
+  if (result.error) {
+    console.error(result.error.message);
+    process.exit(1);
+  }
+
+  if ((result.status ?? 1) !== 0) {
+    process.exit(result.status ?? 1);
+  }
 }
 
-process.exit(result.status ?? 1);
+process.exit(0);

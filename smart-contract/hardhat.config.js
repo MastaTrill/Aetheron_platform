@@ -1,12 +1,12 @@
 import { defineConfig } from 'hardhat/config';
+import hardhatEthers from '@nomicfoundation/hardhat-ethers';
 import hardhatNodeTestRunner from '@nomicfoundation/hardhat-node-test-runner';
-import hardhatUpgrades from '@openzeppelin/hardhat-upgrades';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const config = defineConfig({
-  plugins: [hardhatNodeTestRunner, hardhatUpgrades],
+  plugins: [hardhatEthers, hardhatNodeTestRunner],
   solidity: {
     version: '0.8.20',
     settings: {
@@ -48,14 +48,6 @@ const config = defineConfig({
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 1,
       gasPrice: 30000000000,
-    },
-  },
-  etherscan: {
-    apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY || '',
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || '',
-      mainnet: process.env.ETHERSCAN_API_KEY || '',
-      sepolia: process.env.ETHERSCAN_API_KEY || '',
     },
   },
   paths: {
