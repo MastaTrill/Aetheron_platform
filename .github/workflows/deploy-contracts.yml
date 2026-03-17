@@ -13,7 +13,7 @@ jobs:
       MUMBAI_RPC_URL: ${{ secrets.MUMBAI_RPC_URL }}
       SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -41,9 +41,9 @@ jobs:
       - name: Verify contracts on ${{ matrix.network }}
         run: |
           cd smart-contract
-          npx hardhat verify --network ${{ matrix.network }}
+          node scripts/verify-contracts.mjs ${{ matrix.network }}
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.network }}
           path: smart-contract/coverage
