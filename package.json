@@ -13,11 +13,11 @@
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",
-    "test:smart-contract": "cd smart-contract && npm test",
+    "test:smart-contract": "node run-smart-contract.cjs test",
     "deploy": "echo 'Deploy manually to GitHub Pages'",
-    "verify": "cd smart-contract && node scripts/verify-contracts.mjs",
-    "hardhat:compile": "npx hardhat compile",
-    "hardhat:test": "npx hardhat test"
+    "verify": "node run-smart-contract.cjs verify",
+    "hardhat:compile": "node run-smart-contract.cjs compile",
+    "hardhat:test": "node run-smart-contract.cjs test"
   },
   "keywords": [
     "blockchain",

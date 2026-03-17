@@ -1,7 +1,7 @@
 // dashboard.test.js
 // Basic unit tests for dashboard.js user settings, notifications, onboarding
 
-import { JSDOM } from 'jsdom';
+const { JSDOM } = require('jsdom');
 
 describe('Aetheron Dashboard', () => {
   let window, document;

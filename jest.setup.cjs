@@ -1,6 +1,11 @@
 // jest.setup.js
 // Setup file for Jest tests
 
+const { TextDecoder, TextEncoder } = require('util');
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 // Mock CSS imports
 require.extensions['.css'] = () => ({});
 
