@@ -30,6 +30,7 @@ let signer;
 let account;
 let aethContract;
 let stakingContract;
+let dashboardMainInitialized = false;
 
 function showGlobalLoading(show) {
   const spinner = document.getElementById('globalLoading');
@@ -51,13 +52,13 @@ function showToast(message, options = {}) {
 
 async function switchToPolygon() {
   try {
-    await ethereum.request({
+    await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: POLYGON_CHAIN_ID }],
     });
   } catch (err) {
     if (err.code === 4902) {
-      await ethereum.request({
+      await window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [POLYGON_PARAMS],
       });
@@ -71,13 +72,26 @@ async function connectWallet(auto = false) {
     return;
   }
 
+  if (
+    typeof window.ethers === 'undefined' ||
+    !window.ethers.providers ||
+    !window.ethers.providers.Web3Provider
+  ) {
+    if (!auto) {
+      showToast('Wallet libraries are still loading. Please try again.', {
+        type: 'error',
+      });
+    }
+    return;
+  }
+
   let retries = 0;
   let success = false;
   showGlobalLoading(true);
   while (retries < 3 && !success) {
     try {
       if (!auto) {
-        await ethereum.request({
+        await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
       }
@@ -92,9 +106,12 @@ async function connectWallet(auto = false) {
         STAKING_ABI,
         signer,
       );
-      document.getElementById('walletInfo').classList.add('active');
-      document.getElementById('accountAddress').textContent =
-        account.slice(0, 6) + '...' + account.slice(-4);
+      const walletInfo = document.getElementById('walletInfo');
+      if (walletInfo) walletInfo.classList.add('active');
+      const accountAddress = document.getElementById('accountAddress');
+      if (accountAddress) {
+        accountAddress.textContent = account.slice(0, 6) + '...' + account.slice(-4);
+      }
       await updateBalances();
       success = true;
     } catch (err) {
@@ -112,12 +129,17 @@ async function connectWallet(auto = false) {
       { type: 'error' },
     );
     // Fallback UI for stats
-    document.getElementById('ethBalance').textContent = '--';
-    document.getElementById('aethBalance').textContent = '--';
+    const ethBalance = document.getElementById('ethBalance');
+    const aethBalance = document.getElementById('aethBalance');
+    if (ethBalance) ethBalance.textContent = '--';
+    if (aethBalance) aethBalance.textContent = '--';
     // Add more fallback for holders, staked, market cap, health if needed
   }
   showGlobalLoading(false);
 }
+
+window.connectWallet = connectWallet;
+window.updateDashboardBalances = updateBalances;
 
 async function autoReconnect() {
   const saved = localStorage.getItem('aetheron_connected');
@@ -129,24 +151,34 @@ async function autoReconnect() {
 
 async function updateBalances() {
   if (!account) {
-    document.getElementById('ethBalance').textContent = '--';
-    document.getElementById('aethBalance').textContent = '--';
+    const ethBalance = document.getElementById('ethBalance');
+    const aethBalance = document.getElementById('aethBalance');
+    if (ethBalance) ethBalance.textContent = '--';
+    if (aethBalance) aethBalance.textContent = '--';
     return;
   }
   try {
     const matic = await provider.getBalance(account);
-    document.getElementById('ethBalance').textContent =
-      parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
+    const ethBalance = document.getElementById('ethBalance');
+    if (ethBalance) {
+      ethBalance.textContent =
+        parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
+    }
   } catch (err) {
-    document.getElementById('ethBalance').textContent = '--';
+    const ethBalance = document.getElementById('ethBalance');
+    if (ethBalance) ethBalance.textContent = '--';
     console.error('Failed to fetch MATIC balance:', err);
   }
   try {
     const aeth = await aethContract.balanceOf(account);
-    document.getElementById('aethBalance').textContent =
-      parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
+    const aethBalance = document.getElementById('aethBalance');
+    if (aethBalance) {
+      aethBalance.textContent =
+        parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
+    }
   } catch (err) {
-    document.getElementById('aethBalance').textContent = '--';
+    const aethBalance = document.getElementById('aethBalance');
+    if (aethBalance) aethBalance.textContent = '--';
     console.error('Failed to fetch AETH balance:', err);
   }
 }
@@ -204,7 +236,12 @@ async function stakeTokens() {
   showGlobalLoading(false);
 }
 
-window.addEventListener('load', () => {
+function initDashboardMain() {
+  if (dashboardMainInitialized) {
+    return;
+  }
+
+  dashboardMainInitialized = true;
   autoReconnect();
 
   const connectBtn = document.getElementById('connectBtn');
@@ -261,4 +298,12 @@ window.addEventListener('load', () => {
     hamburger.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', closeMenu);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboardMain, {
+    once: true,
+  });
+} else {
+  initDashboardMain();
+}
