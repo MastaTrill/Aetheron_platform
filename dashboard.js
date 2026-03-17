@@ -17,6 +17,25 @@ function setContainerHtml(container, html) {
   container.innerHTML = html;
 }
 
+function getDashboardApp() {
+  return window.dashboard || null;
+}
+
+function notifyDashboard(message, type = 'info') {
+  const dashboardApp = getDashboardApp();
+  if (dashboardApp && typeof dashboardApp.notify === 'function') {
+    dashboardApp.notify(message, type);
+    return;
+  }
+
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, { type });
+    return;
+  }
+
+  console[type === 'error' ? 'error' : 'log'](message);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -811,7 +830,7 @@ class AetheronDashboard {
     if (governanceBtn) {
       governanceBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        window.dashboard.notify('Loading governance proposals...', 'info');
+        notifyDashboard('Loading governance proposals...', 'info');
         try {
           const res = await fetch('https://hub.snapshot.org/graphql', {
             method: 'POST',
@@ -824,7 +843,7 @@ class AetheronDashboard {
           const result = await res.json();
           const proposals = result.data?.proposals || [];
           if (proposals.length === 0) {
-            window.dashboard.notify('No governance proposals found.', 'info');
+            notifyDashboard('No governance proposals found.', 'info');
             return;
           }
           // Render proposals in a modal (simple alert for now)
@@ -834,7 +853,7 @@ class AetheronDashboard {
           });
           alert(msg);
         } catch (err) {
-          window.dashboard.notify('Failed to load governance proposals.', 'error');
+          notifyDashboard('Failed to load governance proposals.', 'error');
         }
       });
     }
@@ -1258,12 +1277,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Wallet Portfolio Breakdown
   function initWalletPortfolio() {
     const el = document.getElementById('walletPortfolioPlaceholder');
+    const dashboardApp = getDashboardApp();
     if (el) el.textContent = 'Loading wallet portfolio...';
-    if (!window.dashboard.walletAccount) {
+    if (!dashboardApp?.walletAccount) {
       if (el) el.textContent = 'Connect your wallet to load your portfolio.';
       return;
     }
-    fetch('https://api.covalenthq.com/v1/137/address/' + window.dashboard.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
+    fetch('https://api.covalenthq.com/v1/137/address/' + dashboardApp.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
       .then(res => res.json())
       .then(data => {
         if (el) el.textContent = 'Portfolio loaded: ' + (data.data.items.length) + ' tokens.';
@@ -1328,7 +1348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('openGovernanceVoteBtn');
       if (btn) {
         btn.onclick = function () {
-          window.dashboard.notify('Governance voting portal opened', 'info');
+          notifyDashboard('Governance voting portal opened', 'info');
           // TODO: Open governance voting modal/portal
         };
       }
@@ -1362,13 +1382,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Real-Time Notifications
   function initNotifications() {
     const el = document.getElementById('notificationsPlaceholder');
+    const dashboardApp = getDashboardApp();
     if (el) el.textContent = 'Loading notifications...';
-    if (!window.dashboard.walletAccount) {
+    if (!dashboardApp?.walletAccount) {
       if (el) el.textContent = 'Connect your wallet to load notifications.';
       return;
     }
     // Example: Fetch notifications (stub)
-    fetch('https://api.mocknotifications.com/aetheron/' + window.dashboard.walletAccount)
+    fetch('https://api.mocknotifications.com/aetheron/' + dashboardApp.walletAccount)
       .then(res => res.json())
       .then(data => {
         if (el) el.textContent = 'Notifications loaded: ' + (data.notifications ? data.notifications.length : 0);
@@ -1456,16 +1477,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openLendingBtn');
         if (btn) {
           btn.onclick = async function () {
+            const dashboardApp = getDashboardApp();
+            if (!dashboardApp) {
+              notifyDashboard('Dashboard is still loading.', 'warning');
+              return;
+            }
             // Connect wallet if not connected
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
+            if (!dashboardApp.walletAccount) {
+              await dashboardApp.connectWallet('metamask');
             }
             // Example: Select protocol (Aave)
-            const rates = await window.dashboard.getDeFiRates('aave');
+            const rates = await dashboardApp.getDeFiRates('aave');
             if (rates) {
               el.textContent = `Aave Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
               // Example: Execute lend action
-              const success = await window.dashboard.executeDeFiAction('lend', { protocol: 'aave', amount: 100 });
+              const success = await dashboardApp.executeDeFiAction('lend', { protocol: 'aave', amount: 100 });
               if (success) el.textContent += '\nLending successful!';
             }
           };
@@ -1477,15 +1503,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openYieldFarmingBtn');
         if (btn) {
           btn.onclick = async function () {
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
+            const dashboardApp = getDashboardApp();
+            if (!dashboardApp) {
+              notifyDashboard('Dashboard is still loading.', 'warning');
+              return;
+            }
+
+            if (!dashboardApp.walletAccount) {
+              await dashboardApp.connectWallet('metamask');
             }
             // Example: Select protocol (Compound)
-            const rates = await window.dashboard.getDeFiRates('compound');
+            const rates = await dashboardApp.getDeFiRates('compound');
             if (rates) {
               el.textContent = `Compound Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
               // Example: Execute yield farming action
-              const success = await window.dashboard.executeDeFiAction('farm', { protocol: 'compound', amount: 50 });
+              const success = await dashboardApp.executeDeFiAction('farm', { protocol: 'compound', amount: 50 });
               if (success) el.textContent += '\nYield farming started!';
             }
           };
@@ -1497,15 +1529,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openCrossChainSwapBtn');
         if (btn) {
           btn.onclick = async function () {
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
+            const dashboardApp = getDashboardApp();
+            if (!dashboardApp) {
+              notifyDashboard('Dashboard is still loading.', 'warning');
+              return;
+            }
+
+            if (!dashboardApp.walletAccount) {
+              await dashboardApp.connectWallet('metamask');
             }
             // Example: Use 1inch for swap
-            const rates = await window.dashboard.getDeFiRates('1inch');
+            const rates = await dashboardApp.getDeFiRates('1inch');
             if (rates) {
               el.textContent = `1inch Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
               // Example: Execute swap action
-              const success = await window.dashboard.executeDeFiAction('swap', { protocol: '1inch', from: 'AETH', to: 'MATIC', amount: 25 });
+              const success = await dashboardApp.executeDeFiAction('swap', { protocol: '1inch', from: 'AETH', to: 'MATIC', amount: 25 });
               if (success) el.textContent += '\nSwap successful!';
             }
           };
@@ -1523,7 +1561,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('enableBiometricBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Biometric login enabled (stub)', 'success');
+            notifyDashboard('Biometric login enabled (stub)', 'success');
             // TODO: Integrate with WebAuthn or device biometrics
           };
         }
@@ -1534,7 +1572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('manageDeviceTrustBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Device trust management opened (stub)', 'info');
+            notifyDashboard('Device trust management opened (stub)', 'info');
             // TODO: Show/manage trusted devices
           };
         }
@@ -1545,7 +1583,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('enableAntiPhishingBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Anti-phishing protection enabled (stub)', 'success');
+            notifyDashboard('Anti-phishing protection enabled (stub)', 'success');
             // TODO: Integrate anti-phishing features
           };
         }
@@ -1562,7 +1600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openLiveChatBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Live chat opened (stub)', 'info');
+            notifyDashboard('Live chat opened (stub)', 'info');
             // TODO: Integrate chat widget (Discord, Telegram, custom)
           };
         }
@@ -1604,7 +1642,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (el) {
                   el.textContent = `Welcome, ${name}!`;
                 }
-                window.dashboard.notify('Profile updated!', 'success');
+                notifyDashboard('Profile updated!', 'success');
                 modal.remove();
                 void email;
                 // TODO: Persist profile changes to backend/localStorage
@@ -1619,7 +1657,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('viewLeaderboardBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Leaderboard viewed (stub)', 'info');
+            notifyDashboard('Leaderboard viewed (stub)', 'info');
             // TODO: Show leaderboard modal
           };
         }
@@ -1636,7 +1674,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('runPredictiveTrendsBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Predictive trends analysis started (stub)', 'info');
+            notifyDashboard('Predictive trends analysis started (stub)', 'info');
             // TODO: Run AI model and render chart
           };
         }
@@ -1647,7 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('runAnomalyDetectionBtn');
         if (btn) {
           btn.onclick = function () {
-            window.dashboard.notify('Anomaly detection started (stub)', 'warning');
+            notifyDashboard('Anomaly detection started (stub)', 'warning');
             // TODO: Run anomaly detection model and render chart
           };
         }
@@ -1726,7 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rtlToggle = document.getElementById('rtlToggle');
         if (langSelector) {
           langSelector.onchange = function () {
-            window.dashboard.notify('Language changed to ' + langSelector.value, 'info');
+            notifyDashboard('Language changed to ' + langSelector.value, 'info');
             localStorage.setItem('aetheron-language', langSelector.value);
             // TODO: Integrate with i18next or other i18n library
           };
@@ -1738,7 +1776,7 @@ document.addEventListener('DOMContentLoaded', () => {
           rtlToggle.onchange = function () {
             const enabled = rtlToggle.checked;
             document.documentElement.dir = enabled ? 'rtl' : 'ltr';
-            window.dashboard.notify('RTL mode ' + (enabled ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('RTL mode ' + (enabled ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-rtl', enabled ? '1' : '0');
             // TODO: Persist RTL setting and update layout
           };
@@ -1759,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dyslexiaToggle = document.getElementById('dyslexiaToggle');
         if (srToggle) {
           srToggle.onchange = function () {
-            window.dashboard.notify('Screen reader optimization ' + (srToggle.checked ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('Screen reader optimization ' + (srToggle.checked ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-screenreader', srToggle.checked ? '1' : '0');
             // TODO: Apply ARIA roles, landmarks, and focus management
           };
@@ -1770,7 +1808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dyslexiaToggle) {
           dyslexiaToggle.onchange = function () {
             document.body.classList.toggle('dyslexia-font', dyslexiaToggle.checked);
-            window.dashboard.notify('Dyslexia-friendly mode ' + (dyslexiaToggle.checked ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('Dyslexia-friendly mode ' + (dyslexiaToggle.checked ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-dyslexia', dyslexiaToggle.checked ? '1' : '0');
             // TODO: Apply OpenDyslexic or similar font
           };
@@ -1792,7 +1830,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inAppToggle = document.getElementById('inAppToggle');
         if (pushToggle) {
           pushToggle.onchange = function () {
-            window.dashboard.notify('Push notifications ' + (pushToggle.checked ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('Push notifications ' + (pushToggle.checked ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-push', pushToggle.checked ? '1' : '0');
             // TODO: Integrate with push notification service
           };
@@ -1802,7 +1840,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (emailToggle) {
           emailToggle.onchange = function () {
-            window.dashboard.notify('Email notifications ' + (emailToggle.checked ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('Email notifications ' + (emailToggle.checked ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-email', emailToggle.checked ? '1' : '0');
             // TODO: Integrate with email notification service
           };
@@ -1812,7 +1850,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (inAppToggle) {
           inAppToggle.onchange = function () {
-            window.dashboard.notify('In-app notifications ' + (inAppToggle.checked ? 'enabled' : 'disabled'), 'info');
+            notifyDashboard('In-app notifications ' + (inAppToggle.checked ? 'enabled' : 'disabled'), 'info');
             localStorage.setItem('aetheron-inapp', inAppToggle.checked ? '1' : '0');
             // TODO: Integrate with in-app notification system
           };
@@ -1832,13 +1870,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const contractBtn = document.getElementById('openContractPlaygroundBtn');
         if (apiBtn) {
           apiBtn.onclick = function () {
-            window.dashboard.notify('API Explorer opened (stub)', 'info');
+            notifyDashboard('API Explorer opened (stub)', 'info');
             // TODO: Launch API explorer modal
           };
         }
         if (contractBtn) {
           contractBtn.onclick = function () {
-            window.dashboard.notify('Contract Playground opened (stub)', 'info');
+            notifyDashboard('Contract Playground opened (stub)', 'info');
             // TODO: Launch smart contract playground modal
           };
         }
