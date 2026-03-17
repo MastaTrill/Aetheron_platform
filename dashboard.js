@@ -103,6 +103,21 @@ function initStaticPlaceholder(placeholderId, text) {
   setElementText(placeholderId, text);
 }
 
+async function withWidgetLoading(element, loadingText, errorText, task) {
+  if (element) {
+    element.textContent = loadingText;
+  }
+
+  try {
+    return await task();
+  } catch (error) {
+    if (element) {
+      element.textContent = errorText;
+    }
+    return null;
+  }
+}
+
 function createDashboardModal(contentHtml) {
   const modal = document.createElement('div');
   modal.className = 'modal';
@@ -1447,14 +1462,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function initWalletPortfolio() {
     const el = document.getElementById('walletPortfolioPlaceholder');
     const dashboardApp = getDashboardApp();
-    if (el) el.textContent = 'Loading wallet portfolio...';
     if (!dashboardApp?.walletAccount) {
       if (el) el.textContent = 'Connect your wallet to load your portfolio.';
       return;
     }
-    fetch('https://api.covalenthq.com/v1/137/address/' + dashboardApp.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
-      .then(res => res.json())
-      .then(data => {
+    void withWidgetLoading(
+      el,
+      'Loading wallet portfolio...',
+      'Failed to load portfolio.',
+      async () => {
+        const response = await fetch(
+          'https://api.covalenthq.com/v1/137/address/' +
+            dashboardApp.walletAccount +
+            '/balances_v2/?key=IlX80zDtd-GkH015Waioo',
+        );
+        const data = await response.json();
         const items = Array.isArray(data?.data?.items) ? data.data.items : [];
         if (el) el.textContent = 'Portfolio loaded: ' + items.length + ' tokens.';
         // Render Chart.js pie chart with token balances
@@ -1471,8 +1493,8 @@ document.addEventListener('DOMContentLoaded', () => {
             options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
           });
         }
-      })
-      .catch(() => { if (el) el.textContent = 'Failed to load portfolio.'; });
+      },
+    );
   }
 
     // 4. NFT Analytics
@@ -1499,13 +1521,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Governance Voting
     function initGovernanceVoting() {
       const el = document.getElementById('governanceVotingPlaceholder');
-      if (el) el.textContent = 'Loading governance proposals...';
-      fetchGovernanceProposals()
-        .then((proposals) => {
+      void withWidgetLoading(
+        el,
+        'Loading governance proposals...',
+        'Failed to load proposals.',
+        async () => {
+          const proposals = await fetchGovernanceProposals();
           if (el) el.textContent = proposals.length > 0 ? `Proposals loaded: ${proposals.length}` : 'No proposals found.';
           // TODO: Render proposals and enable voting
-        })
-        .catch(() => { if (el) el.textContent = 'Failed to load proposals.'; });
+        },
+      );
       const btn = document.getElementById('openGovernanceVoteBtn');
       if (btn) {
         btn.onclick = function () {
@@ -1518,10 +1543,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Portfolio Tracker
     function initPortfolioTracker() {
       const el = document.getElementById('portfolioTrackerPlaceholder');
-      if (el) el.textContent = 'Loading portfolio tracker...';
-      fetch('https://api.coingecko.com/api/v3/coins/aetheron/market_chart?vs_currency=usd&days=7')
-        .then(res => res.json())
-        .then(data => {
+      void withWidgetLoading(
+        el,
+        'Loading portfolio tracker...',
+        'Failed to load performance.',
+        async () => {
+          const response = await fetch(
+            'https://api.coingecko.com/api/v3/coins/aetheron/market_chart?vs_currency=usd&days=7',
+          );
+          const data = await response.json();
           const prices = Array.isArray(data?.prices) ? data.prices : [];
           if (el) el.textContent = 'Performance loaded.';
           // Render Chart.js line chart
@@ -1538,27 +1568,32 @@ document.addEventListener('DOMContentLoaded', () => {
               options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
           }
-        })
-        .catch(() => { if (el) el.textContent = 'Failed to load performance.'; });
+        },
+      );
     }
   // 2. Real-Time Notifications
   function initNotifications() {
     const el = document.getElementById('notificationsPlaceholder');
     const dashboardApp = getDashboardApp();
-    if (el) el.textContent = 'Loading notifications...';
     if (!dashboardApp?.walletAccount) {
       if (el) el.textContent = 'Connect your wallet to load notifications.';
       return;
     }
-    // Example: Fetch notifications (stub)
-    fetch('https://api.mocknotifications.com/aetheron/' + dashboardApp.walletAccount)
-      .then(res => res.json())
-      .then(data => {
+    void withWidgetLoading(
+      el,
+      'Loading notifications...',
+      'Failed to load notifications.',
+      async () => {
+        const response = await fetch(
+          'https://api.mocknotifications.com/aetheron/' +
+            dashboardApp.walletAccount,
+        );
+        const data = await response.json();
         const notifications = Array.isArray(data?.notifications) ? data.notifications : [];
         if (el) el.textContent = 'Notifications loaded: ' + notifications.length;
         // TODO: Render notifications
-      })
-      .catch(() => { if (el) el.textContent = 'Failed to load notifications.'; });
+      },
+    );
   }
   // 3. Theme Auto-Switch
   function initThemeSettings() {
