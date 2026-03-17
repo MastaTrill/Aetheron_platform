@@ -1,0 +1,49 @@
+name: Deploy Smart Contracts
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        network: [polygon, mumbai, sepolia]
+    env:
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+      MUMBAI_RPC_URL: ${{ secrets.MUMBAI_RPC_URL }}
+      SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: |
+          cd smart-contract
+          npm install
+      - name: Run tests
+        run: |
+          cd smart-contract
+          npm test
+      - name: Run coverage
+        run: |
+          cd smart-contract
+          npm run test:coverage
+      - name: Compile contracts
+        run: |
+          cd smart-contract
+          npm run compile
+      - name: Deploy contracts to ${{ matrix.network }}
+        run: |
+          cd smart-contract
+          npx hardhat run scripts/deploy.mjs --network ${{ matrix.network }}
+      - name: Verify contracts on ${{ matrix.network }}
+        run: |
+          cd smart-contract
+          npx hardhat verify --network ${{ matrix.network }}
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-${{ matrix.network }}
+          path: smart-contract/coverage

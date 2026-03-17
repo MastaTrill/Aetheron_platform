@@ -1,0 +1,37 @@
+🎉 WELCOME TO AETHERON! 🎉
+
+We're excited to have you join our community!
+
+🌟 **What is Aetheron?**
+A next-generation DeFi platform on Polygon featuring:
+- Multi-pool staking (8-18% APY)
+- ERC-20 AETH token
+- DEX integration
+- Community governance
+
+💰 **How to get started:**
+1. Visit: https://aetheronplatform.github.io
+2. Add AETH to MetaMask
+3. Start staking for rewards
+
+📱 **Join our ecosystem:**
+Telegram: https://t.me/aetheronplatform
+Twitter: https://twitter.com/aetheronplatform
+
+Stay tuned for exciting announcements! 🚀
+
+---
+
+**📌 Quick Links:**
+• **Staking Dashboard**: https://aetheronplatform.github.io
+• **Contract Address**: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+• **DEX Trading**: https://quickswap.exchange/
+• **Analytics**: https://dexscreener.com/
+
+**💡 Pro Tips:**
+• Use #support for technical questions
+• Check #announcements for important updates
+• Participate in #trading-competition for rewards
+• DYOR and never invest more than you can afford to lose
+
+Welcome aboard! Let's build the future of DeFi together! 🌟

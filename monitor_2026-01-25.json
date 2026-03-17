@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-01-25T05:25:28.072Z",
+  "startTime": 1769318589131,
+  "transactions": {
+    "total": 2002,
+    "transfers": 0,
+    "stakes": 0,
+    "unstakes": 0,
+    "claims": 0
+  },
+  "users": [],
+  "volume": {
+    "aeth": 0,
+    "usd": 0
+  },
+  "tvl": 150000000,
+  "lastUpdate": 1769318710329
+}

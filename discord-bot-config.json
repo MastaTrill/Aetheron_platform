@@ -1,0 +1,112 @@
+{
+  "mee6": {
+    "name": "MEE6",
+    "invite_url": "https://mee6.xyz/invite",
+    "configuration": {
+      "moderation": {
+        "enabled": true,
+        "auto_mod": {
+          "spam_protection": true,
+          "link_filtering": true,
+          "word_filter": [
+            "scam",
+            "rug",
+            "dump",
+            "pump"
+          ],
+          "caps_filter": true,
+          "emoji_filter": false
+        },
+        "mute_role": "Muted",
+        "log_channel": "mod-logs"
+      },
+      "leveling": {
+        "enabled": true,
+        "xp_rate": "medium",
+        "level_up_messages": true,
+        "level_up_channel": "general",
+        "rewards": [
+          {
+            "level": 5,
+            "role": "Staking Champion"
+          },
+          {
+            "level": 10,
+            "role": "Community Helper"
+          }
+        ]
+      },
+      "custom_commands": [
+        {
+          "command": "!website",
+          "response": "🌐 Visit Aetheron: https://aetheronplatform.github.io"
+        },
+        {
+          "command": "!contract",
+          "response": "📋 AETH Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+        },
+        {
+          "command": "!staking",
+          "response": "💰 Start staking at: https://aetheronplatform.github.io"
+        },
+        {
+          "command": "!rules",
+          "response": "📖 Check #rules for community guidelines"
+        }
+      ]
+    }
+  },
+  "probot": {
+    "name": "ProBot",
+    "invite_url": "https://probot.io/invite",
+    "configuration": {
+      "welcome_messages": {
+        "enabled": true,
+        "channel": "general",
+        "message": "🎉 Welcome {user} to Aetheron Community! Please read #rules and introduce yourself in #introductions.",
+        "embed": {
+          "title": "Welcome to Aetheron! 🌟",
+          "description": "We're excited to have you join our DeFi community!",
+          "color": "#00ff00",
+          "fields": [
+            {
+              "name": "Get Started",
+              "value": "Visit https://aetheronplatform.github.io to start staking!"
+            },
+            {
+              "name": "Need Help?",
+              "value": "Check #faq or ask in #support"
+            }
+          ]
+        }
+      },
+      "auto_mod": {
+        "enabled": true,
+        "anti_spam": true,
+        "anti_raid": true,
+        "max_mentions": 5,
+        "max_emojis": 10
+      },
+      "music": {
+        "enabled": true,
+        "dj_role": "DJ",
+        "max_queue": 50
+      }
+    }
+  },
+  "epic_rpg": {
+    "name": "EPIC RPG",
+    "invite_url": "https://epic-rpg.com/invite",
+    "configuration": {
+      "enabled": true,
+      "prefix": "rpg",
+      "adventure_channel": "gaming",
+      "leaderboard_channel": "leaderboards",
+      "allowed_channels": [
+        "gaming",
+        "off-topic",
+        "memes"
+      ]
+    }
+  }
+}

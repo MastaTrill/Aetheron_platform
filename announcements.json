@@ -1,0 +1,16 @@
+{
+  "announcements": [
+    {
+      "title": "Aetheron Updates",
+      "text": "CoinMarketCap application submitted. Watch for listing updates.",
+      "linkText": "Track Progress",
+      "linkHref": "CMC_APPLICATION_READY.md"
+    },
+    {
+      "title": "Referral Season",
+      "text": "Top referrers unlock bonus multipliers and leaderboard rewards.",
+      "linkText": "View Referrals",
+      "linkHref": "referral.html"
+    }
+  ]
+}

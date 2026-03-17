@@ -1,0 +1,45 @@
+{
+  "updated": "2026-02-08T00:00:00Z",
+  "entries": [
+    {
+      "rank": 1,
+      "address": "0xA4B9...9F21",
+      "referrals": 42,
+      "reward": "+12,500 AETH",
+      "badge": "Elite",
+      "badgeIcon": "crown"
+    },
+    {
+      "rank": 2,
+      "address": "0xB22C...104D",
+      "referrals": 31,
+      "reward": "+9,800 AETH",
+      "badge": "Pro",
+      "badgeIcon": "star"
+    },
+    {
+      "rank": 3,
+      "address": "0x7E11...4C8A",
+      "referrals": 24,
+      "reward": "+7,250 AETH",
+      "badge": "Rising",
+      "badgeIcon": "gem"
+    },
+    {
+      "rank": 4,
+      "address": "0xF00D...A0B1",
+      "referrals": 18,
+      "reward": "+5,400 AETH",
+      "badge": "Growth",
+      "badgeIcon": "bolt"
+    },
+    {
+      "rank": 5,
+      "address": "0x9C77...88EA",
+      "referrals": 12,
+      "reward": "+3,250 AETH",
+      "badge": "Starter",
+      "badgeIcon": "seedling"
+    }
+  ]
+}

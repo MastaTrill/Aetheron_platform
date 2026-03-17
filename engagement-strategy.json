@@ -1,0 +1,50 @@
+{
+  "onboarding": {
+    "welcomeMessage": "Welcome to Aetheron! 🚀\\n\\nPlease read our #rules and introduce yourself in #general.\\n\\nNeed help? Visit #support or ask in #general.",
+    "starterGuide": "New here? Check out:\\n• #faq for common questions\\n• #announcements for updates\\n• Our dashboard: https://mastatrill.github.io/aetheron-platform",
+    "verification": "Verify your account to access all channels and start staking!"
+  },
+  "retention": {
+    "daily": [
+      "Market updates",
+      "Staking reminders",
+      "Community highlights"
+    ],
+    "weekly": [
+      "AMA sessions",
+      "Progress reports",
+      "Fun activities"
+    ],
+    "monthly": [
+      "Competitions",
+      "Giveaways",
+      "Achievement celebrations"
+    ]
+  },
+  "growth": {
+    "referral": "Earn AETH rewards by inviting friends!",
+    "achievements": [
+      "First stake",
+      "Community helper",
+      "Trading champion"
+    ],
+    "gamification": [
+      "XP system",
+      "Badges",
+      "Leaderboards"
+    ]
+  },
+  "support": {
+    "responseTime": "< 2 hours for urgent issues",
+    "channels": [
+      "Discord #support",
+      "Telegram support",
+      "GitHub issues"
+    ],
+    "resources": [
+      "FAQ",
+      "Tutorials",
+      "Video guides"
+    ]
+  }
+}

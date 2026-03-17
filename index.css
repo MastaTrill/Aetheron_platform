@@ -1,0 +1,309 @@
+/* Price action row for Buy/Chart buttons */
+.price-action-row {
+  margin-top: 0.5em;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.buy-quickswap-btn {
+  font-size: 1em;
+  padding: 0.5em 1.2em;
+  font-weight: 600;
+}
+.dexscreener-btn {
+  font-size: 0.95em;
+  padding: 0.4em 1em;
+  font-weight: 500;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+}
+/* Ensure .btn-info overrides .btn styles for DexScreener */
+.btn-info.dexscreener-btn:hover {
+  background: #334155;
+  color: #fff;
+}
+/* Subtle animated starfield background (canvas already present) */
+#starfield-canvas {
+  animation: starfieldMove 60s linear infinite;
+}
+@keyframes starfieldMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100vw 100vh;
+  }
+}
+
+/* Card shadow and hover depth */
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.18),
+    0 1.5px 8px rgba(0, 212, 255, 0.08);
+  margin-bottom: 32px;
+  padding: 32px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition:
+    box-shadow 0.3s,
+    transform 0.2s;
+}
+.card:hover {
+  box-shadow:
+    0 8px 48px rgba(0, 212, 255, 0.18),
+    0 2px 16px rgba(0, 0, 0, 0.18);
+  transform: translateY(-6px) scale(1.02);
+}
+
+/* Button styling improvements */
+.btn,
+button {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.08);
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.btn:hover,
+button:hover {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.15);
+  transform: scale(1.04);
+}
+.btn i,
+button i {
+  font-size: 1.3em;
+  margin-right: 8px;
+}
+
+/* Section spacing for readability */
+.features-section,
+.stats-grid,
+.main-grid,
+.newsletter-section,
+.faq-section {
+  margin-bottom: 48px;
+}
+.card:not(:last-child) {
+  margin-bottom: 40px;
+}
+
+/* Branded accent highlights */
+.primary-link {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.primary-link:hover {
+  color: var(--primary);
+}
+
+/* Modal transitions */
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-content {
+  border-radius: 18px;
+  box-shadow: 0 8px 48px rgba(0, 212, 255, 0.18);
+  background: var(--card-bg);
+  padding: 32px;
+  transition: transform 0.3s;
+  transform: scale(0.98);
+}
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .container {
+    padding: 16px 8px;
+  }
+}
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card {
+    padding: 16px;
+  }
+}
+/* Embedded CSS from index.html moved here for best practices */
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  background: none;
+  color: var(--text);
+  min-height: 100vh;
+  transition:
+    background 0.3s,
+    color 0.3s;
+  color: var(--text);
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  z-index: -1;
+}
+@keyframes twinkle {
+  0% {
+    filter: brightness(0.3);
+  }
+  100% {
+    filter: brightness(0.8);
+  }
+}
+/* ...rest of embedded CSS from index.html... */
+/* index.css - moved inline styles from index.html */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 212, 255, 0.3);
+}
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 212, 255, 0.3);
+}
+:root {
+  --primary: #00d4ff;
+  --secondary: #8a2be2;
+  --accent: #ff6b35;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #0a0a0a;
+  --light: #1a1a2e;
+  --text: #ffffff;
+  --card-bg: rgba(26, 26, 46, 0.8);
+  --bg-gradient-start: #0a0a0a;
+  --bg-gradient-mid: #1a1a2e;
+  --bg-gradient-end: #16213e;
+}
+[data-theme='light'] {
+  --primary: #0099cc;
+  --secondary: #6b21a8;
+  --accent: #ea580c;
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --dark: #f8fafc;
+  --light: #e2e8f0;
+  --text: #1e293b;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --bg-gradient-start: #f1f5f9;
+  --bg-gradient-mid: #e2e8f0;
+  --bg-gradient-end: #cbd5e1;
+}
+/* ...existing styles from index.html... */
+
+/* Starfield Canvas Background Fix */
+#starfield-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -99999;
+  display: block;
+  background: transparent;
+}
+body,
+html {
+  min-height: 100vh;
+}
+
+body > *:not(#starfield-canvas) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Accessibility: Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  background: #000;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 8px;
+  outline: 2px solid var(--primary);
+}
+
+/* Restored styles previously inline */
+.btn-coinbase {
+  background: linear-gradient(135deg, #0052ff, #00d4ff);
+  margin-top: 10px;
+}
+
+/* Prevent background scroll when modal is open */
+html.no-scroll,
+body.no-scroll {
+  overflow: hidden !important;
+}

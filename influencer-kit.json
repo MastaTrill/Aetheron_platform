@@ -1,0 +1,81 @@
+{
+  "tiers": {
+    "nano": {
+      "followers": "1K-10K",
+      "rate": "$50-200",
+      "deliverables": [
+        "1 tweet",
+        "story mention"
+      ]
+    },
+    "micro": {
+      "followers": "10K-100K",
+      "rate": "$200-1,000",
+      "deliverables": [
+        "2-3 tweets",
+        "story/feature",
+        "discord shoutout"
+      ]
+    },
+    "macro": {
+      "followers": "100K-500K",
+      "rate": "$1,000-5,000",
+      "deliverables": [
+        "dedicated video",
+        "multiple posts",
+        "AMA appearance"
+      ]
+    },
+    "mega": {
+      "followers": "500K+",
+      "rate": "$5,000+",
+      "deliverables": [
+        "full review video",
+        "partnership deal",
+        "ambassador role"
+      ]
+    }
+  },
+  "content": {
+    "videoScript": "Hey everyone! Today I'm checking out Aetheron, a new DeFi platform on Polygon! 🚀\n\nWhat makes Aetheron special:\n- Easy-to-use staking with great APYs (8-18%)\n- Built-in token tax system\n- Already listed on QuickSwap\n- Active community and development\n\nLet me show you how to get started...\n\n[Demo: Connect wallet, stake tokens, check rewards]\n\nIf you're into DeFi, definitely check out Aetheron! Link in bio.\n\n#DeFi #Polygon #Aetheron #Crypto",
+    "keyPoints": [
+      "User-friendly DeFi platform",
+      "Competitive staking rewards",
+      "Already live with real users",
+      "Strong community focus",
+      "Clear roadmap and development"
+    ],
+    "assets": [
+      "Logo and branding",
+      "Screenshots and demo videos",
+      "Token contract address",
+      "Social media handles",
+      "Press kit and documentation"
+    ]
+  },
+  "outreach": {
+    "platforms": [
+      "Twitter",
+      "YouTube",
+      "TikTok",
+      "Discord"
+    ],
+    "targeting": [
+      "DeFi educators",
+      "Crypto YouTubers",
+      "Trading influencers"
+    ],
+    "messaging": "Personalized outreach with platform value proposition",
+    "followUp": "Thank you emails, exclusive access, community invites"
+  },
+  "tracking": {
+    "metrics": [
+      "Views",
+      "Engagement",
+      "Traffic",
+      "Conversions"
+    ],
+    "reporting": "Weekly performance reports",
+    "roi": "Track cost per acquisition and user lifetime value"
+  }
+}

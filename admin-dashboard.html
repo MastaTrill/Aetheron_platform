@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+  <title>Aetheron Admin Dashboard</title>
+  <link rel="stylesheet" href="./admin-dashboard.css">
+  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body><canvas id="space-bg" class="canvas-bg"></canvas>
+  <header class="header-gradient">
+    <div class="header-content">
+      <h1 class="orbitron">🌌 Aetheron Control Center</h1>
+      <p class="share-tech">Decentralized Space Exploration Platform</p>
+    </div>
+  </header>
+  <nav id="sidebar" class="sidebar-custom">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">🚀 Aetheron</h3>
+    </div>
+    <ul class="nav-menu">
+      <li><a href="#dashboard" class="sidebar-link nav-link active">📊 Dashboard</a></li>
+      <li><a href="#payments" class="sidebar-link nav-link">💸 Payments</a></li>
+      <li><a href="#users" class="sidebar-link nav-link">👥 Users</a></li>
+      <li><a href="#missions" class="sidebar-link nav-link">🎯 Missions</a></li>
+      <li><a href="#blockchain" class="sidebar-link nav-link">⛓️ Blockchain</a></li>
+      <li><a href="#analytics" class="sidebar-link nav-link">📈 Analytics</a></li>
+    </ul>
+  </nav>
+  <main id="main-content" class="main-content main-bg">
+    <section id="dashboard" class="content-section active">
+      <header>
+        <h2>🌌 Welcome to Aetheron Platform</h2>
+      </header>
+      <div class="stats-grid">
+        <article class="stat-card">
+          <h3>Total Users</h3>
+          <p class="stat-number">1,234</p>
+        </article>
+        <article class="stat-card">
+          <h3>Active Missions</h3>
+          <p class="stat-number">56</p>
+        </article>
+        <article class="stat-card">
+          <h3>AETH Staked</h3>
+          <p class="stat-number">892,345</p>
+        </article>
+        <article class="stat-card">
+          <h3>Network Health</h3>
+          <p class="stat-number">99.9%</p>
+        </article>
+      </div>
+      <article class="welcome-message">
+        <h3>🚀 Platform Status: LIVE</h3>
+        <p>Welcome to the Aetheron Admin Dashboard. This is a revolutionary blockchain and space exploration platform.
+        </p>
+        <ul>
+          <li>✅ Admin Dashboard - Fully Functional</li>
+          <li>✅ Mobile App - React Native Ready</li>
+          <li>✅ Backend API - Express.js Server</li>
+          <li>✅ Smart Contracts - Solidity Ready</li>
+          <li>✅ Professional Structure - Production Ready</li>
+        </ul>
+      </article>
+    </section>
+    <section id="payments" class="content-section">
+      <header>
+        <h2>💸 Payment Management</h2>
+      </header>
+      <div class="payments-table-container">
+        <table class="payments-table">
+          <thead>
+            <tr class="payments-table-header-row">
+              <th>User</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Receipt</th>
+              <th>Gateway</th>
+            </tr>
+          </thead>
+          <tbody id="adminPaymentTableBody">
+            <tr>
+              <td colspan="6">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <div id="login-modal" class="login-modal">
+      <form id="login-form" class="login-form">
+        <h2 class="login-title">Admin Login</h2>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+        <div id="login-error" class="login-error"></div>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Aetheron Platform. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="global-announcements.js"></script>
+  <script src="admin-dashboard-init.js"></script>
+</body>
+
+</html>

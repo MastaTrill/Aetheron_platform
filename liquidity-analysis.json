@@ -1,0 +1,39 @@
+{
+  "pool": {
+    "exchange": "QuickSwap",
+    "pair": "AETH/MATIC",
+    "address": "0xd57c5E33ebDC1b565F99d06809debbf86142705D",
+    "liquidity": {
+      "aeth": 9500000,
+      "matic": 5
+    },
+    "price": 5.512e-7,
+    "tvl": 10.2364
+  },
+  "metrics": {
+    "liquidityDepth": 5.2364,
+    "impermanentLoss": 42.50404254239311,
+    "volume24h": 1000,
+    "fees24h": 50,
+    "slippage": {
+      "1000": 0.010526315789473684,
+      "10000": 0.10526315789473684,
+      "50000": 0.5263157894736842,
+      "100000": 1.0526315789473684
+    }
+  },
+  "health": {
+    "score": 65,
+    "issues": [
+      "Low TVL - Pool is vulnerable to manipulation",
+      "High impermanent loss risk"
+    ],
+    "recommendations": [
+      "Increase liquidity through incentives program",
+      "Launch liquidity mining rewards",
+      "Monitor impermanent loss and adjust strategy",
+      "Set up automated rebalancing",
+      "Consider multiple pool tiers"
+    ]
+  }
+}

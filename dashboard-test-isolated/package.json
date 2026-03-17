@@ -1,0 +1,12 @@
+{
+  "name": "dashboard-test-isolated",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^19.0.0"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "referrers": {
+    "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82": {
+      "address": "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82",
+      "totalReferrals": 0,
+      "activeReferrals": 0,
+      "totalEarned": 0,
+      "pendingRewards": 0,
+      "referrals": [],
+      "createdAt": "2026-02-09T00:00:00Z",
+      "lastUpdated": "2026-02-09T00:00:00Z"
+    }
+  },
+  "referralLinks": [],
+  "analytics": {
+    "totalLinksGenerated": 0,
+    "totalConversions": 0,
+    "totalRewardsDistributed": 0,
+    "lastSyncedBlock": 0
+  }
+}

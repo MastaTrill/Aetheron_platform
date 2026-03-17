@@ -1,0 +1,114 @@
+{
+  "uniswap": {
+    "exchange": "Uniswap V3",
+    "url": "https://app.uniswap.org/#/add/",
+    "requirements": [
+      "Token contract",
+      "Liquidity provision",
+      "Bridge to Ethereum"
+    ],
+    "submissionData": {
+      "tokenName": "Aetheron",
+      "tokenSymbol": "AETH",
+      "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "chain": "Polygon",
+      "website": "https://mastatrill.github.io/aetheron-platform",
+      "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+      "community": {
+        "twitter": "https://twitter.com/aetheronplatform",
+        "telegram": "https://t.me/aetheronplatform",
+        "discord": "https://discord.gg/aetheronplatform"
+      },
+      "additionalInfo": "AETH is a DeFi utility token with integrated staking and tax system. Total supply: 1000000000 tokens. Currently listed on QuickSwap with active liquidity pool."
+    }
+  },
+  "pancakeswap": {
+    "exchange": "PancakeSwap",
+    "url": "https://pancakeswap.finance/add/",
+    "requirements": [
+      "Token contract",
+      "Bridge to BSC",
+      "Liquidity provision"
+    ],
+    "submissionData": {
+      "tokenName": "Aetheron",
+      "tokenSymbol": "AETH",
+      "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "chain": "Polygon",
+      "website": "https://mastatrill.github.io/aetheron-platform",
+      "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+      "community": {
+        "twitter": "https://twitter.com/aetheronplatform",
+        "telegram": "https://t.me/aetheronplatform",
+        "discord": "https://discord.gg/aetheronplatform"
+      },
+      "additionalInfo": "AETH is a DeFi utility token with integrated staking and tax system. Total supply: 1000000000 tokens. Currently listed on QuickSwap with active liquidity pool."
+    }
+  },
+  "sushiswap": {
+    "exchange": "SushiSwap",
+    "url": "https://app.sushi.com/swap",
+    "requirements": [
+      "Cross-chain bridge",
+      "Liquidity incentives"
+    ],
+    "submissionData": {
+      "tokenName": "Aetheron",
+      "tokenSymbol": "AETH",
+      "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "chain": "Polygon",
+      "website": "https://mastatrill.github.io/aetheron-platform",
+      "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+      "community": {
+        "twitter": "https://twitter.com/aetheronplatform",
+        "telegram": "https://t.me/aetheronplatform",
+        "discord": "https://discord.gg/aetheronplatform"
+      },
+      "additionalInfo": "AETH is a DeFi utility token with integrated staking and tax system. Total supply: 1000000000 tokens. Currently listed on QuickSwap with active liquidity pool."
+    }
+  },
+  "balancer": {
+    "exchange": "Balancer",
+    "url": "https://app.balancer.fi/",
+    "requirements": [
+      "Advanced pool setup",
+      "Multiple tokens"
+    ],
+    "submissionData": {
+      "tokenName": "Aetheron",
+      "tokenSymbol": "AETH",
+      "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "chain": "Polygon",
+      "website": "https://mastatrill.github.io/aetheron-platform",
+      "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+      "community": {
+        "twitter": "https://twitter.com/aetheronplatform",
+        "telegram": "https://t.me/aetheronplatform",
+        "discord": "https://discord.gg/aetheronplatform"
+      },
+      "additionalInfo": "AETH is a DeFi utility token with integrated staking and tax system. Total supply: 1000000000 tokens. Currently listed on QuickSwap with active liquidity pool."
+    }
+  },
+  "inch": {
+    "exchange": "1inch",
+    "url": "https://app.1inch.io/",
+    "requirements": [
+      "Aggregator integration",
+      "High liquidity"
+    ],
+    "submissionData": {
+      "tokenName": "Aetheron",
+      "tokenSymbol": "AETH",
+      "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "chain": "Polygon",
+      "website": "https://mastatrill.github.io/aetheron-platform",
+      "documentation": "https://github.com/MastaTrill/Aetheron_platform",
+      "community": {
+        "twitter": "https://twitter.com/aetheronplatform",
+        "telegram": "https://t.me/aetheronplatform",
+        "discord": "https://discord.gg/aetheronplatform"
+      },
+      "additionalInfo": "AETH is a DeFi utility token with integrated staking and tax system. Total supply: 1000000000 tokens. Currently listed on QuickSwap with active liquidity pool."
+    }
+  }
+}

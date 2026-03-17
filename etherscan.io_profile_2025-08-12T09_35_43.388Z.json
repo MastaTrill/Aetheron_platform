@@ -1,0 +1,21 @@
+{
+  "/mynotes_address": [
+    {
+      "address": "0xbEE525F3...935420d1D",
+      "tag": "AETR",
+      "note": "Aetheron",
+      "addedAt": "2025-08-02",
+      "favorite": true
+    },
+    {
+      "address": "0x8A3ad496...8847c3452",
+      "tag": "Aetheron",
+      "note": "AETR",
+      "addedAt": "2025-07-31",
+      "favorite": true
+    }
+  ],
+  "/mynotes_tx": [],
+  "/myaddress": [],
+  "/mytokenignore": []
+}

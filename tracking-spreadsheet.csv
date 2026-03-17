@@ -1,0 +1,30 @@
+Platform,Status,Date Submitted,Date Listed,Notes,Link
+DexScreener,✅ LIVE,Automatic,Automatic,Already showing data,https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D
+DexTools,⏳ TODO,Not yet,Not yet,Need to add token info,https://www.dextools.io/app/en/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D
+CoinSniper,⏳ TODO,Not yet,Not yet,Quick submission,https://coinsniper.net/submit
+CoinHunt,⏳ TODO,Not yet,Not yet,Quick submission,https://coinhunt.cc/add-coin
+GemPad,⏳ TODO,Not yet,Not yet,Optional,https://gempad.app/submit-token
+CoinGecko,⏳ TODO,Not yet,Not yet,"Wait 3-7 days trading, then submit",https://www.coingecko.com/en/coins/request
+CoinMarketCap,⏳ TODO,Not yet,Not yet,"Wait 7-14 days trading, then submit",https://support.coinmarketcap.com/hc/en-us/requests/new
+
+Social Media,Status,Date Created,Followers/Members,Link,Notes
+Twitter,❌ TODO,Not yet,0,Not created yet,Create @AetheronToken or similar
+Telegram,❌ TODO,Not yet,0,Not created yet,Create "Aetheron Official" group
+Discord,⏸️ OPTIONAL,Not yet,0,Optional,Lower priority
+
+Daily Metrics,Market Cap,24h Volume,Holders,Twitter,Telegram,Notes
+2025-12-20,$276,TBD,~10,0,0,Starting metrics - update daily
+
+Weekly Goals,Target,Current,Status,Notes
+Week 1: Market Cap,$1000,$276,In Progress,Focus on listings and posts
+Week 1: Holders,20,~10,In Progress,Get word out on social media
+Week 1: Twitter,50,0,Not Started,Need to create account
+Week 1: Telegram,50,0,Not Started,Need to create group
+
+Month Goals,Target,Current,Status,Deadline
+Market Cap,$10000,$276,In Progress,30 days from launch
+Total Holders,100,~10,In Progress,30 days
+Twitter Followers,500,0,Not Started,30 days
+Telegram Members,200,0,Not Started,30 days
+CoinGecko Listing,Listed,Not listed,Pending,Submit after 7 days trading
+CMC Listing,Listed,Not listed,Pending,Submit after 14 days trading

@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(
+    ellipse at center,
+    #0a0a0a 0%,
+    #1a1a2e 50%,
+    #16213e 100%
+  );
+  overflow-x: hidden;
+}
+label {
+  font-weight: 700;
+  margin-right: 8px;
+}
+.trade-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #232946;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 1.1em;
+}
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #232946;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 1.1em;
+}
+.unlocked {
+  color: #22c55e;
+}
+.locked {
+  color: #a1a1aa;
+}

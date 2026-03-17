@@ -1,0 +1,38 @@
+/* Extracted from offline.html for CSP compliance */
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.offline-container {
+  text-align: center;
+}
+
+h1 {
+  color: #00d4ff;
+  font-size: 2.2em;
+  margin-bottom: 0.5em;
+}
+
+p {
+  color: #ccc;
+  font-size: 1.2em;
+  margin-bottom: 1.5em;
+}
+
+.icon {
+  font-size: 4em;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: #00d4ff;
+  text-decoration: underline;
+}

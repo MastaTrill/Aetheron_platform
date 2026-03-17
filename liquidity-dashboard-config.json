@@ -1,0 +1,56 @@
+{
+  "metrics": {
+    "tvl": {
+      "current": 10.2364,
+      "target": 250000,
+      "change24h": 5.2,
+      "change7d": 23.1
+    },
+    "volume": {
+      "daily": 1250,
+      "weekly": 8750,
+      "monthly": 35000,
+      "growth": 15.3
+    },
+    "liquidity": {
+      "utilization": 68,
+      "efficiency": 82,
+      "concentration": 45
+    },
+    "incentives": {
+      "activeParticipants": 127,
+      "totalStakedLP": 2500000,
+      "rewardsDistributed": 1250000,
+      "apr": 25.3
+    }
+  },
+  "alerts": {
+    "lowLiquidity": "TVL below $10K threshold",
+    "highSlippage": "Slippage >5% on $10K trades",
+    "impermanentLoss": "IL risk >20% for current positions",
+    "rewardDepletion": "Incentive pool <20% remaining"
+  },
+  "reports": {
+    "daily": [
+      "TVL changes",
+      "Volume analysis",
+      "New participants"
+    ],
+    "weekly": [
+      "Pool health assessment",
+      "Incentive effectiveness",
+      "Market analysis"
+    ],
+    "monthly": [
+      "Strategic review",
+      "Budget adjustments",
+      "Future planning"
+    ]
+  },
+  "integrations": {
+    "theGraph": "Subgraph for historical data",
+    "defiPulse": "Yield and TVL tracking",
+    "duneAnalytics": "Custom dashboards",
+    "zapier": "Alert automation"
+  }
+}
