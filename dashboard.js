@@ -74,6 +74,31 @@ function bindStoredToggle(toggle, storageKey, messagePrefix, onApply) {
   };
 }
 
+function initStubActionWidget({
+  placeholderId,
+  loadingText,
+  buttonId,
+  message,
+  type = 'info',
+}) {
+  const element = placeholderId
+    ? document.getElementById(placeholderId)
+    : null;
+  const button = document.getElementById(buttonId);
+
+  if (element) {
+    element.textContent = loadingText;
+  }
+
+  if (!button) {
+    return;
+  }
+
+  button.onclick = function () {
+    notifyDashboard(message, type);
+  };
+}
+
 async function fetchGovernanceProposals(space = 'aetheron.eth') {
   const response = await fetch('https://hub.snapshot.org/graphql', {
     method: 'POST',
@@ -1648,37 +1673,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Advanced Security Features
       function initBiometricLogin() {
-        const el = document.getElementById('biometricLoginPlaceholder');
-        if (el) el.textContent = 'Loading biometric login (stub)...';
-        const btn = document.getElementById('enableBiometricBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Biometric login enabled (stub)', 'success');
-            // TODO: Integrate with WebAuthn or device biometrics
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'biometricLoginPlaceholder',
+          loadingText: 'Loading biometric login (stub)...',
+          buttonId: 'enableBiometricBtn',
+          message: 'Biometric login enabled (stub)',
+          type: 'success',
+        });
+        // TODO: Integrate with WebAuthn or device biometrics
       }
       function initDeviceTrust() {
-        const el = document.getElementById('deviceTrustPlaceholder');
-        if (el) el.textContent = 'Loading device trust management (stub)...';
-        const btn = document.getElementById('manageDeviceTrustBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Device trust management opened (stub)', 'info');
-            // TODO: Show/manage trusted devices
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'deviceTrustPlaceholder',
+          loadingText: 'Loading device trust management (stub)...',
+          buttonId: 'manageDeviceTrustBtn',
+          message: 'Device trust management opened (stub)',
+        });
+        // TODO: Show/manage trusted devices
       }
       function initAntiPhishing() {
-        const el = document.getElementById('antiPhishingPlaceholder');
-        if (el) el.textContent = 'Loading anti-phishing protection (stub)...';
-        const btn = document.getElementById('enableAntiPhishingBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Anti-phishing protection enabled (stub)', 'success');
-            // TODO: Integrate anti-phishing features
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'antiPhishingPlaceholder',
+          loadingText: 'Loading anti-phishing protection (stub)...',
+          buttonId: 'enableAntiPhishingBtn',
+          message: 'Anti-phishing protection enabled (stub)',
+          type: 'success',
+        });
+        // TODO: Integrate anti-phishing features
       }
 
       initBiometricLogin();
@@ -1687,15 +1708,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Social/Community Features
       function initLiveChat() {
-        const el = document.getElementById('liveChatPlaceholder');
-        if (el) el.textContent = 'Loading live chat (stub)...';
-        const btn = document.getElementById('openLiveChatBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Live chat opened (stub)', 'info');
-            // TODO: Integrate chat widget (Discord, Telegram, custom)
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'liveChatPlaceholder',
+          loadingText: 'Loading live chat (stub)...',
+          buttonId: 'openLiveChatBtn',
+          message: 'Live chat opened (stub)',
+        });
+        // TODO: Integrate chat widget (Discord, Telegram, custom)
       }
       function initUserProfiles() {
         const el = document.getElementById('userProfilesPlaceholder');
@@ -1744,15 +1763,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       function initLeaderboard() {
-        const el = document.getElementById('leaderboardPlaceholder');
-        if (el) el.textContent = 'Loading leaderboard (stub)...';
-        const btn = document.getElementById('viewLeaderboardBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Leaderboard viewed (stub)', 'info');
-            // TODO: Show leaderboard modal
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'leaderboardPlaceholder',
+          loadingText: 'Loading leaderboard (stub)...',
+          buttonId: 'viewLeaderboardBtn',
+          message: 'Leaderboard viewed (stub)',
+        });
+        // TODO: Show leaderboard modal
       }
 
       initLiveChat();
@@ -1761,26 +1778,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // AI-Powered Analytics
       function initPredictiveTrends() {
-        const el = document.getElementById('predictiveTrendsPlaceholder');
-        if (el) el.textContent = 'Loading predictive trends (stub)...';
-        const btn = document.getElementById('runPredictiveTrendsBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Predictive trends analysis started (stub)', 'info');
-            // TODO: Run AI model and render chart
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'predictiveTrendsPlaceholder',
+          loadingText: 'Loading predictive trends (stub)...',
+          buttonId: 'runPredictiveTrendsBtn',
+          message: 'Predictive trends analysis started (stub)',
+        });
+        // TODO: Run AI model and render chart
       }
       function initAnomalyDetection() {
-        const el = document.getElementById('anomalyDetectionPlaceholder');
-        if (el) el.textContent = 'Loading anomaly detection (stub)...';
-        const btn = document.getElementById('runAnomalyDetectionBtn');
-        if (btn) {
-          btn.onclick = function () {
-            notifyDashboard('Anomaly detection started (stub)', 'warning');
-            // TODO: Run anomaly detection model and render chart
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'anomalyDetectionPlaceholder',
+          loadingText: 'Loading anomaly detection (stub)...',
+          buttonId: 'runAnomalyDetectionBtn',
+          message: 'Anomaly detection started (stub)',
+          type: 'warning',
+        });
+        // TODO: Run anomaly detection model and render chart
       }
 
       initPredictiveTrends();
@@ -1921,22 +1935,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Developer Tools
       function initDeveloperTools() {
-        const el = document.getElementById('developerToolsPlaceholder');
-        if (el) el.textContent = 'Loading developer tools (stub)...';
-        const apiBtn = document.getElementById('openApiExplorerBtn');
-        const contractBtn = document.getElementById('openContractPlaygroundBtn');
-        if (apiBtn) {
-          apiBtn.onclick = function () {
-            notifyDashboard('API Explorer opened (stub)', 'info');
-            // TODO: Launch API explorer modal
-          };
-        }
-        if (contractBtn) {
-          contractBtn.onclick = function () {
-            notifyDashboard('Contract Playground opened (stub)', 'info');
-            // TODO: Launch smart contract playground modal
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'developerToolsPlaceholder',
+          loadingText: 'Loading developer tools (stub)...',
+          buttonId: 'openApiExplorerBtn',
+          message: 'API Explorer opened (stub)',
+        });
+        initStubActionWidget({
+          buttonId: 'openContractPlaygroundBtn',
+          message: 'Contract Playground opened (stub)',
+        });
+        // TODO: Launch API explorer modal / smart contract playground modal
       }
 
       initDeveloperTools();
