@@ -49,6 +49,31 @@ function renderChartInstance(key, chartEl, config) {
   return window[key];
 }
 
+function bindStoredToggle(toggle, storageKey, messagePrefix, onApply) {
+  if (!toggle) {
+    return;
+  }
+
+  const apply = (checked, shouldNotify) => {
+    toggle.checked = checked;
+    if (typeof onApply === 'function') {
+      onApply(checked);
+    }
+    if (shouldNotify) {
+      notifyDashboard(
+        `${messagePrefix} ${checked ? 'enabled' : 'disabled'}`,
+        'info',
+      );
+    }
+    localStorage.setItem(storageKey, checked ? '1' : '0');
+  };
+
+  apply(localStorage.getItem(storageKey) === '1', false);
+  toggle.onchange = function () {
+    apply(toggle.checked, true);
+  };
+}
+
 async function fetchGovernanceProposals(space = 'aetheron.eth') {
   const response = await fetch('https://hub.snapshot.org/graphql', {
     method: 'POST',
@@ -1839,19 +1864,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const savedLang = localStorage.getItem('aetheron-language');
           if (savedLang) langSelector.value = savedLang;
         }
-        if (rtlToggle) {
-          rtlToggle.onchange = function () {
-            const enabled = rtlToggle.checked;
-            document.documentElement.dir = enabled ? 'rtl' : 'ltr';
-            notifyDashboard('RTL mode ' + (enabled ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-rtl', enabled ? '1' : '0');
-            // TODO: Persist RTL setting and update layout
-          };
-          // Load saved RTL setting
-          const savedRtl = localStorage.getItem('aetheron-rtl');
-          rtlToggle.checked = savedRtl === '1';
-          document.documentElement.dir = rtlToggle.checked ? 'rtl' : 'ltr';
-        }
+        bindStoredToggle(rtlToggle, 'aetheron-rtl', 'RTL mode', (enabled) => {
+          document.documentElement.dir = enabled ? 'rtl' : 'ltr';
+          // TODO: Persist RTL setting and update layout
+        });
       }
 
       initLocalization();
@@ -1862,28 +1878,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.textContent = 'Loading accessibility settings...';
         const srToggle = document.getElementById('screenReaderToggle');
         const dyslexiaToggle = document.getElementById('dyslexiaToggle');
-        if (srToggle) {
-          srToggle.onchange = function () {
-            notifyDashboard('Screen reader optimization ' + (srToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-screenreader', srToggle.checked ? '1' : '0');
+        bindStoredToggle(
+          srToggle,
+          'aetheron-screenreader',
+          'Screen reader optimization',
+          () => {
             // TODO: Apply ARIA roles, landmarks, and focus management
-          };
-          // Load saved screen reader setting
-          const savedSr = localStorage.getItem('aetheron-screenreader');
-          srToggle.checked = savedSr === '1';
-        }
-        if (dyslexiaToggle) {
-          dyslexiaToggle.onchange = function () {
-            document.body.classList.toggle('dyslexia-font', dyslexiaToggle.checked);
-            notifyDashboard('Dyslexia-friendly mode ' + (dyslexiaToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-dyslexia', dyslexiaToggle.checked ? '1' : '0');
+          },
+        );
+        bindStoredToggle(
+          dyslexiaToggle,
+          'aetheron-dyslexia',
+          'Dyslexia-friendly mode',
+          (enabled) => {
+            document.body.classList.toggle('dyslexia-font', enabled);
             // TODO: Apply OpenDyslexic or similar font
-          };
-          // Load saved dyslexia setting
-          const savedDys = localStorage.getItem('aetheron-dyslexia');
-          dyslexiaToggle.checked = savedDys === '1';
-          document.body.classList.toggle('dyslexia-font', dyslexiaToggle.checked);
-        }
+          },
+        );
       }
 
       initAccessibility();
@@ -1895,36 +1906,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const pushToggle = document.getElementById('pushToggle');
         const emailToggle = document.getElementById('emailToggle');
         const inAppToggle = document.getElementById('inAppToggle');
-        if (pushToggle) {
-          pushToggle.onchange = function () {
-            notifyDashboard('Push notifications ' + (pushToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-push', pushToggle.checked ? '1' : '0');
-            // TODO: Integrate with push notification service
-          };
-          // Load saved push setting
-          const savedPush = localStorage.getItem('aetheron-push');
-          pushToggle.checked = savedPush === '1';
-        }
-        if (emailToggle) {
-          emailToggle.onchange = function () {
-            notifyDashboard('Email notifications ' + (emailToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-email', emailToggle.checked ? '1' : '0');
-            // TODO: Integrate with email notification service
-          };
-          // Load saved email setting
-          const savedEmail = localStorage.getItem('aetheron-email');
-          emailToggle.checked = savedEmail === '1';
-        }
-        if (inAppToggle) {
-          inAppToggle.onchange = function () {
-            notifyDashboard('In-app notifications ' + (inAppToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-inapp', inAppToggle.checked ? '1' : '0');
-            // TODO: Integrate with in-app notification system
-          };
-          // Load saved in-app setting
-          const savedInApp = localStorage.getItem('aetheron-inapp');
-          inAppToggle.checked = savedInApp === '1';
-        }
+        bindStoredToggle(pushToggle, 'aetheron-push', 'Push notifications', () => {
+          // TODO: Integrate with push notification service
+        });
+        bindStoredToggle(emailToggle, 'aetheron-email', 'Email notifications', () => {
+          // TODO: Integrate with email notification service
+        });
+        bindStoredToggle(inAppToggle, 'aetheron-inapp', 'In-app notifications', () => {
+          // TODO: Integrate with in-app notification system
+        });
       }
 
       initNotificationsSettings();
