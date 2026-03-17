@@ -41,6 +41,19 @@ async function handleCopyButtonClick(event) {
   }
 }
 
+function showWhitepaperSection(section) {
+  const sections = ['summary', 'tokenomics', 'staking', 'security', 'roadmap'];
+
+  sections.forEach((key) => {
+    const panel = document.getElementById(`whitepaper-${key}`);
+    if (!panel) {
+      return;
+    }
+
+    panel.style.display = key === section ? '' : 'none';
+  });
+}
+
 function initCopyButtons() {
   document.querySelectorAll('[data-copy-text]').forEach((button) => {
     button.addEventListener('click', handleCopyButtonClick);
@@ -62,6 +75,20 @@ function initWhitepaperButtons() {
       window.open('WHITEPAPER.md', '_blank', 'noopener');
     });
   }
+
+  const toggleBtn = document.getElementById('toggleWhitepaperBtn');
+  const content = document.getElementById('whitepaperContent');
+
+  if (toggleBtn && content) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      content.style.display = expanded ? 'none' : '';
+      toggleBtn.textContent = expanded ? 'Expand' : 'Collapse';
+      toggleBtn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    });
+  }
+
+  showWhitepaperSection('summary');
 }
 
 function preventStakeFormSubmit() {
@@ -75,10 +102,85 @@ function preventStakeFormSubmit() {
   });
 }
 
+function initSkipLink() {
+  const skipLink = document.querySelector('.skip-link');
+  if (!skipLink) {
+    return;
+  }
+
+  skipLink.addEventListener('focus', () => {
+    skipLink.style.left = '16px';
+  });
+
+  skipLink.addEventListener('blur', () => {
+    skipLink.style.left = '-999px';
+  });
+}
+
+function initHelpCenter() {
+  const tourBtn = document.getElementById('startTourBtn');
+  if (
+    tourBtn &&
+    window.dashboard &&
+    typeof window.dashboard.startTour === 'function'
+  ) {
+    tourBtn.addEventListener('click', () => {
+      window.dashboard.startTour();
+    });
+  }
+
+  const helpBtn = document.getElementById('openHelpCenterBtn');
+  const helpModal = document.getElementById('helpCenterModal');
+  const closeHelp = document.getElementById('closeHelpCenterModal');
+
+  if (helpBtn && helpModal) {
+    helpBtn.addEventListener('click', () => {
+      helpModal.style.display = 'block';
+    });
+  }
+
+  if (closeHelp && helpModal) {
+    closeHelp.addEventListener('click', () => {
+      helpModal.style.display = 'none';
+    });
+  }
+
+  window.addEventListener('click', (event) => {
+    if (event.target === helpModal) {
+      helpModal.style.display = 'none';
+    }
+  });
+}
+
+function initProfileModal() {
+  const modal = document.getElementById('profileModal');
+  if (!modal) {
+    return;
+  }
+
+  const closeBtn = modal.querySelector('.close-modal-btn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.hidden = true;
+    });
+  }
+
+  const cancelBtn = document.getElementById('closeProfileModal');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      modal.hidden = true;
+    });
+  }
+}
+
 function initDashboardBodyActions() {
+  window.showWhitepaperSection = showWhitepaperSection;
   initCopyButtons();
   initWhitepaperButtons();
   preventStakeFormSubmit();
+  initSkipLink();
+  initHelpCenter();
+  initProfileModal();
 }
 
 if (document.readyState === 'loading') {
