@@ -21,7 +21,9 @@ export const TOKEN_INFO = {
   symbol: 'AETH',
   decimals: 18,
   totalSupply: '1000000000',
-  logo: require('../assets/logo.png'),
+  logo: {
+    uri: 'https://mastatrill.github.io/Aetheron_platform/logo192.png',
+  },
 };
 
 export const LINKS = {
