@@ -1,18 +1,36 @@
 // dashboard.test.js
 // Basic unit tests for dashboard.js user settings, notifications, onboarding
 
-const { JSDOM } = require('jsdom');
+const { parseHTML } = require('linkedom');
 
 describe('Aetheron Dashboard', () => {
   let window, document;
   beforeEach(() => {
-    const dom = new JSDOM(
+    const dom = parseHTML(
       '<!DOCTYPE html><html><body><div id="userProfilesPlaceholder"></div><button id="editProfileBtn"></button></body></html>',
     );
-    window = dom.window;
-    document = window.document;
+    ({ window, document } = dom);
     global.window = window;
     global.document = document;
+    global.navigator = window.navigator;
+    global.navigator.serviceWorker = {
+      register: jest.fn().mockResolvedValue({}),
+      ready: Promise.resolve({
+        active: {},
+        waiting: null,
+        installing: null,
+      }),
+    };
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    }));
     // Mock dashboard object
     global.dashboard = { notify: jest.fn() };
   });

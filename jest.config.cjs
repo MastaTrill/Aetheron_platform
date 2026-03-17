@@ -2,7 +2,7 @@
 const WIN_OR_POSIX_SEP = '[/\\\\]';
 
 module.exports = {
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   // Force a narrow test scope to avoid crawling large non-test folders.
   testMatch: ['<rootDir>/dashboard.test.js'],
