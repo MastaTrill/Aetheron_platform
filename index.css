@@ -317,13 +317,14 @@ body > *:not(#starfield-canvas) {
   position: relative;
   overflow: hidden;
   padding: 2.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(110, 231, 255, 0.16);
   border-radius: 28px;
   background:
-    linear-gradient(135deg, rgba(6, 15, 34, 0.82), rgba(20, 26, 52, 0.72)),
-    radial-gradient(circle at top right, rgba(0, 212, 255, 0.14), transparent 34%);
+    linear-gradient(135deg, rgba(3, 10, 24, 0.9), rgba(14, 24, 52, 0.78)),
+    radial-gradient(circle at top right, rgba(0, 212, 255, 0.18), transparent 34%);
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.32),
+    0 30px 80px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(0, 212, 255, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
@@ -334,6 +335,15 @@ body > *:not(#starfield-canvas) {
   background:
     radial-gradient(circle at 14% 22%, rgba(0, 212, 255, 0.16), transparent 18%),
     radial-gradient(circle at 88% 18%, rgba(138, 43, 226, 0.18), transparent 20%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 27px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
   pointer-events: none;
 }
 
@@ -363,17 +373,24 @@ body > *:not(#starfield-canvas) {
   min-height: 48px;
   padding: 0.85rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(0, 212, 255, 0.08));
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(110, 231, 255, 0.18);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 212, 255, 0.06)),
+    linear-gradient(135deg, rgba(4, 12, 28, 0.9), rgba(8, 22, 48, 0.82));
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   color: var(--text);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  letter-spacing: 0.01em;
 }
 
 .quick-action-btn:hover {
-  border-color: rgba(0, 212, 255, 0.35);
-  box-shadow: 0 16px 34px rgba(0, 212, 255, 0.14);
+  border-color: rgba(110, 231, 255, 0.4);
+  box-shadow:
+    0 16px 34px rgba(0, 212, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .live-indicator {
@@ -426,12 +443,13 @@ body > *:not(#starfield-canvas) {
 .staking-pools > .pool-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(110, 231, 255, 0.12);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03)),
-    linear-gradient(135deg, rgba(5, 11, 24, 0.82), rgba(18, 28, 54, 0.72));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    linear-gradient(135deg, rgba(4, 10, 22, 0.92), rgba(9, 20, 46, 0.82));
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.22),
+    0 18px 40px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(0, 212, 255, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
@@ -446,8 +464,26 @@ body > *:not(#starfield-canvas) {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(140deg, rgba(0, 212, 255, 0.12), transparent 38%, rgba(138, 43, 226, 0.08));
-  opacity: 0.9;
+  background:
+    linear-gradient(140deg, rgba(0, 212, 255, 0.16), transparent 38%, rgba(138, 43, 226, 0.08)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 30%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.feature-card::after,
+.stat-card::after,
+.pool-card::after,
+.quick-link::after,
+.wallet-status::after,
+.balance-display::after,
+.wallet-connected::after,
+.input-group::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.04);
   pointer-events: none;
 }
 
@@ -467,8 +503,10 @@ body > *:not(#starfield-canvas) {
 .feature-card:hover,
 .quick-link:hover {
   transform: translateY(-6px);
-  border-color: rgba(0, 212, 255, 0.28);
-  box-shadow: 0 24px 48px rgba(0, 212, 255, 0.15);
+  border-color: rgba(110, 231, 255, 0.34);
+  box-shadow:
+    0 24px 48px rgba(0, 212, 255, 0.18),
+    0 0 28px rgba(0, 212, 255, 0.08);
 }
 
 .feature-card > *,
@@ -487,16 +525,21 @@ body > *:not(#starfield-canvas) {
   height: 52px;
   border-radius: 16px;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.22), rgba(138, 43, 226, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(110, 231, 255, 0.18), rgba(138, 43, 226, 0.2)),
+    linear-gradient(135deg, rgba(7, 15, 32, 0.95), rgba(12, 25, 52, 0.88));
+  border: 1px solid rgba(110, 231, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 212, 255, 0.12);
 }
 
 .feature-card h3,
 .quick-link .fw-600 {
   margin-bottom: 0.45rem;
   font-size: 1.02rem;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .feature-card p,
@@ -517,9 +560,9 @@ body > *:not(#starfield-canvas) {
 }
 
 .stat-card .label {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(188, 247, 255, 0.72);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   font-size: 0.76rem;
   margin-bottom: 0.7rem;
 }
@@ -529,6 +572,7 @@ body > *:not(#starfield-canvas) {
   font-weight: 800;
   line-height: 1.05;
   margin-bottom: 0.6rem;
+  text-shadow: 0 0 22px rgba(110, 231, 255, 0.16);
 }
 
 .stat-card .change {
@@ -538,7 +582,8 @@ body > *:not(#starfield-canvas) {
   min-height: 32px;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(110, 231, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.86rem;
 }
@@ -575,7 +620,8 @@ body > *:not(#starfield-canvas) {
 
 .card-title {
   font-size: 1.2rem;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .wallet-section,
@@ -593,13 +639,14 @@ body > *:not(#starfield-canvas) {
 
 .balance-display {
   margin: 1rem 0;
-  border: 1px solid rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(110, 231, 255, 0.16);
 }
 
 .amount {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
+  text-shadow: 0 0 20px rgba(110, 231, 255, 0.16);
 }
 
 .quick-links,
@@ -640,8 +687,11 @@ body > *:not(#starfield-canvas) {
   padding: 0.5rem 0.8rem;
   border-radius: 999px;
   font-weight: 800;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(138, 43, 226, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(110, 231, 255, 0.18), rgba(138, 43, 226, 0.18)),
+    rgba(7, 15, 32, 0.9);
+  border: 1px solid rgba(110, 231, 255, 0.18);
+  box-shadow: 0 10px 22px rgba(0, 212, 255, 0.1);
 }
 
 .input-group {
@@ -660,10 +710,11 @@ body > *:not(#starfield-canvas) {
   width: 100%;
   margin-bottom: 0.8rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(7, 12, 26, 0.6);
+  border: 1px solid rgba(110, 231, 255, 0.14);
+  background: rgba(6, 12, 28, 0.78);
   color: var(--text);
   padding: 0.95rem 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .quick-link {
