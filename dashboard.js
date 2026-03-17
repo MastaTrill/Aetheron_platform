@@ -99,6 +99,10 @@ function initStubActionWidget({
   };
 }
 
+function initStaticPlaceholder(placeholderId, text) {
+  setElementText(placeholderId, text);
+}
+
 function createDashboardModal(contentHtml) {
   const modal = document.createElement('div');
   modal.className = 'modal';
@@ -1940,32 +1944,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
       initDeveloperTools();
   function initCommunityChat() {
-    const el = document.getElementById('communityChatWidget');
-    if (el) el.textContent = 'Chat widget coming soon (stub).';
+    initStaticPlaceholder('communityChatWidget', 'Chat widget coming soon (stub).');
     // TODO: Embed Discord/Telegram widget
   }
   // 6. NFT Gallery
   function initNFTGallery() {
-    const el = document.getElementById('nftGalleryPlaceholder');
-    if (el) el.textContent = 'No NFTs found (stub).';
+    initStaticPlaceholder('nftGalleryPlaceholder', 'No NFTs found (stub).');
     // TODO: Fetch/display user NFTs
   }
   // 7. Gas Fee Estimator
   function initGasFeeEstimator() {
-    const el = document.getElementById('gasFeeEstimate');
-    if (el) el.textContent = 'Estimated gas fee: -- (stub)';
+    initStaticPlaceholder('gasFeeEstimate', 'Estimated gas fee: -- (stub)');
     // TODO: Fetch Polygon gas price, update on speed select
   }
   // 8. Referral Leaderboard
   function initReferralLeaderboard() {
-    const el = document.getElementById('referralLeaderboardPlaceholder');
-    if (el) el.textContent = 'Leaderboard coming soon (stub).';
+    initStaticPlaceholder(
+      'referralLeaderboardPlaceholder',
+      'Leaderboard coming soon (stub).',
+    );
     // TODO: Fetch/display top referrers, handle referral link copy
   }
   // 9. Multi-Language Support
   function initLanguageSelector() {
-    const el = document.getElementById('currentLanguage');
-    if (el) el.textContent = 'Current: English (stub)';
+    initStaticPlaceholder('currentLanguage', 'Current: English (stub)');
     // TODO: Wire up language selector, load translations
   }
   // 10. Advanced Analytics
@@ -1986,12 +1988,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletGrowthData = [100, 120, 140, 180, 210, 250, 300]; // # wallets
     const protocolHealthData = [80, 82, 85, 87, 90, 92, 95]; // health score
 
-    // Destroy previous chart if exists
-    if (window.advancedAnalyticsChartInstance) {
-      window.advancedAnalyticsChartInstance.destroy();
-    }
-
-    window.advancedAnalyticsChartInstance = new Chart(chartEl, {
+    renderChartInstance('advancedAnalyticsChartInstance', chartEl, {
       type: 'line',
       data: {
         labels,
