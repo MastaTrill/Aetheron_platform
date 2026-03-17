@@ -87,7 +87,9 @@
   <nav class="navbar" role="navigation" aria-label="Primary">
     <div class="navbar-content"><button class="hamburger" id="hamburger" aria-label="Toggle navigation menu"
         aria-expanded="false" type="button"><span></span> <span></span> <span></span></button>
-      <div class="logo"><i class="fas fa-rocket" aria-hidden="true"></i> <span>Aetheron Platform</span></div>
+      <div class="logo"><span class="logo-mark"><i class="fas fa-rocket" aria-hidden="true"></i></span> <span
+          class="logo-text-wrap"><span class="logo-text">Aetheron Platform</span><span class="logo-caption">Polygon
+            DeFi Command</span></span></div>
       <div class="nav-links" id="navLinks"><a href="dashboard-enhanced.html" class="nav-link">Dashboard</a> <a
           href="analytics-dashboard.html" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics </a><a
           href="staking-calculator.html" class="nav-link"><i class="fas fa-calculator"></i> Calculator </a><a
@@ -103,27 +105,65 @@
             class="fas fa-gem"></i> NFT </a><a href="token-info.html" class="nav-link"><i
             class="fas fa-info-circle"></i> Token Info </a><a href="#staking" class="nav-link">Staking</a> <button
           id="connectBtn" class="btn btn-primary" type="button"><i class="fas fa-wallet"></i> Connect Wallet</button>
+        <div class="nav-status-pill"><span class="nav-status-dot" aria-hidden="true"></span> Live on Polygon</div>
       </div>
     </div>
   </nav>
   <main id="main-content" role="main">
     <div class="container">
       <div class="hero">
-        <h1>Welcome to Aetheron</h1>
-        <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
-        <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
-        </div>
-        <div class="quick-actions"><button id="addToMetaMaskBtn" class="quick-action-btn" title="Add AETH to MetaMask"
-            type="button"><i class="fas fa-plus-circle"></i> Add to MetaMask</button> <button id="copyContractBtn"
-            class="quick-action-btn" title="Copy Contract Address" type="button"><i class="fas fa-copy"></i> <span
-              id="copyBtnText">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span></button> <button id="qrCodeBtn"
-            class="quick-action-btn" title="Show QR Code" type="button"><i class="fas fa-qrcode"></i> QR Code</button>
-          <button id="shareBtn" class="quick-action-btn" title="Share Aetheron" type="button"><i
-              class="fas fa-share-alt"></i> Share</button>
-          <button id="viewOnScanBtn" class="quick-action-btn" type="button"><i class="fas fa-external-link-alt"></i>
-            PolygonScan</button>
-          <div class="quick-action-btn live-indicator"><span class="pulse-dot"></span> <span
-              id="liveHoldersCount">100+</span> Holders</div>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="hero-kicker">AETH Signal Core</div>
+            <h1>Welcome to Aetheron</h1>
+            <p>Your gateway to DeFi on Polygon with futuristic staking, analytics, wallet tools, and ecosystem
+              tracking in one command deck.</p>
+            <div class="hero-tags">
+              <div class="hero-tag"><i class="fas fa-satellite" aria-hidden="true"></i> Live metrics</div>
+              <div class="hero-tag"><i class="fas fa-layer-group" aria-hidden="true"></i> DeFi toolkit</div>
+              <div class="hero-tag"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet ready</div>
+            </div>
+            <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
+            </div>
+            <div class="quick-actions"><button id="addToMetaMaskBtn" class="quick-action-btn"
+                title="Add AETH to MetaMask" type="button"><i class="fas fa-plus-circle"></i> Add to MetaMask</button>
+              <button id="copyContractBtn" class="quick-action-btn" title="Copy Contract Address" type="button"><i
+                  class="fas fa-copy"></i> <span id="copyBtnText">0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e</span></button>
+              <button id="qrCodeBtn" class="quick-action-btn" title="Show QR Code" type="button"><i
+                  class="fas fa-qrcode"></i> QR Code</button>
+              <button id="shareBtn" class="quick-action-btn" title="Share Aetheron" type="button"><i
+                  class="fas fa-share-alt"></i> Share</button>
+              <button id="viewOnScanBtn" class="quick-action-btn" type="button"><i
+                  class="fas fa-external-link-alt"></i>
+                PolygonScan</button>
+              <div class="quick-action-btn live-indicator"><span class="pulse-dot"></span> <span
+                  id="liveHoldersCount">100+</span> Holders</div>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <div class="hero-panel-header">
+              <div class="hero-panel-title"><i class="fas fa-wave-square" aria-hidden="true"></i> Command Deck</div>
+              <div class="hero-panel-status">Online</div>
+            </div>
+            <div class="hero-panel-grid">
+              <div class="hero-panel-card">
+                <div class="hero-panel-label">Network</div>
+                <div class="hero-panel-value">Polygon Mainnet</div>
+              </div>
+              <div class="hero-panel-card">
+                <div class="hero-panel-label">Max APY</div>
+                <div class="hero-panel-value">25%</div>
+              </div>
+              <div class="hero-panel-card hero-panel-card-wide">
+                <div class="hero-panel-label">Contract</div>
+                <div class="hero-panel-value">0xAb5a...9671e</div>
+              </div>
+              <div class="hero-panel-card hero-panel-card-wide">
+                <div class="hero-panel-label">Utility</div>
+                <div class="hero-panel-value">Stake, track, trade, and monitor in real time</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="features-section">
