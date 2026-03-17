@@ -261,6 +261,10 @@ textarea:focus {
   justify-content: center;
 }
 
+.modal-bg[hidden] {
+  display: none !important;
+}
+
 .modal {
   background: var(--card-bg);
   border-radius: 14px;
