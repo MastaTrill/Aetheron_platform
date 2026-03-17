@@ -3,6 +3,17 @@
 /**
  * Shows a critical alert banner.
  */
+function setTextIfPresent(target, text) {
+  if (!target) return;
+  target.textContent = text;
+}
+
+function setPreviousSiblingText(id, text) {
+  const element = document.getElementById(id);
+  if (!element?.previousSibling) return;
+  element.previousSibling.textContent = text;
+}
+
 window.showCriticalAlert = function (type, message) {
   const el = document.getElementById('criticalAlerts');
   if (!el) return;
@@ -68,7 +79,7 @@ Next Steps for Feature Implementation
   - Fetch and display analytics data (price, volume, TVL, whales, etc.)
 */
 // Onboarding button click handler
-document.getElementById('onboardingBtn').addEventListener('click', () => {
+document.getElementById('onboardingBtn')?.addEventListener('click', () => {
   alert(
     'Onboarding tour temporarily disabled for security. Please explore the dashboard manually.',
   );
@@ -559,11 +570,19 @@ async function loadPrice() {
       'https://api.dexscreener.com/latest/dex/tokens/' + AETH_ADDRESS,
     );
     const data = await res.json();
-    const price = data.pairs[0].priceUsd;
-    const el = document.createElement('div');
-    el.innerHTML = 'AETH Price: $' + parseFloat(price).toFixed(4);
-    el.style.color = '#00d4ff';
-    document.querySelector('.header').appendChild(el);
+    const price = data?.pairs?.[0]?.priceUsd;
+    const header = document.querySelector('.header');
+    if (!price || !header) return;
+
+    let el = document.getElementById('dashboardHeaderPrice');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'dashboardHeaderPrice';
+      el.style.color = '#00d4ff';
+      header.appendChild(el);
+    }
+
+    el.textContent = 'AETH Price: $' + parseFloat(price).toFixed(4);
   } catch {}
 }
 loadPrice();
@@ -578,9 +597,16 @@ async function loadPoolData() {
 }
 setInterval(loadPoolData, 15000);
 
-if (window.ethereum) {
-  ethereum.on('accountsChanged', () => location.reload());
-  ethereum.on('chainChanged', () => location.reload());
+if (window.ethereum?.on) {
+  const refreshDashboardFeatures = () => {
+    loadPrice();
+    loadTreasury();
+    updateTreasuryChart();
+    window.updateQuickStats?.();
+  };
+
+  window.ethereum.on('accountsChanged', refreshDashboardFeatures);
+  window.ethereum.on('chainChanged', refreshDashboardFeatures);
 }
 
 async function loadTreasury() {
@@ -608,9 +634,10 @@ async function loadTreasury() {
   }
 }
 // Refresh button
-document
-  .getElementById('refreshTreasuryBtn')
-  .addEventListener('click', loadTreasury);
+document.getElementById('refreshTreasuryBtn')?.addEventListener('click', () => {
+  loadTreasury();
+  updateTreasuryChart();
+});
 // Auto-load on page
 window.addEventListener('DOMContentLoaded', loadTreasury);
 
@@ -858,44 +885,42 @@ const translations = {
 };
 function setLang(lang) {
   const t = translations[lang] || translations.en;
-  document.querySelector('.logo').textContent = '🌌 ' + t.title;
-  document.querySelector('.header p').textContent = t.subtitle;
-  document.getElementById('connectBtn').textContent = t.connect;
-  document.querySelector('.buy-btn').textContent = t.buy;
-  document.querySelector('.coinbase-btn').textContent = t.pay;
-  document.querySelector('.refresh-btn').textContent = '🔄 ' + t.refresh;
-  document.getElementById('walletType').previousSibling.textContent =
-    t.walletType + ' ';
-  document.getElementById('accountAddress').previousSibling.textContent =
-    t.connectedAccount + ' ';
-  document.getElementById('networkName').previousSibling.textContent =
-    t.network + ' ';
-  document.getElementById('ethBalance').previousSibling.textContent =
-    t.maticBalance + ' ';
-  document.getElementById('aethBalance').previousSibling.textContent =
-    t.aethBalance + ' ';
-  document.querySelector('.card h2').textContent = '💰 ' + t.transfer;
-  document.getElementById('transferTo').previousSibling.textContent =
-    t.recipient;
-  document.getElementById('transferAmount').previousSibling.textContent =
-    t.amount;
-  document.querySelector('.card .action-btn').textContent = t.transferBtn;
-  document.querySelectorAll('.card h2')[1].textContent = '🎯 ' + t.stake;
-  document.getElementById('poolId').previousSibling.textContent = t.poolId;
-  document.getElementById('stakeAmount').previousSibling.textContent = t.amount;
-  document.querySelectorAll('.card .action-btn')[1].textContent = t.stakeBtn;
-  document.querySelectorAll('.card h2')[2].textContent = '📊 ' + t.contractInfo;
-  document.querySelector('.payment-history-title').textContent =
-    t.paymentHistory;
-  document.getElementById('analyticsCard').querySelector('h2').textContent =
-    '📈 ' + t.engagement;
+  const cardHeadings = document.querySelectorAll('.card h2');
+  const cardButtons = document.querySelectorAll('.card .action-btn');
+
+  setTextIfPresent(document.querySelector('.logo'), 'Aetheron Platform');
+  setTextIfPresent(document.querySelector('.header p'), t.subtitle);
+  setTextIfPresent(document.getElementById('connectBtn'), t.connect);
+  setTextIfPresent(document.querySelector('.buy-btn'), t.buy);
+  setTextIfPresent(document.querySelector('.coinbase-btn'), t.pay);
+  setTextIfPresent(document.querySelector('.refresh-btn'), 'Refresh Balances');
+  setPreviousSiblingText('walletType', t.walletType + ' ');
+  setPreviousSiblingText('accountAddress', t.connectedAccount + ' ');
+  setPreviousSiblingText('networkName', t.network + ' ');
+  setPreviousSiblingText('ethBalance', t.maticBalance + ' ');
+  setPreviousSiblingText('aethBalance', t.aethBalance + ' ');
+  setTextIfPresent(cardHeadings[0], t.transfer);
+  setPreviousSiblingText('transferTo', t.recipient);
+  setPreviousSiblingText('transferAmount', t.amount);
+  setTextIfPresent(cardButtons[0], t.transferBtn);
+  setTextIfPresent(cardHeadings[1], t.stake);
+  setPreviousSiblingText('poolId', t.poolId);
+  setPreviousSiblingText('stakeAmount', t.amount);
+  setTextIfPresent(cardButtons[1], t.stakeBtn);
+  setTextIfPresent(cardHeadings[2], t.contractInfo);
+  setTextIfPresent(document.querySelector('.payment-history-title'), t.paymentHistory);
+  setTextIfPresent(
+    document.getElementById('analyticsCard')?.querySelector('h2'),
+    t.engagement,
+  );
 }
-document.getElementById('langSelect').addEventListener('change', (e) => {
+document.getElementById('langSelect')?.addEventListener('change', (e) => {
   setLang(e.target.value);
   localStorage.setItem('dashboard-lang', e.target.value);
 });
 window.addEventListener('DOMContentLoaded', () => {
   const lang = localStorage.getItem('dashboard-lang') || 'en';
-  document.getElementById('langSelect').value = lang;
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) langSelect.value = lang;
   setLang(lang);
 });
