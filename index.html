@@ -536,24 +536,66 @@
     </div>
     <div class="newsletter-section">
       <div class="container">
-        <h2>📧 Stay Updated</h2>
-        <p>Get notified about governance votes, new features, and important updates</p>
-        <form id="newsletterForm" class="newsletter-form"><input type="email" id="emailInput"
-            placeholder="Enter your email address" required> <button type="submit" class="subscribe-btn"><i
-              class="fas fa-bell"></i> Subscribe</button></form>
-        <div id="newsletterMessage" class="newsletter-message"></div>
-        <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
-          <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
-              checked="checked"> Price Alerts</label> <label><input type="checkbox"> Weekly Digest</label>
+        <div class="newsletter-panel">
+          <div class="newsletter-copy">
+            <div class="section-kicker">Signal Feed</div>
+            <h2><i class="fas fa-satellite-dish" aria-hidden="true"></i> Stay Updated</h2>
+            <p>Get notified about governance votes, new features, trading opportunities, and important ecosystem
+              updates.</p>
+            <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
+              <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
+                  checked="checked"> Price Alerts</label> <label><input type="checkbox"> Weekly Digest</label>
+            </div>
+          </div>
+          <div class="newsletter-card">
+            <div class="newsletter-card-top">
+              <div class="newsletter-badge"><i class="fas fa-broadcast-tower" aria-hidden="true"></i> Live Signal
+                Queue</div>
+              <div class="newsletter-meta">Priority delivery for platform updates and launch notices.</div>
+            </div>
+            <form id="newsletterForm" class="newsletter-form"><input type="email" id="emailInput"
+                placeholder="Enter your email address" required> <button type="submit" class="subscribe-btn"><i
+                  class="fas fa-bell"></i> Subscribe</button></form>
+            <div id="newsletterMessage" class="newsletter-message"></div>
+          </div>
         </div>
       </div>
     </div>
   </main>
-  <footer>
-    <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
-    <p class="mt-05 text-sm"><a href="#" class="footer-link">Terms</a> <a href="#" class="footer-link">Privacy</a> <a
-        href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener noreferrer"
-        class="footer-link">GitHub</a></p>
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><i class="fas fa-atom" aria-hidden="true"></i> <span>Aetheron Platform</span></div>
+          <p>Futuristic DeFi tooling on Polygon with staking, analytics, and live ecosystem tracking in one control
+            center.</p>
+        </div>
+        <div class="footer-status">
+          <div class="footer-chip"><i class="fas fa-circle-nodes" aria-hidden="true"></i> Polygon Mainnet</div>
+          <div class="footer-chip"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet Ready</div>
+          <div class="footer-chip"><i class="fas fa-chart-line" aria-hidden="true"></i> Live Metrics</div>
+        </div>
+        <div class="footer-nav">
+          <a href="dashboard-enhanced.html" class="footer-link">Dashboard</a>
+          <a href="analytics-dashboard.html" class="footer-link">Analytics</a>
+          <a href="governance.html" class="footer-link">Governance</a>
+          <a href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener noreferrer"
+            class="footer-link">GitHub</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
+        <div class="footer-socials">
+          <a href="dashboard.html" class="footer-social" aria-label="Open dashboard"><i class="fas fa-gauge-high"
+              aria-hidden="true"></i></a>
+          <a href="roadmap.html" class="footer-social" aria-label="Open roadmap"><i class="fas fa-route"
+              aria-hidden="true"></i></a>
+          <a href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener noreferrer"
+            class="footer-social" aria-label="Open GitHub repository"><i class="fab fa-github"
+              aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
   </footer>
   <div id="qrModal" class="modal">
     <div class="modal-content"><span class="close-modal" id="closeQRModalBtn">&times;</span>
