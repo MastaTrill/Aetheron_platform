@@ -88,6 +88,57 @@ function formatPercent(value) {
   return `${(Number(value || 0) * 100).toFixed(2)}%`;
 }
 
+async function getConnectedDashboardApp() {
+  const dashboardApp = getDashboardApp();
+  if (!dashboardApp) {
+    notifyDashboard('Dashboard is still loading.', 'warning');
+    return null;
+  }
+
+  if (!dashboardApp.walletAccount) {
+    await dashboardApp.connectWallet('metamask');
+  }
+
+  return dashboardApp;
+}
+
+async function runDeFiWidgetAction({
+  element,
+  protocol,
+  protocolLabel,
+  action,
+  actionParams = {},
+  successMessage,
+}) {
+  const dashboardApp = await getConnectedDashboardApp();
+  if (!dashboardApp) {
+    return;
+  }
+
+  const rates = await dashboardApp.getDeFiRates(protocol);
+  if (!rates) {
+    if (element) {
+      element.textContent = `Unable to load ${protocolLabel} rates right now.`;
+    }
+    return;
+  }
+
+  if (element) {
+    element.textContent = `${protocolLabel} Rates: Supply APY: ${formatPercent(
+      rates.supplyApy,
+    )} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
+  }
+
+  const success = await dashboardApp.executeDeFiAction(action, {
+    protocol,
+    ...actionParams,
+  });
+
+  if (success && element) {
+    element.textContent += `\n${successMessage}`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -1520,23 +1571,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openLendingBtn');
         if (btn) {
           btn.onclick = async function () {
-            const dashboardApp = getDashboardApp();
-            if (!dashboardApp) {
-              notifyDashboard('Dashboard is still loading.', 'warning');
-              return;
-            }
-            // Connect wallet if not connected
-            if (!dashboardApp.walletAccount) {
-              await dashboardApp.connectWallet('metamask');
-            }
-            // Example: Select protocol (Aave)
-            const rates = await dashboardApp.getDeFiRates('aave');
-            if (rates) {
-              el.textContent = `Aave Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
-              // Example: Execute lend action
-              const success = await dashboardApp.executeDeFiAction('lend', { protocol: 'aave', amount: 100 });
-              if (success) el.textContent += '\nLending successful!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: 'aave',
+              protocolLabel: 'Aave',
+              action: 'lend',
+              actionParams: { amount: 100 },
+              successMessage: 'Lending successful!',
+            });
           };
         }
       }
@@ -1546,23 +1588,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openYieldFarmingBtn');
         if (btn) {
           btn.onclick = async function () {
-            const dashboardApp = getDashboardApp();
-            if (!dashboardApp) {
-              notifyDashboard('Dashboard is still loading.', 'warning');
-              return;
-            }
-
-            if (!dashboardApp.walletAccount) {
-              await dashboardApp.connectWallet('metamask');
-            }
-            // Example: Select protocol (Compound)
-            const rates = await dashboardApp.getDeFiRates('compound');
-            if (rates) {
-              el.textContent = `Compound Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
-              // Example: Execute yield farming action
-              const success = await dashboardApp.executeDeFiAction('farm', { protocol: 'compound', amount: 50 });
-              if (success) el.textContent += '\nYield farming started!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: 'compound',
+              protocolLabel: 'Compound',
+              action: 'farm',
+              actionParams: { amount: 50 },
+              successMessage: 'Yield farming started!',
+            });
           };
         }
       }
@@ -1572,23 +1605,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openCrossChainSwapBtn');
         if (btn) {
           btn.onclick = async function () {
-            const dashboardApp = getDashboardApp();
-            if (!dashboardApp) {
-              notifyDashboard('Dashboard is still loading.', 'warning');
-              return;
-            }
-
-            if (!dashboardApp.walletAccount) {
-              await dashboardApp.connectWallet('metamask');
-            }
-            // Example: Use 1inch for swap
-            const rates = await dashboardApp.getDeFiRates('1inch');
-            if (rates) {
-              el.textContent = `1inch Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
-              // Example: Execute swap action
-              const success = await dashboardApp.executeDeFiAction('swap', { protocol: '1inch', from: 'AETH', to: 'MATIC', amount: 25 });
-              if (success) el.textContent += '\nSwap successful!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: '1inch',
+              protocolLabel: '1inch',
+              action: 'swap',
+              actionParams: { from: 'AETH', to: 'MATIC', amount: 25 },
+              successMessage: 'Swap successful!',
+            });
           };
         }
       }
