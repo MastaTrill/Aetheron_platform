@@ -553,8 +553,8 @@
       <!-- SushiSwap Integration -->
       <section id="sushiswap-section-2" class="card mb-2">
         <h2 class="card-title">SushiSwap (DEX & Yield)</h2>
-        <div id="sushiswapPlaceholder" class="text-gray">Connect your wallet to swap tokens, provide liquidity, or
-          withdraw from SushiSwap pools.</div>
+      <div id="sushiswapSecondaryPlaceholder" class="text-gray">Connect your wallet to swap tokens, provide liquidity, or
+        withdraw from SushiSwap pools.</div>
         <button id="openSushiSwapMainBtn" class="btn mt-1em" type="button">Swap Tokens</button>
         <button id="openSushiLiquidityBtn" class="btn mt-1em ml-10" type="button">Provide Liquidity</button>
         <button id="openSushiWithdrawBtn" class="btn mt-1em ml-10" type="button">Withdraw</button>
@@ -772,7 +772,7 @@
       <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake"
         title="Processing stake...">
       </div>
-      <form aria-label="Stake Form" onsubmit="return false;" role="form" tabindex="0">
+      <form id="stakeForm" aria-label="Stake Form" role="form" tabindex="0">
         <div class="input-group">
           <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
               title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">?</span></label>
@@ -783,7 +783,7 @@
               title="Enter the amount of AETH you want to stake.">?</span></label>
           <input type="number" id="stakeAmount" name="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
         </div>
-        <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
+        <button id="stakeBtn" type="button" class="btn" aria-label="Stake AETH"
           title="Stake your AETH tokens">Stake</button>
       </form>
       <div id="stakeStatus" class="status-message" aria-live="polite"></div>
@@ -809,15 +809,15 @@
         <span class="info-label">AETH Token Address:</span>
         <span class="info-value font-08" aria-label="AETH Token Address"
           tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
-        <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
-          onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
+        <button id="copyAethAddressBtn" class="btn-outline" aria-label="Copy AETH Token Address" type="button"
+          data-copy-text="0x072091F554df794852E0A9d1c809F2B2bBda171E">Copy</button>
       </div>
       <div class="info-row">
         <span class="info-label">Staking Contract Address:</span>
         <span class="info-value font-08" aria-label="Staking Contract Address"
           tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
-        <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
-          onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
+        <button id="copyStakingAddressBtn" class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
+          data-copy-text="0x896D9d37A67B0bBf81dde0005975DA7850FFa638">Copy</button>
       </div>
       <div class="info-row">
         <span class="info-label">Network:</span>
@@ -953,14 +953,13 @@
           <button class="btn-outline" id="toggleWhitepaperBtn" type="button" aria-expanded="true">Collapse</button>
         </div>
         <nav class="whitepaper-nav">
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('summary')">Executive
+          <button class="btn-outline" type="button" data-whitepaper-section="summary">Executive
             Summary</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('tokenomics')">Tokenomics</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('staking')">Staking</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('security')">Security</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('roadmap')">Roadmap</button>
-          <button class="btn whitepaper-download-btn" type="button"
-            onclick="window.open('WHITEPAPER.md','_blank')">Download
+          <button class="btn-outline" type="button" data-whitepaper-section="tokenomics">Tokenomics</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="staking">Staking</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="security">Security</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="roadmap">Roadmap</button>
+          <button id="downloadWhitepaperBtn" class="btn whitepaper-download-btn" type="button">Download
             Full
             Whitepaper</button>
         </nav>
@@ -1053,6 +1052,7 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="dashboard-wallet.js?v=1.4.3" defer></script>
     <script src="dashboard-accessibility.js?v=1.4.2" defer></script>
+    <script src="dashboard-body-init.js?v=1.0.0" defer></script>
     <!-- Onboarding Tour Disabled - CSP Compliance -->
     <!-- New Features Scripts -->
     <script src="dashboard-treasury-chart.js?v=1.4.2" defer></script>
