@@ -54,6 +54,51 @@ function showWhitepaperSection(section) {
   });
 }
 
+function setTextContent(id, value) {
+  const element = document.getElementById(id);
+  if (!element) {
+    return;
+  }
+
+  element.textContent = value;
+}
+
+function updateQuickStats() {
+  const account =
+    document.getElementById('accountAddress')?.textContent?.trim() || '-';
+  const aeth =
+    document.getElementById('aethBalance')?.textContent?.trim() || '-';
+  const staked =
+    document
+      .getElementById('stakingHistoryTable')
+      ?.querySelector('tbody tr:not(.text-gray) td:nth-child(3)')
+      ?.textContent?.trim() || '0';
+  const treasury =
+    document.getElementById('treasuryTotal')?.textContent?.trim() || '-';
+  const rewards =
+    document.getElementById('stakingRewards')?.textContent?.trim() || '-';
+
+  setTextContent('quickWallet', account);
+  setTextContent('quickAeth', aeth);
+  setTextContent('quickStaked', staked);
+  setTextContent('quickTreasury', treasury);
+  setTextContent('quickRewards', rewards);
+}
+
+function initQuickStats() {
+  updateQuickStats();
+
+  document
+    .getElementById('refreshBalancesBtn')
+    ?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+  document
+    .getElementById('refreshTreasuryBtn')
+    ?.addEventListener('click', () => setTimeout(updateQuickStats, 1000));
+
+  window.addEventListener('aetheron:wallet-connected', updateQuickStats);
+  window.addEventListener('aetheron:wallet-disconnected', updateQuickStats);
+}
+
 function initCopyButtons() {
   document.querySelectorAll('[data-copy-text]').forEach((button) => {
     button.addEventListener('click', handleCopyButtonClick);
@@ -175,6 +220,8 @@ function initProfileModal() {
 
 function initDashboardBodyActions() {
   window.showWhitepaperSection = showWhitepaperSection;
+  window.updateQuickStats = updateQuickStats;
+  initQuickStats();
   initCopyButtons();
   initWhitepaperButtons();
   preventStakeFormSubmit();
