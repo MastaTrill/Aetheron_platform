@@ -1,4 +1,22 @@
 // Bridge Modal Logic
+function setElementText(id, text) {
+  const element = document.getElementById(id);
+  if (!element) {
+    return null;
+  }
+
+  element.textContent = text;
+  return element;
+}
+
+function setContainerHtml(container, html) {
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = html;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -65,13 +83,20 @@ class AetheronDashboard {
   }
 
   renderTxHistory() {
-    const table = document.getElementById('txHistoryTable').querySelector('tbody');
-    const type = document.getElementById('txTypeFilter').value;
-    const date = document.getElementById('txDateFilter').value;
+    const tableBody = document
+      .getElementById('txHistoryTable')
+      ?.querySelector('tbody');
+    const type = document.getElementById('txTypeFilter')?.value || 'all';
+    const date = document.getElementById('txDateFilter')?.value || '';
+
+    if (!tableBody) {
+      return;
+    }
+
     let txs = this.getTxHistory();
     if (type !== 'all') txs = txs.filter(tx => tx.type === type);
     if (date) txs = txs.filter(tx => tx.date.startsWith(date));
-    table.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
+    tableBody.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
   }
 
   exportTxCsv() {
@@ -627,15 +652,15 @@ class AetheronDashboard {
   async refreshBalances() {
     this.notify('Refreshing wallet balances...', 'info');
     setTimeout(() => {
-      document.getElementById('ethBalance').textContent = '123.45 MATIC';
-      document.getElementById('aethBalance').textContent = '6789 AETH';
+      setElementText('ethBalance', '123.45 MATIC');
+      setElementText('aethBalance', '6789 AETH');
     }, 1000);
   }
 
   async refreshAnalytics() {
     this.notify('Refreshing analytics...', 'info');
     setTimeout(() => {
-      document.getElementById('stakingAnalyticsPlaceholder').textContent = 'Staking APY: 12%';
+      setElementText('stakingAnalyticsPlaceholder', 'Staking APY: 12%');
     }, 1000);
   }
 
@@ -1400,9 +1425,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const spinner = document.getElementById('stakingHistorySpinner');
     if (spinner) spinner.style.display = 'flex';
     setTimeout(() => {
-      if (el)
-        el.querySelector('tbody').innerHTML =
-          '<tr><td colspan="5">No data (stub)</td></tr>';
+      const stakingTableBody = el?.querySelector('tbody');
+      if (stakingTableBody) {
+        setContainerHtml(
+          stakingTableBody,
+          '<tr><td colspan="5">No data (stub)</td></tr>',
+        );
+      }
       if (spinner) spinner.style.display = 'none';
     }, 800);
     // TODO: Fetch staking/unstaking events, render table and chart
@@ -1555,15 +1584,26 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             `;
             document.body.appendChild(modal);
-            document.getElementById('closeProfileModalBtn').onclick = () => modal.remove();
-            document.getElementById('saveProfileBtn').onclick = () => {
-              const name = document.getElementById('profileNameInput').value;
-              const email = document.getElementById('profileEmailInput').value;
-              el.textContent = `Welcome, ${name}!`;
-              window.dashboard.notify('Profile updated!', 'success');
-              modal.remove();
-              // TODO: Persist profile changes to backend/localStorage
-            };
+            const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+            if (closeProfileModalBtn) {
+              closeProfileModalBtn.onclick = () => modal.remove();
+            }
+
+            if (saveProfileBtn) {
+              saveProfileBtn.onclick = () => {
+                const name = document.getElementById('profileNameInput')?.value || 'Alex';
+                const email = document.getElementById('profileEmailInput')?.value || '';
+                if (el) {
+                  el.textContent = `Welcome, ${name}!`;
+                }
+                window.dashboard.notify('Profile updated!', 'success');
+                modal.remove();
+                void email;
+                // TODO: Persist profile changes to backend/localStorage
+              };
+            }
           };
         }
       }
@@ -1631,7 +1671,10 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             `;
             document.body.appendChild(modal);
-            document.getElementById('closeVideoModalBtn').onclick = () => modal.remove();
+            const closeVideoModalBtn = document.getElementById('closeVideoModalBtn');
+            if (closeVideoModalBtn) {
+              closeVideoModalBtn.onclick = () => modal.remove();
+            }
           };
         }
       }
@@ -1657,7 +1700,10 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             `;
             document.body.appendChild(modal);
-            document.getElementById('closeTutorialModalBtn').onclick = () => modal.remove();
+            const closeTutorialModalBtn = document.getElementById('closeTutorialModalBtn');
+            if (closeTutorialModalBtn) {
+              closeTutorialModalBtn.onclick = () => modal.remove();
+            }
             // TODO: Track and update progress, persist to backend/localStorage
           };
         }
