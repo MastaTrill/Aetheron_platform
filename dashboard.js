@@ -49,6 +49,21 @@ function renderChartInstance(key, chartEl, config) {
   return window[key];
 }
 
+function normalizeDeFiRates(rawRates = {}) {
+  const supplyApy = Number(rawRates.supplyApy ?? rawRates.supplyAPY ?? 0);
+  const borrowApy = Number(rawRates.borrowApy ?? rawRates.borrowAPY ?? 0);
+
+  return {
+    ...rawRates,
+    supplyApy: Number.isFinite(supplyApy) ? supplyApy : 0,
+    borrowApy: Number.isFinite(borrowApy) ? borrowApy : 0,
+  };
+}
+
+function formatPercent(value) {
+  return `${(Number(value || 0) * 100).toFixed(2)}%`;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -250,16 +265,16 @@ class AetheronDashboard {
           })
         });
         const data = await response.json();
-        rates = data.data.reserves[0];
+        rates = normalizeDeFiRates(data?.data?.reserves?.[0] || {});
       } else if (protocol === 'compound') {
         const response = await fetch('https://api.compound.finance/api/v2/ctoken');
         const data = await response.json();
-        rates = {
+        rates = normalizeDeFiRates({
           supplyApy: data.cToken[0].supply_rate.value,
           borrowApy: data.cToken[0].borrow_rate.value
-        };
+        });
       } else if (protocol === '1inch') {
-        rates = { supplyApy: 0, borrowApy: 0, swapRate: 'See 1inch API' };
+        rates = normalizeDeFiRates({ supplyApy: 0, borrowApy: 0, swapRate: 'See 1inch API' });
       } else {
         throw new Error('Unsupported protocol');
       }
@@ -1155,7 +1170,7 @@ class AetheronDashboard {
     }
 
     if (holdersElement) {
-      holdersElement.textContent = this.communityStats.totalHolders.toString();
+      holdersElement.textContent = String(this.communityStats.totalHolders || 0);
     }
     // Hide quick stats spinner after data loads
     setTimeout(() => { if (quickStatsSpinner) quickStatsSpinner.style.display = 'none'; }, 800);
@@ -1163,9 +1178,11 @@ class AetheronDashboard {
 
   checkTradingMilestones() {
     // Check for milestone achievements
+    const volumeWarrior = this.achievements.find((a) => a.id === 'volume-warrior');
     if (
       this.tradingVolume >= 1000 &&
-      !this.achievements.find((a) => a.id === 'volume-warrior').unlocked
+      volumeWarrior &&
+      !volumeWarrior.unlocked
     ) {
       this.unlockAchievement('volume-warrior');
     }
@@ -1307,12 +1324,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('https://api.covalenthq.com/v1/137/address/' + dashboardApp.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
       .then(res => res.json())
       .then(data => {
-        if (el) el.textContent = 'Portfolio loaded: ' + (data.data.items.length) + ' tokens.';
+        const items = Array.isArray(data?.data?.items) ? data.data.items : [];
+        if (el) el.textContent = 'Portfolio loaded: ' + items.length + ' tokens.';
         // Render Chart.js pie chart with token balances
         const chartEl = document.getElementById('walletPortfolioChart');
-        if (chartEl && data.data.items.length > 0 && window.Chart) {
-          const labels = data.data.items.map(t => t.contract_ticker_symbol);
-          const values = data.data.items.map(t => t.balance / Math.pow(10, t.contract_decimals));
+        if (chartEl && items.length > 0 && window.Chart) {
+          const labels = items.map(t => t.contract_ticker_symbol);
+          const values = items.map(t => t.balance / Math.pow(10, t.contract_decimals));
           renderChartInstance('walletPortfolioBreakdownChart', chartEl, {
             type: 'pie',
             data: {
@@ -1382,12 +1400,13 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch('https://api.coingecko.com/api/v3/coins/aetheron/market_chart?vs_currency=usd&days=7')
         .then(res => res.json())
         .then(data => {
+          const prices = Array.isArray(data?.prices) ? data.prices : [];
           if (el) el.textContent = 'Performance loaded.';
           // Render Chart.js line chart
           const chartEl = document.getElementById('portfolioTrackerChart');
-          if (chartEl && data.prices && window.Chart) {
-            const labels = data.prices.map(p => new Date(p[0]).toLocaleDateString());
-            const values = data.prices.map(p => p[1]);
+          if (chartEl && prices.length > 0 && window.Chart) {
+            const labels = prices.map(p => new Date(p[0]).toLocaleDateString());
+            const values = prices.map(p => p[1]);
             renderChartInstance('portfolioTrackerChartInstance', chartEl, {
               type: 'line',
               data: {
@@ -1413,7 +1432,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('https://api.mocknotifications.com/aetheron/' + dashboardApp.walletAccount)
       .then(res => res.json())
       .then(data => {
-        if (el) el.textContent = 'Notifications loaded: ' + (data.notifications ? data.notifications.length : 0);
+        const notifications = Array.isArray(data?.notifications) ? data.notifications : [];
+        if (el) el.textContent = 'Notifications loaded: ' + notifications.length;
         // TODO: Render notifications
       })
       .catch(() => { if (el) el.textContent = 'Failed to load notifications.'; });
@@ -1510,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Example: Select protocol (Aave)
             const rates = await dashboardApp.getDeFiRates('aave');
             if (rates) {
-              el.textContent = `Aave Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
+              el.textContent = `Aave Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
               // Example: Execute lend action
               const success = await dashboardApp.executeDeFiAction('lend', { protocol: 'aave', amount: 100 });
               if (success) el.textContent += '\nLending successful!';
@@ -1536,7 +1556,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Example: Select protocol (Compound)
             const rates = await dashboardApp.getDeFiRates('compound');
             if (rates) {
-              el.textContent = `Compound Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
+              el.textContent = `Compound Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
               // Example: Execute yield farming action
               const success = await dashboardApp.executeDeFiAction('farm', { protocol: 'compound', amount: 50 });
               if (success) el.textContent += '\nYield farming started!';
@@ -1562,7 +1582,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Example: Use 1inch for swap
             const rates = await dashboardApp.getDeFiRates('1inch');
             if (rates) {
-              el.textContent = `1inch Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
+              el.textContent = `1inch Rates: Supply APY: ${formatPercent(rates.supplyApy)} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
               // Example: Execute swap action
               const success = await dashboardApp.executeDeFiAction('swap', { protocol: '1inch', from: 'AETH', to: 'MATIC', amount: 25 });
               if (success) el.textContent += '\nSwap successful!';
