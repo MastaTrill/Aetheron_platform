@@ -24,18 +24,28 @@ describe('AetheronMultiSigTreasury', function () {
     const to = addr1.address;
     const value = ethers.utils.parseEther('1');
     const data = '0x';
-    await expect(multiSig.submitTransaction(to, value, data)).to.emit(
-      multiSig,
-      'SubmitTransaction',
+    const tx = await multiSig.submitTransaction(to, value, data);
+    const receipt = await tx.wait();
+
+    const submitEvent = receipt.events.find(
+      (event) => event.event === 'SubmitTransaction',
     );
+
+    expect(submitEvent).to.not.equal(undefined);
   });
 
   it('should not allow non-owners to submit a transaction', async function () {
     const to = addr1.address;
     const value = ethers.utils.parseEther('1');
     const data = '0x';
-    await expect(
-      multiSig.connect(addr1).submitTransaction(to, value, data),
-    ).to.be.revertedWith('Ownable: caller is not the owner');
+    let errorMessage = '';
+
+    try {
+      await multiSig.connect(addr1).submitTransaction(to, value, data);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+
+    expect(errorMessage).to.contain('Ownable: caller is not the owner');
   });
 });

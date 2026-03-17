@@ -1,7 +1,5 @@
 require('@nomicfoundation/hardhat-verify');
 require('@nomiclabs/hardhat-ethers');
-require('@nomiclabs/hardhat-waffle');
-require('hardhat-gas-reporter');
 require('@openzeppelin/hardhat-upgrades');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -54,11 +52,6 @@ module.exports = {
       mainnet: process.env.ETHERSCAN_API_KEY || '',
       sepolia: process.env.ETHERSCAN_API_KEY || '',
     },
-  },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS === 'true',
-    currency: 'USD',
-    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   paths: {
     sources: './contracts',
