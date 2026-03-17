@@ -99,6 +99,21 @@ function initStubActionWidget({
   };
 }
 
+function createDashboardModal(contentHtml) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `<div class="modal-content">${contentHtml}</div>`;
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function bindModalClose(modal, closeButtonId) {
+  const closeButton = document.getElementById(closeButtonId);
+  if (closeButton) {
+    closeButton.onclick = () => modal.remove();
+  }
+}
+
 async function fetchGovernanceProposals(space = 'aetheron.eth') {
   const response = await fetch('https://hub.snapshot.org/graphql', {
     method: 'POST',
@@ -1727,24 +1742,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Open profile editor modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
-                <h2>Edit Profile</h2>
-                <label>Name: <input id="profileNameInput" type="text" value="Alex" /></label><br>
-                <label>Email: <input id="profileEmailInput" type="email" value="alex@email.com" /></label><br>
-                <button id="saveProfileBtn">Save</button>
-                <button id="closeProfileModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+            const modal = createDashboardModal(`
+              <h2>Edit Profile</h2>
+              <label>Name: <input id="profileNameInput" type="text" value="Alex" /></label><br>
+              <label>Email: <input id="profileEmailInput" type="email" value="alex@email.com" /></label><br>
+              <button id="saveProfileBtn">Save</button>
+              <button id="closeProfileModalBtn">Close</button>
+            `);
             const saveProfileBtn = document.getElementById('saveProfileBtn');
-
-            if (closeProfileModalBtn) {
-              closeProfileModalBtn.onclick = () => modal.remove();
-            }
+            bindModalClose(modal, 'closeProfileModalBtn');
 
             if (saveProfileBtn) {
               saveProfileBtn.onclick = () => {
@@ -1808,23 +1814,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Play onboarding video modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
-                <h2>Welcome to Aetheron!</h2>
-                <video controls autoplay width="400">
-                  <source src="onboarding.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                <button id="closeVideoModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            const closeVideoModalBtn = document.getElementById('closeVideoModalBtn');
-            if (closeVideoModalBtn) {
-              closeVideoModalBtn.onclick = () => modal.remove();
-            }
+            const modal = createDashboardModal(`
+              <h2>Welcome to Aetheron!</h2>
+              <video controls autoplay width="400">
+                <source src="onboarding.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <button id="closeVideoModalBtn">Close</button>
+            `);
+            bindModalClose(modal, 'closeVideoModalBtn');
           };
         }
       }
@@ -1835,10 +1833,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Launch interactive tutorial modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
+            const modal = createDashboardModal(`
                 <h2>Gamified Tutorial</h2>
                 <p>Complete tasks to earn badges and rewards!</p>
                 <ul>
@@ -1847,13 +1842,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <li>Vote in governance <span id="task3Status">❌</span></li>
                 </ul>
                 <button id="closeTutorialModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            const closeTutorialModalBtn = document.getElementById('closeTutorialModalBtn');
-            if (closeTutorialModalBtn) {
-              closeTutorialModalBtn.onclick = () => modal.remove();
-            }
+            `);
+            bindModalClose(modal, 'closeTutorialModalBtn');
             // TODO: Track and update progress, persist to backend/localStorage
           };
         }
