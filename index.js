@@ -51,6 +51,7 @@ let transactions = [];
 let priceWebSocket; // WebSocket for real-time price updates
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
+const APP_VERSION = '1.4.1';
 
 let detectionAttempts = 0;
 const maxAttempts = 5;
@@ -79,6 +80,10 @@ function initReadOnlyProvider() {
 }
 
 // Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setDefaultValues();
+});
+
 window.addEventListener('load', async () => {
     console.log('🚀 Aetheron Dashboard Loading...');
     
@@ -895,6 +900,11 @@ function copyContractAddress() {
 
 // Update live holder count
 async function updateHolderCount() {
+    const holdersCountEl = document.getElementById('liveHoldersCount');
+    if (!holdersCountEl) {
+        return;
+    }
+
     try {
         // Estimate holders based on total supply and average holding
         // In production, you'd query this from a backend or indexer
@@ -905,11 +915,13 @@ async function updateHolderCount() {
             // Rough estimate: use transaction count or volume as proxy
             const txCount = data.pairs[0].txns?.h24?.total || 0;
             const estimatedHolders = Math.max(Math.floor(txCount / 2) + 50, 100);
-            document.getElementById('liveHoldersCount').textContent = estimatedHolders + '+';
+            holdersCountEl.textContent = estimatedHolders + '+';
+        } else {
+            holdersCountEl.textContent = '100+';
         }
     } catch (error) {
         console.log('Could not fetch holder count:', error);
-        document.getElementById('liveHoldersCount').textContent = '100+';
+        holdersCountEl.textContent = '100+';
     }
 }
 
@@ -926,6 +938,15 @@ function toggleFAQ(index) {
 let lastPrice = null;
 
 async function updatePriceWithChange() {
+    const priceValueEl = document.getElementById('priceValue');
+    const arrow = document.getElementById('priceArrow');
+    const changePercent = document.getElementById('priceChangePercent');
+    const changeDiv = document.getElementById('priceChange');
+
+    if (!priceValueEl || !arrow || !changePercent || !changeDiv) {
+        return;
+    }
+
     try {
         const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
         const data = await response.json();
@@ -936,12 +957,7 @@ async function updatePriceWithChange() {
             const priceChange = parseFloat(pair.priceChange?.h24 || 0);
             
             // Update price value
-            document.getElementById('priceValue').textContent = `$${currentPrice.toFixed(8)}`;
-            
-            // Update price change indicator
-            const arrow = document.getElementById('priceArrow');
-            const changePercent = document.getElementById('priceChangePercent');
-            const changeDiv = document.getElementById('priceChange');
+            priceValueEl.textContent = `$${currentPrice.toFixed(8)}`;
             
             if (priceChange >= 0) {
                 arrow.className = 'fas fa-arrow-up';
@@ -954,9 +970,16 @@ async function updatePriceWithChange() {
             }
             
             lastPrice = currentPrice;
+        } else {
+            priceValueEl.textContent = '$0.00000001';
+            changeDiv.className = 'change positive';
+            changePercent.textContent = '+0.00%';
         }
     } catch (error) {
         console.log('Could not update price with change:', error);
+        priceValueEl.textContent = '$0.00000001';
+        changeDiv.className = 'change positive';
+        changePercent.textContent = '+0.00%';
     }
 }
 

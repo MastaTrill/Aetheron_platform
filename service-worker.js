@@ -1,26 +1,30 @@
-const CACHE_VERSION = 'v1.4.0';
+const CACHE_VERSION = 'v1.4.1';
 const CACHE_NAME = `aetheron-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `aetheron-runtime-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './index.min.js',
+  './index.js',
   './charts.min.js',
   './monitor.js',
   './performance-monitor.js',
   './marketing-launch.js',
   './shared-utils.js',
-  './critical.min.css',
+  './critical.css',
+  './index.css',
+  './shared-styles.css',
+  './mobile-optimization.css',
   './shared-mobile-polish.css',
+  './sw-init.js',
+  './dom-bindings.js',
+  './dashboard-starfield.js',
   './global-announcements.js',
   './announcements.json',
   './referral-leaderboard.json',
   './manifest.json',
+  './manifest.webmanifest',
   './offline.html',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
 ];
 
 self.addEventListener('install', (event) => {
