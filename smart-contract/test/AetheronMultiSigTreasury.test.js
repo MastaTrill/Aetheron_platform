@@ -5,6 +5,8 @@ import { deployUupsProxy } from '../utils/uups.mjs';
 
 const connection = await hre.network.connect();
 const { ethers } = connection;
+const MULTISIG_CONTRACT_FQN =
+  'contracts/AetheronMultiSigTreasury.sol:AetheronMultiSigTreasury';
 
 describe('AetheronMultiSigTreasury', { concurrency: false }, function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
@@ -14,7 +16,7 @@ describe('AetheronMultiSigTreasury', { concurrency: false }, function () {
   });
 
   beforeEach(async function () {
-    MultiSig = await ethers.getContractFactory('AetheronMultiSigTreasury');
+    MultiSig = await ethers.getContractFactory(MULTISIG_CONTRACT_FQN);
     ({ instance: multiSig } = await deployUupsProxy(MultiSig, [
       [owner.address, addr1.address, addr2.address],
       2,

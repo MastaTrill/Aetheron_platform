@@ -31,6 +31,7 @@ let account;
 let aethContract;
 let stakingContract;
 let dashboardMainInitialized = false;
+let walletEventsBound = false;
 
 function showGlobalLoading(show) {
   const spinner = document.getElementById('globalLoading');
@@ -47,6 +48,26 @@ function showToast(message, options = {}) {
       console.log('Toast:', message, options);
     } catch {}
     alert(message);
+  }
+}
+
+function dispatchWalletEvent(name, detail = {}) {
+  window.dispatchEvent(
+    new CustomEvent(name, {
+      detail,
+    }),
+  );
+}
+
+function syncLegacyDashboard(accountAddress = null) {
+  if (!window.dashboard) {
+    return;
+  }
+
+  if (typeof accountAddress === 'string' && accountAddress) {
+    window.dashboard.walletAccount = accountAddress;
+  } else if (!accountAddress) {
+    window.dashboard.walletAccount = null;
   }
 }
 
@@ -112,6 +133,15 @@ async function connectWallet(auto = false) {
       if (accountAddress) {
         accountAddress.textContent = account.slice(0, 6) + '...' + account.slice(-4);
       }
+      const walletType = document.getElementById('walletType');
+      if (walletType) {
+        walletType.textContent = 'MetaMask';
+      }
+      syncLegacyDashboard(account);
+      dispatchWalletEvent('aetheron:wallet-connected', {
+        account,
+        walletType: 'MetaMask',
+      });
       await updateBalances();
       success = true;
     } catch (err) {
@@ -134,6 +164,8 @@ async function connectWallet(auto = false) {
     if (ethBalance) ethBalance.textContent = '--';
     if (aethBalance) aethBalance.textContent = '--';
     // Add more fallback for holders, staked, market cap, health if needed
+    syncLegacyDashboard(null);
+    dispatchWalletEvent('aetheron:wallet-disconnected');
   }
   showGlobalLoading(false);
 }
@@ -181,6 +213,54 @@ async function updateBalances() {
     if (aethBalance) aethBalance.textContent = '--';
     console.error('Failed to fetch AETH balance:', err);
   }
+}
+
+function handleAccountsChanged(accounts) {
+  if (Array.isArray(accounts) && accounts.length > 0) {
+    account = accounts[0];
+    syncLegacyDashboard(account);
+    dispatchWalletEvent('aetheron:wallet-connected', {
+      account,
+      walletType: 'MetaMask',
+    });
+    updateBalances();
+    return;
+  }
+
+  account = null;
+  provider = undefined;
+  signer = undefined;
+  aethContract = undefined;
+  stakingContract = undefined;
+  localStorage.removeItem('aetheron_connected');
+
+  const walletInfo = document.getElementById('walletInfo');
+  if (walletInfo) {
+    walletInfo.classList.remove('active');
+  }
+
+  const accountAddress = document.getElementById('accountAddress');
+  if (accountAddress) {
+    accountAddress.textContent = '-';
+  }
+
+  updateBalances();
+  syncLegacyDashboard(null);
+  dispatchWalletEvent('aetheron:wallet-disconnected');
+}
+
+function bindWalletEvents() {
+  if (walletEventsBound || !window.ethereum || typeof window.ethereum.on !== 'function') {
+    return;
+  }
+
+  walletEventsBound = true;
+  window.ethereum.on('accountsChanged', handleAccountsChanged);
+  window.ethereum.on('chainChanged', () => {
+    if (account) {
+      updateBalances();
+    }
+  });
 }
 
 async function transferTokens() {
@@ -242,6 +322,7 @@ function initDashboardMain() {
   }
 
   dashboardMainInitialized = true;
+  bindWalletEvents();
   autoReconnect();
 
   const connectBtn = document.getElementById('connectBtn');

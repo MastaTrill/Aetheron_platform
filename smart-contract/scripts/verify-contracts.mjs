@@ -1,10 +1,11 @@
 import fs from 'fs';
+import hre from 'hardhat';
 import dotenv from 'dotenv';
+import { verifyContract } from '@nomicfoundation/hardhat-verify/verify';
 
 dotenv.config();
 
 const cliArgs = process.argv.slice(2);
-const allNetworks = ['polygon', 'mumbai', 'goerli', 'mainnet', 'sepolia'];
 const allContractTypes = ['Aetheron', 'AetxToken', 'AetheronStaking'];
 const explorerBaseUrls = {
   polygon: 'https://polygonscan.com',
@@ -14,24 +15,11 @@ const explorerBaseUrls = {
   sepolia: 'https://sepolia.etherscan.io',
 };
 
-let networks = [];
-let contractTypes = [];
-
-for (const arg of cliArgs) {
-  if (allNetworks.includes(arg.toLowerCase())) {
-    networks.push(arg.toLowerCase());
-  } else if (allContractTypes.includes(arg)) {
-    contractTypes.push(arg);
-  }
-}
-
-if (networks.length === 0) {
-  networks = [process.env.NETWORK || 'polygon'];
-}
-
-if (contractTypes.length === 0) {
-  contractTypes = allContractTypes;
-}
+const requestedContractTypes = cliArgs.filter((arg) =>
+  allContractTypes.includes(arg),
+);
+const contractTypes =
+  requestedContractTypes.length > 0 ? requestedContractTypes : allContractTypes;
 
 const TEAM_WALLET = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
 const MARKETING_WALLET = '0x8D3442424F8F6BEEd97496C7E54e056166f96746';
@@ -43,11 +31,17 @@ function fail(message, code = 1) {
 }
 
 function readContractAddresses(network) {
-  if (fs.existsSync('deployment-info.json')) {
-    const deploymentData = JSON.parse(fs.readFileSync('deployment-info.json', 'utf8'));
+  const candidateFiles = ['deployment-info.json', 'deployment.json'];
+
+  for (const fileName of candidateFiles) {
+    if (!fs.existsSync(fileName)) {
+      continue;
+    }
+
+    const deploymentData = JSON.parse(fs.readFileSync(fileName, 'utf8'));
     let networkData = deploymentData;
 
-    if (deploymentData.networks && deploymentData.networks[network]) {
+    if (deploymentData.networks?.[network]) {
       networkData = deploymentData.networks[network];
     }
 
@@ -57,6 +51,19 @@ function readContractAddresses(network) {
       networkData.contracts?.AetheronStaking?.address
     ) {
       return networkData.contracts;
+    }
+
+    if (
+      networkData.contracts?.Aetheron &&
+      networkData.contracts?.AetheronStaking
+    ) {
+      return {
+        Aetheron: { address: networkData.contracts.Aetheron },
+        AetxToken: {
+          address: deploymentData.contracts?.AetxToken || process.env.AETH_TOKEN_ADDRESS,
+        },
+        AetheronStaking: { address: networkData.contracts.AetheronStaking },
+      };
     }
   }
 
@@ -85,10 +92,18 @@ function getConstructorArgs(contractType, contractAddresses) {
   return [];
 }
 
-function printManualInstructions(network, contractType, address, constructorArgs) {
+function getApiKeyForNetwork(network) {
+  if (network === 'polygon' || network === 'mumbai') {
+    return process.env.POLYGONSCAN_API_KEY || process.env.ETHERSCAN_API_KEY || '';
+  }
+
+  return process.env.ETHERSCAN_API_KEY || '';
+}
+
+function printVerificationTarget(network, contractType, address, constructorArgs) {
   const explorerBaseUrl = explorerBaseUrls[network] || explorerBaseUrls.polygon;
 
-  console.log(`Manual verification steps for ${contractType}:`);
+  console.log(`Verification target for ${contractType}:`);
   console.log(`  Explorer page: ${explorerBaseUrl}/address/${address}#code`);
   console.log('  Compiler: v0.8.20');
   console.log('  Optimization: enabled, 200 runs');
@@ -102,36 +117,70 @@ function printManualInstructions(network, contractType, address, constructorArgs
 }
 
 async function main() {
+  const network = hre.network.name;
   const results = [];
+  const apiKey = getApiKeyForNetwork(network);
 
-  for (const network of networks) {
-    console.log(`\nVerification Guide for network: ${network}`);
-    console.log('='.repeat(60));
+  console.log(`\nVerification Run for network: ${network}`);
+  console.log('='.repeat(60));
 
-    const contractAddresses = readContractAddresses(network);
-    if (
-      !contractAddresses.Aetheron?.address ||
-      !contractAddresses.AetxToken?.address ||
-      !contractAddresses.AetheronStaking?.address
-    ) {
-      fail(`Missing contract addresses for network "${network}".`, 2);
+  if (!apiKey) {
+    fail(
+      `Missing explorer API key for network "${network}". Set ETHERSCAN_API_KEY or POLYGONSCAN_API_KEY before verifying.`,
+      2,
+    );
+  }
+
+  const contractAddresses = readContractAddresses(network);
+  if (
+    !contractAddresses.Aetheron?.address ||
+    !contractAddresses.AetxToken?.address ||
+    !contractAddresses.AetheronStaking?.address
+  ) {
+    fail(`Missing contract addresses for network "${network}".`, 2);
+  }
+
+  for (const contractType of contractTypes) {
+    const address = contractAddresses[contractType]?.address;
+    if (!address) {
+      console.error(`Address for ${contractType} not found. Skipping.`);
+      continue;
     }
 
-    for (const contractType of contractTypes) {
-      const address = contractAddresses[contractType]?.address;
-      if (!address) {
-        console.error(`Address for ${contractType} not found. Skipping.`);
-        continue;
-      }
+    const constructorArgs = getConstructorArgs(contractType, contractAddresses);
+    printVerificationTarget(network, contractType, address, constructorArgs);
 
-      const constructorArgs = getConstructorArgs(contractType, contractAddresses);
-      printManualInstructions(network, contractType, address, constructorArgs);
+    try {
+      await verifyContract(
+        {
+          address,
+          constructorArgs,
+          provider: 'etherscan',
+        },
+        hre,
+      );
+
       results.push({
         network,
         contract: contractType,
         address,
-        status: 'manual',
-        message: 'Printed manual verification steps',
+        status: 'verified',
+        message: 'Verified through Hardhat verify',
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const normalizedMessage = message.toLowerCase();
+      const alreadyVerified =
+        normalizedMessage.includes('already verified') ||
+        normalizedMessage.includes('already been verified') ||
+        normalizedMessage.includes('source code already verified');
+
+      results.push({
+        network,
+        contract: contractType,
+        address,
+        status: alreadyVerified ? 'already-verified' : 'failed',
+        message: alreadyVerified ? 'Explorer already has verified source' : message,
       });
     }
   }

@@ -1,31 +1,37 @@
-// scripts/verify-upgradeable.js
-// Verifies the implementation contract behind the proxy on Etherscan
-
-const { run, upgrades } = require('hardhat');
+import hre from 'hardhat';
+import { verifyContract } from '@nomicfoundation/hardhat-verify/verify';
+import { getImplementationAddress } from '../utils/uups.mjs';
 
 async function main() {
   const proxyAddress = process.argv[2];
   if (!proxyAddress) {
     throw new Error(
-      'Proxy address required: node scripts/verify-upgradeable.js <proxyAddress>',
+      'Proxy address required: hardhat run scripts/verify-upgradeable.js --network <network> -- <proxyAddress>',
     );
   }
-  const implAddress = await upgrades.erc1967.getImplementationAddress(
+
+  const connection = await hre.network.connect();
+  const { ethers } = connection;
+  const implementationAddress = await getImplementationAddress(
+    ethers.provider,
     proxyAddress,
   );
-  console.log('Implementation address:', implAddress);
 
-  // The constructor args for implementation are empty (UUPS pattern)
-  await run('verify:verify', {
-    address: implAddress,
-    constructorArguments: [],
-  });
+  console.log('Implementation address:', implementationAddress);
+
+  await verifyContract(
+    {
+      address: implementationAddress,
+      constructorArgs: [],
+      provider: 'etherscan',
+    },
+    hre,
+  );
+
   console.log('Verification submitted for implementation contract.');
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

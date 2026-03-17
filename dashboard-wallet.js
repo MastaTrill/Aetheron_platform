@@ -22,6 +22,22 @@ const walletStatusIcon = document.getElementById('walletStatusIcon');
 const walletTypeEl = document.getElementById('walletType');
 const walletInfo = document.getElementById('walletInfo');
 
+function dispatchWalletEvent(name, detail = {}) {
+  window.dispatchEvent(
+    new CustomEvent(name, {
+      detail,
+    }),
+  );
+}
+
+function syncLegacyDashboard(accountAddress = null) {
+  if (!window.dashboard) {
+    return;
+  }
+
+  window.dashboard.walletAccount = accountAddress || null;
+}
+
 function createInjectedProvider(injectedProvider) {
   if (ethers && typeof ethers.BrowserProvider === 'function') {
     return new ethers.BrowserProvider(injectedProvider);
@@ -54,6 +70,11 @@ async function connectMetaMask() {
   });
   walletAccount = accounts[0];
   updateWalletUI();
+  syncLegacyDashboard(walletAccount);
+  dispatchWalletEvent('aetheron:wallet-connected', {
+    account: walletAccount,
+    walletType,
+  });
 }
 
 async function connectWalletConnect() {
@@ -71,6 +92,11 @@ async function connectWalletConnect() {
   const accounts = wcProvider.accounts;
   walletAccount = accounts[0];
   updateWalletUI();
+  syncLegacyDashboard(walletAccount);
+  dispatchWalletEvent('aetheron:wallet-connected', {
+    account: walletAccount,
+    walletType,
+  });
 }
 
 function updateWalletUI() {

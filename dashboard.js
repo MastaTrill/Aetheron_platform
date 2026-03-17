@@ -36,9 +36,11 @@ class AetheronDashboard {
     this.communityStats = {};
     this.achievements = [];
     this.currentSection = 'dashboard';
+    this.walletAccount = null;
     this.referralCode = this.generateReferralCode();
     
     // Initialize all setup methods
+    this.bindWalletBridge();
     this.setupTradingIncentives();
     this.setupCommunityFeatures();
     this.setupEventListeners();
@@ -77,6 +79,7 @@ class AetheronDashboard {
   }
 
   handleWalletConnected(account) {
+    this.syncWalletAccount(account);
     this.notify('Wallet connected', 'success');
     const spinner = document.getElementById('walletLoadingSpinner');
     this.refreshBalances();
@@ -93,6 +96,80 @@ class AetheronDashboard {
     } else {
       this.updateWalletStatusBar(false);
       if (spinner) spinner.style.display = 'none';
+    }
+  }
+
+  async connectWallet(walletType = 'metamask') {
+    if (walletType === 'walletconnect' && typeof window.connectWalletConnect === 'function') {
+      await window.connectWalletConnect();
+      return this.syncWalletAccount();
+    }
+
+    if (typeof window.connectWallet === 'function') {
+      await window.connectWallet(false);
+      return this.syncWalletAccount();
+    }
+
+    if (typeof window.connectMetaMask === 'function') {
+      await window.connectMetaMask();
+      return this.syncWalletAccount();
+    }
+
+    throw new Error('Wallet connector is still loading.');
+  }
+
+  bindWalletBridge() {
+    window.addEventListener('aetheron:wallet-connected', (event) => {
+      if (event.detail?.walletType) {
+        const walletTypeEl = document.getElementById('walletType');
+        if (walletTypeEl) {
+          walletTypeEl.textContent = event.detail.walletType;
+        }
+      }
+      this.handleWalletConnected(event.detail?.account || null);
+    });
+
+    window.addEventListener('aetheron:wallet-disconnected', () => {
+      this.walletAccount = null;
+      this.updateWalletStatusBar(false);
+    });
+
+    this.syncWalletAccount();
+  }
+
+  syncWalletAccount(account = null) {
+    const normalizedAccount =
+      account ||
+      window.ethereum?.selectedAddress ||
+      localStorage.getItem('aetheron_connected') ||
+      null;
+
+    this.walletAccount = normalizedAccount;
+    return this.walletAccount;
+  }
+
+  updateWalletStatusBar(isConnected) {
+    const walletStatusText = document.getElementById('walletStatusText');
+    const walletStatusIcon = document.getElementById('walletStatusIcon');
+    const walletTypeEl = document.getElementById('walletType');
+    const walletInfo = document.getElementById('walletInfo');
+
+    if (walletInfo) {
+      walletInfo.classList.toggle('active', Boolean(isConnected));
+    }
+
+    if (walletStatusText) {
+      walletStatusText.textContent = isConnected
+        ? 'Wallet connected'
+        : 'Wallet not connected';
+    }
+
+    if (walletStatusIcon) {
+      walletStatusIcon.textContent = isConnected ? 'Connected' : 'Disconnected';
+    }
+
+    if (walletTypeEl && !isConnected) {
+      walletTypeEl.textContent = '-';
     }
   }
 
@@ -493,10 +570,6 @@ class AetheronDashboard {
         if (params.protocol === 'uniswap') {
           // ...existing Uniswap liquidity logic...
         } else if (params.protocol === 'sushiswap') {
-            // SushiSwap add liquidity logic (simplified)
-            if (!window.ethereum) throw new Error('Wallet not found');
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send('eth_requestAccounts', []);
             // SushiSwap add liquidity logic (simplified)
             if (!window.ethereum) throw new Error('Wallet not found');
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -1155,6 +1228,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function initWalletPortfolio() {
     const el = document.getElementById('walletPortfolioPlaceholder');
     if (el) el.textContent = 'Loading wallet portfolio...';
+    if (!window.dashboard.walletAccount) {
+      if (el) el.textContent = 'Connect your wallet to load your portfolio.';
+      return;
+    }
     fetch('https://api.covalenthq.com/v1/137/address/' + window.dashboard.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
       .then(res => res.json())
       .then(data => {
@@ -1255,6 +1332,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function initNotifications() {
     const el = document.getElementById('notificationsPlaceholder');
     if (el) el.textContent = 'Loading notifications...';
+    if (!window.dashboard.walletAccount) {
+      if (el) el.textContent = 'Connect your wallet to load notifications.';
+      return;
+    }
     // Example: Fetch notifications (stub)
     fetch('https://api.mocknotifications.com/aetheron/' + window.dashboard.walletAccount)
       .then(res => res.json())
@@ -1856,6 +1937,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  initCommunityChat();
+  initNFTGallery();
+  initGasFeeEstimator();
+  initReferralLeaderboard();
+  initLanguageSelector();
+  initAdvancedAnalytics();
+});
 
 // Add some startup animations
 // Note: The initialization functions are now handled by the AetheronDashboard class constructor

@@ -32,7 +32,7 @@ switch (action) {
     ];
     break;
   case 'verify':
-    steps = [{ command: 'node', args: ['scripts/verify-contracts.mjs'] }];
+    steps = [{ command: 'npm', args: ['run', 'verify:polygon'] }];
     break;
   default:
     console.error(`Unknown action: ${action || '(missing)'}`);
