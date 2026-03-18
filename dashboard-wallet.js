@@ -52,6 +52,28 @@ function createInjectedProvider(injectedProvider) {
   throw new Error('Compatible ethers provider API not found.');
 }
 
+function getWalletConnectProjectId() {
+  const metaProjectId = document
+    .querySelector('meta[name="walletconnect-project-id"]')
+    ?.getAttribute('content')
+    ?.trim();
+  const runtimeProjectId =
+    typeof window.AETHERON_WALLETCONNECT_PROJECT_ID === 'string'
+      ? window.AETHERON_WALLETCONNECT_PROJECT_ID.trim()
+      : '';
+
+  return runtimeProjectId || metaProjectId || '';
+}
+
+function showWalletMessage(message, type = 'info') {
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, { type });
+    return;
+  }
+
+  alert(message);
+}
+
 function getWalletConnectProviderCtor() {
   if (
     window.WalletConnectProvider &&
@@ -157,16 +179,31 @@ async function connectMetaMask() {
 }
 
 async function connectWalletConnect(options = {}) {
+  if (!getWalletConnectProjectId()) {
+    const message =
+      'WalletConnect QR is not configured on this deployment yet. Use MetaMask or Coinbase Wallet instead.';
+
+    if (
+      typeof window.connectWallet === 'function' &&
+      window.ethereum
+    ) {
+      showWalletMessage(`${message} Opening your browser wallet now.`, 'warning');
+      return window.connectWallet({
+        auto: Boolean(options.auto),
+        walletType: 'browser',
+      });
+    }
+
+    showWalletMessage(message, 'warning');
+    return null;
+  }
+
   let WalletConnectCtor;
   try {
     WalletConnectCtor = await loadWalletConnectProvider();
   } catch (error) {
     const message = 'WalletConnect failed to load. Please refresh and try again.';
-    if (typeof window.showToast === 'function') {
-      window.showToast(message, { type: 'error' });
-    } else {
-      alert(message);
-    }
+    showWalletMessage(message, 'error');
     throw error;
   }
 
@@ -278,6 +315,11 @@ function initWalletBindings() {
   }
 
   if (walletConnectBtn) {
+    if (!getWalletConnectProjectId()) {
+      walletConnectBtn.title =
+        'WalletConnect QR is not configured for this deployment. The button will fall back to browser wallets.';
+    }
+
     walletConnectBtn.addEventListener('click', () => {
       connectWalletConnect().catch((error) => {
         console.error('WalletConnect failed:', error);

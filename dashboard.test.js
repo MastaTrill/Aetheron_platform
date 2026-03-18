@@ -166,6 +166,7 @@ describe('Dashboard wallet wiring', () => {
     window.WalletConnectProvider = {
       default: jest.fn(() => wcProvider),
     };
+    window.AETHERON_WALLETCONNECT_PROJECT_ID = 'test-project-id';
 
     runScript(context, 'dashboard-main.js');
     runScript(context, 'dashboard-wallet.js');
@@ -221,6 +222,7 @@ describe('Dashboard wallet wiring', () => {
       on: jest.fn(),
       request: jest.fn().mockRejectedValue({ code: -32601 }),
     };
+    window.AETHERON_WALLETCONNECT_PROJECT_ID = 'test-project-id';
 
     runScript(context, 'dashboard-main.js');
     runScript(context, 'dashboard-wallet.js');
@@ -240,6 +242,41 @@ describe('Dashboard wallet wiring', () => {
 
     expect(window.WalletConnectProvider.default).toHaveBeenCalled();
     expect(document.getElementById('walletType').textContent).toBe('WalletConnect');
+  });
+
+  test('WalletConnect falls back to browser wallets when no project ID is configured', async () => {
+    const { window, context } = createDashboardContext(
+      `
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <button id="connectBtn">Connect</button>
+            <button id="walletConnectBtn">WalletConnect</button>
+            <span id="walletStatusText"></span>
+            <span id="walletStatusIcon"></span>
+            <span id="walletType">-</span>
+            <span id="accountAddress">-</span>
+            <span id="ethBalance">-</span>
+            <span id="aethBalance">-</span>
+          </body>
+        </html>
+      `,
+    );
+
+    window.ethereum = { isMetaMask: true };
+    window.AETHERON_WALLETCONNECT_PROJECT_ID = '';
+    window.WalletConnectProvider = undefined;
+    window.connectWallet = jest.fn().mockResolvedValue(true);
+
+    runScript(context, 'dashboard-wallet.js');
+
+    await window.connectWalletConnect();
+
+    expect(window.connectWallet).toHaveBeenCalledWith({
+      auto: false,
+      walletType: 'browser',
+    });
+    expect(window.showToast).toHaveBeenCalled();
   });
 
   test('body actions wire profile and referral buttons', async () => {
