@@ -188,6 +188,60 @@ describe('Dashboard wallet wiring', () => {
     expect(window.dashboard.walletAccount).toBe(account);
   });
 
+  test('WalletConnect lazy-loads the provider script when needed', async () => {
+    const account = '0x9999999999999999999999999999999999999999';
+    const { window, document, context } = createDashboardContext(
+      `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+          </head>
+          <body>
+            <button id="connectBtn">Connect</button>
+            <button id="walletConnectBtn">WalletConnect</button>
+            <div id="walletInfo"></div>
+            <span id="walletStatusText"></span>
+            <span id="walletStatusIcon"></span>
+            <span id="walletType">-</span>
+            <span id="accountAddress">-</span>
+            <span id="ethBalance">-</span>
+            <span id="aethBalance">-</span>
+          </body>
+        </html>
+      `,
+      {
+        connectedAccount: account,
+      },
+    );
+
+    const wcProvider = {
+      accounts: [account],
+      enable: jest.fn().mockResolvedValue([account]),
+      on: jest.fn(),
+      request: jest.fn().mockRejectedValue({ code: -32601 }),
+    };
+
+    runScript(context, 'dashboard-main.js');
+    runScript(context, 'dashboard-wallet.js');
+
+    const providerScript = document.querySelector(
+      'script[src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"]',
+    );
+
+    setTimeout(() => {
+      window.WalletConnectProvider = {
+        default: jest.fn(() => wcProvider),
+      };
+      providerScript.dispatchEvent(new window.Event('load'));
+    }, 0);
+
+    await window.connectWalletConnect();
+
+    expect(window.WalletConnectProvider.default).toHaveBeenCalled();
+    expect(document.getElementById('walletType').textContent).toBe('WalletConnect');
+  });
+
   test('body actions wire profile and referral buttons', async () => {
     const account = '0xabc1230000000000000000000000000000000000';
     const { window, document, context } = createDashboardContext(

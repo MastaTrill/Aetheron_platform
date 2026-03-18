@@ -6,10 +6,13 @@
 let walletProvider = null;
 let walletType = null;
 let walletAccount = null;
+const WALLETCONNECT_PROVIDER_SRC =
+  'https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js';
 
 // WalletConnect provider instance
 let wcProvider = null;
 let walletBindingsInitialized = false;
+let walletConnectLoaderPromise = null;
 
 // 1inch aggregator API endpoint (Polygon)
 const AGGREGATOR_API = 'https://api.1inch.io/v5.0/137';
@@ -47,6 +50,73 @@ function createInjectedProvider(injectedProvider) {
   }
 
   throw new Error('Compatible ethers provider API not found.');
+}
+
+function getWalletConnectProviderCtor() {
+  if (
+    window.WalletConnectProvider &&
+    typeof window.WalletConnectProvider.default === 'function'
+  ) {
+    return window.WalletConnectProvider.default;
+  }
+
+  if (typeof window.WalletConnectProvider === 'function') {
+    return window.WalletConnectProvider;
+  }
+
+  return null;
+}
+
+function loadWalletConnectProvider() {
+  const existingCtor = getWalletConnectProviderCtor();
+  if (existingCtor) {
+    return Promise.resolve(existingCtor);
+  }
+
+  if (walletConnectLoaderPromise) {
+    return walletConnectLoaderPromise;
+  }
+
+  walletConnectLoaderPromise = new Promise((resolve, reject) => {
+    const finish = () => {
+      const ctor = getWalletConnectProviderCtor();
+      if (ctor) {
+        resolve(ctor);
+        return;
+      }
+
+      reject(
+        new Error('WalletConnect loaded, but no provider constructor was found.'),
+      );
+    };
+
+    const fail = () => {
+      reject(new Error('WalletConnect failed to load from the CDN.'));
+    };
+
+    const existingScript = document.querySelector(
+      `script[src="${WALLETCONNECT_PROVIDER_SRC}"]`,
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener('load', finish, { once: true });
+      existingScript.addEventListener('error', fail, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = WALLETCONNECT_PROVIDER_SRC;
+    script.async = true;
+    script.dataset.walletconnectProvider = 'true';
+    script.addEventListener('load', finish, { once: true });
+    script.addEventListener('error', fail, { once: true });
+    (document.head || document.body || document.documentElement).appendChild(script);
+  }).catch((error) => {
+    walletConnectLoaderPromise = null;
+    throw error;
+  });
+
+  return walletConnectLoaderPromise;
 }
 
 function setWalletState(nextAccount, nextType, nextProvider) {
@@ -87,12 +157,20 @@ async function connectMetaMask() {
 }
 
 async function connectWalletConnect(options = {}) {
-  if (!window.WalletConnectProvider) {
-    alert('WalletConnectProvider not loaded.');
-    return;
+  let WalletConnectCtor;
+  try {
+    WalletConnectCtor = await loadWalletConnectProvider();
+  } catch (error) {
+    const message = 'WalletConnect failed to load. Please refresh and try again.';
+    if (typeof window.showToast === 'function') {
+      window.showToast(message, { type: 'error' });
+    } else {
+      alert(message);
+    }
+    throw error;
   }
 
-  wcProvider = new window.WalletConnectProvider.default({
+  wcProvider = new WalletConnectCtor({
     rpc: { 137: 'https://polygon-rpc.com' },
     chainId: 137,
   });
