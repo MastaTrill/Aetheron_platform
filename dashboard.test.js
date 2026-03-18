@@ -80,6 +80,7 @@ function createDashboardContext(html, options = {}) {
     Event: window.Event,
     Node: window.Node,
     HTMLElement: window.HTMLElement,
+    URL,
     ethers,
   });
 
@@ -158,13 +159,15 @@ describe('Dashboard wallet wiring', () => {
 
     const wcProvider = {
       accounts: [account],
-      enable: jest.fn().mockResolvedValue([account]),
+      connect: jest.fn().mockResolvedValue([account]),
       on: jest.fn(),
       request: jest.fn().mockRejectedValue({ code: -32601 }),
     };
 
-    window.WalletConnectProvider = {
-      default: jest.fn(() => wcProvider),
+    window['@walletconnect/ethereum-provider'] = {
+      EthereumProvider: {
+        init: jest.fn().mockResolvedValue(wcProvider),
+      },
     };
     window.AETHERON_WALLETCONNECT_PROJECT_ID = 'test-project-id';
 
@@ -173,7 +176,10 @@ describe('Dashboard wallet wiring', () => {
 
     await window.connectWalletConnect();
 
-    expect(window.WalletConnectProvider.default).toHaveBeenCalled();
+    expect(
+      window['@walletconnect/ethereum-provider'].EthereumProvider.init,
+    ).toHaveBeenCalled();
+    expect(wcProvider.connect).toHaveBeenCalled();
     expect(localStorage.setItem).toHaveBeenCalledWith(
       'aetheron_connected_wallet',
       'walletconnect',
@@ -189,14 +195,14 @@ describe('Dashboard wallet wiring', () => {
     expect(window.dashboard.walletAccount).toBe(account);
   });
 
-  test('WalletConnect lazy-loads the provider script when needed', async () => {
+  test('WalletConnect passes app metadata into the v2 connector', async () => {
     const account = '0x9999999999999999999999999999999999999999';
     const { window, document, context } = createDashboardContext(
       `
         <!DOCTYPE html>
         <html>
           <head>
-            <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+            <meta name="walletconnect-project-id" content="test-project-id">
           </head>
           <body>
             <button id="connectBtn">Connect</button>
@@ -218,29 +224,34 @@ describe('Dashboard wallet wiring', () => {
 
     const wcProvider = {
       accounts: [account],
-      enable: jest.fn().mockResolvedValue([account]),
+      connect: jest.fn().mockResolvedValue([account]),
       on: jest.fn(),
       request: jest.fn().mockRejectedValue({ code: -32601 }),
     };
-    window.AETHERON_WALLETCONNECT_PROJECT_ID = 'test-project-id';
+    window['@walletconnect/ethereum-provider'] = {
+      EthereumProvider: {
+        init: jest.fn().mockResolvedValue(wcProvider),
+      },
+    };
 
     runScript(context, 'dashboard-main.js');
     runScript(context, 'dashboard-wallet.js');
 
-    const providerScript = document.querySelector(
-      'script[src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"]',
-    );
-
-    setTimeout(() => {
-      window.WalletConnectProvider = {
-        default: jest.fn(() => wcProvider),
-      };
-      providerScript.dispatchEvent(new window.Event('load'));
-    }, 0);
-
     await window.connectWalletConnect();
 
-    expect(window.WalletConnectProvider.default).toHaveBeenCalled();
+    expect(
+      window['@walletconnect/ethereum-provider'].EthereumProvider.init,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          description: 'Aetheron Platform Dashboard',
+          name: 'Aetheron Platform',
+        }),
+        optionalChains: [137],
+        projectId: 'test-project-id',
+        showQrModal: true,
+      }),
+    );
     expect(document.getElementById('walletType').textContent).toBe('WalletConnect');
   });
 

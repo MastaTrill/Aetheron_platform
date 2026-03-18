@@ -1,18 +1,16 @@
 // dashboard-wallet.js
 // WalletConnect and DEX aggregator integration for Aetheron Platform
 
-// Assumes ethers.js and @walletconnect/web3-provider are loaded globally
+// Assumes ethers.js is loaded globally. WalletConnect v2 is provided by the
+// official @walletconnect/ethereum-provider UMD script when a project ID is configured.
 
 let walletProvider = null;
 let walletType = null;
 let walletAccount = null;
-const WALLETCONNECT_PROVIDER_SRC =
-  'https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js';
 
 // WalletConnect provider instance
 let wcProvider = null;
 let walletBindingsInitialized = false;
-let walletConnectLoaderPromise = null;
 
 // 1inch aggregator API endpoint (Polygon)
 const AGGREGATOR_API = 'https://api.1inch.io/v5.0/137';
@@ -74,71 +72,78 @@ function showWalletMessage(message, type = 'info') {
   alert(message);
 }
 
-function getWalletConnectProviderCtor() {
-  if (
-    window.WalletConnectProvider &&
-    typeof window.WalletConnectProvider.default === 'function'
-  ) {
-    return window.WalletConnectProvider.default;
+function getWalletConnectEthereumProvider() {
+  const walletConnectPackage = window['@walletconnect/ethereum-provider'];
+
+  if (walletConnectPackage?.EthereumProvider?.init) {
+    return walletConnectPackage.EthereumProvider;
   }
 
-  if (typeof window.WalletConnectProvider === 'function') {
-    return window.WalletConnectProvider;
+  if (walletConnectPackage?.default?.init) {
+    return walletConnectPackage.default;
   }
 
   return null;
 }
 
-function loadWalletConnectProvider() {
-  const existingCtor = getWalletConnectProviderCtor();
-  if (existingCtor) {
-    return Promise.resolve(existingCtor);
+function getWalletConnectMetadata() {
+  const currentHref =
+    window.location?.href || 'https://mastatrill.github.io/Aetheron_platform/dashboard.html';
+  const currentOrigin =
+    window.location?.origin || 'https://mastatrill.github.io';
+
+  return {
+    description: 'Aetheron Platform Dashboard',
+    icons: [new URL('apple-touch-icon.png', currentHref).href],
+    name: 'Aetheron Platform',
+    url: currentOrigin,
+  };
+}
+
+async function getWalletConnectProvider() {
+  if (wcProvider) {
+    return wcProvider;
   }
 
-  if (walletConnectLoaderPromise) {
-    return walletConnectLoaderPromise;
+  const projectId = getWalletConnectProjectId();
+  const EthereumProvider = getWalletConnectEthereumProvider();
+
+  if (!projectId || !EthereumProvider) {
+    return null;
   }
 
-  walletConnectLoaderPromise = new Promise((resolve, reject) => {
-    const finish = () => {
-      const ctor = getWalletConnectProviderCtor();
-      if (ctor) {
-        resolve(ctor);
-        return;
-      }
-
-      reject(
-        new Error('WalletConnect loaded, but no provider constructor was found.'),
-      );
-    };
-
-    const fail = () => {
-      reject(new Error('WalletConnect failed to load from the CDN.'));
-    };
-
-    const existingScript = document.querySelector(
-      `script[src="${WALLETCONNECT_PROVIDER_SRC}"]`,
-    );
-
-    if (existingScript) {
-      existingScript.addEventListener('load', finish, { once: true });
-      existingScript.addEventListener('error', fail, { once: true });
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = WALLETCONNECT_PROVIDER_SRC;
-    script.async = true;
-    script.dataset.walletconnectProvider = 'true';
-    script.addEventListener('load', finish, { once: true });
-    script.addEventListener('error', fail, { once: true });
-    (document.head || document.body || document.documentElement).appendChild(script);
-  }).catch((error) => {
-    walletConnectLoaderPromise = null;
-    throw error;
+  wcProvider = await EthereumProvider.init({
+    events: ['chainChanged', 'accountsChanged'],
+    methods: [
+      'eth_requestAccounts',
+      'eth_accounts',
+      'eth_chainId',
+      'eth_sendTransaction',
+      'eth_signTransaction',
+      'eth_sign',
+      'personal_sign',
+      'eth_signTypedData',
+    ],
+    metadata: getWalletConnectMetadata(),
+    optionalChains: [137],
+    projectId,
+    rpcMap: {
+      137: `https://rpc.walletconnect.com?chainId=eip155:137&projectId=${projectId}`,
+    },
+    showQrModal: true,
   });
 
-  return walletConnectLoaderPromise;
+  const handleDisconnect = () => {
+    wcProvider = null;
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    dispatchWalletEvent('aetheron:wallet-disconnected');
+  };
+
+  wcProvider.on?.('disconnect', handleDisconnect);
+  wcProvider.on?.('session_delete', handleDisconnect);
+
+  return wcProvider;
 }
 
 function setWalletState(nextAccount, nextType, nextProvider) {
@@ -198,37 +203,48 @@ async function connectWalletConnect(options = {}) {
     return null;
   }
 
-  let WalletConnectCtor;
+  let connectedProvider = null;
   try {
-    WalletConnectCtor = await loadWalletConnectProvider();
+    connectedProvider = await getWalletConnectProvider();
+
+    if (!connectedProvider) {
+      throw new Error('WalletConnect v2 provider is not available.');
+    }
+
+    const hasExistingSession =
+      Boolean(connectedProvider.session) &&
+      Array.isArray(connectedProvider.accounts) &&
+      connectedProvider.accounts.length > 0;
+
+    if (!hasExistingSession || !Boolean(options.auto)) {
+      await connectedProvider.connect();
+    }
   } catch (error) {
-    const message = 'WalletConnect failed to load. Please refresh and try again.';
+    const message =
+      'WalletConnect failed to start. Please try again or use MetaMask/Coinbase Wallet.';
     showWalletMessage(message, 'error');
     throw error;
   }
 
-  wcProvider = new WalletConnectCtor({
-    rpc: { 137: 'https://polygon-rpc.com' },
-    chainId: 137,
-  });
+  wcProvider = connectedProvider;
+  const connectedAccount =
+    connectedProvider?.accounts?.[0] ||
+    null;
 
-  wcProvider.on?.('disconnect', () => {
-    setWalletState(null, null, null);
-    syncLegacyDashboard(null);
-    dispatchWalletEvent('aetheron:wallet-disconnected');
-  });
-
-  await wcProvider.enable();
+  if (wcProvider && connectedAccount) {
+    wcProvider.accounts = [connectedAccount];
+  }
 
   if (typeof window.connectWallet === 'function') {
     const result = await window.connectWallet({
-      auto: Boolean(options.auto),
+      auto: Boolean(options.auto) || Boolean(connectedAccount),
       walletType: 'walletconnect',
       provider: wcProvider,
     });
 
     const currentAccount =
       window.localStorage?.getItem('aetheron_connected') ||
+      connectedAccount ||
       wcProvider.accounts?.[0] ||
       null;
 
@@ -242,7 +258,7 @@ async function connectWalletConnect(options = {}) {
   }
 
   const providerInstance = createInjectedProvider(wcProvider);
-  const accounts = wcProvider.accounts || [];
+  const accounts = wcProvider?.accounts || [];
   setWalletState(accounts[0] || null, 'WalletConnect', providerInstance);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
