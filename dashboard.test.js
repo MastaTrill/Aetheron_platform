@@ -34,6 +34,9 @@ function createDashboardContext(html, options = {}) {
   window.alert = jest.fn();
   window.open = jest.fn();
   window.showToast = jest.fn();
+  window.navigator.clipboard = {
+    writeText: jest.fn().mockResolvedValue(undefined),
+  };
   window.console = console;
   window.dashboard = {
     walletAccount: null,
@@ -83,6 +86,7 @@ function createDashboardContext(html, options = {}) {
   context.global = context;
   context.globalThis = context;
   context.self = window;
+  context.navigator.clipboard = window.navigator.clipboard;
   window.ethers = ethers;
 
   return { window, document, localStorage, context };
@@ -182,5 +186,51 @@ describe('Dashboard wallet wiring', () => {
       'Wallet connected',
     );
     expect(window.dashboard.walletAccount).toBe(account);
+  });
+
+  test('body actions wire profile and referral buttons', async () => {
+    const account = '0xabc1230000000000000000000000000000000000';
+    const { window, document, context } = createDashboardContext(
+      `
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <a class="skip-to-content" href="#mainContent">Skip</a>
+            <main id="mainContent"></main>
+            <button id="editProfileBtn1">Edit Profile</button>
+            <button id="copyReferralBtn">Copy referral</button>
+            <input id="referralLink" value="" />
+            <div id="profileModal" class="modal-bg" hidden>
+              <div class="modal">
+                <button class="close-modal-btn" type="button">x</button>
+                <input id="nicknameInput" />
+                <button id="closeProfileModal" type="button">Cancel</button>
+              </div>
+            </div>
+            <span id="accountAddress">${account}</span>
+          </body>
+        </html>
+      `,
+      {
+        connectedAccount: account,
+      },
+    );
+
+    runScript(context, 'dashboard-body-init.js');
+
+    document
+      .getElementById('editProfileBtn1')
+      .dispatchEvent(new window.Event('click', { bubbles: true }));
+
+    expect(document.getElementById('profileModal').hidden).toBe(false);
+
+    document
+      .getElementById('copyReferralBtn')
+      .dispatchEvent(new window.Event('click', { bubbles: true }));
+
+    await Promise.resolve();
+
+    expect(document.getElementById('referralLink').value).toContain(account);
+    expect(window.showToast).toHaveBeenCalled();
   });
 });
