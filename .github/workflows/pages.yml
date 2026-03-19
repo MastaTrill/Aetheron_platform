@@ -21,17 +21,50 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Stage static site
+        run: |
+          mkdir -p _site
+          rsync -av --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "node_modules/" \
+            --exclude ".appdata/" \
+            --exclude ".localappdata/" \
+            --exclude ".browser-profile*/" \
+            --exclude ".chrome-profile*/" \
+            --exclude "Aetheron/" \
+            --exclude "backend/" \
+            --exclude "dashboard-test-isolated/" \
+            --exclude "mobile-app/" \
+            --exclude "react-app/" \
+            --exclude "smart-contract/" \
+            --exclude "src/" \
+            --exclude "cache/" \
+            --exclude "pages/" \
+            --exclude "*.zip" \
+            --exclude "*.log" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "jest.config.cjs" \
+            --exclude "jest.setup.cjs" \
+            --exclude "dashboard.test.js" \
+            --exclude "dashboard.test.simple.js" \
+            --exclude "server.log" \
+            ./ _site/
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
