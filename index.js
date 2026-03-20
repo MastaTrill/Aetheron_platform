@@ -47,11 +47,12 @@ const STAKING_ABI = [
 let provider, signer, account;
 let aethContract, stakingContract;
 let readOnlyProvider; // For reading data without wallet connection
+let injectedProvider;
 let transactions = [];
 let priceWebSocket; // WebSocket for real-time price updates
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
-const APP_VERSION = '1.4.1';
+const APP_VERSION = '1.4.3';
 
 let detectionAttempts = 0;
 const maxAttempts = 5;
@@ -171,6 +172,40 @@ function handleEthereumInit() {
     checkWalletStatus();
 }
 
+function resolveInjectedProvider() {
+    if (!window.ethereum) {
+        injectedProvider = null;
+        return null;
+    }
+
+    const providers = Array.isArray(window.ethereum.providers)
+        ? window.ethereum.providers
+        : [window.ethereum];
+
+    const exactMetaMask = providers.find((candidate) => candidate?.isMetaMask && !candidate?.isBraveWallet);
+    const anyMetaMask = providers.find((candidate) => candidate?.isMetaMask);
+    const coinbase = providers.find((candidate) => candidate?.isCoinbaseWallet);
+
+    injectedProvider = exactMetaMask || anyMetaMask || coinbase || window.ethereum;
+    return injectedProvider;
+}
+
+function getWalletName(targetProvider) {
+    if (!targetProvider) {
+        return '';
+    }
+
+    if (targetProvider.isCoinbaseWallet) {
+        return 'Coinbase Wallet';
+    }
+
+    if (targetProvider.isMetaMask) {
+        return 'MetaMask';
+    }
+
+    return 'Browser Wallet';
+}
+
 async function detectWalletWithRetry() {
     const delays = [500, 1000, 2000, 3000, 4000];
     for (let i = 0; i < delays.length; i++) {
@@ -180,7 +215,8 @@ async function detectWalletWithRetry() {
         if (detected) {
             console.log('Wallet detected successfully!');
             try {
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                const wallet = resolveInjectedProvider();
+                const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
                     await connectWallet();
                 }
@@ -203,32 +239,18 @@ async function checkWalletStatus() {
     console.log('window.ethereum.isMetaMask:', window.ethereum?.isMetaMask);
     console.log('window.ethereum.isCoinbaseWallet:', window.ethereum?.isCoinbaseWallet);
     console.log('window.ethereum providers:', window.ethereum?.providers);
-    let isSupportedWallet = false;
-    let walletName = '';
+    const wallet = resolveInjectedProvider();
+    const walletName = getWalletName(wallet);
     
-    if (window.ethereum?.isCoinbaseWallet) {
-        isSupportedWallet = true;
-        walletName = 'Coinbase Wallet';
-    } else if (window.ethereum?.isMetaMask) {
-        isSupportedWallet = true;
-        walletName = 'MetaMask';
+    if (wallet?.isCoinbaseWallet) {
+        console.log('Found Coinbase Wallet in providers array');
+    } else if (wallet?.isMetaMask) {
+        console.log('Found MetaMask in providers array');
     }
     
-    if (window.ethereum?.providers) {
-        const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
-        const metamaskProvider = window.ethereum.providers.find(p => p.isMetaMask);
-        if (coinbaseProvider) {
-            isSupportedWallet = true;
-            walletName = 'Coinbase Wallet';
-            console.log('Found Coinbase Wallet in providers array');
-        } else if (metamaskProvider) {
-            isSupportedWallet = true;
-            walletName = 'MetaMask';
-            console.log('Found MetaMask in providers array');
-        }
-    }
     
-    if (isSupportedWallet) {
+    
+    if (wallet) {
         statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> ${walletName} Detected ✓<br><small style="color: #6b7280;">Ready to connect</small>`;
         statusDiv.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
         statusDiv.style.border = '2px solid var(--success)';
@@ -592,21 +614,23 @@ async function updateStakingStats() {
 
 // Connect wallet function
 async function connectWallet() {
-    if (typeof window.ethereum === 'undefined') {
+    const wallet = resolveInjectedProvider();
+
+    if (!wallet) {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
         return;
     }
 
     try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
+        provider = new ethers.providers.Web3Provider(wallet, 'any');
+        await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
         account = await signer.getAddress();
 
         // Switch to Polygon network
         try {
-            await window.ethereum.request({
+            await wallet.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: POLYGON_CHAIN_ID }],
             });
@@ -614,7 +638,7 @@ async function connectWallet() {
             // This error code indicates that the chain has not been added to MetaMask
             if (switchError.code === 4902) {
                 try {
-                    await window.ethereum.request({
+                    await wallet.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
                             chainId: POLYGON_CHAIN_ID,
@@ -653,7 +677,7 @@ async function connectWallet() {
         await loadTransactionHistory();
         hideProgress();
         
-        showToast('Connected!', `Wallet ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
 
     } catch (error) {
         console.error('Error connecting:', error);
