@@ -8,10 +8,10 @@ const LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 const OWNER_ADDRESS = "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82".toLowerCase();
 const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
 const POLYGON_RPC_URLS = [
-    'https://polygon-rpc.com/',
-    'https://rpc-mainnet.matic.network',
-    'https://matic-mainnet.chainstacklabs.com',
-    'https://rpc-mainnet.maticvigil.com'
+    'https://polygon-bor-rpc.publicnode.com',
+    'https://polygon.llamarpc.com',
+    'https://polygon.drpc.org',
+    'https://1rpc.io/matic'
 ];
 
 // ABIs
@@ -758,7 +758,7 @@ async function connectWallet(options = {}) {
                             chainId: POLYGON_CHAIN_ID,
                             chainName: 'Polygon Mainnet',
                             nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
-                            rpcUrls: ['https://polygon-rpc.com/'],
+                            rpcUrls: ['https://polygon-bor-rpc.publicnode.com'],
                             blockExplorerUrls: ['https://polygonscan.com/']
                         }],
                     });
@@ -1421,64 +1421,13 @@ if (typeof window !== 'undefined') {
 // ============================================================================
 
 function initializeWebSocket() {
-    console.log('🔌 Initializing WebSocket for real-time updates...');
-    
-    // Connect to Polygon mainnet via Alchemy WebSocket (fallback to polling if unavailable)
-    try {
-        // Use Alchemy's WebSocket for Polygon
-        const wsProvider = new ethers.providers.WebSocketProvider(
-            'wss://polygon-mainnet.g.alchemy.com/v2/demo' // Use your own key in production
-        );
-        
-        wsProvider.on('error', (error) => {
-            console.warn('⚠️ WebSocket error:', error.message);
-            reconnectWebSocket();
-        });
-        
-        wsProvider.on('close', () => {
-            console.log('🔌 WebSocket connection closed');
-            reconnectWebSocket();
-        });
-        
-        // Listen for new blocks (real-time blockchain updates)
-        wsProvider.on('block', async (blockNumber) => {
-            console.log(`📦 New block: ${blockNumber}`);
-            // Update stats when new block arrives (throttled)
-            if (blockNumber % 10 === 0) { // Every 10 blocks (~20 seconds)
-                await updateStakingStats();
-                await updateLiveHolders();
-            }
-        });
-        
-        // Listen for Transfer events on AETH contract
-        if (aethContract) {
-            const filter = aethContract.filters.Transfer();
-            wsProvider.on(filter, (log) => {
-                console.log('💸 New AETH transfer detected');
-                updateLiveHolders();
-            });
-        }
-        
-        console.log('✅ WebSocket connected for real-time updates');
-        reconnectAttempts = 0;
-        
-    } catch (error) {
-        console.warn('⚠️ WebSocket not available, using polling fallback:', error.message);
-    }
-    
-    // Initialize DexScreener price updates via more frequent polling
+    console.log('Real-time updates running in polling mode');
+    reconnectAttempts = 0;
     initializePriceStream();
 }
 
 function reconnectWebSocket() {
-    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-        reconnectAttempts++;
-        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-        console.log(`🔄 Reconnecting WebSocket in ${delay/1000}s (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
-        setTimeout(initializeWebSocket, delay);
-    } else {
-        console.log('❌ Max WebSocket reconnection attempts reached. Using polling only.');
-    }
+    console.log('Polling mode active - websocket reconnect skipped');
 }
 
 function initializePriceStream() {
@@ -1501,64 +1450,6 @@ function initializePriceStream() {
 // ============================================================================
 // Service Worker Registration (Progressive Web App)
 // ============================================================================
-
-// Register Service Worker (moved from inline script)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(registration => {
-                console.log('✅ Service Worker registered:', registration.scope);
-            })
-            .catch(error => {
-                console.log('❌ Service Worker registration failed:', error);
-            });
-    });
-}
-
-// ============================================================================
-// Toast Notification System
-// ============================================================================
-
-function showToast(title, message, type = 'success') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.setAttribute('role', 'alert');
-    
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-    
-    toast.innerHTML = `
-        <i class="fas ${icons[type]} toast-icon" aria-hidden="true"></i>
-        <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <div class="toast-message">${message}</div>
-        </div>
-        <i class="fas fa-times toast-close" aria-label="Close notification"></i>
-    `;
-    
-    container.appendChild(toast);
-    
-    // Close button
-    toast.querySelector('.toast-close').addEventListener('click', () => {
-        toast.style.animation = 'slideIn 0.3s ease-out reverse';
-        setTimeout(() => toast.remove(), 300);
-    });
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.style.animation = 'slideIn 0.3s ease-out reverse';
-            setTimeout(() => toast.remove(), 300);
-        }
-    }, 5000);
-}
 
 // ============================================================================
 // Mobile Menu
@@ -1965,10 +1856,5 @@ function displayTransactions(transactions) {
         </div>
     `).join('');
 }
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(registration => console.log('✅ Service Worker registered:', registration.scope))
-            .catch(error => console.error('❌ Service Worker registration failed:', error));
-    }
 }
+
