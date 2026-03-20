@@ -82,8 +82,24 @@ function initReadOnlyProvider() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    initConnectButton();
     setDefaultValues();
 });
+
+function initConnectButton() {
+    const connectBtn = document.getElementById('connectBtn');
+    if (!connectBtn || connectBtn.dataset.walletBound === 'true') {
+        return;
+    }
+
+    connectBtn.dataset.walletBound = 'true';
+    connectBtn.type = 'button';
+    connectBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        await connectWallet();
+    });
+}
 
 window.addEventListener('load', async () => {
     console.log('🚀 Aetheron Dashboard Loading...');
@@ -94,11 +110,8 @@ window.addEventListener('load', async () => {
     // Set default values immediately to avoid "Loading..." stuck state
     setDefaultValues();
     
-    // Hook up connect wallet button
-    const connectBtn = document.getElementById('connectBtn');
-    if (connectBtn) {
-        connectBtn.addEventListener('click', connectWallet);
-    }
+    // Keep the connect wallet button bound even with late-loading scripts
+    initConnectButton();
     
     // Initialize read-only provider first for live data
     const readOnlyContracts = initReadOnlyProvider();
@@ -708,6 +721,10 @@ async function disconnectWallet() {
     showToast('Disconnected', 'Wallet disconnected successfully', 'info');
     console.log('\ud83d\udd0c Wallet disconnected');
 }
+
+window.connectWallet = connectWallet;
+window.disconnectWallet = disconnectWallet;
+window.recheckWallet = recheckWallet;
 
 // Add token to wallet function
 async function addTokenToWallet() {
