@@ -271,7 +271,7 @@ function ensureWalletChooser() {
 
     const closeChooser = () => {
         modal.style.display = 'none';
-        modal.classList.remove('open');
+        modal.classList.remove('show');
     };
 
     modal.querySelector('#walletChooserClose').addEventListener('click', closeChooser);
@@ -317,7 +317,7 @@ function openWalletChooser() {
     browserBtn.style.display = '';
 
     modal.style.display = 'block';
-    modal.classList.add('open');
+    modal.classList.add('show');
 }
 
 async function detectWalletWithRetry() {
