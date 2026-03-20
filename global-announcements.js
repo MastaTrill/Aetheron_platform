@@ -1,4 +1,4 @@
-export function initGlobalAnnouncements() {
+function initGlobalAnnouncements() {
   const ANNOUNCEMENT_STORAGE_KEY = 'aethAnnouncementDismissed';
   const OFFLINE_TOAST_KEY = 'aethOfflineReadyShown';
 
