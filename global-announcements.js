@@ -126,6 +126,14 @@ function initGlobalAnnouncements() {
       return;
     }
 
+    const swSetting = document
+      .querySelector('meta[name="aetheron-sw"]')
+      ?.getAttribute('content');
+
+    if (swSetting === 'off') {
+      return;
+    }
+
     navigator.serviceWorker.register(serviceWorkerUrl).catch(() => {});
 
     navigator.serviceWorker.addEventListener('message', (event) => {

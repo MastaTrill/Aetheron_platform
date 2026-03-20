@@ -1,75 +1,32 @@
 (function () {
   if (!('serviceWorker' in navigator)) return;
 
-  let reloading = false;
-
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (reloading) return;
-    reloading = true;
-    console.log('Service Worker updated - reloading page...');
-    window.location.reload();
-  });
-
   navigator.serviceWorker
-    .register('./service-worker.js', { scope: './' })
-    .then((reg) => {
-      console.log('Service Worker registered successfully');
+    .getRegistrations()
+    .then(async (registrations) => {
+      await Promise.all(registrations.map((registration) => registration.unregister()));
 
-      setInterval(() => {
-        try {
-          reg.update();
-        } catch (_) {}
-      }, 60 * 1000);
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames
+            .filter((name) => name.startsWith('aetheron-'))
+            .map((name) => caches.delete(name)),
+        );
+      }
 
-      reg.addEventListener('updatefound', () => {
-        const sw = reg.installing;
-        if (!sw) return;
-
-        sw.addEventListener('statechange', () => {
-          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('New version available');
-            try {
-              if (typeof window.showToast === 'function') {
-                window.showToast(
-                  'Update Available',
-                  'A new version is ready. Refreshing...',
-                  'info',
-                );
-              }
-            } catch (_) {}
-
-            setTimeout(() => {
-              try {
-                sw.postMessage({ type: 'SKIP_WAITING' });
-              } catch (_) {}
-            }, 2000);
-          }
-        });
-      });
-
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event?.data && event.data.type === 'SW_UPDATED') {
-          console.log('Service Worker updated and activated');
-        }
-      });
+      console.log('Aetheron service workers unregistered for fresh wallet assets');
     })
     .catch((error) => {
-      console.error('Service Worker registration failed:', error);
+      console.warn('Unable to clear old service workers:', error);
     });
 
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      console.log('Page loaded from cache - checking for updates...');
-      window.location.reload();
-    }
-  });
-
   console.log(
-    '%cAetheron Platform v1.4.2',
+    '%cAetheron Platform v1.4.7',
     'color: #00D4FF; font-size: 16px; font-weight: bold;',
   );
   console.log(
-    '%cDashboard loaded successfully',
+    '%cHomepage cache reset enabled',
     'color: #10b981; font-size: 12px;',
   );
 })();
