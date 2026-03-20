@@ -23,7 +23,7 @@ class AetheronPlatform {
     document.addEventListener('click', (e) => {
       if (
         e.target.closest(
-          '.wallet-btn, #connectWallet, #connectWalletBtn, #connectBtn',
+          '.wallet-btn, #connectWallet, #connectWalletBtn',
         )
       ) {
         e.preventDefault();
@@ -157,7 +157,7 @@ class AetheronPlatform {
   updateUI() {
     // Update wallet buttons
     const walletButtons = document.querySelectorAll(
-      '.wallet-btn, #connectWallet, #connectWalletBtn, #connectBtn',
+      '.wallet-btn, #connectWallet, #connectWalletBtn',
     );
     walletButtons.forEach((btn) => {
       if (this.isConnected) {
@@ -303,45 +303,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Global functions for backward compatibility
-window.connectWallet = function () {
-  if (
-    window.aetheronPlatform &&
-    typeof window.aetheronPlatform.connectWallet === 'function'
-  ) {
-    window.aetheronPlatform.connectWallet();
-  }
-};
-window.disconnectWallet = function () {
-  if (
-    window.aetheronPlatform &&
-    typeof window.aetheronPlatform.disconnectWallet === 'function'
-  ) {
-    window.aetheronPlatform.disconnectWallet();
-  }
-};
-window.addTokenToWallet = async function () {
-  // Mock token addition
-  if (
-    window.aetheronPlatform &&
-    typeof window.aetheronPlatform.showToast === 'function'
-  ) {
-    window.aetheronPlatform.showToast('Token added to wallet!', 'success');
-  }
-};
-window.disconnectWallet = function () {
-  if (
-    window.aetheronPlatform &&
-    typeof window.aetheronPlatform.disconnectWallet === 'function'
-  ) {
-    window.aetheronPlatform.disconnectWallet();
-  }
-};
-window.addTokenToWallet = async function () {
-  // Mock token addition
-  if (
-    window.aetheronPlatform &&
-    typeof window.aetheronPlatform.showToast === 'function'
-  ) {
-    window.aetheronPlatform.showToast('Token added to wallet!', 'success');
-  }
-};
+if (typeof window.connectWallet !== 'function') {
+  window.connectWallet = function () {
+    if (
+      window.aetheronPlatform &&
+      typeof window.aetheronPlatform.connectWallet === 'function'
+    ) {
+      window.aetheronPlatform.connectWallet();
+    }
+  };
+}
+
+if (typeof window.disconnectWallet !== 'function') {
+  window.disconnectWallet = function () {
+    if (
+      window.aetheronPlatform &&
+      typeof window.aetheronPlatform.disconnectWallet === 'function'
+    ) {
+      window.aetheronPlatform.disconnectWallet();
+    }
+  };
+}
+
+if (typeof window.addTokenToWallet !== 'function') {
+  window.addTokenToWallet = async function () {
+    if (
+      window.aetheronPlatform &&
+      typeof window.aetheronPlatform.showToast === 'function'
+    ) {
+      window.aetheronPlatform.showToast('Token added to wallet!', 'success');
+    }
+  };
+}
