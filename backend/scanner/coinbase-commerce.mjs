@@ -2,7 +2,6 @@
 // Handles charge creation and webhook verification for both Launchpad and Scanner
 
 import express from 'express';
-import fetch from 'node-fetch';
 import { sendPaymentEmail } from './send-email.mjs';
 const router = express.Router();
 const COINBASE_API_KEY =
