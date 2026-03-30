@@ -7,7 +7,7 @@
   "scripts": {
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
-    "build": "echo 'Static site - no build needed'",
+    "build": "node build-cloudflare-dist.cjs",
     "test": "npm run test:smoke",
     "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
