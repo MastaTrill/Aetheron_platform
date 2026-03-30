@@ -40,6 +40,14 @@ function buildDiagnostics({ teamWallet }) {
   };
 }
 
+function parseAllocationPercent(value) {
+  if (value === undefined || value === null || value === '') {
+    return 1;
+  }
+
+  return Number(value);
+}
+
 // POST /api/launch-token
 router.post('/launch-token', async (req, res) => {
   const {
@@ -63,7 +71,7 @@ router.post('/launch-token', async (req, res) => {
 
   const teamWalletFinal =
     isNonEmptyString(teamWallet) ? teamWallet.trim() : TEAM_WALLET;
-  const allocation = allocationPercent ? Number(allocationPercent) : 1;
+  const allocation = parseAllocationPercent(allocationPercent);
   const diagnostics = buildDiagnostics({ teamWallet: teamWalletFinal });
 
   if (!diagnostics.deployerKeyConfigured) {
@@ -111,12 +119,17 @@ router.post('/launch-token', async (req, res) => {
   }
 
   try {
+    const { ethers } = await import('ethers');
+    const mintRecipient =
+      allocation === 100 ? teamWalletFinal : new ethers.Wallet(DEPLOYER_KEY).address;
+
     // Deploy contract
     const contractAddress = await deployToken({
       name,
       symbol,
       supply,
       owner: teamWalletFinal,
+      initialRecipient: mintRecipient,
       rpcUrl: RPC_URL,
       privateKey: DEPLOYER_KEY,
     });

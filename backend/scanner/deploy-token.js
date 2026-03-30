@@ -64,6 +64,7 @@ async function deployToken({
   symbol,
   supply,
   owner,
+  initialRecipient,
   rpcUrl,
   privateKey,
 }) {
@@ -76,7 +77,7 @@ async function deployToken({
     name,
     symbol,
     initialSupply,
-    wallet.address,
+    initialRecipient,
     owner,
   );
   await contract.waitForDeployment();
