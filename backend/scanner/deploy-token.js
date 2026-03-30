@@ -1,17 +1,63 @@
 // deploy-token.js - Hardhat/ethers.js deployment utility for backend
 // Usage: Called from launchpad-api.js to deploy ERC20 token
 
+const fs = require('fs');
+const path = require('path');
 const { ethers } = require('ethers');
-const ERC20_ABI = [
-  'function name() view returns (string)',
-  'function symbol() view returns (string)',
-  'function totalSupply() view returns (uint256)',
-  'function balanceOf(address) view returns (uint)',
-  'function transfer(address to, uint amount) returns (bool)',
-  'event Transfer(address indexed from, address indexed to, uint amount)',
-];
 
-const ERC20_BYTECODE = '0x...'; // TODO: Replace with compiled ERC20 bytecode
+const ARTIFACT_PATH = path.resolve(
+  __dirname,
+  '../../smart-contract/artifacts/contracts/LaunchpadToken.sol/LaunchpadToken.json',
+);
+
+function getLaunchTokenDeploymentDiagnostics() {
+  if (!fs.existsSync(ARTIFACT_PATH)) {
+    return {
+      artifactPath: ARTIFACT_PATH,
+      artifactExists: false,
+      artifactReadable: false,
+      bytecodeConfigured: false,
+    };
+  }
+
+  try {
+    const artifact = JSON.parse(fs.readFileSync(ARTIFACT_PATH, 'utf8'));
+    const bytecode = artifact?.bytecode;
+    return {
+      artifactPath: ARTIFACT_PATH,
+      artifactExists: true,
+      artifactReadable: true,
+      bytecodeConfigured:
+        typeof bytecode === 'string' && bytecode.startsWith('0x') && bytecode.length > 2,
+    };
+  } catch {
+    return {
+      artifactPath: ARTIFACT_PATH,
+      artifactExists: true,
+      artifactReadable: false,
+      bytecodeConfigured: false,
+    };
+  }
+}
+
+async function loadLaunchpadArtifact() {
+  const raw = await fs.promises.readFile(ARTIFACT_PATH, 'utf8');
+  const artifact = JSON.parse(raw);
+
+  if (!Array.isArray(artifact.abi)) {
+    throw new Error(`Launchpad artifact is missing ABI: ${ARTIFACT_PATH}`);
+  }
+
+  if (
+    typeof artifact.bytecode !== 'string' ||
+    !artifact.bytecode.startsWith('0x') ||
+    artifact.bytecode.length <= 2
+  ) {
+    throw new Error(`Launchpad artifact is missing bytecode: ${ARTIFACT_PATH}`);
+  }
+
+  return artifact;
+}
 
 async function deployToken({
   name,
@@ -23,15 +69,18 @@ async function deployToken({
 }) {
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const wallet = new ethers.Wallet(privateKey, provider);
-  // Minimal ERC20 constructor: name, symbol, initialSupply
-  const factory = new ethers.ContractFactory(ERC20_ABI, ERC20_BYTECODE, wallet);
+  const artifact = await loadLaunchpadArtifact();
+  const initialSupply = ethers.parseUnits(supply.toString(), 18);
+  const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
   const contract = await factory.deploy(
     name,
     symbol,
-    ethers.parseUnits(supply.toString(), 18),
+    initialSupply,
+    wallet.address,
+    owner,
   );
   await contract.waitForDeployment();
   return contract.target;
 }
 
-module.exports = { deployToken };
+module.exports = { deployToken, getLaunchTokenDeploymentDiagnostics };
