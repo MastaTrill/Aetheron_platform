@@ -2,7 +2,7 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Aetheron Platform",
-  "url": "https://aetheron.online/dashboard.html",
+  "url": "https://mastatrill.github.io/Aetheron_platform/dashboard.html",
   "description": "Decentralized token management, staking, analytics, and community engagement on Polygon.",
   "image": "https://mastatrill.github.io/Aetheron_platform/apple-touch-icon.png",
   "sameAs": [
