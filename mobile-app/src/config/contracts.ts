@@ -27,7 +27,7 @@ export const TOKEN_INFO = {
 };
 
 export const LINKS = {
-  WEBSITE: 'https://mastatrill.github.io/aetheron-platform',
+  WEBSITE: 'https://mastatrill.github.io/Aetheron_platform',
   BUY_QUICKSWAP: `https://quickswap.exchange/#/swap?outputCurrency=${CONTRACTS.AETH_TOKEN}`,
   DEXTOOLS: `https://www.dextools.io/app/polygon/pair-explorer/${CONTRACTS.LIQUIDITY_PAIR}`,
   DEXSCREENER: `https://dexscreener.com/polygon/${CONTRACTS.AETH_TOKEN}`,

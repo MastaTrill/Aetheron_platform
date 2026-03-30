@@ -86,7 +86,7 @@ Text overlay:
 • "Real-Time Analytics"
 • "Mobile Optimized"
 
-Footer: aetheronplatform.github.io | @William_McCoy_
+Footer: https://mastatrill.github.io/Aetheron_platform | @William_McCoy_
 ```
 
 **Tweet Graphics** (1200x675):
@@ -330,7 +330,7 @@ You're now part of a growing platform that's making DeFi staking accessible, tra
 
 🎯 Quick Start Guide:
 
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Connect your MetaMask wallet
 3. Switch to Polygon network (Chain ID: 137)
 4. Buy AETH on QuickSwap
@@ -438,13 +438,13 @@ Tokenomics:
 The AETH token has a fixed supply of 1 billion, with 20% (200M) allocated to staking rewards. A deflationary mechanism through trading fee buybacks ensures long-term value appreciation.
 
 Availability:
-Aetheron is live now at https://aetheronplatform.github.io. Users need a MetaMask wallet and access to Polygon network to start staking.
+Aetheron is live now at https://mastatrill.github.io/Aetheron_platform. Users need a MetaMask wallet and access to Polygon network to start staking.
 
 About Aetheron:
 Aetheron is a DeFi staking platform built on Polygon that combines high yield, low fees, and transparent analytics. The project aims to democratize access to institutional-grade DeFi returns.
 
 For more information:
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 Whitepaper: [Link]
 Email: [your-email]
 Twitter: @[handle]
@@ -470,7 +470,7 @@ Name: Aetheron Platform
 Token: AETH
 Blockchain: Polygon (Chain ID 137)
 Launch Date: January 2026
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 
 PRODUCT
 • DeFi staking platform with three pool options
@@ -574,7 +574,7 @@ async function addAETHToMetaMask() {
         address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
         symbol: 'AETH',
         decimals: 18,
-        image: 'https://aetheronplatform.github.io/logo.png'
+        image: 'https://mastatrill.github.io/Aetheron_platform/logo.png'
       }
     }
   });

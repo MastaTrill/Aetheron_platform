@@ -120,7 +120,7 @@ A next-generation DeFi platform on Polygon featuring:
 - Community governance
 
 💰 How to get started:
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Add AETH to MetaMask
 3. Start staking for rewards
 

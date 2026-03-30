@@ -17,7 +17,7 @@ The Aetheron Platform has been successfully deployed to production with all syst
 
 #### Frontend Application
 
-- **Live URL**: <https://mastatrill.github.io/aetheron-platform>
+- **Live URL**: <https://mastatrill.github.io/Aetheron_platform>
 - **Platform**: GitHub Pages
 - **Status**: ✅ Deployed and accessible
 - **Integration**: MetaMask wallet connection active
@@ -34,7 +34,7 @@ The Aetheron Platform has been successfully deployed to production with all syst
 
 ### 🔗 LIVE LINKS
 
-- **🌐 Web Dashboard**: <https://mastatrill.github.io/aetheron-platform>
+- **🌐 Web Dashboard**: <https://mastatrill.github.io/Aetheron_platform>
 - **📊 Token on DexScreener**: <https://dexscreener.com/polygon/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e>
 - **🔗 Token on PolygonScan**: <https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e>
 - **🏦 Staking Contract**: <https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638>

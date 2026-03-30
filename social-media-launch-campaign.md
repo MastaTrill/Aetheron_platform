@@ -18,7 +18,7 @@
 
 💰 Start earning passive income today!
 
-🔗 https://mastatrill.github.io/aetheron-platform
+🔗 https://mastatrill.github.io/Aetheron_platform
 
 #DeFi #Polygon #Aetheron #Crypto #Launch
 ```
@@ -34,7 +34,7 @@
 
 Stake AETH, earn while you sleep! 💤
 
-Dashboard: https://mastatrill.github.io/aetheron-platform
+Dashboard: https://mastatrill.github.io/Aetheron_platform
 
 #Staking #DeFi #PassiveIncome #Aetheron
 ```
@@ -98,7 +98,7 @@ Today's market update:
 
 Start your day with passive income! 💰
 
-Dashboard: https://mastatrill.github.io/aetheron-platform
+Dashboard: https://mastatrill.github.io/Aetheron_platform
 ```
 
 **Daily Posts (2 PM UTC):**
@@ -191,7 +191,7 @@ const client = new Twitter({
 
 const posts = [
   {
-    content: `🚀 BREAKING: Aetheron DeFi Platform is LIVE on Polygon!\n\n🌟 Features:\n• Multi-pool staking (8-18% APY)\n• ERC-20 AETH token\n• DEX integration\n• Community governance\n\n💰 Start earning today!\n🔗 https://mastatrill.github.io/aetheron-platform\n\n#DeFi #Polygon #Aetheron #Crypto`,
+    content: `🚀 BREAKING: Aetheron DeFi Platform is LIVE on Polygon!\n\n🌟 Features:\n• Multi-pool staking (8-18% APY)\n• ERC-20 AETH token\n• DEX integration\n• Community governance\n\n💰 Start earning today!\n🔗 https://mastatrill.github.io/Aetheron_platform\n\n#DeFi #Polygon #Aetheron #Crypto`,
     schedule: '2026-01-24T00:00:00Z'
   },
   // Add more posts...
@@ -229,7 +229,7 @@ const channelId = process.env.TELEGRAM_CHANNEL_ID;
 
 const announcements = [
   {
-    text: `🎉 AETHERON IS LIVE! 🎉\n\nOur DeFi platform is now live on Polygon!\n\n🚀 Features:\n• 8-18% APY staking\n• AETH token\n• QuickSwap integration\n• Community rewards\n\n🌐 Visit: https://mastatrill.github.io/aetheron-platform\n\nShare with friends! 🚀`,
+    text: `🎉 AETHERON IS LIVE! 🎉\n\nOur DeFi platform is now live on Polygon!\n\n🚀 Features:\n• 8-18% APY staking\n• AETH token\n• QuickSwap integration\n• Community rewards\n\n🌐 Visit: https://mastatrill.github.io/Aetheron_platform\n\nShare with friends! 🚀`,
     schedule: '2026-01-24T00:00:00Z'
   }
 ];

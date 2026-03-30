@@ -17,7 +17,7 @@
 ```
 Aetheron Team
 DeFi Platform on Polygon
-Website: https://mastatrill.github.io/aetheron-platform
+Website: https://mastatrill.github.io/Aetheron_platform
 Discord: https://discord.gg/aetheronplatform
 Telegram: https://t.me/aetheronplatform
 ```
@@ -75,7 +75,7 @@ We'd love to provide exclusive insights or arrange an interview with our team. A
 Best regards,
 Aetheron Team
 contact@aetheronplatform.com
-https://mastatrill.github.io/aetheron-platform
+https://mastatrill.github.io/Aetheron_platform
 
 [Attachment: Aetheron_Platform_Launch_Press_Release.pdf]
 ```
@@ -100,7 +100,7 @@ We're available for interviews and would welcome coverage of our innovative appr
 Best regards,
 Aetheron Team
 contact@aetheronplatform.com
-https://mastatrill.github.io/aetheron-platform
+https://mastatrill.github.io/Aetheron_platform
 
 [Attachment: Aetheron_Platform_Launch_Press_Release.pdf]
 ```
@@ -197,7 +197,7 @@ Post 1 (Launch Time):
 
 💰 Start earning passive income today!
 
-🔗 https://mastatrill.github.io/aetheron-platform
+🔗 https://mastatrill.github.io/Aetheron_platform
 
 #DeFi #Polygon #Aetheron #Crypto #Staking
 ```
@@ -213,7 +213,7 @@ Post 2 (1 hour later):
 
 Stake AETH, earn while you sleep! 💤
 
-Dashboard: https://mastatrill.github.io/aetheron-platform
+Dashboard: https://mastatrill.github.io/Aetheron_platform
 
 #Staking #DeFi #PassiveIncome #Aetheron
 ```
@@ -247,7 +247,7 @@ Our revolutionary DeFi platform is now live on Polygon!
 • Join our community
 • Participate in governance
 
-🌐 Visit: https://mastatrill.github.io/aetheron-platform
+🌐 Visit: https://mastatrill.github.io/Aetheron_platform
 
 Share with friends and start earning! 💰
 
@@ -262,7 +262,7 @@ Share with friends and start earning! 💰
 We're officially LIVE on Polygon Network!
 
 🌟 **What you can do right now:**
-• Visit our platform: https://mastatrill.github.io/aetheron-platform
+• Visit our platform: https://mastatrill.github.io/Aetheron_platform
 • Add AETH to MetaMask
 • Start staking for 8-18% APY rewards
 • Join our community events

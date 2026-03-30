@@ -54,7 +54,7 @@ We would appreciate coverage of our launch and are available for interviews.
 Best regards,
 Aetheron Team
 <contact@aetheronplatform.com>
-<https://aetheronplatform.github.io>
+<https://mastatrill.github.io/Aetheron_platform>
 
 1. SOCIAL MEDIA CAMPAIGN
 
@@ -73,7 +73,7 @@ Twitter/X Posts:
 • Community governance
 
 💰 Start earning rewards today!
-🔗 https://aetheronplatform.github.io
+🔗 https://mastatrill.github.io/Aetheron_platform
 
 #DeFi #Polygon #Aetheron #Crypto
 ```
@@ -89,7 +89,7 @@ Our DeFi platform is now live on Polygon with:
 - QuickSwap integration
 - Community rewards
 
-Join now: https://aetheronplatform.github.io
+Join now: https://mastatrill.github.io/Aetheron_platform
 
 Share with friends and start earning! 🚀
 ```
@@ -102,7 +102,7 @@ Discord Announcement:
 We're officially LIVE on Polygon Network!
 
 🌟 **What you can do right now:**
-• Visit our platform: https://aetheronplatform.github.io
+• Visit our platform: https://mastatrill.github.io/Aetheron_platform
 • Add AETH to MetaMask
 • Start staking for 8-18% APY rewards
 • Join our community events

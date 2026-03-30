@@ -58,12 +58,12 @@ A next-generation DeFi platform on Polygon featuring:
 - Community governance
 
 💰 **How to get started:**
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Add AETH to MetaMask
 3. Start staking for rewards
 
 📌 **Quick Links:**
-• **Staking Dashboard**: https://aetheronplatform.github.io
+• **Staking Dashboard**: https://mastatrill.github.io/Aetheron_platform
 • **Contract Address**: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 • **DEX Trading**: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
@@ -133,7 +133,7 @@ Welcome aboard! Let's build the future of DeFi together! 🌟
 Welcome to our DeFi ecosystem! 🚀
 
 **Quick Start Guide:**
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Connect MetaMask
 3. Get AETH on QuickSwap
 4. Start staking!
@@ -159,7 +159,7 @@ Join the revolution! 💰
 
 #DeFi #Polygon #Aetheron #Crypto
 
-🌐 https://aetheronplatform.github.io
+🌐 https://mastatrill.github.io/Aetheron_platform
 📋 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 ```
 
@@ -175,7 +175,7 @@ Join the revolution! 💰
 
 Stake AETH, earn passive income!
 
-Dashboard: https://aetheronplatform.github.io
+Dashboard: https://mastatrill.github.io/Aetheron_platform
 
 #Staking #DeFi #PassiveIncome
 ```
@@ -221,7 +221,7 @@ Quick Facts:
 • QuickSwap integration
 • OpenZeppelin audited contracts
 • Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-• Live: https://aetheronplatform.github.io
+• Live: https://mastatrill.github.io/Aetheron_platform
 
 Full press release below. Available for interviews!
 
@@ -265,7 +265,7 @@ Aetheron is building the future of decentralized finance by making DeFi accessib
 
 Contact Information:
 Email: contact@aetheronplatform.com
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 Twitter: https://twitter.com/aetheronplatform
 Discord: [Your Discord invite link]
 
@@ -304,7 +304,7 @@ Project/Coin Launched Date: January 25, 2026
 Select Platform: Polygon (MATIC)
 Decimals: 18
 
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 
 Block Explorer: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
@@ -339,7 +339,7 @@ Contract Address: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Blockchain: Polygon
 Launch Date: January 25, 2026
 
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 Explorer: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Market: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
@@ -370,7 +370,7 @@ Hi @dexscreener! Please update info for Aetheron (AETH) on Polygon
 
 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 Twitter: https://twitter.com/aetheronplatform
 Telegram: https://t.me/aetheronplatform
 

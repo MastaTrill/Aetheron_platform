@@ -172,7 +172,7 @@ Right-click server → Create Channel/Category
 A: A next-generation DeFi platform on Polygon with multi-pool staking.
 
 **Q: How do I start staking?**
-A: Visit https://aetheronplatform.github.io and connect your wallet.
+A: Visit https://mastatrill.github.io/Aetheron_platform and connect your wallet.
 
 **Q: What are the APYs?**
 A: 8-18% APY depending on lock period.
@@ -295,7 +295,7 @@ A: Trade on QuickSwap or participate in liquidity provision.
 - Discord: [Create after setup]
 - Telegram: <https://t.me/aetheronplatform>
 - Twitter: <https://twitter.com/aetheronplatform>
-- Website: <https://aetheronplatform.github.io>
+- Website: <https://mastatrill.github.io/Aetheron_platform>
 
 ## 📞 SUPPORT
 
