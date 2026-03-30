@@ -5,12 +5,16 @@ node_modules
 .env.local
 .env.production
 .env.staging
+backend/.env
+backend/admin.pass
 
 # Build outputs
 dist/
 build/
 artifacts/
 cache/
+smart-contract/artifacts/
+smart-contract/cache/
 
 # IDE
 .vscode/settings.json
@@ -25,5 +29,12 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-openJdk-25/lib/modules
-openJdk-25/lib/modules
+
+# Local browser/app profiles
+.appdata/
+.localappdata/
+.browser-profile*/
+.chrome-profile*/
+
+# Local captures
+dashboard-live.png
