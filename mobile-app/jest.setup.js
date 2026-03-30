@@ -69,7 +69,12 @@ jest.mock('react-native-reanimated', () =>
   require('react-native-reanimated/mock'),
 );
 
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+try {
+  require.resolve('react-native/src/private/animated/NativeAnimatedHelper');
+  jest.mock('react-native/src/private/animated/NativeAnimatedHelper');
+} catch {
+  jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+}
 
 if (typeof global.setImmediate !== 'function') {
   global.setImmediate = (callback, ...args) => setTimeout(callback, 0, ...args);
