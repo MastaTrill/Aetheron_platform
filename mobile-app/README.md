@@ -39,7 +39,7 @@
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js >= 20.19.4
 - React Native CLI
 - Xcode (for iOS) or Android Studio (for Android)
 - CocoaPods (for iOS)
@@ -291,4 +291,3 @@ Contributions are welcome! Please see [CONTRIBUTING.md](../CONTRIBUTING.MD) for 
 ---
 
 Built with ❤️ for the Aetheron community
-
