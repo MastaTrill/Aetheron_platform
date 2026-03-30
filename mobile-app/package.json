@@ -24,7 +24,7 @@
     "@walletconnect/react-native-compat": "^2.23.6",
     "ethers": "^6.16.0",
     "react": "18.2.0",
-    "react-native": "^0.75.5",
+    "react-native": "^0.84.1",
     "react-native-gesture-handler": "^2.30.0",
     "react-native-get-random-values": "^1.11.0",
     "react-native-qrcode-svg": "^6.3.21",
