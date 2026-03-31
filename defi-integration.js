@@ -1,4 +1,10 @@
-import { AETR_TOKEN, getAETRTokenInfo } from "./aetheron-platform/tokens";
+// AETH Token Configuration
+const AETH_TOKEN = {
+    address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+    symbol: 'AETH',
+    name: 'Aetheron',
+    decimals: 18
+};
 
 /**
  * DeFi Integration Engine

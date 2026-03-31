@@ -24,6 +24,7 @@ mobile-app/test-icon.png
 .idea/
 *.swp
 *.swo
+.vscode_hardhat_config_*.ts
 
 # OS
 .DS_Store
