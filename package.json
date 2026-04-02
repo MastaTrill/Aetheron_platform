@@ -7,7 +7,8 @@
   "scripts": {
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
-    "build": "node build-cloudflare-dist.cjs",
+    "build": "npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
     "test": "npm run test:smoke",
     "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "esbuild": "^0.27.5",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "linkedom": "^0.18.12",

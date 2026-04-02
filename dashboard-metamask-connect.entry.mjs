@@ -1,4 +1,4 @@
-import { createMultichainClient } from './vendor/metamask-connect-multichain.mjs';
+import { createMultichainClient } from '@metamask/connect-multichain';
 
 const POLYGON_SCOPE = 'eip155:137';
 const POLYGON_CHAIN_ID = '0x89';
@@ -72,7 +72,7 @@ class MultichainProviderAdapter {
         return this.chainId;
       }
       case 'wallet_switchEthereumChain': {
-        const nextChainId = params[0]?.chainId;
+        const nextChainId = params[0] && params[0].chainId;
         if (!nextChainId || nextChainId === POLYGON_CHAIN_ID) {
           this.syncChainId(POLYGON_CHAIN_ID);
           this.emit('chainChanged', this.chainId);
@@ -84,7 +84,7 @@ class MultichainProviderAdapter {
         throw error;
       }
       case 'wallet_addEthereumChain': {
-        const nextChainId = params[0]?.chainId;
+        const nextChainId = params[0] && params[0].chainId;
         if (nextChainId === POLYGON_CHAIN_ID) {
           this.syncChainId(POLYGON_CHAIN_ID);
           this.emit('chainChanged', this.chainId);
@@ -176,106 +176,110 @@ function exposeBridge(bridge) {
   window.dispatchEvent(new CustomEvent('aetheron:metamask-connect-ready'));
 }
 
-try {
-  const client = await createMultichainClient({
-    dapp: {
-      name: 'Aetheron Platform',
-      url: getDappUrl(),
-      iconUrl: getDappIconUrl(),
-    },
-    api: {
-      supportedNetworks: {
-        [POLYGON_SCOPE]: POLYGON_RPC_URL,
+async function initializeBridge() {
+  try {
+    const client = await createMultichainClient({
+      dapp: {
+        name: 'Aetheron Platform',
+        url: getDappUrl(),
+        iconUrl: getDappIconUrl(),
       },
-    },
-    ui: {
-      preferExtension: true,
-      showInstallModal: false,
-      headless: false,
-    },
-  });
-
-  const provider = new MultichainProviderAdapter(client);
-
-  client.on('metamask_accountsChanged', function (accounts) {
-    provider.syncAccounts(accounts);
-    provider.emit('accountsChanged', provider.accounts);
-  });
-
-  client.on('metamask_chainChanged', function (event) {
-    provider.syncChainId(event?.chainId || POLYGON_CHAIN_ID);
-    provider.emit('chainChanged', provider.chainId);
-  });
-
-  client.on('wallet_sessionChanged', async function () {
-    const nextAccounts = await provider.request({
-      method: 'eth_accounts',
-      params: [],
+      api: {
+        supportedNetworks: {
+          [POLYGON_SCOPE]: POLYGON_RPC_URL,
+        },
+      },
+      ui: {
+        preferExtension: true,
+        showInstallModal: false,
+        headless: false,
+      },
     });
 
-    provider.emit('accountsChanged', nextAccounts);
-    provider.emit('chainChanged', provider.chainId);
-  });
+    const provider = new MultichainProviderAdapter(client);
 
-  client.on('stateChanged', function (state) {
-    if (state === 'disconnected') {
-      provider.syncAccounts([]);
-      provider.emit('accountsChanged', []);
-    }
+    client.on('metamask_accountsChanged', function (accounts) {
+      provider.syncAccounts(accounts);
+      provider.emit('accountsChanged', provider.accounts);
+    });
 
-    window.dispatchEvent(
-      new CustomEvent('aetheron:metamask-connect-state', {
-        detail: { state },
-      }),
-    );
-  });
+    client.on('metamask_chainChanged', function (event) {
+      provider.syncChainId((event && event.chainId) || POLYGON_CHAIN_ID);
+      provider.emit('chainChanged', provider.chainId);
+    });
 
-  exposeBridge({
-    isReady: function () {
-      return true;
-    },
-    getProvider: function () {
-      return provider;
-    },
-    connect: async function (options = {}) {
-      await provider.ensureConnected(Boolean(options.forceRequest));
-      return provider;
-    },
-    getAccounts: async function () {
-      return provider.request({
+    client.on('wallet_sessionChanged', async function () {
+      const nextAccounts = await provider.request({
         method: 'eth_accounts',
         params: [],
       });
-    },
-    disconnect: async function () {
-      try {
-        await client.disconnect([POLYGON_SCOPE]);
-      } catch (_error) {
-        await client.disconnect();
+
+      provider.emit('accountsChanged', nextAccounts);
+      provider.emit('chainChanged', provider.chainId);
+    });
+
+    client.on('stateChanged', function (state) {
+      if (state === 'disconnected') {
+        provider.syncAccounts([]);
+        provider.emit('accountsChanged', []);
       }
 
-      provider.syncAccounts([]);
-      provider.emit('accountsChanged', []);
-    },
-    client,
-  });
-} catch (error) {
-  console.error('MetaMask multichain bridge failed to initialize:', error);
+      window.dispatchEvent(
+        new CustomEvent('aetheron:metamask-connect-state', {
+          detail: { state },
+        }),
+      );
+    });
 
-  exposeBridge({
-    isReady: function () {
-      return false;
-    },
-    getProvider: function () {
-      return null;
-    },
-    connect: async function () {
-      throw error;
-    },
-    getAccounts: async function () {
-      return [];
-    },
-    disconnect: async function () {},
-    error,
-  });
+    exposeBridge({
+      isReady: function () {
+        return true;
+      },
+      getProvider: function () {
+        return provider;
+      },
+      connect: async function (options = {}) {
+        await provider.ensureConnected(Boolean(options.forceRequest));
+        return provider;
+      },
+      getAccounts: async function () {
+        return provider.request({
+          method: 'eth_accounts',
+          params: [],
+        });
+      },
+      disconnect: async function () {
+        try {
+          await client.disconnect([POLYGON_SCOPE]);
+        } catch (_error) {
+          await client.disconnect();
+        }
+
+        provider.syncAccounts([]);
+        provider.emit('accountsChanged', []);
+      },
+      client,
+    });
+  } catch (error) {
+    console.error('MetaMask multichain bridge failed to initialize:', error);
+
+    exposeBridge({
+      isReady: function () {
+        return false;
+      },
+      getProvider: function () {
+        return null;
+      },
+      connect: async function () {
+        throw error;
+      },
+      getAccounts: async function () {
+        return [];
+      },
+      disconnect: async function () {},
+      error,
+    });
+  }
 }
+
+initializeBridge();
