@@ -1,8 +1,35 @@
 // payment-history.js - Handles fetching and displaying user payment history
 
+const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
+const DEFAULT_API_BASE = 'https://vercel-node-app-1.vercel.app';
+
+function getPaymentHistoryApiBase() {
+  const metaBase = document
+    .querySelector('meta[name="aetheron-api-base"]')
+    ?.getAttribute('content')
+    ?.trim();
+  const globalBase =
+    typeof window.AETHERON_API_BASE_URL === 'string'
+      ? window.AETHERON_API_BASE_URL.trim()
+      : '';
+  const configuredBase = globalBase || metaBase || '';
+
+  if (configuredBase) {
+    return configuredBase.replace(/\/+$/, '');
+  }
+
+  const hostname = window.location.hostname;
+  const isStaticHost = STATIC_HOST_SUFFIXES.some(function (suffix) {
+    return hostname === suffix || hostname.endsWith('.' + suffix);
+  });
+
+  return isStaticHost ? DEFAULT_API_BASE : window.location.origin;
+}
+
 async function fetchPaymentHistory() {
   try {
-    const res = await fetch('/api/payment-history');
+    const apiBase = getPaymentHistoryApiBase();
+    const res = await fetch(apiBase + '/api/payment-history');
     if (!res.ok) throw new Error('Failed to fetch payment history');
     const data = await res.json();
     return data.history || [];
