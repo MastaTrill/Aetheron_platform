@@ -290,6 +290,81 @@ describe('Dashboard wallet wiring', () => {
     expect(window.showToast).toHaveBeenCalled();
   });
 
+  test('MetaMask falls back to the multichain bridge when no extension is installed', async () => {
+    const account = '0x2222222222222222222222222222222222222222';
+    const { window, document, localStorage, context } = createDashboardContext(
+      `
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <button id="connectBtn">Connect</button>
+            <div id="walletInfo"></div>
+            <span id="walletType">-</span>
+            <span id="accountAddress">-</span>
+            <span id="ethBalance">-</span>
+            <span id="aethBalance">-</span>
+          </body>
+        </html>
+      `,
+      {
+        connectedAccount: account,
+      },
+    );
+
+    const multichainProvider = {
+      accounts: [account],
+      isAetheronMetaMaskMultichain: true,
+      isMetaMask: true,
+      on: jest.fn(),
+      removeListener: jest.fn(),
+      request: jest.fn(async ({ method }) => {
+        if (method === 'eth_accounts' || method === 'eth_requestAccounts') {
+          return [account];
+        }
+
+        if (
+          method === 'wallet_switchEthereumChain' ||
+          method === 'wallet_addEthereumChain'
+        ) {
+          return null;
+        }
+
+        if (method === 'eth_chainId') {
+          return '0x89';
+        }
+
+        return null;
+      }),
+    };
+
+    window.AetheronMetaMaskMultichain = {
+      isReady: jest.fn(() => true),
+      connect: jest.fn().mockResolvedValue(multichainProvider),
+      getProvider: jest.fn(() => multichainProvider),
+    };
+
+    runScript(context, 'dashboard-main.js');
+
+    await window.connectWallet({
+      auto: false,
+      walletType: 'metamask',
+    });
+
+    expect(window.AetheronMetaMaskMultichain.connect).toHaveBeenCalledWith({
+      forceRequest: true,
+    });
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      'aetheron_connected_wallet',
+      'metamask',
+    );
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      'aetheron_connected',
+      account,
+    );
+    expect(document.getElementById('walletType').textContent).toBe('MetaMask');
+    expect(window.dashboard.walletAccount).toBe(account);
+  });
+
   test('body actions wire profile and referral buttons', async () => {
     const account = '0xabc1230000000000000000000000000000000000';
     const { window, document, context } = createDashboardContext(

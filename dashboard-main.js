@@ -111,6 +111,10 @@ function getInjectedProviderLabel(injectedProvider) {
     return 'Browser Wallet';
   }
 
+  if (injectedProvider.isAetheronMetaMaskMultichain) {
+    return 'MetaMask';
+  }
+
   if (injectedProvider.isMetaMask && !injectedProvider.isCoinbaseWallet) {
     return 'MetaMask';
   }
@@ -183,6 +187,61 @@ function getPreferredInjectedProvider(walletType = null) {
   }
 
   return injectedProviders[0];
+}
+
+function getMetaMaskMultichainBridge() {
+  const bridge = window.AetheronMetaMaskMultichain;
+
+  if (!bridge || typeof bridge.getProvider !== 'function') {
+    return null;
+  }
+
+  return bridge;
+}
+
+function isUsableWalletProvider(providerOption) {
+  return Boolean(providerOption && typeof providerOption.request === 'function');
+}
+
+async function getMetaMaskMultichainProvider(auto) {
+  const bridge = getMetaMaskMultichainBridge();
+
+  if (!bridge || (typeof bridge.isReady === 'function' && !bridge.isReady())) {
+    return null;
+  }
+
+  const providerOption = bridge.getProvider();
+  if (!providerOption || typeof providerOption.request !== 'function') {
+    return null;
+  }
+
+  if (auto) {
+    const accounts = await providerOption.request({
+      method: 'eth_accounts',
+      params: [],
+    });
+
+    return Array.isArray(accounts) && accounts.length > 0 ? providerOption : null;
+  }
+
+  return bridge.connect({ forceRequest: true });
+}
+
+async function resolveWalletProvider(requestedProvider, walletType, auto) {
+  if (isUsableWalletProvider(requestedProvider)) {
+    return requestedProvider;
+  }
+
+  const preferredProvider = getPreferredInjectedProvider(walletType);
+  if (isUsableWalletProvider(preferredProvider)) {
+    return preferredProvider;
+  }
+
+  if (walletType === 'metamask') {
+    return getMetaMaskMultichainProvider(auto);
+  }
+
+  return isUsableWalletProvider(window.ethereum) ? window.ethereum : null;
 }
 
 function ensureWalletChooser() {
@@ -261,7 +320,10 @@ function renderWalletChooserOptions() {
     chooserOptions.push({
       choice,
       label,
-      helper: `Connect with ${label}`,
+      helper:
+        label === 'MetaMask'
+          ? 'Connect with MetaMask extension or mobile app'
+          : `Connect with ${label}`,
     });
   });
 
@@ -364,14 +426,23 @@ async function switchToPolygon(injectedProvider) {
 async function connectWallet(request = false) {
   const { auto, walletType = null, provider: requestedProvider = null } =
     normalizeConnectRequest(request);
-  const injectedProvider =
-    requestedProvider || getPreferredInjectedProvider(walletType) || window.ethereum;
+  const injectedProvider = await resolveWalletProvider(
+    requestedProvider,
+    walletType,
+    auto,
+  );
 
   if (!injectedProvider) {
     if (!auto) {
-      showToast('No browser wallet detected. Choose WalletConnect or install a wallet.', {
-        type: 'error',
-      });
+      const bridge = getMetaMaskMultichainBridge();
+      showToast(
+        walletType === 'metamask' && !bridge
+          ? 'MetaMask Connect is still loading. Please try again in a moment.'
+          : 'No browser wallet detected. Choose WalletConnect or install a wallet.',
+        {
+          type: 'error',
+        },
+      );
       openWalletChooser();
     }
     return;
@@ -483,7 +554,7 @@ async function autoReconnect() {
     return;
   }
 
-  if (saved && window.ethereum) {
+  if (saved && (window.ethereum || savedWalletType === 'metamask')) {
     connectWallet({
       auto: true,
       walletType: savedWalletType || 'browser',
