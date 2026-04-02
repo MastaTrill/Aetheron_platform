@@ -138,7 +138,7 @@ async function fetchGovernanceProposals(space = 'aetheron.eth') {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
+      query: `query Proposals($space: String!) { proposals(where: { space: $space }) { id title body choices start end state } }`,
       variables: { space },
     }),
   });
