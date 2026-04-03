@@ -1,1138 +1,1285 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aetheron Platform - Your DeFi Dashboard</title>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
+    ></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'GA_MEASUREMENT_ID');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "GA_MEASUREMENT_ID");
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="index.js"></script>
     <script src="monitor.js"></script>
     <script src="marketing-launch.js"></script>
     <script src="performance-monitor.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="aetheron-integration.js"></script>
+    <script src="defi-integration.js"></script>
+    <script src="marketing-automation.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-        }
+      :root {
+        --primary: #667eea;
+        --secondary: #764ba2;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --dark: #1f2937;
+        --light: #f3f4f6;
+      }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            min-height: 100vh;
-            color: var(--dark);
-        }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        min-height: 100vh;
+        color: var(--dark);
+      }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+      .navbar {
+        background: rgba(255, 255, 255, 0.98);
+        padding: 1rem 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
 
-        .navbar-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .navbar-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
 
-        .nav-link {
-            color: var(--dark);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+      .nav-link {
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
 
-        .nav-link:hover {
-            color: var(--primary);
-        }
+      .nav-link:hover {
+        color: var(--primary);
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+      }
 
-        .hero {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 3rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+      .hero {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
 
-        .hero h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
+      .hero h1 {
+        font-size: 3rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+      }
 
-        .hero p {
-            font-size: 1.25rem;
-            color: #6b7280;
-            margin-bottom: 2rem;
-        }
+      .hero p {
+        font-size: 1.25rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+      }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
 
-        .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
 
-        .stat-card .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
+      .stat-card .icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
 
-        .stat-card.primary .icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
+      .stat-card.primary .icon {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
 
-        .stat-card.success .icon {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
+      .stat-card.success .icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+      }
 
-        .stat-card.warning .icon {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }
+      .stat-card.warning .icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+      }
 
-        .stat-card.info .icon {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-        }
+      .stat-card.info .icon {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+      }
 
-        .stat-card .label {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-        }
+      .stat-card .label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+      }
 
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
+      .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
 
-        .stat-card .change {
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
+      .stat-card .change {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
 
-        .change.positive {
-            color: var(--success);
-        }
+      .change.positive {
+        color: var(--success);
+      }
 
-        .change.negative {
-            color: var(--danger);
-        }
+      .change.negative {
+        color: var(--danger);
+      }
 
+      .main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      @media (max-width: 968px) {
         .main-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 968px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .wallet-section {
-            text-align: center;
-            padding: 3rem;
-        }
-
-        .wallet-connected {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-
-        .balance-display {
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-            border-radius: 12px;
-            margin: 1rem 0;
-        }
-
-        .balance-display .amount {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .staking-pools {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .pool-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .pool-card:hover {
-            border-color: var(--primary);
-            transform: translateX(4px);
-        }
-
-        .pool-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .pool-duration {
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-
-        .pool-apy {
-            background: var(--success);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .pool-details {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .quick-links {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .quick-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--dark);
-            transition: all 0.3s;
-        }
-
-        .quick-link:hover {
-            transform: translateX(4px);
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-        }
-
-        .quick-link .icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, .3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .calculator-input {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .calculator-result {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .calculator-result .big-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--success);
-            margin: 0.5rem 0;
-        }
-
-        .tx-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .tx-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background 0.3s;
-        }
-
-        .tx-item:hover {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .tx-item:last-child {
-            border-bottom: none;
-        }
-
-        .tx-type {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .tx-type.buy {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .tx-type.sell {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .tx-type.stake {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .tx-type.unstake {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .admin-section {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
-            border: 2px solid var(--danger);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-        }
-
-        .admin-controls {
-            display: grid;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .control-row {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .control-row input {
-            flex: 1;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 4rem;
-        }
-
-        /* Utility Classes */
-        .mb-0 {
-            margin-bottom: 0;
-        }
-
-        .mb-05 {
-            margin-bottom: 0.5rem;
-        }
-
-        .mb-1 {
-            margin-bottom: 1rem;
-        }
-
-        .mb-2 {
-            margin-bottom: 2rem;
-        }
-
-        .mt-05 {
-            margin-top: 0.5rem;
-        }
-
-        .mt-1 {
-            margin-top: 1rem;
-        }
-
-        .text-xs {
-            font-size: 0.75rem;
-        }
-
-        .text-sm {
-            font-size: 0.875rem;
-        }
-
-        .text-base {
-            font-size: 1rem;
-        }
-
-        .text-gray {
-            color: #6b7280;
-        }
-
-        .text-white {
-            color: white;
-        }
-
-        .fw-600 {
-            font-weight: 600;
-        }
-
-        .fw-700 {
-            font-weight: 700;
-        }
-
-        .font-mono {
-            font-family: 'Courier New', monospace;
-        }
-
-        .d-grid {
-            display: grid;
-        }
-
-        .grid-2 {
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .w-full {
-            width: 100%;
-        }
-
-        .word-break {
-            word-break: break-all;
-        }
-
-        .font-08 {
-            font-size: 0.8em;
-        }
-
-        .wallet-icon {
-            font-size: 4rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .metamask-status {
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        .pool-apy-orange {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .info-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .contract-address {
-            font-family: monospace;
-            font-size: 0.75rem;
-            word-break: break-all;
-            background: #f3f4f6;
-            padding: 0.5rem;
-            border-radius: 6px;
-        }
-
-        .tax-structure {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .calc-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .calc-input {
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-        }
-
-        .calc-select {
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background: white;
-        }
-
-        .tx-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .loading-md {
-            width: 40px;
-            height: 40px;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            color: #9ca3af;
-            margin-bottom: 1rem;
-        }
-
-        .admin-title {
-            color: var(--danger);
-        }
-
-        .flex-1 {
-            flex: 1;
-        }
-
-        .footer-link {
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0 1rem;
-        }
-
-        .paragraph-spacing {
-            margin: 1rem 0;
-        }
-
-        .info-label {
-            margin-bottom: 0.25rem;
-        }
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .wallet-section {
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .wallet-connected {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1),
+          rgba(118, 75, 162, 0.1)
+        );
+        border-radius: 12px;
+        margin-bottom: 1rem;
+      }
+
+      .balance-display {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05),
+          rgba(118, 75, 162, 0.05)
+        );
+        border-radius: 12px;
+        margin: 1rem 0;
+      }
+
+      .balance-display .amount {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .staking-pools {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .pool-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05),
+          rgba(118, 75, 162, 0.05)
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .pool-card:hover {
+        border-color: var(--primary);
+        transform: translateX(4px);
+      }
+
+      .pool-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .pool-duration {
+        font-weight: 700;
+        font-size: 1.25rem;
+      }
+
+      .pool-apy {
+        background: var(--success);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .pool-details {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .input-group input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .quick-links {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05),
+          rgba(118, 75, 162, 0.05)
+        );
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--dark);
+        transition: all 0.3s;
+      }
+
+      .quick-link:hover {
+        transform: translateX(4px);
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1),
+          rgba(118, 75, 162, 0.1)
+        );
+      }
+
+      .quick-link .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .calculator-input {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .calculator-result {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.1),
+          rgba(5, 150, 105, 0.1)
+        );
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .calculator-result .big-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--success);
+        margin: 0.5rem 0;
+      }
+
+      .tx-list {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .tx-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        transition: background 0.3s;
+      }
+
+      .tx-item:hover {
+        background: rgba(102, 126, 234, 0.05);
+      }
+
+      .tx-item:last-child {
+        border-bottom: none;
+      }
+
+      .tx-type {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .tx-type.buy {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .tx-type.sell {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .tx-type.stake {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .tx-type.unstake {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .admin-section {
+        background: linear-gradient(
+          135deg,
+          rgba(239, 68, 68, 0.1),
+          rgba(220, 38, 38, 0.1)
+        );
+        border: 2px solid var(--danger);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-top: 1rem;
+      }
+
+      .admin-controls {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .control-row input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-warning {
+        background: var(--warning);
+        color: white;
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 4rem;
+      }
+
+      /* Utility Classes */
+      .mb-0 {
+        margin-bottom: 0;
+      }
+
+      .mb-05 {
+        margin-bottom: 0.5rem;
+      }
+
+      .mb-1 {
+        margin-bottom: 1rem;
+      }
+
+      .mb-2 {
+        margin-bottom: 2rem;
+      }
+
+      .mt-05 {
+        margin-top: 0.5rem;
+      }
+
+      .mt-1 {
+        margin-top: 1rem;
+      }
+
+      .text-xs {
+        font-size: 0.75rem;
+      }
+
+      .text-sm {
+        font-size: 0.875rem;
+      }
+
+      .text-base {
+        font-size: 1rem;
+      }
+
+      .text-gray {
+        color: #6b7280;
+      }
+
+      .text-white {
+        color: white;
+      }
+
+      .fw-600 {
+        font-weight: 600;
+      }
+
+      .fw-700 {
+        font-weight: 700;
+      }
+
+      .font-mono {
+        font-family: "Courier New", monospace;
+      }
+
+      .d-grid {
+        display: grid;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .w-full {
+        width: 100%;
+      }
+
+      .word-break {
+        word-break: break-all;
+      }
+
+      .font-08 {
+        font-size: 0.8em;
+      }
+
+      .wallet-icon {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      .metamask-status {
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .pool-apy-orange {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+      }
+
+      .info-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .contract-address {
+        font-family: monospace;
+        font-size: 0.75rem;
+        word-break: break-all;
+        background: #f3f4f6;
+        padding: 0.5rem;
+        border-radius: 6px;
+      }
+
+      .tax-structure {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1),
+          rgba(118, 75, 162, 0.1)
+        );
+        padding: 1rem;
+        border-radius: 8px;
+      }
+
+      .calc-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .calc-input {
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+      }
+
+      .calc-select {
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        background: white;
+      }
+
+      .tx-icon {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      .loading-md {
+        width: 40px;
+        height: 40px;
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+      }
+
+      .admin-title {
+        color: var(--danger);
+      }
+
+      .flex-1 {
+        flex: 1;
+      }
+
+      .footer-link {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0 1rem;
+      }
+
+      .paragraph-spacing {
+        margin: 1rem 0;
+      }
+
+      .info-label {
+        margin-bottom: 0.25rem;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <i class="fas fa-rocket"></i>
-                Aetheron Platform
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Dashboard</a>
-                <a href="#staking" class="nav-link">Staking</a>
-                <a href="#" class="nav-link">Analytics</a>
-                <button id="connectBtn" class="btn btn-primary">
-                    <i class="fas fa-wallet"></i> Connect Wallet
-                </button>
-            </div>
+      <div class="navbar-content">
+        <div class="logo">
+          <i class="fas fa-rocket"></i>
+          Aetheron Platform
         </div>
+        <div class="nav-links">
+          <a href="#" class="nav-link">Dashboard</a>
+          <a href="#staking" class="nav-link">Staking</a>
+          <a href="#" class="nav-link">Analytics</a>
+          <button id="connectBtn" class="btn btn-primary">
+            <i class="fas fa-wallet"></i> Connect Wallet
+          </button>
+        </div>
+      </div>
     </nav>
 
     <div class="container">
-        <!-- Hero Section -->
-        <div class="hero">
-            <h1>Welcome to Aetheron</h1>
-            <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
-            <div id="networkAlert" class="alert alert-error hidden">
-                ⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
-            </div>
+      <!-- Hero Section -->
+      <div class="hero">
+        <h1>Welcome to Aetheron</h1>
+        <p>Your Gateway to DeFi on Polygon - Stake, Earn, and Grow</p>
+        <div id="networkAlert" class="alert alert-error hidden">
+          ⚠️ Please switch to Polygon Mainnet (Chain ID: 137)
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="icon"><i class="fas fa-coins"></i></div>
+          <div class="label">AETH Price</div>
+          <div class="value" id="priceValue">Loading...</div>
+          <div class="change positive" id="priceChange">--</div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card primary">
-                <div class="icon"><i class="fas fa-coins"></i></div>
-                <div class="label">AETH Price</div>
-                <div class="value" id="priceValue">Loading...</div>
-                <div class="change positive" id="priceChange">--</div>
-            </div>
-
-            <div class="stat-card success">
-                <div class="icon"><i class="fas fa-chart-line"></i></div>
-                <div class="label">Market Cap</div>
-                <div class="value" id="marketCapValue">Loading...</div>
-                <div class="change" id="marketCapChange">--</div>
-            </div>
-
-            <div class="stat-card warning">
-                <div class="icon"><i class="fas fa-fire"></i></div>
-                <div class="label">Total Staked</div>
-                <div class="value" id="stakedValue">Loading...</div>
-                <div class="change" id="stakedChange">150M AETH</div>
-            </div>
-
-            <div class="stat-card info">
-                <div class="icon"><i class="fas fa-users"></i></div>
-                <div class="label">Holders</div>
-                <div class="value" id="holdersValue">Loading...</div>
-                <div class="change positive" id="holdersChange">Growing</div>
-            </div>
+        <div class="stat-card success">
+          <div class="icon"><i class="fas fa-chart-line"></i></div>
+          <div class="label">Market Cap</div>
+          <div class="value" id="marketCapValue">Loading...</div>
+          <div class="change" id="marketCapChange">--</div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="main-grid">
-            <!-- Left Column - Wallet & Staking -->
-            <div>
-                <!-- Wallet Section -->
-                <div class="card mb-2">
-                    <div class="card-header">
-                        <h2 class="card-title">Your Wallet</h2>
-                    </div>
-
-                    <div id="walletNotConnected" class="wallet-section">
-                        <i class="fas fa-wallet wallet-icon"></i>
-                        <h3>Connect Your Wallet</h3>
-                        <p class="text-gray paragraph-spacing">Connect your MetaMask browser extension to start using
-                            Aetheron Platform</p>
-                        <div id="metamaskStatus" class="metamask-status">
-                            <i class="fas fa-spinner fa-spin"></i> Checking for MetaMask...
-                        </div>
-                        <button class="btn btn-outline mt-05" onclick="recheckMetaMask()">
-                            <i class="fas fa-sync-alt"></i> Refresh Detection
-                        </button>
-                    </div>
-
-                    <div id="walletConnected" class="hidden">
-                        <div class="wallet-connected">
-                            <div>
-                                <div class="text-sm text-gray">Connected Wallet</div>
-                                <div id="walletAddress" class="fw-600 font-mono"></div>
-                            </div>
-                            <button class="btn btn-outline" onclick="disconnectWallet()">
-                                <i class="fas fa-sign-out-alt"></i> Disconnect
-                            </button>
-                        </div>
-
-                        <div class="balance-display">
-                            <div class="text-sm text-gray mb-05">Your AETH Balance</div>
-                            <div class="amount" id="userBalance">0.00</div>
-                            <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
-                        </div>
-
-                        <div class="d-grid grid-2 mt-1">
-                            <button class="btn btn-primary"
-                                onclick="window.open('https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', '_blank')">
-                                <i class="fas fa-shopping-cart"></i> Buy AETH
-                            </button>
-                            <button class="btn btn-success" onclick="addTokenToMetaMask()">
-                                <i class="fas fa-plus"></i> Add to MetaMask
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staking Section -->
-                <div class="card" id="staking">
-                    <div class="card-header">
-                        <h2 class="card-title">Staking Pools</h2>
-                        <span class="text-gray text-sm">Earn up to 25% APY</span>
-                    </div>
-
-                    <div id="stakingAlert" class="alert alert-error hidden"></div>
-                    <div id="stakingSuccess" class="alert alert-success hidden"></div>
-
-                    <div class="staking-pools">
-                        <!-- Pool 1 - 30 Days -->
-                        <div class="pool-card">
-                            <div class="pool-header">
-                                <div>
-                                    <div class="pool-duration">30 Days</div>
-                                    <div class="text-sm text-gray">Short-term staking</div>
-                                </div>
-                                <div class="pool-apy">5% APY</div>
-                            </div>
-                            <div class="pool-details">
-                                <div><i class="fas fa-clock"></i> Lock: 30 days</div>
-                                <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
-                            </div>
-                            <div class="input-group">
-                                <input type="number" id="stakeAmount0" placeholder="Amount to stake" min="100">
-                                <button class="btn btn-primary" onclick="stakeTokens(0)" id="stakeBtn0">
-                                    <i class="fas fa-lock"></i> Stake
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Pool 2 - 90 Days -->
-                        <div class="pool-card">
-                            <div class="pool-header">
-                                <div>
-                                    <div class="pool-duration">90 Days</div>
-                                    <div class="text-sm text-gray">Medium-term staking</div>
-                                </div>
-                                <div class="pool-apy">12% APY</div>
-                            </div>
-                            <div class="pool-details">
-                                <div><i class="fas fa-clock"></i> Lock: 90 days</div>
-                                <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
-                            </div>
-                            <div class="input-group">
-                                <input type="number" id="stakeAmount1" placeholder="Amount to stake" min="500">
-                                <button class="btn btn-primary" onclick="stakeTokens(1)" id="stakeBtn1">
-                                    <i class="fas fa-lock"></i> Stake
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Pool 3 - 180 Days -->
-                        <div class="pool-card">
-                            <div class="pool-header">
-                                <div>
-                                    <div class="pool-duration">180 Days</div>
-                                    <div class="text-sm text-gray">Long-term staking</div>
-                                </div>
-                                <div class="pool-apy pool-apy-orange">25% APY</div>
-                            </div>
-                            <div class="pool-details">
-                                <div><i class="fas fa-clock"></i> Lock: 180 days</div>
-                                <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
-                            </div>
-                            <div class="input-group">
-                                <input type="number" id="stakeAmount2" placeholder="Amount to stake" min="1000">
-                                <button class="btn btn-primary" onclick="stakeTokens(2)" id="stakeBtn2">
-                                    <i class="fas fa-lock"></i> Stake
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column - Quick Links & Info -->
-            <div>
-                <!-- Quick Links -->
-                <div class="card mb-2">
-                    <div class="card-header">
-                        <h2 class="card-title">Quick Links</h2>
-                    </div>
-
-                    <div class="quick-links">
-                        <a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-                            target="_blank" rel="noopener" class="quick-link">
-                            <div class="icon"><i class="fas fa-search"></i></div>
-                            <div>
-                                <div class="fw-600">View Contract</div>
-                                <div class="text-sm text-gray">PolygonScan</div>
-                            </div>
-                        </a>
-
-                        <a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
-                            target="_blank" rel="noopener" class="quick-link">
-                            <div class="icon"><i class="fas fa-chart-area"></i></div>
-                            <div>
-                                <div class="fw-600">Live Chart</div>
-                                <div class="text-sm text-gray">DexTools</div>
-                            </div>
-                        </a>
-
-                        <a href="https://quickswap.exchange/#/pool" target="_blank" rel="noopener" class="quick-link">
-                            <div class="icon"><i class="fas fa-water"></i></div>
-                            <div>
-                                <div class="fw-600">Liquidity Pool</div>
-                                <div class="text-sm text-gray">QuickSwap</div>
-                            </div>
-                        </a>
-
-                        <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-                            target="_blank" rel="noopener" class="quick-link">
-                            <div class="icon"><i class="fas fa-exchange-alt"></i></div>
-                            <div>
-                                <div class="fw-600">Trade AETH</div>
-                                <div class="text-sm text-gray">Buy/Sell</div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Token Info -->
-                <div class="card mb-2">
-                    <div class="card-header">
-                        <h2 class="card-title">Token Info</h2>
-                    </div>
-
-                    <div class="info-grid">
-                        <div>
-                            <div class="text-sm text-gray info-label">Contract Address</div>
-                            <div class="contract-address">
-                                0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="text-sm text-gray info-label">Total Supply</div>
-                            <div class="fw-600">1,000,000,000 AETH</div>
-                        </div>
-
-                        <div>
-                            <div class="text-sm text-gray info-label">Network</div>
-                            <div class="fw-600">Polygon Mainnet</div>
-                        </div>
-
-                        <div>
-                            <div class="text-sm text-gray info-label">Decimals</div>
-                            <div class="fw-600">18</div>
-                        </div>
-
-                        <div class="tax-structure mt-1">
-                            <div class="fw-600 mb-05">Tax Structure</div>
-                            <div class="text-sm text-gray">
-                                • Buy: 3% → Treasury<br>
-                                • Sell: 5% → Treasury<br>
-                                • Tax-free for staking
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rewards Calculator -->
-                <div class="card mb-2">
-                    <div class="card-header">
-                        <h2 class="card-title">Rewards Calculator</h2>
-                    </div>
-
-                    <div>
-                        <label class="calc-label">Amount to Stake</label>
-                        <div class="calculator-input">
-                            <input type="number" id="calcAmount" placeholder="Enter AETH amount" class="calc-input">
-                            <select id="calcPool" class="calc-select" aria-label="Select staking pool">
-                                <option value="0">30 Days (5% APY)</option>
-                                <option value="1">90 Days (12% APY)</option>
-                                <option value="2">180 Days (25% APY)</option>
-                            </select>
-                        </div>
-
-                        <button class="btn btn-primary w-full" onclick="calculateRewards()">
-                            <i class="fas fa-calculator"></i> Calculate Rewards
-                        </button>
-
-                        <div id="calcResult" class="hidden">
-                            <div class="calculator-result">
-                                <div class="text-sm text-gray">Estimated Rewards</div>
-                                <div class="big-number" id="rewardAmount">0 AETH</div>
-                                <div class="text-sm text-gray">
-                                    Total Return: <span id="totalReturn" class="fw-600">0 AETH</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="stat-card warning">
+          <div class="icon"><i class="fas fa-fire"></i></div>
+          <div class="label">Total Staked</div>
+          <div class="value" id="stakedValue">Loading...</div>
+          <div class="change" id="stakedChange">150M AETH</div>
         </div>
 
-        <!-- Transaction History -->
-        <div class="card mb-2">
+        <div class="stat-card info">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <div class="label">Holders</div>
+          <div class="value" id="holdersValue">Loading...</div>
+          <div class="change positive" id="holdersChange">Growing</div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="main-grid">
+        <!-- Left Column - Wallet & Staking -->
+        <div>
+          <!-- Wallet Section -->
+          <div class="card mb-2">
             <div class="card-header">
-                <h2 class="card-title">Recent Transactions</h2>
-                <button class="btn btn-outline" onclick="refreshTransactions()">
-                    <i class="fas fa-sync-alt"></i> Refresh
+              <h2 class="card-title">Your Wallet</h2>
+            </div>
+
+            <div id="walletNotConnected" class="wallet-section">
+              <i class="fas fa-wallet wallet-icon"></i>
+              <h3>Connect Your Wallet</h3>
+              <p class="text-gray paragraph-spacing">
+                Connect your MetaMask browser extension to start using Aetheron
+                Platform
+              </p>
+              <div id="metamaskStatus" class="metamask-status">
+                <i class="fas fa-spinner fa-spin"></i> Checking for MetaMask...
+              </div>
+              <button class="btn btn-outline mt-05" onclick="recheckMetaMask()">
+                <i class="fas fa-sync-alt"></i> Refresh Detection
+              </button>
+            </div>
+
+            <div id="walletConnected" class="hidden">
+              <div class="wallet-connected">
+                <div>
+                  <div class="text-sm text-gray">Connected Wallet</div>
+                  <div id="walletAddress" class="fw-600 font-mono"></div>
+                </div>
+                <button class="btn btn-outline" onclick="disconnectWallet()">
+                  <i class="fas fa-sign-out-alt"></i> Disconnect
                 </button>
+              </div>
+
+              <div class="balance-display">
+                <div class="text-sm text-gray mb-05">Your AETH Balance</div>
+                <div class="amount" id="userBalance">0.00</div>
+                <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
+              </div>
+
+              <div class="d-grid grid-2 mt-1">
+                <button
+                  class="btn btn-primary"
+                  onclick="
+                    window.open(
+                      'https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+                      '_blank',
+                    )
+                  "
+                >
+                  <i class="fas fa-shopping-cart"></i> Buy AETH
+                </button>
+                <button class="btn btn-success" onclick="addTokenToMetaMask()">
+                  <i class="fas fa-plus"></i> Add to MetaMask
+                </button>
+              </div>
             </div>
+          </div>
 
-            <div id="txNotConnected" class="wallet-section">
-                <i class="fas fa-receipt tx-icon"></i>
-                <p class="text-gray">Connect your wallet to view transaction history</p>
-            </div>
-
-            <div id="txConnected" class="hidden">
-                <div id="txLoading" class="wallet-section hidden">
-                    <div class="loading loading-md"></div>
-                    <p class="mt-1 text-gray">Loading transactions...</p>
-                </div>
-
-                <div id="txEmpty" class="wallet-section hidden">
-                    <i class="fas fa-inbox empty-icon"></i>
-                    <p class="text-gray">No transactions yet</p>
-                </div>
-
-                <div id="txList" class="tx-list"></div>
-            </div>
-        </div>
-
-        <!-- Admin Controls (Only visible to contract owner) -->
-        <div id="adminPanel" class="card hidden mb-2">
+          <!-- Staking Section -->
+          <div class="card" id="staking">
             <div class="card-header">
-                <h2 class="card-title admin-title">
-                    <i class="fas fa-shield-alt"></i> Admin Controls
-                </h2>
+              <h2 class="card-title">Staking Pools</h2>
+              <span class="text-gray text-sm">Earn up to 25% APY</span>
             </div>
 
-            <div class="admin-section">
-                <div class="fw-600 mb-1">⚠️ Owner Functions - Use with Caution</div>
+            <div id="stakingAlert" class="alert alert-error hidden"></div>
+            <div id="stakingSuccess" class="alert alert-success hidden"></div>
 
-                <div class="admin-controls">
-                    <div>
-                        <label class="calc-label">Update Tax Rates</label>
-                        <div class="control-row">
-                            <input type="number" id="buyTax" placeholder="Buy Tax %" min="0" max="10">
-                            <input type="number" id="sellTax" placeholder="Sell Tax %" min="0" max="10">
-                            <button class="btn btn-warning" onclick="updateTaxes()">
-                                <i class="fas fa-percent"></i> Update
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="calc-label">Pause/Unpause Trading</label>
-                        <div class="control-row">
-                            <button class="btn btn-danger flex-1" onclick="pauseTrading()">
-                                <i class="fas fa-pause"></i> Pause Trading
-                            </button>
-                            <button class="btn btn-success flex-1" onclick="unpauseTrading()">
-                                <i class="fas fa-play"></i> Resume Trading
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="calc-label">Withdraw Treasury</label>
-                        <div class="control-row">
-                            <input type="text" id="withdrawAddress" placeholder="Recipient Address">
-                            <input type="number" id="withdrawAmount" placeholder="Amount">
-                            <button class="btn btn-danger" onclick="withdrawTreasury()">
-                                <i class="fas fa-wallet"></i> Withdraw
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="calc-label">Emergency Functions</label>
-                        <div class="control-row">
-                            <button class="btn btn-danger flex-1" onclick="emergencyWithdraw()">
-                                <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
-                            </button>
-                            <button class="btn btn-warning flex-1" onclick="rescueTokens()">
-                                <i class="fas fa-life-ring"></i> Rescue Tokens
-                            </button>
-                        </div>
-                    </div>
+            <div class="staking-pools">
+              <!-- Pool 1 - 30 Days -->
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">30 Days</div>
+                    <div class="text-sm text-gray">Short-term staking</div>
+                  </div>
+                  <div class="pool-apy">5% APY</div>
                 </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 30 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
+                </div>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    id="stakeAmount0"
+                    placeholder="Amount to stake"
+                    min="100"
+                  />
+                  <button
+                    class="btn btn-primary"
+                    onclick="stakeTokens(0)"
+                    id="stakeBtn0"
+                  >
+                    <i class="fas fa-lock"></i> Stake
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pool 2 - 90 Days -->
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">90 Days</div>
+                    <div class="text-sm text-gray">Medium-term staking</div>
+                  </div>
+                  <div class="pool-apy">12% APY</div>
+                </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 90 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
+                </div>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    id="stakeAmount1"
+                    placeholder="Amount to stake"
+                    min="500"
+                  />
+                  <button
+                    class="btn btn-primary"
+                    onclick="stakeTokens(1)"
+                    id="stakeBtn1"
+                  >
+                    <i class="fas fa-lock"></i> Stake
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pool 3 - 180 Days -->
+              <div class="pool-card">
+                <div class="pool-header">
+                  <div>
+                    <div class="pool-duration">180 Days</div>
+                    <div class="text-sm text-gray">Long-term staking</div>
+                  </div>
+                  <div class="pool-apy pool-apy-orange">25% APY</div>
+                </div>
+                <div class="pool-details">
+                  <div><i class="fas fa-clock"></i> Lock: 180 days</div>
+                  <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
+                </div>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    id="stakeAmount2"
+                    placeholder="Amount to stake"
+                    min="1000"
+                  />
+                  <button
+                    class="btn btn-primary"
+                    onclick="stakeTokens(2)"
+                    id="stakeBtn2"
+                  >
+                    <i class="fas fa-lock"></i> Stake
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+
+        <!-- Right Column - Quick Links & Info -->
+        <div>
+          <!-- Quick Links -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Quick Links</h2>
+            </div>
+
+            <div class="quick-links">
+              <a
+                href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+                target="_blank"
+                rel="noopener"
+                class="quick-link"
+              >
+                <div class="icon"><i class="fas fa-search"></i></div>
+                <div>
+                  <div class="fw-600">View Contract</div>
+                  <div class="text-sm text-gray">PolygonScan</div>
+                </div>
+              </a>
+
+              <a
+                href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
+                target="_blank"
+                rel="noopener"
+                class="quick-link"
+              >
+                <div class="icon"><i class="fas fa-chart-area"></i></div>
+                <div>
+                  <div class="fw-600">Live Chart</div>
+                  <div class="text-sm text-gray">DexTools</div>
+                </div>
+              </a>
+
+              <a
+                href="https://quickswap.exchange/#/pool"
+                target="_blank"
+                rel="noopener"
+                class="quick-link"
+              >
+                <div class="icon"><i class="fas fa-water"></i></div>
+                <div>
+                  <div class="fw-600">Liquidity Pool</div>
+                  <div class="text-sm text-gray">QuickSwap</div>
+                </div>
+              </a>
+
+              <a
+                href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+                target="_blank"
+                rel="noopener"
+                class="quick-link"
+              >
+                <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+                <div>
+                  <div class="fw-600">Trade AETH</div>
+                  <div class="text-sm text-gray">Buy/Sell</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Token Info -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Token Info</h2>
+            </div>
+
+            <div class="info-grid">
+              <div>
+                <div class="text-sm text-gray info-label">Contract Address</div>
+                <div class="contract-address">
+                  0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
+                </div>
+              </div>
+
+              <div>
+                <div class="text-sm text-gray info-label">Total Supply</div>
+                <div class="fw-600">1,000,000,000 AETH</div>
+              </div>
+
+              <div>
+                <div class="text-sm text-gray info-label">Network</div>
+                <div class="fw-600">Polygon Mainnet</div>
+              </div>
+
+              <div>
+                <div class="text-sm text-gray info-label">Decimals</div>
+                <div class="fw-600">18</div>
+              </div>
+
+              <div class="tax-structure mt-1">
+                <div class="fw-600 mb-05">Tax Structure</div>
+                <div class="text-sm text-gray">
+                  • Buy: 3% → Treasury<br />
+                  • Sell: 5% → Treasury<br />
+                  • Tax-free for staking
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rewards Calculator -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="card-title">Rewards Calculator</h2>
+            </div>
+
+            <div>
+              <label class="calc-label">Amount to Stake</label>
+              <div class="calculator-input">
+                <input
+                  type="number"
+                  id="calcAmount"
+                  placeholder="Enter AETH amount"
+                  class="calc-input"
+                />
+                <select
+                  id="calcPool"
+                  class="calc-select"
+                  aria-label="Select staking pool"
+                >
+                  <option value="0">30 Days (5% APY)</option>
+                  <option value="1">90 Days (12% APY)</option>
+                  <option value="2">180 Days (25% APY)</option>
+                </select>
+              </div>
+
+              <button
+                class="btn btn-primary w-full"
+                onclick="calculateRewards()"
+              >
+                <i class="fas fa-calculator"></i> Calculate Rewards
+              </button>
+
+              <div id="calcResult" class="hidden">
+                <div class="calculator-result">
+                  <div class="text-sm text-gray">Estimated Rewards</div>
+                  <div class="big-number" id="rewardAmount">0 AETH</div>
+                  <div class="text-sm text-gray">
+                    Total Return:
+                    <span id="totalReturn" class="fw-600">0 AETH</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="card mb-2">
+        <div class="card-header">
+          <h2 class="card-title">Recent Transactions</h2>
+          <button class="btn btn-outline" onclick="refreshTransactions()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+
+        <div id="txNotConnected" class="wallet-section">
+          <i class="fas fa-receipt tx-icon"></i>
+          <p class="text-gray">
+            Connect your wallet to view transaction history
+          </p>
+        </div>
+
+        <div id="txConnected" class="hidden">
+          <div id="txLoading" class="wallet-section hidden">
+            <div class="loading loading-md"></div>
+            <p class="mt-1 text-gray">Loading transactions...</p>
+          </div>
+
+          <div id="txEmpty" class="wallet-section hidden">
+            <i class="fas fa-inbox empty-icon"></i>
+            <p class="text-gray">No transactions yet</p>
+          </div>
+
+          <div id="txList" class="tx-list"></div>
+        </div>
+      </div>
+
+      <!-- Admin Controls (Only visible to contract owner) -->
+      <div id="adminPanel" class="card hidden mb-2">
+        <div class="card-header">
+          <h2 class="card-title admin-title">
+            <i class="fas fa-shield-alt"></i> Admin Controls
+          </h2>
+        </div>
+
+        <div class="admin-section">
+          <div class="fw-600 mb-1">⚠️ Owner Functions - Use with Caution</div>
+
+          <div class="admin-controls">
+            <div>
+              <label class="calc-label">Update Tax Rates</label>
+              <div class="control-row">
+                <input
+                  type="number"
+                  id="buyTax"
+                  placeholder="Buy Tax %"
+                  min="0"
+                  max="10"
+                />
+                <input
+                  type="number"
+                  id="sellTax"
+                  placeholder="Sell Tax %"
+                  min="0"
+                  max="10"
+                />
+                <button class="btn btn-warning" onclick="updateTaxes()">
+                  <i class="fas fa-percent"></i> Update
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="calc-label">Pause/Unpause Trading</label>
+              <div class="control-row">
+                <button class="btn btn-danger flex-1" onclick="pauseTrading()">
+                  <i class="fas fa-pause"></i> Pause Trading
+                </button>
+                <button
+                  class="btn btn-success flex-1"
+                  onclick="unpauseTrading()"
+                >
+                  <i class="fas fa-play"></i> Resume Trading
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="calc-label">Withdraw Treasury</label>
+              <div class="control-row">
+                <input
+                  type="text"
+                  id="withdrawAddress"
+                  placeholder="Recipient Address"
+                />
+                <input type="number" id="withdrawAmount" placeholder="Amount" />
+                <button class="btn btn-danger" onclick="withdrawTreasury()">
+                  <i class="fas fa-wallet"></i> Withdraw
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="calc-label">Emergency Functions</label>
+              <div class="control-row">
+                <button
+                  class="btn btn-danger flex-1"
+                  onclick="emergencyWithdraw()"
+                >
+                  <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
+                </button>
+                <button class="btn btn-warning flex-1" onclick="rescueTokens()">
+                  <i class="fas fa-life-ring"></i> Rescue Tokens
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <footer>
-        <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
-        <p class="mt-05 text-sm">
-            <a href="#" class="footer-link">Terms</a>
-            <a href="#" class="footer-link">Privacy</a>
-            <a href="https://github.com/MastaTrill/Aetheron_platform" target="_blank" rel="noopener"
-                class="footer-link">GitHub</a>
-        </p>
+      <p>© 2025 Aetheron Platform. Built on Polygon. Powered by DeFi.</p>
+      <p class="mt-05 text-sm">
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Privacy</a>
+        <a
+          href="https://github.com/MastaTrill/Aetheron_platform"
+          target="_blank"
+          rel="noopener"
+          class="footer-link"
+          >GitHub</a
+        >
+      </p>
     </footer>
 
     <!-- JavaScript logic moved to index.js -->
-</body>
-
+  </body>
 </html>
