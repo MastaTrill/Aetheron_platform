@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aetheron Pro Charts + Portfolio</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{background:#0b0b0b;color:#fff;font-family:Arial;text-align:center}
+.card{background:#151515;padding:20px;margin:20px;border-radius:10px}
+canvas{max-width:600px;margin:auto}
+</style>
+</head>
+<body>
+
+<h1>Aetheron Pro Charts + Portfolio</h1>
+
+<div class="card">
+<button onclick="pcpConnect()">Connect Wallet</button>
+<p id="pcpWallet"></p>
+</div>
+
+<div class="card">
+<select id="pcpAsset">
+<option>AETH</option>
+<option>WMATIC</option>
+<option>USDC</option>
+</select>
+<p>Price: <span id="pcpPrice">--</span></p>
+<p>Change: <span id="pcpChange">--</span></p>
+<p>Volatility: <span id="pcpVol">--</span></p>
+<p>Trend: <span id="pcpTrend">--</span></p>
+<p>Liquidity: <span id="pcpLiquidity">--</span></p>
+<p>Volume: <span id="pcpVolume">--</span></p>
+<canvas id="pcpMainChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Portfolio</h3>
+<p>Total Value: <span id="pcpTotal">--</span></p>
+<p>Trades: <span id="pcpTradeCount">0</span></p>
+<p>Estimated PnL: <span id="pcpPnl">--</span></p>
+<div id="pcpPositions"></div>
+<canvas id="pcpAllocChart"></canvas>
+</div>
+
+<div class="card">
+<h3>PnL Analytics</h3>
+<canvas id="pcpPnlChart"></canvas>
+</div>
+
+<script src="pro-charts-portfolio.js"></script>
+
+</body>
+</html>
