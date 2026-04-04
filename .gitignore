@@ -12,6 +12,11 @@ build/
 artifacts/
 cache/
 
+# Mobile app build artifacts
+mobile-app/android/app/src/main/res/mipmap-*/ic_launcher.png
+mobile-app/assets/
+mobile-app/ios/
+
 # IDE
 .vscode/settings.json
 .idea/
