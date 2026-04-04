@@ -172,10 +172,10 @@ button i {
 /* Embedded CSS from index.html moved here for best practices */
 body {
   font-family:
-    'Inter',
+    "Inter",
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     sans-serif;
   background: none;
   color: var(--text);
@@ -188,7 +188,7 @@ body {
   position: relative;
 }
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
@@ -240,7 +240,7 @@ textarea {
   --bg-gradient-mid: #1a1a2e;
   --bg-gradient-end: #16213e;
 }
-[data-theme='light'] {
+[data-theme="light"] {
   --primary: #0099cc;
   --secondary: #6b21a8;
   --accent: #ea580c;
@@ -306,4 +306,82 @@ body > *:not(#starfield-canvas) {
 html.no-scroll,
 body.no-scroll {
   overflow: hidden !important;
+}
+
+/* Chart container */
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+.chart-timeframe-selector {
+  display: flex;
+  gap: 0.5em;
+}
+
+.timeframe-btn {
+  padding: 0.4em 0.8em;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+}
+
+.timeframe-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.timeframe-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Claim button */
+.claim-btn {
+  min-width: 90px;
+}
+
+/* Portfolio stats */
+.portfolio-overview {
+  margin-top: 1.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1em;
+}
+
+.portfolio-stat {
+  text-align: center;
+  padding: 0.8em;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+}
+
+.portfolio-stat-label {
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 0.3em;
+}
+
+.portfolio-stat-value {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.portfolio-stat-value.positive {
+  color: var(--success);
+}
+
+.portfolio-stat-value.negative {
+  color: var(--danger);
 }
