@@ -4,22 +4,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Restrict the default token permissions to read-only unless explicitly required
+    permissions:
+      contents: read
     strategy:
       matrix:
         network: [polygon, mumbai, sepolia]
       fail-fast: false
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-      POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
-      MUMBAI_RPC_URL: ${{ secrets.MUMBAI_RPC_URL }}
-      SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
-      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-      POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+    # Do not leak secrets as global environment variables. Only expose them when needed.
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: '20'
           cache: npm
@@ -41,15 +37,24 @@ jobs:
           cd smart-contract
           npm run compile
       - name: Deploy contracts to ${{ matrix.network }}
+        # Secrets are scoped to this step only
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+          MUMBAI_RPC_URL: ${{ secrets.MUMBAI_RPC_URL }}
+          SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
         run: |
           cd smart-contract
           npx hardhat run scripts/deploy.mjs --network ${{ matrix.network }}
       - name: Verify contracts on ${{ matrix.network }}
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
         run: |
           cd smart-contract
           npm run verify:${{ matrix.network }}
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.0.0
         with:
           name: coverage-${{ matrix.network }}
           path: smart-contract/coverage
