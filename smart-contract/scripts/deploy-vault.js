@@ -8,6 +8,7 @@ async function main() {
   const { ethers } = connection;
 
   const [deployer] = await ethers.getSigners();
+  const NEW_OWNER = "0xa0Bd76BDA539cF45e2963e84757516B50FfefFf7";
   console.log("Deploying contracts with the account:", deployer.address);
   console.log(
     "Account balance:",
@@ -16,7 +17,7 @@ async function main() {
 
   // Deploy Retainer Vault
   const Vault = await ethers.getContractFactory("AetheronRetainerVault");
-  const vault = await Vault.deploy(deployer.address);
+  const vault = await Vault.deploy(NEW_OWNER);
 
   await vault.waitForDeployment();
   const vaultAddress = await vault.getAddress();
