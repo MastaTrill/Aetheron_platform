@@ -6,6 +6,8 @@
 
 > Revolutionary Blockchain & Space Exploration Ecosystem
 
+> Codename: **Aetheron L3 Sentinel**
+
 ![License: MIT](https://opensource.org/licenses/MIT)
 ![Build Status](https://github.com/Mastatrill/aetheron-platform)
 ![Version](https://github.com/Mastatrill/aetheron-platform)
@@ -37,7 +39,7 @@
 
 🚀 Live Demo
 
-- 🌐 Admin Dashboard: mastatrill.github.io/aetheron-platform
+- 🌐 Admin Dashboard: https://mastatrill.github.io/Aetheron_platform
 - 📱 Mobile App: Coming soon to App Store & Google Play
 - 📖 Documentation: Complete guides and API reference
 - 🔗 GitHub Repository: github.com/Mastatrill/aetheron-platform
@@ -52,6 +54,14 @@
 - 🌐 Web Dashboard — Comprehensive admin and user interface
 - ⛓️ Smart Contracts — Secure blockchain infrastructure
 - 🔭 Discovery System — Real‑time space exploration tracking
+- ⚡ Sentinel L3 Baseline — Target throughput benchmark: **10,000 TPS**
+
+---
+
+🚄 Sovereign Baseline
+
+- Sentinel benchmark target: **10,000 TPS**
+- Baseline contracts: `Sentinel2.sol` and `AetheronRetainerVault.sol`
 
 ---
 
@@ -419,7 +429,7 @@ If you encounter issues not covered in this guide:
 
 - GitHub: @Mastatrill
 - Repository: github.com/Mastatrill/aetheron-platform
-- Website: mastatrill.github.io/aetheron-platform
+- Website: https://mastatrill.github.io/Aetheron_platform
 - Email: <contact@aetheron.space>
 
 ---

@@ -140,7 +140,7 @@ Aetheron is building the future of decentralized finance by making DeFi accessib
 **Media Contact:**
 Aetheron Team
 Email: contact@aetheronplatform.com
-Website: https://mastatrill.github.io/aetheron-platform
+Website: https://mastatrill.github.io/Aetheron_platform
 Discord: https://discord.gg/aetheronplatform
 
 ---
@@ -183,7 +183,7 @@ Discord: https://discord.gg/aetheronplatform
           callToAction: 'Visit dashboard, connect wallet, start staking'
         },
         {
-          text: '🎁 Aetheron Staking Rewards:\\n\\n🔹 30-day pool: 8% APY\\n🔹 90-day pool: 12% APY\\n🔹 180-day pool: 18% APY\\n\\nStake AETH, earn passive income!\\n\\nDashboard: https://mastatrill.github.io/aetheron-platform\\n\\n#Staking #DeFi #PassiveIncome',
+          text: '🎁 Aetheron Staking Rewards:\\n\\n🔹 30-day pool: 8% APY\\n🔹 90-day pool: 12% APY\\n🔹 180-day pool: 18% APY\\n\\nStake AETH, earn passive income!\\n\\nDashboard: https://mastatrill.github.io/Aetheron_platform\\n\\n#Staking #DeFi #PassiveIncome',
           hashtags: ['Staking', 'DeFi', 'PassiveIncome'],
           timing: 'Daily posts',
           callToAction: 'Stake now, earn rewards'
@@ -197,14 +197,14 @@ Discord: https://discord.gg/aetheronplatform
       ],
       telegram: [
         {
-          text: '🚀 Aetheron Platform Launch Announcement!\\n\\nWe are LIVE on Polygon mainnet!\\n\\n🎯 What\'s available:\\n• AETH token trading\\n• Multi-pool staking\\n• Web dashboard\\n• Community support\\n\\n🌐 Dashboard: https://mastatrill.github.io/aetheron-platform\\n💬 Join our community!',
+          text: '🚀 Aetheron Platform Launch Announcement!\\n\\nWe are LIVE on Polygon mainnet!\\n\\n🎯 What\'s available:\\n• AETH token trading\\n• Multi-pool staking\\n• Web dashboard\\n• Community support\\n\\n🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform\\n💬 Join our community!',
           channels: ['Main channel', 'Announcements'],
           timing: 'Launch + weekly updates'
         }
       ],
       discord: [
         {
-          text: '@everyone 🎉 Aetheron is LIVE!\\n\\nWelcome to our DeFi ecosystem! 🚀\\n\\n**Quick Start Guide:**\\n1. Visit: https://mastatrill.github.io/aetheron-platform\\n2. Connect MetaMask\\n3. Get AETH on QuickSwap\\n4. Start staking!\\n\\nQuestions? Ask in #support\\n\\nLet\'s build the future of DeFi together! 💰',
+          text: '@everyone 🎉 Aetheron is LIVE!\\n\\nWelcome to our DeFi ecosystem! 🚀\\n\\n**Quick Start Guide:**\\n1. Visit: https://mastatrill.github.io/Aetheron_platform\\n2. Connect MetaMask\\n3. Get AETH on QuickSwap\\n4. Start staking!\\n\\nQuestions? Ask in #support\\n\\nLet\'s build the future of DeFi together! 💰',
           channels: ['announcements', 'general'],
           timing: 'Launch announcement'
         }

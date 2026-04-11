@@ -12,7 +12,7 @@ export const TOKEN_LIST = [
     name: 'Aetheron',
     address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
     decimals: 18,
-    logo: require('../assets/logo.png'),
+    logo: 'https://mastatrill.github.io/Aetheron_platform/logo192.png',
   },
   {
     symbol: 'USDC',

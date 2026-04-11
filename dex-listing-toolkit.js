@@ -17,7 +17,7 @@ class DEXListingToolkit {
       decimals: 18,
       chainId: 137, // Polygon
       totalSupply: '1000000000', // 1B AETH
-      website: 'https://mastatrill.github.io/aetheron-platform',
+      website: 'https://mastatrill.github.io/Aetheron_platform',
       docs: 'https://github.com/MastaTrill/Aetheron_platform',
       twitter: 'https://twitter.com/aetheronplatform',
       telegram: 'https://t.me/aetheronplatform',

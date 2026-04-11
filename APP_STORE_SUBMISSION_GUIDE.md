@@ -102,8 +102,8 @@ npx react-native run-ios --configuration Release
    - **Description**: [Use from store-metadata.json]
    - **Keywords**: DeFi, crypto, wallet, staking, Polygon, AETH, Web3, space
    - **Category**: Finance
-   - **Support URL**: <https://mastatrill.github.io/aetheron-platform>
-   - **Marketing URL**: <https://mastatrill.github.io/aetheron-platform>
+   - **Support URL**: <https://mastatrill.github.io/Aetheron_platform>
+   - **Marketing URL**: <https://mastatrill.github.io/Aetheron_platform>
 4. Upload IPA via Xcode or Transporter
 5. Add screenshots (6.5", 5.5", iPad)
 6. Set pricing (Free)

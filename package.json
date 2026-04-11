@@ -7,17 +7,18 @@
   "scripts": {
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
-    "build": "echo 'Static site - no build needed'",
+    "build": "npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
     "test": "npm run test:smoke",
     "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",
-    "test:smart-contract": "cd smart-contract && npm test",
+    "test:smart-contract": "node run-smart-contract.cjs test",
     "deploy": "echo 'Deploy manually to GitHub Pages'",
-    "verify": "cd smart-contract && node scripts/verify-contracts.mjs",
-    "hardhat:compile": "npx hardhat compile",
-    "hardhat:test": "npx hardhat test"
+    "verify": "node run-smart-contract.cjs verify",
+    "hardhat:compile": "node run-smart-contract.cjs compile",
+    "hardhat:test": "node run-smart-contract.cjs test"
   },
   "keywords": [
     "blockchain",
@@ -39,33 +40,25 @@
     "url": "https://github.com/MastaTrill/Aetheron_platform/issues"
   },
   "homepage": "https://mastatrill.github.io/Aetheron_platform",
+  "overrides": {
+    "undici": "^7.24.0"
+  },
   "dependencies": {
-    "@noble/hashes": "^2.0.1",
-    "@openzeppelin/contracts": "^5.4.0",
+    "@metamask/connect-multichain": "^0.11.0",
     "dotenv": "^17.3.1",
+    "ethers": "^6.15.0",
     "express": "^5.2.1",
-    "io-ts": "^2.2.22",
-    "next": "^16.1.6",
     "nodemailer": "^8.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "^0.84.0",
-    "stripe": "^20.3.1",
-    "web3": "^4.16.0"
+    "stripe": "^20.3.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "@nomiclabs/hardhat-waffle": "^2.0.6",
-    "chai": "^4.3.7",
-    "eslint": "^4.1.1",
-    "ethereum-waffle": "^4.0.10",
-    "ethers": "^5.7.2",
-    "hardhat": "^3.1.9",
+    "esbuild": "^0.27.5",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "jsdom": "^28.1.0",
+    "linkedom": "^0.18.12",
     "prettier": "^3.8.1"
   }
 }

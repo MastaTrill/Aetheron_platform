@@ -250,7 +250,7 @@ We're proud to release our comprehensive technical whitepaper covering:
 
 📖 Read: [Link to WHITEPAPER.md]
 🔍 Verify Contracts: polygonscan.com/address/0xAb5a...
-💻 Live Platform: aetheronplatform.github.io
+💻 Live Platform: https://mastatrill.github.io/Aetheron_platform
 
 Built on #Polygon for low fees & fast transactions.
 
@@ -289,7 +289,7 @@ A: Smart contract bugs (mitigated by testing + audit), market volatility, compet
 A: Long-term: DAO governance transition. Short-term: Token liquidity on major CEXs. Potential: Strategic acquisition by larger DeFi protocol.
 
 **Q: Can I try the platform now?**
-A: Yes! Visit [https://aetheronplatform.github.io](https://aetheronplatform.github.io), connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
+A: Yes! Visit [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform), connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
 
 ---
 

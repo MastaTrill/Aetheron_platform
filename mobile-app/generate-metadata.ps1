@@ -8,9 +8,9 @@ $metadata = @{
     "short_description" = "Space Exploration & DeFi in your pocket."
     "full_description" = "Aetheron is a next-gen DeFi and space exploration app. Manage your AETH wallet, stake, swap, and track your portfolio on Polygon. Secure, fast, and beautiful."
     "keywords" = "DeFi, crypto, wallet, staking, Polygon, AETH, Web3, space"
-    "privacy_policy_url" = "https://mastatrill.github.io/aetheron-platform/privacy"
+    "privacy_policy_url" = "https://mastatrill.github.io/Aetheron_platform/privacy"
     "support_email" = "support@aetheron.com"
-    "website" = "https://mastatrill.github.io/aetheron-platform"
+    "website" = "https://mastatrill.github.io/Aetheron_platform"
 }
 
 $metadata | ConvertTo-Json -Depth 3 | Out-File -FilePath "store-metadata.json" -Encoding utf8

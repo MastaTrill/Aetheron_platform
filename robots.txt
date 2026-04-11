@@ -17,7 +17,7 @@ Allow: /*.webp$
 
 # SEO: Crawl delay and sitemap
 Crawl-delay: 10
-Sitemap: https://aetheron.online/sitemap.xml
+Sitemap: https://mastatrill.github.io/Aetheron_platform/sitemap.xml
 
 # Crawl delay (optional, 1 second)
 Crawl-delay: 1

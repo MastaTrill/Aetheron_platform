@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
     crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="aetheron-advanced-styles.css?v=1.0.0">
+  <link rel="stylesheet" href="aetheron-advanced-styles.css?v=1.1.0">
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.0">
 </head>
 
@@ -20,11 +20,10 @@
       <div class="logo"><i class="fas fa-cube"></i> Aetheron Advanced</div>
       <div class="navbar-buttons">
         <button type="button" class="btn btn-primary"
-          onclick='window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank")'><i
+          onclick='window.open("https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e","_blank","noopener")'><i
             class="fas fa-shopping-cart"></i> Buy AETH</button>
         <button type="button" class="btn btn-primary" id="connectBtn" onclick="connectWallet()"><i
-            class="fas fa-wallet"></i> Connect
-          Wallet</button>
+            class="fas fa-wallet"></i> Connect Wallet</button>
       </div>
     </div>
   </nav>
@@ -34,7 +33,7 @@
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
         <h3>Advanced Analytics</h3>
-        <p>Real-time portfolio tracking, performance metrics, and market analysis powered by Aetheron.io</p>
+        <p>Real-time portfolio tracking, performance metrics, and market analysis powered by Aetheron.</p>
         <button type="button" class="btn btn-primary" onclick="openAnalytics()"><i class="fas fa-chart-bar"></i> View
           Analytics</button>
       </article>
@@ -42,7 +41,7 @@
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-robot"></i></div>
         <h3>AI Portfolio Optimizer</h3>
-        <p>Machine learning algorithms optimize your staking strategy for maximum returns</p>
+        <p>Portfolio suggestions based on your live AETH balance and staking position.</p>
         <button type="button" class="btn btn-primary" onclick="optimizePortfolio()"><i class="fas fa-brain"></i>
           Optimize Now</button>
       </article>
@@ -50,7 +49,7 @@
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
         <h3>Risk Management</h3>
-        <p>Advanced risk analysis, diversification recommendations, and portfolio protection</p>
+        <p>See diversification, liquidity, and volatility signals for your current AETH strategy.</p>
         <button type="button" class="btn btn-primary" onclick="analyzeRisk()"><i class="fas fa-shield"></i> Analyze
           Risk</button>
       </article>
@@ -58,7 +57,7 @@
       <article class="feature-card">
         <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
         <h3>DeFi Integration</h3>
-        <p>Seamless integration with QuickSwap, liquidity pools, and yield farming</p>
+        <p>Jump straight into QuickSwap using the live production AETH token address on Polygon.</p>
         <button type="button" class="btn btn-primary" onclick="openDeFi()"><i class="fas fa-coins"></i> Explore
           DeFi</button>
       </article>
@@ -66,7 +65,7 @@
 
     <section class="portfolio-summary hidden" id="portfolioSummary">
       <header>
-        <h2>📊 Your Portfolio Overview</h2>
+        <h2>Your Portfolio Overview</h2>
       </header>
       <div class="d-grid grid-2 mt-1">
         <div>
@@ -76,18 +75,18 @@
         </div>
         <div>
           <div class="text-sm text-gray">24h Performance</div>
-          <div class="amount" id="performance24h">+0%</div>
+          <div class="amount" id="performance24h">+0.00%</div>
           <span class="market-indicator indicator-bullish" id="marketTrend">Bullish</span>
         </div>
       </div>
 
       <section>
-        <h3 class="mt-2">💡 AI Recommendations</h3>
+        <h3 class="mt-2">AI Recommendations</h3>
         <div id="recommendations"></div>
       </section>
 
       <section>
-        <h3 class="mt-2">⚠️ Risk Assessment</h3>
+        <h3 class="mt-2">Risk Assessment</h3>
         <div class="risk-meter">
           <div class="risk-level" id="riskLevel"></div>
         </div>
@@ -97,28 +96,28 @@
 
     <section class="chart-container hidden" id="marketAnalytics">
       <header>
-        <h2>📈 Market Analytics</h2>
+        <h2>Market Analytics</h2>
       </header>
       <div class="stats-grid">
         <article class="stat-card">
           <div class="icon"><i class="fas fa-dollar-sign"></i></div>
           <div class="label">Current Price</div>
-          <div class="value" id="currentPrice">Loading...</div>
+          <div class="value" id="currentPrice">$0.000000</div>
         </article>
         <article class="stat-card">
           <div class="icon"><i class="fas fa-chart-area"></i></div>
           <div class="label">24h Volume</div>
-          <div class="value" id="volume24h">Loading...</div>
+          <div class="value" id="volume24h">$0</div>
         </article>
         <article class="stat-card">
           <div class="icon"><i class="fas fa-database"></i></div>
           <div class="label">Total Supply</div>
-          <div class="value" id="totalSupply">1B AETH</div>
+          <div class="value" id="totalSupply">1.00B AETH</div>
         </article>
         <article class="stat-card">
           <div class="icon"><i class="fas fa-users"></i></div>
           <div class="label">Total Holders</div>
-          <div class="value" id="totalHolders">Growing</div>
+          <div class="value" id="totalHolders">Live</div>
         </article>
       </div>
     </section>
@@ -129,9 +128,9 @@
       <p>&copy; 2026 Aetheron Platform. All rights reserved.</p>
     </div>
   </footer>
-  <script src="aetheron-integration.js"></script>
-  <script src="aetheron-advanced-init.js"></script>
-  <script src="global-announcements.js"></script>
+  <script src="aetheron-integration.js?v=1.1.0" defer></script>
+  <script src="aetheron-advanced-init.js?v=1.1.0" defer></script>
+  <script src="global-announcements.js" type="module"></script>
 </body>
 
 </html>

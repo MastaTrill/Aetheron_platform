@@ -39,7 +39,7 @@
       "custom_commands": [
         {
           "command": "!website",
-          "response": "🌐 Visit Aetheron: https://aetheronplatform.github.io"
+          "response": "🌐 Visit Aetheron: https://mastatrill.github.io/Aetheron_platform"
         },
         {
           "command": "!contract",
@@ -47,7 +47,7 @@
         },
         {
           "command": "!staking",
-          "response": "💰 Start staking at: https://aetheronplatform.github.io"
+          "response": "💰 Start staking at: https://mastatrill.github.io/Aetheron_platform"
         },
         {
           "command": "!rules",
@@ -71,7 +71,7 @@
           "fields": [
             {
               "name": "Get Started",
-              "value": "Visit https://aetheronplatform.github.io to start staking!"
+              "value": "Visit https://mastatrill.github.io/Aetheron_platform to start staking!"
             },
             {
               "name": "Need Help?",

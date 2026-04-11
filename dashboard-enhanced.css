@@ -257,3 +257,67 @@ body {
   margin-top: 1.5em;
   text-align: center;
 }
+.integration-note {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 10px;
+  background: rgba(0, 212, 255, 0.08);
+  color: #dbeafe;
+  line-height: 1.5;
+}
+.result-message {
+  display: none;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.result-message code {
+  font-family: 'Courier New', monospace;
+}
+.result-info,
+.result-success,
+.result-warning,
+.result-error {
+  display: block;
+}
+.result-info {
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.12);
+  color: #e0f2fe;
+}
+.result-success {
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.12);
+  color: #d1fae5;
+}
+.result-warning {
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+  color: #fef3c7;
+}
+.result-error {
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.12);
+  color: #fee2e2;
+}
+.result-link {
+  color: #7dd3fc;
+}
+.result-link:hover,
+.result-link:focus {
+  color: #bae6fd;
+}
+.result-spacer {
+  height: 0.6rem;
+}
+.result-section-title {
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+.result-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}

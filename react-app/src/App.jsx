@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import "./App.css";
 
 // Contract addresses (from README)
-const AETHERON_ADDRESS = '0x44F9c15816bCe5d6691448F60DAD50355ABa40b5';
-const STAKING_ADDRESS = '0x896D9d37A67B0bBf81dde0005975DA7850FFa638';
+const AETHERON_ADDRESS = "0x44F9c15816bCe5d6691448F60DAD50355ABa40b5";
+const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 
-// Mumbai RPC
-const MUMBAI_RPC = 'https://rpc-mumbai.matic.network';
+// Amoy RPC
+const MUMBAI_RPC = "https://polygon-amoy.drpc.org";
 
 function App() {
-  const [account, setAccount] = useState('');
-  const [balance, setBalance] = useState('0');
-  const [stakingBalance, setStakingBalance] = useState('0');
+  const [account, setAccount] = useState("");
+  const [balance, setBalance] = useState("0");
+  const [stakingBalance, setStakingBalance] = useState("0");
   const [pools, setPools] = useState([]);
   const [loading, setLoading] = useState(false);
   const [provider, setProvider] = useState(null);
@@ -22,7 +22,9 @@ function App() {
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
         setAccount(accounts[0]);
 
         const web3Provider = new ethers.BrowserProvider(window.ethereum);
@@ -30,41 +32,47 @@ function App() {
         setProvider(web3Provider);
         setSigner(web3Signer);
 
-        // Switch to Mumbai network
-        await switchToMumbai();
+        // Switch to Amoy network
+        await switchToAmoy();
 
         loadBalances(web3Provider, accounts[0]);
         loadPools(web3Provider);
       } catch (error) {
-        console.error('Error connecting wallet:', error);
+        console.error("Error connecting wallet:", error);
       }
     } else {
-      alert('Please install MetaMask!');
+      alert("Please install MetaMask!");
     }
   };
 
-  const switchToMumbai = async () => {
+  const switchToAmoy = async () => {
     try {
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x13881' }], // Mumbai testnet
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x13882" }], // Amoy testnet
       });
     } catch (switchError) {
       // If network doesn't exist, add it
       if (switchError.code === 4902) {
         try {
           await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0x13881',
-              chainName: 'Mumbai Testnet',
-              nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
-              rpcUrls: [MUMBAI_RPC],
-              blockExplorerUrls: ['https://mumbai.polygonscan.com/']
-            }]
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: "0x13882",
+                chainName: "Amoy Testnet",
+                nativeCurrency: {
+                  name: "MATIC",
+                  symbol: "MATIC",
+                  decimals: 18,
+                },
+                rpcUrls: [MUMBAI_RPC],
+                blockExplorerUrls: ["https://www.oklink.com/amoy"],
+              },
+            ],
           });
         } catch (addError) {
-          console.error('Error adding Mumbai network:', addError);
+          console.error("Error adding Amoy network:", addError);
         }
       }
     }
@@ -74,8 +82,8 @@ function App() {
     try {
       const aetheronContract = new ethers.Contract(
         AETHERON_ADDRESS,
-        ['function balanceOf(address) view returns (uint256)'],
-        web3Provider
+        ["function balanceOf(address) view returns (uint256)"],
+        web3Provider,
       );
 
       const balance = await aetheronContract.balanceOf(userAddress);
@@ -83,18 +91,20 @@ function App() {
 
       const stakingContract = new ethers.Contract(
         STAKING_ADDRESS,
-        ['function getUserStakes(address) view returns (tuple(uint256,uint256,uint256,uint256)[])'],
-        web3Provider
+        [
+          "function getUserStakes(address) view returns (tuple(uint256,uint256,uint256,uint256)[])",
+        ],
+        web3Provider,
       );
 
       const stakes = await stakingContract.getUserStakes(userAddress);
       let totalStaked = 0n;
-      stakes.forEach(stake => {
+      stakes.forEach((stake) => {
         totalStaked += stake.amount;
       });
       setStakingBalance(ethers.formatEther(totalStaked));
     } catch (error) {
-      console.error('Error loading balances:', error);
+      console.error("Error loading balances:", error);
     }
   };
 
@@ -103,10 +113,10 @@ function App() {
       const stakingContract = new ethers.Contract(
         STAKING_ADDRESS,
         [
-          'function poolCount() view returns (uint256)',
-          'function pools(uint256) view returns (uint256,uint256,uint256,bool)'
+          "function poolCount() view returns (uint256)",
+          "function pools(uint256) view returns (uint256,uint256,uint256,bool)",
         ],
-        web3Provider
+        web3Provider,
       );
 
       const count = await stakingContract.poolCount();
@@ -119,13 +129,13 @@ function App() {
           lockDuration: pool[0],
           rewardRate: pool[1],
           totalStaked: pool[2],
-          isActive: pool[3]
+          isActive: pool[3],
         });
       }
 
       setPools(poolData);
     } catch (error) {
-      console.error('Error loading pools:', error);
+      console.error("Error loading pools:", error);
     }
   };
 
@@ -136,29 +146,35 @@ function App() {
     try {
       const aetheronContract = new ethers.Contract(
         AETHERON_ADDRESS,
-        ['function approve(address,uint256) returns (bool)'],
-        signer
+        ["function approve(address,uint256) returns (bool)"],
+        signer,
       );
 
       const stakingContract = new ethers.Contract(
         STAKING_ADDRESS,
-        ['function stake(uint256,uint256)'],
-        signer
+        ["function stake(uint256,uint256)"],
+        signer,
       );
 
       // Approve tokens
-      const approveTx = await aetheronContract.approve(STAKING_ADDRESS, ethers.parseEther(amount));
+      const approveTx = await aetheronContract.approve(
+        STAKING_ADDRESS,
+        ethers.parseEther(amount),
+      );
       await approveTx.wait();
 
       // Stake tokens
-      const stakeTx = await stakingContract.stake(poolId, ethers.parseEther(amount));
+      const stakeTx = await stakingContract.stake(
+        poolId,
+        ethers.parseEther(amount),
+      );
       await stakeTx.wait();
 
-      alert('Staking successful!');
+      alert("Staking successful!");
       loadBalances(provider, account);
     } catch (error) {
-      console.error('Error staking:', error);
-      alert('Staking failed: ' + error.message);
+      console.error("Error staking:", error);
+      alert("Staking failed: " + error.message);
     }
     setLoading(false);
   };
@@ -170,18 +186,18 @@ function App() {
     try {
       const stakingContract = new ethers.Contract(
         STAKING_ADDRESS,
-        ['function claimRewards(uint256)'],
-        signer
+        ["function claimRewards(uint256)"],
+        signer,
       );
 
       const tx = await stakingContract.claimRewards(stakeId);
       await tx.wait();
 
-      alert('Rewards claimed!');
+      alert("Rewards claimed!");
       loadBalances(provider, account);
     } catch (error) {
-      console.error('Error claiming rewards:', error);
-      alert('Claim failed: ' + error.message);
+      console.error("Error claiming rewards:", error);
+      alert("Claim failed: " + error.message);
     }
     setLoading(false);
   };
@@ -198,7 +214,9 @@ function App() {
           </button>
         ) : (
           <div className="wallet-info">
-            <p>Connected: {account.slice(0, 6)}...{account.slice(-4)}</p>
+            <p>
+              Connected: {account.slice(0, 6)}...{account.slice(-4)}
+            </p>
             <p>AETH Balance: {balance}</p>
             <p>Staked: {stakingBalance}</p>
           </div>
@@ -210,13 +228,15 @@ function App() {
           <section className="pools-section">
             <h2>Staking Pools</h2>
             <div className="pools-grid">
-              {pools.map(pool => (
+              {pools.map((pool) => (
                 <div key={pool.id} className="pool-card">
                   <h3>Pool {pool.id}</h3>
-                  <p>Lock Duration: {pool.lockDuration / (24 * 60 * 60)} days</p>
+                  <p>
+                    Lock Duration: {pool.lockDuration / (24 * 60 * 60)} days
+                  </p>
                   <p>APY: {pool.rewardRate / 100}%</p>
                   <p>Total Staked: {ethers.formatEther(pool.totalStaked)}</p>
-                  <p>Status: {pool.isActive ? 'Active' : 'Inactive'}</p>
+                  <p>Status: {pool.isActive ? "Active" : "Inactive"}</p>
 
                   {pool.isActive && (
                     <div className="stake-form">
@@ -227,12 +247,14 @@ function App() {
                       />
                       <button
                         onClick={() => {
-                          const amount = document.getElementById(`stake-${pool.id}`).value;
+                          const amount = document.getElementById(
+                            `stake-${pool.id}`,
+                          ).value;
                           if (amount > 0) stakeTokens(pool.id, amount);
                         }}
                         disabled={loading}
                       >
-                        {loading ? 'Staking...' : 'Stake'}
+                        {loading ? "Staking..." : "Stake"}
                       </button>
                     </div>
                   )}

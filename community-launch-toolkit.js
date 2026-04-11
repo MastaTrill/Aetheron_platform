@@ -79,7 +79,7 @@ class CommunityLaunchToolkit {
   getTwitterContent() {
     return {
       bio: '🚀 Aetheron - DeFi Ecosystem on Polygon | Staking, Trading, Community | $AETH',
-      pinned: '🎉 Aetheron Platform is LIVE! Stake AETH, earn rewards, join our community 🚀\\n\\n🌐 https://mastatrill.github.io/aetheron-platform\\n💰 Contract: 0xAb5ae...671e',
+      pinned: '🎉 Aetheron Platform is LIVE! Stake AETH, earn rewards, join our community 🚀\\n\\n🌐 https://mastatrill.github.io/Aetheron_platform\\n💰 Contract: 0xAb5ae...671e',
       posts: [
         {
           text: '🚀 BREAKING: Aetheron Platform is now LIVE on Polygon!\\n\\n✅ ERC-20 AETH token deployed\\n✅ Multi-pool staking active\\n✅ Web dashboard ready\\n✅ QuickSwap liquidity pool\\n\\nStart staking today! 💰\\n\\n#DeFi #Polygon #Aetheron',
@@ -87,7 +87,7 @@ class CommunityLaunchToolkit {
           scheduled: 'immediate'
         },
         {
-          text: '🎁 Aetheron Staking Rewards:\\n\\n🔹 30-day pool: 8% APY\\n🔹 90-day pool: 12% APY\\n🔹 180-day pool: 18% APY\\n\\nStake AETH, earn rewards automatically!\\n\\nDashboard: https://mastatrill.github.io/aetheron-platform\\n\\n#Staking #DeFi #AETH',
+          text: '🎁 Aetheron Staking Rewards:\\n\\n🔹 30-day pool: 8% APY\\n🔹 90-day pool: 12% APY\\n🔹 180-day pool: 18% APY\\n\\nStake AETH, earn rewards automatically!\\n\\nDashboard: https://mastatrill.github.io/Aetheron_platform\\n\\n#Staking #DeFi #AETH',
           hashtags: ['Staking', 'DeFi', 'AETH'],
           scheduled: 'daily'
         }
@@ -116,7 +116,7 @@ A comprehensive DeFi ecosystem featuring:
 - Network: Polygon
 
 **Live Links:**
-- 🌐 Dashboard: https://mastatrill.github.io/aetheron-platform
+- 🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform
 - 📊 DexScreener: https://dexscreener.com/polygon/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - 🔗 PolygonScan: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
@@ -169,7 +169,7 @@ Join our community and start your DeFi journey today! 💰`,
 4. Stake AETH tokens
 5. Earn rewards automatically!
 
-Start earning today at: https://mastatrill.github.io/aetheron-platform`,
+Start earning today at: https://mastatrill.github.io/Aetheron_platform`,
         channels: ['announcements', 'staking'],
         platforms: ['discord', 'telegram', 'twitter']
       }
@@ -194,7 +194,7 @@ Start earning today at: https://mastatrill.github.io/aetheron-platform`,
    - Chain ID: 137
    - Currency: MATIC
 
-3. **Visit Dashboard:** https://mastatrill.github.io/aetheron-platform
+3. **Visit Dashboard:** https://mastatrill.github.io/Aetheron_platform
 4. **Click "Connect Wallet"**
 5. **Approve connection in your wallet**
 
@@ -365,7 +365,7 @@ Happy staking! 💰`,
     const strategy = {
       onboarding: {
         welcomeMessage: 'Welcome to Aetheron! 🚀\\n\\nPlease read our #rules and introduce yourself in #general.\\n\\nNeed help? Visit #support or ask in #general.',
-        starterGuide: 'New here? Check out:\\n• #faq for common questions\\n• #announcements for updates\\n• Our dashboard: https://mastatrill.github.io/aetheron-platform',
+        starterGuide: 'New here? Check out:\\n• #faq for common questions\\n• #announcements for updates\\n• Our dashboard: https://mastatrill.github.io/Aetheron_platform',
         verification: 'Verify your account to access all channels and start staking!'
       },
       retention: {

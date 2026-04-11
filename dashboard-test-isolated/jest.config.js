@@ -1,5 +1,5 @@
 module.exports = {
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   transformIgnorePatterns: [
     '/node_modules/(?!@exodus/bytes|jsdom|whatwg-encoding|abab|domexception|html-encoding-sniffer)',
   ],

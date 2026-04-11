@@ -92,7 +92,7 @@ A next-generation DeFi platform on Polygon featuring:
 - Community governance
 
 💰 **How to get started:**
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Add AETH to MetaMask
 3. Start staking for rewards
 
@@ -105,7 +105,7 @@ Stay tuned for exciting announcements! 🚀
 ---
 
 **📌 Quick Links:**
-• **Staking Dashboard**: https://aetheronplatform.github.io
+• **Staking Dashboard**: https://mastatrill.github.io/Aetheron_platform
 • **Contract Address**: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 • **DEX Trading**: https://quickswap.exchange/
 • **Analytics**: https://dexscreener.com/
@@ -165,9 +165,9 @@ Welcome aboard! Let's build the future of DeFi together! 🌟
 - Invite: https://mee6.xyz/invite
 - Enable: Auto-moderation, leveling, custom commands
 - Add custom commands:
-  - `!website` → "🌐 Visit Aetheron: https://aetheronplatform.github.io"
+  - `!website` → "🌐 Visit Aetheron: https://mastatrill.github.io/Aetheron_platform"
   - `!contract` → "📋 AETH: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-  - `!staking` → "💰 Start staking at: https://aetheronplatform.github.io"
+  - `!staking` → "💰 Start staking at: https://mastatrill.github.io/Aetheron_platform"
 
 **ProBot (Welcome Messages):**
 - Invite: https://probot.io/invite
@@ -208,7 +208,7 @@ Join the revolution! 💰
 
 #DeFi #Polygon #Aetheron #Crypto
 
-🌐 https://aetheronplatform.github.io
+🌐 https://mastatrill.github.io/Aetheron_platform
 ```
 
 #### Twitter Post 2 (4 hours later):
@@ -221,7 +221,7 @@ Join the revolution! 💰
 
 Stake AETH, earn passive income!
 
-Dashboard: https://aetheronplatform.github.io
+Dashboard: https://mastatrill.github.io/Aetheron_platform
 
 #Staking #DeFi #PassiveIncome
 ```
@@ -233,7 +233,7 @@ Dashboard: https://aetheronplatform.github.io
 Welcome to our DeFi ecosystem! 🚀
 
 **Quick Start Guide:**
-1. Visit: https://aetheronplatform.github.io
+1. Visit: https://mastatrill.github.io/Aetheron_platform
 2. Connect MetaMask
 3. Get AETH on QuickSwap
 4. Start staking!
@@ -255,7 +255,7 @@ We are LIVE on Polygon mainnet!
 • Web dashboard
 • Community support
 
-🌐 Dashboard: https://aetheronplatform.github.io
+🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform
 💬 Join our community!
 ```
 
@@ -318,7 +318,7 @@ Key highlights:
 Platform Details:
 - Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - Network: Polygon (MATIC)
-- Dashboard: https://aetheronplatform.github.io
+- Dashboard: https://mastatrill.github.io/Aetheron_platform
 - Current TVL: $10.24 (growing)
 
 We'd love to provide exclusive insights or arrange an interview with our team. Aetheron represents the next evolution in accessible DeFi, making staking and yield farming simple for everyone.
@@ -328,7 +328,7 @@ Press Release: [See attached full release below]
 Best regards,
 Aetheron Team
 contact@aetheronplatform.com
-https://aetheronplatform.github.io
+https://mastatrill.github.io/Aetheron_platform
 
 ---
 
@@ -367,7 +367,7 @@ Aetheron is building the future of decentralized finance by making DeFi accessib
 **Media Contact:**
 Aetheron Team
 Email: contact@aetheronplatform.com
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 
 ###
 ```
@@ -392,7 +392,7 @@ Website: https://aetheronplatform.github.io
   - Symbol: AETH
   - Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
   - Network: Polygon
-  - Website: https://aetheronplatform.github.io
+  - Website: https://mastatrill.github.io/Aetheron_platform
   - Twitter: https://twitter.com/aetheronplatform
   - Telegram: https://t.me/aetheronplatform
   - Discord: https://discord.gg/aetheronplatform
@@ -439,7 +439,7 @@ Token Information:
 - Total Supply: 1,000,000,000 AETH
 
 Project Information:
-- Website: https://aetheronplatform.github.io
+- Website: https://mastatrill.github.io/Aetheron_platform
 - Documentation: https://github.com/MastaTrill/Aetheron_platform
 - Twitter: https://twitter.com/aetheronplatform
 - Telegram: https://t.me/aetheronplatform

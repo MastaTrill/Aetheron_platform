@@ -8,7 +8,7 @@
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/Mastatrill/aetheron-platform)
 
 ## 🚀 **Live Demo**
-- 🌐 **Admin Dashboard**: https://mastatrill.github.io/aetheron-platform
+- 🌐 **Admin Dashboard**: https://mastatrill.github.io/Aetheron_platform
 - 📱 **Mobile App**: Coming soon to App Store & Google Play
 - 📖 **Documentation**: Complete guides and API reference
 - 🔗 **GitHub Repository**: https://github.com/Mastatrill/aetheron-platform
@@ -99,7 +99,7 @@ cd mobile-app && expo start
 ## 📊 **Live Links**
 
 - 🌐 **GitHub Repository**: https://github.com/Mastatrill/aetheron-platform
-- 🌐 **Live Demo**: https://mastatrill.github.io/aetheron-platform
+- 🌐 **Live Demo**: https://mastatrill.github.io/Aetheron_platform
 - 📱 **Mobile App**: Coming soon to App Store & Google Play
 - 📖 **Documentation**: Available in repository
 
@@ -121,7 +121,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **GitHub**: [@Mastatrill](https://github.com/Mastatrill)
 - **Repository**: https://github.com/Mastatrill/aetheron-platform
-- **Website**: https://mastatrill.github.io/aetheron-platform
+- **Website**: https://mastatrill.github.io/Aetheron_platform
 - **Email**: contact@aetheron.space
 
 ---

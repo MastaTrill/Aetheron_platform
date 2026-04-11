@@ -55,11 +55,11 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({children}) => {
     providerMetadata: {
       name: 'Aetheron Mobile',
       description: 'Aetheron Platform Mobile Wallet',
-      url: 'https://mastatrill.github.io/aetheron-platform',
-      icons: ['https://mastatrill.github.io/aetheron-platform/logo192.png'],
+      url: 'https://mastatrill.github.io/Aetheron_platform',
+      icons: ['https://mastatrill.github.io/Aetheron_platform/logo192.png'],
       redirect: {
         native: Platform.OS === 'ios' ? 'aetheron://' : 'aetheron://',
-        universal: 'https://mastatrill.github.io/aetheron-platform',
+        universal: 'https://mastatrill.github.io/Aetheron_platform',
       },
     },
     chains: ['eip155:137'],

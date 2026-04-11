@@ -1,4 +1,228 @@
 // Bridge Modal Logic
+function setElementText(id, text) {
+  const element = document.getElementById(id);
+  if (!element) {
+    return null;
+  }
+
+  element.textContent = text;
+  return element;
+}
+
+function setContainerHtml(container, html) {
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = html;
+}
+
+function getDashboardApp() {
+  return window.dashboard || null;
+}
+
+function notifyDashboard(message, type = 'info') {
+  const dashboardApp = getDashboardApp();
+  if (dashboardApp && typeof dashboardApp.notify === 'function') {
+    dashboardApp.notify(message, type);
+    return;
+  }
+
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, { type });
+    return;
+  }
+
+  console[type === 'error' ? 'error' : 'log'](message);
+}
+
+function renderChartInstance(key, chartEl, config) {
+  if (!chartEl || !window.Chart) {
+    return null;
+  }
+
+  if (window[key] && typeof window[key].destroy === 'function') {
+    window[key].destroy();
+  }
+
+  window[key] = new Chart(chartEl, config);
+  return window[key];
+}
+
+function bindStoredToggle(toggle, storageKey, messagePrefix, onApply) {
+  if (!toggle) {
+    return;
+  }
+
+  const apply = (checked, shouldNotify) => {
+    toggle.checked = checked;
+    if (typeof onApply === 'function') {
+      onApply(checked);
+    }
+    if (shouldNotify) {
+      notifyDashboard(
+        `${messagePrefix} ${checked ? 'enabled' : 'disabled'}`,
+        'info',
+      );
+    }
+    localStorage.setItem(storageKey, checked ? '1' : '0');
+  };
+
+  apply(localStorage.getItem(storageKey) === '1', false);
+  toggle.onchange = function () {
+    apply(toggle.checked, true);
+  };
+}
+
+function initStubActionWidget({
+  placeholderId,
+  loadingText,
+  buttonId,
+  message,
+  type = 'info',
+}) {
+  const element = placeholderId
+    ? document.getElementById(placeholderId)
+    : null;
+  const button = document.getElementById(buttonId);
+
+  if (element) {
+    element.textContent = loadingText;
+  }
+
+  if (!button) {
+    return;
+  }
+
+  button.onclick = function () {
+    notifyDashboard(message, type);
+  };
+}
+
+function initStaticPlaceholder(placeholderId, text) {
+  setElementText(placeholderId, text);
+}
+
+async function withWidgetLoading(element, loadingText, errorText, task) {
+  if (element) {
+    element.textContent = loadingText;
+  }
+
+  try {
+    return await task();
+  } catch (error) {
+    if (element) {
+      element.textContent = errorText;
+    }
+    return null;
+  }
+}
+
+function createDashboardModal(contentHtml) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `<div class="modal-content">${contentHtml}</div>`;
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function bindModalClose(modal, closeButtonId) {
+  const closeButton = document.getElementById(closeButtonId);
+  if (closeButton) {
+    closeButton.onclick = () => modal.remove();
+  }
+}
+
+async function fetchGovernanceProposals(space = 'aetheron.eth') {
+  const response = await fetch('https://hub.snapshot.org/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query Proposals($space: String!) { proposals(where: { space: $space }) { id title body choices start end state } }`,
+      variables: { space },
+    }),
+  });
+
+  const result = await response.json();
+  return Array.isArray(result?.data?.proposals) ? result.data.proposals : [];
+}
+
+function formatGovernanceProposalSummary(proposals) {
+  let message = 'Active Governance Proposals:\n';
+
+  proposals.forEach((proposal) => {
+    message += `\n${proposal.title}\n${proposal.body}\nChoices: ${proposal.choices.join(', ')}\nStatus: ${proposal.state}\n`;
+  });
+
+  return message;
+}
+
+function normalizeDeFiRates(rawRates = {}) {
+  const supplyApy = Number(rawRates.supplyApy ?? rawRates.supplyAPY ?? 0);
+  const borrowApy = Number(rawRates.borrowApy ?? rawRates.borrowAPY ?? 0);
+
+  return {
+    ...rawRates,
+    supplyApy: Number.isFinite(supplyApy) ? supplyApy : 0,
+    borrowApy: Number.isFinite(borrowApy) ? borrowApy : 0,
+  };
+}
+
+function formatPercent(value) {
+  return `${(Number(value || 0) * 100).toFixed(2)}%`;
+}
+
+async function getConnectedDashboardApp() {
+  const dashboardApp = getDashboardApp();
+  if (!dashboardApp) {
+    notifyDashboard('Dashboard is still loading.', 'warning');
+    return null;
+  }
+
+  if (!dashboardApp.walletAccount) {
+    await dashboardApp.connectWallet('metamask');
+  }
+
+  return dashboardApp;
+}
+
+async function runDeFiWidgetAction({
+  element,
+  protocol,
+  protocolLabel,
+  action,
+  actionParams = {},
+  successMessage,
+}) {
+  const dashboardApp = await getConnectedDashboardApp();
+  if (!dashboardApp) {
+    return;
+  }
+
+  const rates = await dashboardApp.getDeFiRates(protocol);
+  if (!rates) {
+    if (element) {
+      element.textContent = `Unable to load ${protocolLabel} rates right now.`;
+    }
+    return;
+  }
+
+  if (element) {
+    element.textContent = `${protocolLabel} Rates: Supply APY: ${formatPercent(
+      rates.supplyApy,
+    )} | Borrow APY: ${formatPercent(rates.borrowApy)}`;
+  }
+
+  const success = await dashboardApp.executeDeFiAction(action, {
+    protocol,
+    ...actionParams,
+  });
+
+  if (success && element) {
+    element.textContent += `\n${successMessage}`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const openBridgeBtn = document.getElementById('openBridgeBtn');
   const bridgeModal = document.getElementById('bridgeModal');
@@ -17,10 +241,16 @@ document.addEventListener('DOMContentLoaded', function () {
   if (bridgeForm) {
     bridgeForm.onsubmit = async function (e) {
       e.preventDefault();
-      const asset = document.getElementById('bridgeAsset').value;
-      const amount = document.getElementById('bridgeAmount').value;
-      const fromChain = document.getElementById('bridgeFromChain').value;
-      const toChain = document.getElementById('bridgeToChain').value;
+      const asset = document.getElementById('bridgeAsset')?.value;
+      const amount = document.getElementById('bridgeAmount')?.value;
+      const fromChain = document.getElementById('bridgeFromChain')?.value;
+      const toChain = document.getElementById('bridgeToChain')?.value;
+
+      if (!asset || !amount || !fromChain || !toChain) {
+        alert('Bridge form is missing required fields.');
+        return;
+      }
+
       // TODO: Integrate with real bridge API (e.g., Wormhole, Synapse)
       alert(`Bridge request: ${amount} ${asset} from ${fromChain} to ${toChain}. Integration coming soon.`);
       bridgeModal.style.display = 'none';
@@ -36,9 +266,11 @@ class AetheronDashboard {
     this.communityStats = {};
     this.achievements = [];
     this.currentSection = 'dashboard';
+    this.walletAccount = null;
     this.referralCode = this.generateReferralCode();
     
     // Initialize all setup methods
+    this.bindWalletBridge();
     this.setupTradingIncentives();
     this.setupCommunityFeatures();
     this.setupEventListeners();
@@ -63,13 +295,20 @@ class AetheronDashboard {
   }
 
   renderTxHistory() {
-    const table = document.getElementById('txHistoryTable').querySelector('tbody');
-    const type = document.getElementById('txTypeFilter').value;
-    const date = document.getElementById('txDateFilter').value;
+    const tableBody = document
+      .getElementById('txHistoryTable')
+      ?.querySelector('tbody');
+    const type = document.getElementById('txTypeFilter')?.value || 'all';
+    const date = document.getElementById('txDateFilter')?.value || '';
+
+    if (!tableBody) {
+      return;
+    }
+
     let txs = this.getTxHistory();
     if (type !== 'all') txs = txs.filter(tx => tx.type === type);
     if (date) txs = txs.filter(tx => tx.date.startsWith(date));
-    table.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
+    tableBody.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
   }
 
   exportTxCsv() {
@@ -77,6 +316,7 @@ class AetheronDashboard {
   }
 
   handleWalletConnected(account) {
+    this.syncWalletAccount(account);
     this.notify('Wallet connected', 'success');
     const spinner = document.getElementById('walletLoadingSpinner');
     this.refreshBalances();
@@ -96,6 +336,80 @@ class AetheronDashboard {
     }
   }
 
+  async connectWallet(walletType = 'metamask') {
+    if (walletType === 'walletconnect' && typeof window.connectWalletConnect === 'function') {
+      await window.connectWalletConnect();
+      return this.syncWalletAccount();
+    }
+
+    if (typeof window.connectWallet === 'function') {
+      await window.connectWallet(false);
+      return this.syncWalletAccount();
+    }
+
+    if (typeof window.connectMetaMask === 'function') {
+      await window.connectMetaMask();
+      return this.syncWalletAccount();
+    }
+
+    throw new Error('Wallet connector is still loading.');
+  }
+
+  bindWalletBridge() {
+    window.addEventListener('aetheron:wallet-connected', (event) => {
+      if (event.detail?.walletType) {
+        const walletTypeEl = document.getElementById('walletType');
+        if (walletTypeEl) {
+          walletTypeEl.textContent = event.detail.walletType;
+        }
+      }
+      this.handleWalletConnected(event.detail?.account || null);
+    });
+
+    window.addEventListener('aetheron:wallet-disconnected', () => {
+      this.walletAccount = null;
+      this.updateWalletStatusBar(false);
+    });
+
+    this.syncWalletAccount();
+  }
+
+  syncWalletAccount(account = null) {
+    const normalizedAccount =
+      account ||
+      window.ethereum?.selectedAddress ||
+      localStorage.getItem('aetheron_connected') ||
+      null;
+
+    this.walletAccount = normalizedAccount;
+    return this.walletAccount;
+  }
+
+  updateWalletStatusBar(isConnected) {
+    const walletStatusText = document.getElementById('walletStatusText');
+    const walletStatusIcon = document.getElementById('walletStatusIcon');
+    const walletTypeEl = document.getElementById('walletType');
+    const walletInfo = document.getElementById('walletInfo');
+
+    if (walletInfo) {
+      walletInfo.classList.toggle('active', Boolean(isConnected));
+    }
+
+    if (walletStatusText) {
+      walletStatusText.textContent = isConnected
+        ? 'Wallet connected'
+        : 'Wallet not connected';
+    }
+
+    if (walletStatusIcon) {
+      walletStatusIcon.textContent = isConnected ? 'Connected' : 'Disconnected';
+    }
+
+    if (walletTypeEl && !isConnected) {
+      walletTypeEl.textContent = '-';
+    }
+  }
+
   async getDeFiRates(protocol = 'aave') {
     try {
       let rates;
@@ -110,16 +424,16 @@ class AetheronDashboard {
           })
         });
         const data = await response.json();
-        rates = data.data.reserves[0];
+        rates = normalizeDeFiRates(data?.data?.reserves?.[0] || {});
       } else if (protocol === 'compound') {
         const response = await fetch('https://api.compound.finance/api/v2/ctoken');
         const data = await response.json();
-        rates = {
+        rates = normalizeDeFiRates({
           supplyApy: data.cToken[0].supply_rate.value,
           borrowApy: data.cToken[0].borrow_rate.value
-        };
+        });
       } else if (protocol === '1inch') {
-        rates = { supplyApy: 0, borrowApy: 0, swapRate: 'See 1inch API' };
+        rates = normalizeDeFiRates({ supplyApy: 0, borrowApy: 0, swapRate: 'See 1inch API' });
       } else {
         throw new Error('Unsupported protocol');
       }
@@ -497,10 +811,6 @@ class AetheronDashboard {
             if (!window.ethereum) throw new Error('Wallet not found');
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send('eth_requestAccounts', []);
-            // SushiSwap add liquidity logic (simplified)
-            if (!window.ethereum) throw new Error('Wallet not found');
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
             // SushiSwap Router contract address (mainnet)
             const SUSHISWAP_ROUTER_ADDRESS = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
@@ -554,15 +864,15 @@ class AetheronDashboard {
   async refreshBalances() {
     this.notify('Refreshing wallet balances...', 'info');
     setTimeout(() => {
-      document.getElementById('ethBalance').textContent = '123.45 MATIC';
-      document.getElementById('aethBalance').textContent = '6789 AETH';
+      setElementText('ethBalance', '123.45 MATIC');
+      setElementText('aethBalance', '6789 AETH');
     }, 1000);
   }
 
   async refreshAnalytics() {
     this.notify('Refreshing analytics...', 'info');
     setTimeout(() => {
-      document.getElementById('stakingAnalyticsPlaceholder').textContent = 'Staking APY: 12%';
+      setElementText('stakingAnalyticsPlaceholder', 'Staking APY: 12%');
     }, 1000);
   }
 
@@ -707,30 +1017,17 @@ class AetheronDashboard {
     if (governanceBtn) {
       governanceBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        window.dashboard.notify('Loading governance proposals...', 'info');
+        notifyDashboard('Loading governance proposals...', 'info');
         try {
-          const res = await fetch('https://hub.snapshot.org/graphql', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
-              variables: { space: 'aetheron.eth' }
-            })
-          });
-          const result = await res.json();
-          const proposals = result.data?.proposals || [];
+          const proposals = await fetchGovernanceProposals();
           if (proposals.length === 0) {
-            window.dashboard.notify('No governance proposals found.', 'info');
+            notifyDashboard('No governance proposals found.', 'info');
             return;
           }
           // Render proposals in a modal (simple alert for now)
-          let msg = 'Active Governance Proposals:\n';
-          proposals.forEach(p => {
-            msg += `\n${p.title}\n${p.body}\nChoices: ${p.choices.join(', ')}\nStatus: ${p.state}\n`;
-          });
-          alert(msg);
+          alert(formatGovernanceProposalSummary(proposals));
         } catch (err) {
-          window.dashboard.notify('Failed to load governance proposals.', 'error');
+          notifyDashboard('Failed to load governance proposals.', 'error');
         }
       });
     }
@@ -1019,7 +1316,7 @@ class AetheronDashboard {
     }
 
     if (holdersElement) {
-      holdersElement.textContent = this.communityStats.totalHolders.toString();
+      holdersElement.textContent = String(this.communityStats.totalHolders || 0);
     }
     // Hide quick stats spinner after data loads
     setTimeout(() => { if (quickStatsSpinner) quickStatsSpinner.style.display = 'none'; }, 800);
@@ -1027,9 +1324,11 @@ class AetheronDashboard {
 
   checkTradingMilestones() {
     // Check for milestone achievements
+    const volumeWarrior = this.achievements.find((a) => a.id === 'volume-warrior');
     if (
       this.tradingVolume >= 1000 &&
-      !this.achievements.find((a) => a.id === 'volume-warrior').unlocked
+      volumeWarrior &&
+      !volumeWarrior.unlocked
     ) {
       this.unlockAchievement('volume-warrior');
     }
@@ -1062,7 +1361,15 @@ class AetheronDashboard {
 
   setupSpaceBackground() {
     const canvas = document.getElementById('space-bg');
+    if (!canvas) {
+      return;
+    }
+
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -1154,17 +1461,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Wallet Portfolio Breakdown
   function initWalletPortfolio() {
     const el = document.getElementById('walletPortfolioPlaceholder');
-    if (el) el.textContent = 'Loading wallet portfolio...';
-    fetch('https://api.covalenthq.com/v1/137/address/' + window.dashboard.walletAccount + '/balances_v2/?key=IlX80zDtd-GkH015Waioo')
-      .then(res => res.json())
-      .then(data => {
-        if (el) el.textContent = 'Portfolio loaded: ' + (data.data.items.length) + ' tokens.';
+    const dashboardApp = getDashboardApp();
+    if (!dashboardApp?.walletAccount) {
+      if (el) el.textContent = 'Connect your wallet to load your portfolio.';
+      return;
+    }
+    void withWidgetLoading(
+      el,
+      'Loading wallet portfolio...',
+      'Failed to load portfolio.',
+      async () => {
+        const response = await fetch(
+          'https://api.covalenthq.com/v1/137/address/' +
+            dashboardApp.walletAccount +
+            '/balances_v2/?key=IlX80zDtd-GkH015Waioo',
+        );
+        const data = await response.json();
+        const items = Array.isArray(data?.data?.items) ? data.data.items : [];
+        if (el) el.textContent = 'Portfolio loaded: ' + items.length + ' tokens.';
         // Render Chart.js pie chart with token balances
         const chartEl = document.getElementById('walletPortfolioChart');
-        if (chartEl && data.data.items.length > 0 && window.Chart) {
-          const labels = data.data.items.map(t => t.contract_ticker_symbol);
-          const values = data.data.items.map(t => t.balance / Math.pow(10, t.contract_decimals));
-          new Chart(chartEl, {
+        if (chartEl && items.length > 0 && window.Chart) {
+          const labels = items.map(t => t.contract_ticker_symbol);
+          const values = items.map(t => t.balance / Math.pow(10, t.contract_decimals));
+          renderChartInstance('walletPortfolioBreakdownChart', chartEl, {
             type: 'pie',
             data: {
               labels,
@@ -1173,8 +1493,8 @@ document.addEventListener('DOMContentLoaded', () => {
             options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
           });
         }
-      })
-      .catch(() => { if (el) el.textContent = 'Failed to load portfolio.'; });
+      },
+    );
   }
 
     // 4. NFT Analytics
@@ -1186,7 +1506,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.textContent = 'NFTs loaded: 3 collections.';
         const chartEl = document.getElementById('nftAnalyticsChart');
         if (chartEl && window.Chart) {
-          new Chart(chartEl, {
+          renderChartInstance('nftAnalyticsChartInstance', chartEl, {
             type: 'bar',
             data: {
               labels: ['CryptoPunks', 'BoredApe', 'AetheronArt'],
@@ -1201,26 +1521,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Governance Voting
     function initGovernanceVoting() {
       const el = document.getElementById('governanceVotingPlaceholder');
-      if (el) el.textContent = 'Loading governance proposals...';
-      fetch('https://hub.snapshot.org/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: `query Proposals($space: String!) { proposals(space: $space) { id title body choices start end state } }`,
-          variables: { space: 'aetheron.eth' }
-        })
-      })
-        .then(res => res.json())
-        .then(result => {
-          const proposals = result.data?.proposals || [];
+      void withWidgetLoading(
+        el,
+        'Loading governance proposals...',
+        'Failed to load proposals.',
+        async () => {
+          const proposals = await fetchGovernanceProposals();
           if (el) el.textContent = proposals.length > 0 ? `Proposals loaded: ${proposals.length}` : 'No proposals found.';
           // TODO: Render proposals and enable voting
-        })
-        .catch(() => { if (el) el.textContent = 'Failed to load proposals.'; });
+        },
+      );
       const btn = document.getElementById('openGovernanceVoteBtn');
       if (btn) {
         btn.onclick = function () {
-          window.dashboard.notify('Governance voting portal opened', 'info');
+          notifyDashboard('Governance voting portal opened', 'info');
           // TODO: Open governance voting modal/portal
         };
       }
@@ -1229,17 +1543,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Portfolio Tracker
     function initPortfolioTracker() {
       const el = document.getElementById('portfolioTrackerPlaceholder');
-      if (el) el.textContent = 'Loading portfolio tracker...';
-      fetch('https://api.coingecko.com/api/v3/coins/aetheron/market_chart?vs_currency=usd&days=7')
-        .then(res => res.json())
-        .then(data => {
+      void withWidgetLoading(
+        el,
+        'Loading portfolio tracker...',
+        'Failed to load performance.',
+        async () => {
+          const response = await fetch(
+            'https://api.coingecko.com/api/v3/coins/aetheron/market_chart?vs_currency=usd&days=7',
+          );
+          const data = await response.json();
+          const prices = Array.isArray(data?.prices) ? data.prices : [];
           if (el) el.textContent = 'Performance loaded.';
           // Render Chart.js line chart
           const chartEl = document.getElementById('portfolioTrackerChart');
-          if (chartEl && data.prices && window.Chart) {
-            const labels = data.prices.map(p => new Date(p[0]).toLocaleDateString());
-            const values = data.prices.map(p => p[1]);
-            new Chart(chartEl, {
+          if (chartEl && prices.length > 0 && window.Chart) {
+            const labels = prices.map(p => new Date(p[0]).toLocaleDateString());
+            const values = prices.map(p => p[1]);
+            renderChartInstance('portfolioTrackerChartInstance', chartEl, {
               type: 'line',
               data: {
                 labels,
@@ -1248,21 +1568,32 @@ document.addEventListener('DOMContentLoaded', () => {
               options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
           }
-        })
-        .catch(() => { if (el) el.textContent = 'Failed to load performance.'; });
+        },
+      );
     }
   // 2. Real-Time Notifications
   function initNotifications() {
     const el = document.getElementById('notificationsPlaceholder');
-    if (el) el.textContent = 'Loading notifications...';
-    // Example: Fetch notifications (stub)
-    fetch('https://api.mocknotifications.com/aetheron/' + window.dashboard.walletAccount)
-      .then(res => res.json())
-      .then(data => {
-        if (el) el.textContent = 'Notifications loaded: ' + (data.notifications ? data.notifications.length : 0);
+    const dashboardApp = getDashboardApp();
+    if (!dashboardApp?.walletAccount) {
+      if (el) el.textContent = 'Connect your wallet to load notifications.';
+      return;
+    }
+    void withWidgetLoading(
+      el,
+      'Loading notifications...',
+      'Failed to load notifications.',
+      async () => {
+        const response = await fetch(
+          'https://api.mocknotifications.com/aetheron/' +
+            dashboardApp.walletAccount,
+        );
+        const data = await response.json();
+        const notifications = Array.isArray(data?.notifications) ? data.notifications : [];
+        if (el) el.textContent = 'Notifications loaded: ' + notifications.length;
         // TODO: Render notifications
-      })
-      .catch(() => { if (el) el.textContent = 'Failed to load notifications.'; });
+      },
+    );
   }
   // 3. Theme Auto-Switch
   function initThemeSettings() {
@@ -1319,9 +1650,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const spinner = document.getElementById('stakingHistorySpinner');
     if (spinner) spinner.style.display = 'flex';
     setTimeout(() => {
-      if (el)
-        el.querySelector('tbody').innerHTML =
-          '<tr><td colspan="5">No data (stub)</td></tr>';
+      const stakingTableBody = el?.querySelector('tbody');
+      if (stakingTableBody) {
+        setContainerHtml(
+          stakingTableBody,
+          '<tr><td colspan="5">No data (stub)</td></tr>',
+        );
+      }
       if (spinner) spinner.style.display = 'none';
     }, 800);
     // TODO: Fetch staking/unstaking events, render table and chart
@@ -1340,18 +1675,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openLendingBtn');
         if (btn) {
           btn.onclick = async function () {
-            // Connect wallet if not connected
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
-            }
-            // Example: Select protocol (Aave)
-            const rates = await window.dashboard.getDeFiRates('aave');
-            if (rates) {
-              el.textContent = `Aave Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
-              // Example: Execute lend action
-              const success = await window.dashboard.executeDeFiAction('lend', { protocol: 'aave', amount: 100 });
-              if (success) el.textContent += '\nLending successful!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: 'aave',
+              protocolLabel: 'Aave',
+              action: 'lend',
+              actionParams: { amount: 100 },
+              successMessage: 'Lending successful!',
+            });
           };
         }
       }
@@ -1361,17 +1692,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openYieldFarmingBtn');
         if (btn) {
           btn.onclick = async function () {
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
-            }
-            // Example: Select protocol (Compound)
-            const rates = await window.dashboard.getDeFiRates('compound');
-            if (rates) {
-              el.textContent = `Compound Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
-              // Example: Execute yield farming action
-              const success = await window.dashboard.executeDeFiAction('farm', { protocol: 'compound', amount: 50 });
-              if (success) el.textContent += '\nYield farming started!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: 'compound',
+              protocolLabel: 'Compound',
+              action: 'farm',
+              actionParams: { amount: 50 },
+              successMessage: 'Yield farming started!',
+            });
           };
         }
       }
@@ -1381,17 +1709,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('openCrossChainSwapBtn');
         if (btn) {
           btn.onclick = async function () {
-            if (!window.dashboard.walletAccount) {
-              await window.dashboard.connectWallet('metamask');
-            }
-            // Example: Use 1inch for swap
-            const rates = await window.dashboard.getDeFiRates('1inch');
-            if (rates) {
-              el.textContent = `1inch Rates: Supply APY: ${rates.supplyApy * 100}% | Borrow APY: ${rates.borrowApy * 100}%`;
-              // Example: Execute swap action
-              const success = await window.dashboard.executeDeFiAction('swap', { protocol: '1inch', from: 'AETH', to: 'MATIC', amount: 25 });
-              if (success) el.textContent += '\nSwap successful!';
-            }
+            await runDeFiWidgetAction({
+              element: el,
+              protocol: '1inch',
+              protocolLabel: '1inch',
+              action: 'swap',
+              actionParams: { from: 'AETH', to: 'MATIC', amount: 25 },
+              successMessage: 'Swap successful!',
+            });
           };
         }
       }
@@ -1402,37 +1727,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Advanced Security Features
       function initBiometricLogin() {
-        const el = document.getElementById('biometricLoginPlaceholder');
-        if (el) el.textContent = 'Loading biometric login (stub)...';
-        const btn = document.getElementById('enableBiometricBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Biometric login enabled (stub)', 'success');
-            // TODO: Integrate with WebAuthn or device biometrics
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'biometricLoginPlaceholder',
+          loadingText: 'Loading biometric login (stub)...',
+          buttonId: 'enableBiometricBtn',
+          message: 'Biometric login enabled (stub)',
+          type: 'success',
+        });
+        // TODO: Integrate with WebAuthn or device biometrics
       }
       function initDeviceTrust() {
-        const el = document.getElementById('deviceTrustPlaceholder');
-        if (el) el.textContent = 'Loading device trust management (stub)...';
-        const btn = document.getElementById('manageDeviceTrustBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Device trust management opened (stub)', 'info');
-            // TODO: Show/manage trusted devices
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'deviceTrustPlaceholder',
+          loadingText: 'Loading device trust management (stub)...',
+          buttonId: 'manageDeviceTrustBtn',
+          message: 'Device trust management opened (stub)',
+        });
+        // TODO: Show/manage trusted devices
       }
       function initAntiPhishing() {
-        const el = document.getElementById('antiPhishingPlaceholder');
-        if (el) el.textContent = 'Loading anti-phishing protection (stub)...';
-        const btn = document.getElementById('enableAntiPhishingBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Anti-phishing protection enabled (stub)', 'success');
-            // TODO: Integrate anti-phishing features
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'antiPhishingPlaceholder',
+          loadingText: 'Loading anti-phishing protection (stub)...',
+          buttonId: 'enableAntiPhishingBtn',
+          message: 'Anti-phishing protection enabled (stub)',
+          type: 'success',
+        });
+        // TODO: Integrate anti-phishing features
       }
 
       initBiometricLogin();
@@ -1441,15 +1762,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Social/Community Features
       function initLiveChat() {
-        const el = document.getElementById('liveChatPlaceholder');
-        if (el) el.textContent = 'Loading live chat (stub)...';
-        const btn = document.getElementById('openLiveChatBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Live chat opened (stub)', 'info');
-            // TODO: Integrate chat widget (Discord, Telegram, custom)
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'liveChatPlaceholder',
+          loadingText: 'Loading live chat (stub)...',
+          buttonId: 'openLiveChatBtn',
+          message: 'Live chat opened (stub)',
+        });
+        // TODO: Integrate chat widget (Discord, Telegram, custom)
       }
       function initUserProfiles() {
         const el = document.getElementById('userProfilesPlaceholder');
@@ -1462,40 +1781,40 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Open profile editor modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
-                <h2>Edit Profile</h2>
-                <label>Name: <input id="profileNameInput" type="text" value="Alex" /></label><br>
-                <label>Email: <input id="profileEmailInput" type="email" value="alex@email.com" /></label><br>
-                <button id="saveProfileBtn">Save</button>
-                <button id="closeProfileModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            document.getElementById('closeProfileModalBtn').onclick = () => modal.remove();
-            document.getElementById('saveProfileBtn').onclick = () => {
-              const name = document.getElementById('profileNameInput').value;
-              const email = document.getElementById('profileEmailInput').value;
-              el.textContent = `Welcome, ${name}!`;
-              window.dashboard.notify('Profile updated!', 'success');
-              modal.remove();
-              // TODO: Persist profile changes to backend/localStorage
-            };
+            const modal = createDashboardModal(`
+              <h2>Edit Profile</h2>
+              <label>Name: <input id="profileNameInput" type="text" value="Alex" /></label><br>
+              <label>Email: <input id="profileEmailInput" type="email" value="alex@email.com" /></label><br>
+              <button id="saveProfileBtn">Save</button>
+              <button id="closeProfileModalBtn">Close</button>
+            `);
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+            bindModalClose(modal, 'closeProfileModalBtn');
+
+            if (saveProfileBtn) {
+              saveProfileBtn.onclick = () => {
+                const name = document.getElementById('profileNameInput')?.value || 'Alex';
+                const email = document.getElementById('profileEmailInput')?.value || '';
+                if (el) {
+                  el.textContent = `Welcome, ${name}!`;
+                }
+                notifyDashboard('Profile updated!', 'success');
+                modal.remove();
+                void email;
+                // TODO: Persist profile changes to backend/localStorage
+              };
+            }
           };
         }
       }
       function initLeaderboard() {
-        const el = document.getElementById('leaderboardPlaceholder');
-        if (el) el.textContent = 'Loading leaderboard (stub)...';
-        const btn = document.getElementById('viewLeaderboardBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Leaderboard viewed (stub)', 'info');
-            // TODO: Show leaderboard modal
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'leaderboardPlaceholder',
+          loadingText: 'Loading leaderboard (stub)...',
+          buttonId: 'viewLeaderboardBtn',
+          message: 'Leaderboard viewed (stub)',
+        });
+        // TODO: Show leaderboard modal
       }
 
       initLiveChat();
@@ -1504,26 +1823,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // AI-Powered Analytics
       function initPredictiveTrends() {
-        const el = document.getElementById('predictiveTrendsPlaceholder');
-        if (el) el.textContent = 'Loading predictive trends (stub)...';
-        const btn = document.getElementById('runPredictiveTrendsBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Predictive trends analysis started (stub)', 'info');
-            // TODO: Run AI model and render chart
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'predictiveTrendsPlaceholder',
+          loadingText: 'Loading predictive trends (stub)...',
+          buttonId: 'runPredictiveTrendsBtn',
+          message: 'Predictive trends analysis started (stub)',
+        });
+        // TODO: Run AI model and render chart
       }
       function initAnomalyDetection() {
-        const el = document.getElementById('anomalyDetectionPlaceholder');
-        if (el) el.textContent = 'Loading anomaly detection (stub)...';
-        const btn = document.getElementById('runAnomalyDetectionBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.dashboard.notify('Anomaly detection started (stub)', 'warning');
-            // TODO: Run anomaly detection model and render chart
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'anomalyDetectionPlaceholder',
+          loadingText: 'Loading anomaly detection (stub)...',
+          buttonId: 'runAnomalyDetectionBtn',
+          message: 'Anomaly detection started (stub)',
+          type: 'warning',
+        });
+        // TODO: Run anomaly detection model and render chart
       }
 
       initPredictiveTrends();
@@ -1537,20 +1853,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Play onboarding video modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
-                <h2>Welcome to Aetheron!</h2>
-                <video controls autoplay width="400">
-                  <source src="onboarding.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                <button id="closeVideoModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            document.getElementById('closeVideoModalBtn').onclick = () => modal.remove();
+            const modal = createDashboardModal(`
+              <h2>Welcome to Aetheron!</h2>
+              <video controls autoplay width="400">
+                <source src="onboarding.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <button id="closeVideoModalBtn">Close</button>
+            `);
+            bindModalClose(modal, 'closeVideoModalBtn');
           };
         }
       }
@@ -1561,10 +1872,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Launch interactive tutorial modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-              <div class="modal-content">
+            const modal = createDashboardModal(`
                 <h2>Gamified Tutorial</h2>
                 <p>Complete tasks to earn badges and rewards!</p>
                 <ul>
@@ -1573,10 +1881,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <li>Vote in governance <span id="task3Status">❌</span></li>
                 </ul>
                 <button id="closeTutorialModalBtn">Close</button>
-              </div>
-            `;
-            document.body.appendChild(modal);
-            document.getElementById('closeTutorialModalBtn').onclick = () => modal.remove();
+            `);
+            bindModalClose(modal, 'closeTutorialModalBtn');
             // TODO: Track and update progress, persist to backend/localStorage
           };
         }
@@ -1593,7 +1899,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rtlToggle = document.getElementById('rtlToggle');
         if (langSelector) {
           langSelector.onchange = function () {
-            window.dashboard.notify('Language changed to ' + langSelector.value, 'info');
+            notifyDashboard('Language changed to ' + langSelector.value, 'info');
             localStorage.setItem('aetheron-language', langSelector.value);
             // TODO: Integrate with i18next or other i18n library
           };
@@ -1601,19 +1907,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const savedLang = localStorage.getItem('aetheron-language');
           if (savedLang) langSelector.value = savedLang;
         }
-        if (rtlToggle) {
-          rtlToggle.onchange = function () {
-            const enabled = rtlToggle.checked;
-            document.documentElement.dir = enabled ? 'rtl' : 'ltr';
-            window.dashboard.notify('RTL mode ' + (enabled ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-rtl', enabled ? '1' : '0');
-            // TODO: Persist RTL setting and update layout
-          };
-          // Load saved RTL setting
-          const savedRtl = localStorage.getItem('aetheron-rtl');
-          rtlToggle.checked = savedRtl === '1';
-          document.documentElement.dir = rtlToggle.checked ? 'rtl' : 'ltr';
-        }
+        bindStoredToggle(rtlToggle, 'aetheron-rtl', 'RTL mode', (enabled) => {
+          document.documentElement.dir = enabled ? 'rtl' : 'ltr';
+          // TODO: Persist RTL setting and update layout
+        });
       }
 
       initLocalization();
@@ -1624,28 +1921,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.textContent = 'Loading accessibility settings...';
         const srToggle = document.getElementById('screenReaderToggle');
         const dyslexiaToggle = document.getElementById('dyslexiaToggle');
-        if (srToggle) {
-          srToggle.onchange = function () {
-            window.dashboard.notify('Screen reader optimization ' + (srToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-screenreader', srToggle.checked ? '1' : '0');
+        bindStoredToggle(
+          srToggle,
+          'aetheron-screenreader',
+          'Screen reader optimization',
+          () => {
             // TODO: Apply ARIA roles, landmarks, and focus management
-          };
-          // Load saved screen reader setting
-          const savedSr = localStorage.getItem('aetheron-screenreader');
-          srToggle.checked = savedSr === '1';
-        }
-        if (dyslexiaToggle) {
-          dyslexiaToggle.onchange = function () {
-            document.body.classList.toggle('dyslexia-font', dyslexiaToggle.checked);
-            window.dashboard.notify('Dyslexia-friendly mode ' + (dyslexiaToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-dyslexia', dyslexiaToggle.checked ? '1' : '0');
+          },
+        );
+        bindStoredToggle(
+          dyslexiaToggle,
+          'aetheron-dyslexia',
+          'Dyslexia-friendly mode',
+          (enabled) => {
+            document.body.classList.toggle('dyslexia-font', enabled);
             // TODO: Apply OpenDyslexic or similar font
-          };
-          // Load saved dyslexia setting
-          const savedDys = localStorage.getItem('aetheron-dyslexia');
-          dyslexiaToggle.checked = savedDys === '1';
-          document.body.classList.toggle('dyslexia-font', dyslexiaToggle.checked);
-        }
+          },
+        );
       }
 
       initAccessibility();
@@ -1657,88 +1949,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const pushToggle = document.getElementById('pushToggle');
         const emailToggle = document.getElementById('emailToggle');
         const inAppToggle = document.getElementById('inAppToggle');
-        if (pushToggle) {
-          pushToggle.onchange = function () {
-            window.dashboard.notify('Push notifications ' + (pushToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-push', pushToggle.checked ? '1' : '0');
-            // TODO: Integrate with push notification service
-          };
-          // Load saved push setting
-          const savedPush = localStorage.getItem('aetheron-push');
-          pushToggle.checked = savedPush === '1';
-        }
-        if (emailToggle) {
-          emailToggle.onchange = function () {
-            window.dashboard.notify('Email notifications ' + (emailToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-email', emailToggle.checked ? '1' : '0');
-            // TODO: Integrate with email notification service
-          };
-          // Load saved email setting
-          const savedEmail = localStorage.getItem('aetheron-email');
-          emailToggle.checked = savedEmail === '1';
-        }
-        if (inAppToggle) {
-          inAppToggle.onchange = function () {
-            window.dashboard.notify('In-app notifications ' + (inAppToggle.checked ? 'enabled' : 'disabled'), 'info');
-            localStorage.setItem('aetheron-inapp', inAppToggle.checked ? '1' : '0');
-            // TODO: Integrate with in-app notification system
-          };
-          // Load saved in-app setting
-          const savedInApp = localStorage.getItem('aetheron-inapp');
-          inAppToggle.checked = savedInApp === '1';
-        }
+        bindStoredToggle(pushToggle, 'aetheron-push', 'Push notifications', () => {
+          // TODO: Integrate with push notification service
+        });
+        bindStoredToggle(emailToggle, 'aetheron-email', 'Email notifications', () => {
+          // TODO: Integrate with email notification service
+        });
+        bindStoredToggle(inAppToggle, 'aetheron-inapp', 'In-app notifications', () => {
+          // TODO: Integrate with in-app notification system
+        });
       }
 
       initNotificationsSettings();
 
       // Developer Tools
       function initDeveloperTools() {
-        const el = document.getElementById('developerToolsPlaceholder');
-        if (el) el.textContent = 'Loading developer tools (stub)...';
-        const apiBtn = document.getElementById('openApiExplorerBtn');
-        const contractBtn = document.getElementById('openContractPlaygroundBtn');
-        if (apiBtn) {
-          apiBtn.onclick = function () {
-            window.dashboard.notify('API Explorer opened (stub)', 'info');
-            // TODO: Launch API explorer modal
-          };
-        }
-        if (contractBtn) {
-          contractBtn.onclick = function () {
-            window.dashboard.notify('Contract Playground opened (stub)', 'info');
-            // TODO: Launch smart contract playground modal
-          };
-        }
+        initStubActionWidget({
+          placeholderId: 'developerToolsPlaceholder',
+          loadingText: 'Loading developer tools (stub)...',
+          buttonId: 'openApiExplorerBtn',
+          message: 'API Explorer opened (stub)',
+        });
+        initStubActionWidget({
+          buttonId: 'openContractPlaygroundBtn',
+          message: 'Contract Playground opened (stub)',
+        });
+        // TODO: Launch API explorer modal / smart contract playground modal
       }
 
       initDeveloperTools();
   function initCommunityChat() {
-    const el = document.getElementById('communityChatWidget');
-    if (el) el.textContent = 'Chat widget coming soon (stub).';
+    initStaticPlaceholder('communityChatWidget', 'Chat widget coming soon (stub).');
     // TODO: Embed Discord/Telegram widget
   }
   // 6. NFT Gallery
   function initNFTGallery() {
-    const el = document.getElementById('nftGalleryPlaceholder');
-    if (el) el.textContent = 'No NFTs found (stub).';
+    initStaticPlaceholder('nftGalleryPlaceholder', 'No NFTs found (stub).');
     // TODO: Fetch/display user NFTs
   }
   // 7. Gas Fee Estimator
   function initGasFeeEstimator() {
-    const el = document.getElementById('gasFeeEstimate');
-    if (el) el.textContent = 'Estimated gas fee: -- (stub)';
+    initStaticPlaceholder('gasFeeEstimate', 'Estimated gas fee: -- (stub)');
     // TODO: Fetch Polygon gas price, update on speed select
   }
   // 8. Referral Leaderboard
   function initReferralLeaderboard() {
-    const el = document.getElementById('referralLeaderboardPlaceholder');
-    if (el) el.textContent = 'Leaderboard coming soon (stub).';
+    initStaticPlaceholder(
+      'referralLeaderboardPlaceholder',
+      'Leaderboard coming soon (stub).',
+    );
     // TODO: Fetch/display top referrers, handle referral link copy
   }
   // 9. Multi-Language Support
   function initLanguageSelector() {
-    const el = document.getElementById('currentLanguage');
-    if (el) el.textContent = 'Current: English (stub)';
+    initStaticPlaceholder('currentLanguage', 'Current: English (stub)');
     // TODO: Wire up language selector, load translations
   }
   // 10. Advanced Analytics
@@ -1759,12 +2023,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletGrowthData = [100, 120, 140, 180, 210, 250, 300]; // # wallets
     const protocolHealthData = [80, 82, 85, 87, 90, 92, 95]; // health score
 
-    // Destroy previous chart if exists
-    if (window.advancedAnalyticsChartInstance) {
-      window.advancedAnalyticsChartInstance.destroy();
-    }
-
-    window.advancedAnalyticsChartInstance = new Chart(chartEl, {
+    renderChartInstance('advancedAnalyticsChartInstance', chartEl, {
       type: 'line',
       data: {
         labels,
@@ -1856,6 +2115,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  initCommunityChat();
+  initNFTGallery();
+  initGasFeeEstimator();
+  initReferralLeaderboard();
+  initLanguageSelector();
+  initAdvancedAnalytics();
+});
 
 // Add some startup animations
 // Note: The initialization functions are now handled by the AetheronDashboard class constructor

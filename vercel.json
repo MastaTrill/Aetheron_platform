@@ -1,5 +1,14 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm install",
+  "buildCommand": "echo \"Static site - no build needed\"",
   "outputDirectory": ".",
+  "functions": {
+    "api/**/*.mjs": {
+      "maxDuration": 60
+    }
+  },
   "headers": [
     {
       "source": "(.*)",

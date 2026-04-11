@@ -5,330 +5,419 @@
 const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 const LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
-const OWNER_ADDRESS =
-  "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82".toLowerCase();
-const POLYGON_CHAIN_ID = "0x89"; // 137 in hex
+const OWNER_ADDRESS = "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82".toLowerCase();
+const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
 const POLYGON_RPC_URLS = [
-  "https://polygon-rpc.com/",
-  "https://rpc-mainnet.matic.network",
-  "https://matic-mainnet.chainstacklabs.com",
-  "https://rpc-mainnet.maticvigil.com",
+    'https://polygon-bor-rpc.publicnode.com',
+    'https://polygon.llamarpc.com',
+    'https://polygon.drpc.org',
+    'https://1rpc.io/matic'
 ];
 
 // ABIs
 const AETH_ABI = [
-  "function name() view returns (string)",
-  "function symbol() view returns (string)",
-  "function balanceOf(address) view returns (uint256)",
-  "function transfer(address to, uint256 amount) returns (bool)",
-  "function approve(address spender, uint256 amount) returns (bool)",
-  "function decimals() view returns (uint8)",
-  "function totalSupply() view returns (uint256)",
-  "function owner() view returns (address)",
-  "function tradingEnabled() view returns (bool)",
-  "function updateTaxes(uint256 buyTax, uint256 sellTax)",
-  "function pause()",
-  "function unpause()",
-  "function withdrawTreasury()",
-  "function rescueTokens(address tokenAddress, uint256 amount)",
-  "event Transfer(address indexed from, address indexed to, uint256 value)",
-  "event Approval(address indexed owner, address indexed spender, uint256 value)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function balanceOf(address) view returns (uint256)",
+    "function transfer(address to, uint256 amount) returns (bool)",
+    "function approve(address spender, uint256 amount) returns (bool)",
+    "function decimals() view returns (uint8)",
+    "function totalSupply() view returns (uint256)",
+    "function owner() view returns (address)",
+    "function tradingEnabled() view returns (bool)",
+    "event Transfer(address indexed from, address indexed to, uint256 value)",
+    "event Approval(address indexed owner, address indexed spender, uint256 value)"
 ];
 
 const STAKING_ABI = [
-  "function stake(uint256 poolId, uint256 amount)",
-  "function unstake(uint256 stakeId)",
-  "function claimRewards(uint256 stakeId)",
-  "function calculateReward(address user, uint256 stakeId) view returns (uint256)",
-  "function pools(uint256) view returns (uint256 lockDuration, uint256 rewardRate, uint256 totalStaked, bool isActive)",
-  "function getUserStakesCount(address user) view returns (uint256)",
-  "function getUserStake(address user, uint256 stakeId) view returns (uint256 amount, uint256 startTime, uint256 lastClaimTime, uint256 poolId, uint256 pendingReward, uint256 unlockTime)",
-  "function totalStaked() view returns (uint256)",
-  "function rewardBalance() view returns (uint256)",
-  "event Staked(address indexed user, uint256 poolId, uint256 amount)",
-  "event Unstaked(address indexed user, uint256 stakeId, uint256 amount)",
-  "event RewardClaimed(address indexed user, uint256 stakeId, uint256 reward)",
+    "function stake(uint256 poolId, uint256 amount)",
+    "function unstake(uint256 stakeId)",
+    "function claimRewards(uint256 stakeId)",
+    "function calculateReward(address user, uint256 stakeId) view returns (uint256)",
+    "function pools(uint256) view returns (uint256 lockDuration, uint256 rewardRate, uint256 totalStaked, bool isActive)",
+    "function getUserStakesCount(address user) view returns (uint256)",
+    "function getUserStake(address user, uint256 stakeId) view returns (uint256 amount, uint256 startTime, uint256 lastClaimTime, uint256 poolId, uint256 pendingReward, uint256 unlockTime)",
+    "function totalStaked() view returns (uint256)",
+    "function rewardBalance() view returns (uint256)",
+    "event Staked(address indexed user, uint256 poolId, uint256 amount)",
+    "event Unstaked(address indexed user, uint256 stakeId, uint256 amount)",
+    "event RewardClaimed(address indexed user, uint256 stakeId, uint256 reward)"
 ];
 
 let provider, signer, account;
 let aethContract, stakingContract;
 let readOnlyProvider; // For reading data without wallet connection
+let injectedProvider;
 let transactions = [];
 let priceWebSocket; // WebSocket for real-time price updates
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
+const APP_VERSION = '1.4.3';
 
 let detectionAttempts = 0;
 const maxAttempts = 5;
 
 // Initialize read-only provider for live data
 function initReadOnlyProvider() {
-  // Try multiple RPC endpoints for reliability
-  for (const rpcUrl of POLYGON_RPC_URLS) {
-    try {
-      readOnlyProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-      console.log("✅ Read-only provider initialized:", rpcUrl);
-
-      // Initialize read-only contracts for displaying stats
-      const readOnlyAethContract = new ethers.Contract(
-        AETH_ADDRESS,
-        AETH_ABI,
-        readOnlyProvider,
-      );
-      const readOnlyStakingContract = new ethers.Contract(
-        STAKING_ADDRESS,
-        STAKING_ABI,
-        readOnlyProvider,
-      );
-
-      return {
-        aethContract: readOnlyAethContract,
-        stakingContract: readOnlyStakingContract,
-        rpcUrl,
-      };
-    } catch (error) {
-      console.warn(`⚠️ Failed to connect to ${rpcUrl}:`, error.message);
-      continue;
+    // Try multiple RPC endpoints for reliability
+    for (const rpcUrl of POLYGON_RPC_URLS) {
+        try {
+            readOnlyProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+            console.log('✅ Read-only provider initialized:', rpcUrl);
+            
+            // Initialize read-only contracts for displaying stats
+            const readOnlyAethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, readOnlyProvider);
+            const readOnlyStakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, readOnlyProvider);
+            
+            return { aethContract: readOnlyAethContract, stakingContract: readOnlyStakingContract, rpcUrl };
+        } catch (error) {
+            console.warn(`⚠️ Failed to connect to ${rpcUrl}:`, error.message);
+            continue;
+        }
     }
-  }
-
-  console.error("❌ All RPC endpoints failed");
-  return null;
+    
+    console.error('❌ All RPC endpoints failed');
+    return null;
 }
 
 // Initialize
-window.addEventListener("load", async () => {
-  console.log("🚀 Aetheron Dashboard Loading...");
+document.addEventListener('DOMContentLoaded', () => {
+    initConnectButton();
+    setDefaultValues();
+});
 
-  // Initialize theme first
-  initTheme();
-
-  // Set default values immediately to avoid "Loading..." stuck state
-  setDefaultValues();
-
-  // Hook up connect wallet button
-  const connectBtn = document.getElementById("connectBtn");
-  if (connectBtn) {
-    connectBtn.addEventListener("click", connectWallet);
-  }
-
-  // Initialize read-only provider first for live data
-  const readOnlyContracts = initReadOnlyProvider();
-  if (readOnlyContracts) {
-    // Use read-only contracts initially for stats
-    if (!aethContract) aethContract = readOnlyContracts.aethContract;
-    if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
-    console.log("✅ Using RPC:", readOnlyContracts.rpcUrl);
-  } else {
-    console.warn(
-      "⚠️ Running without blockchain connection - showing defaults only",
-    );
-  }
-
-  // Start updating stats immediately with live blockchain data
-  await updateStats();
-
-  // Initialize WebSocket for real-time updates
-  initializeWebSocket();
-
-  // Fallback polling for blockchain data every 30 seconds
-  setInterval(updateStats, 30000);
-
-  // Then check for wallet
-  detectWalletWithRetry();
-  window.addEventListener("ethereum#initialized", handleEthereumInit, {
-    once: true,
-  });
-  setTimeout(() => {
-    if (!window.ethereum) {
-      console.log("Final check: Wallet still not detected");
-      checkWalletStatus();
+function initConnectButton() {
+    const connectBtn = document.getElementById('connectBtn');
+    if (!connectBtn || connectBtn.dataset.walletBound === 'true') {
+        return;
     }
-  }, 5000);
 
-  console.log("✅ Dashboard initialized!");
+    connectBtn.dataset.walletBound = 'true';
+    connectBtn.type = 'button';
+    connectBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        await openWalletChooser();
+    });
+}
 
-  // Initialize mobile menu
-  initMobileMenu();
-
-  // Initialize progressive features
-  initProgressBar();
-
-  // Add animation classes
-  document
-    .querySelectorAll(".stat-card, .feature-card, .card")
-    .forEach((el, i) => {
-      setTimeout(() => el.classList.add("fade-in"), i * 100);
+window.addEventListener('load', async () => {
+    console.log('🚀 Aetheron Dashboard Loading...');
+    
+    // Initialize theme first
+    initTheme();
+    
+    // Set default values immediately to avoid "Loading..." stuck state
+    setDefaultValues();
+    
+    // Keep the connect wallet button bound even with late-loading scripts
+    initConnectButton();
+    
+    // Initialize read-only provider first for live data
+    const readOnlyContracts = initReadOnlyProvider();
+    if (readOnlyContracts) {
+        // Use read-only contracts initially for stats
+        if (!aethContract) aethContract = readOnlyContracts.aethContract;
+        if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
+        console.log('✅ Using RPC:', readOnlyContracts.rpcUrl);
+    } else {
+        console.warn('⚠️ Running without blockchain connection - showing defaults only');
+    }
+    
+    // Start updating stats immediately with live blockchain data
+    await updateStats();
+    
+    // Initialize WebSocket for real-time updates
+    initializeWebSocket();
+    
+    // Fallback polling for blockchain data every 30 seconds
+    setInterval(updateStats, 30000);
+    
+    // Then check for wallet
+    detectWalletWithRetry();
+    window.addEventListener('ethereum#initialized', handleEthereumInit, { once: true });
+    setTimeout(() => {
+        if (!window.ethereum) {
+            console.log('Final check: Wallet still not detected');
+            checkWalletStatus();
+        }
+    }, 5000);
+    
+    console.log('✅ Dashboard initialized!');
+    
+    // Initialize mobile menu
+    initMobileMenu();
+    
+    // Initialize progressive features
+    initProgressBar();
+    
+    // Add animation classes
+    document.querySelectorAll('.stat-card, .feature-card, .card').forEach((el, i) => {
+        setTimeout(() => el.classList.add('fade-in'), i * 100);
     });
 });
 
 // Set default values to avoid stuck "Loading..." states
 function setDefaultValues() {
-  const defaults = [
-    { id: "priceValue", value: "$0.00000001" },
-    { id: "priceChange", value: "+0.00% (24h)" },
-    { id: "marketCapValue", value: "$10" },
-    { id: "marketCapChange", value: "+0.00% (24h)" },
-    { id: "stakedValue", value: "0 AETH" },
-    { id: "stakedChange", value: "150M AETH Pool" },
-    { id: "holdersValue", value: "1+" },
-    { id: "holdersChange", value: "Growing" },
-  ];
-
-  defaults.forEach(({ id, value }) => {
-    const el = document.getElementById(id);
-    if (el && (el.textContent === "Loading..." || el.textContent === "--")) {
-      el.textContent = value;
-    }
-  });
-
-  console.log("✅ Default values set");
+    const defaults = [
+        { id: 'priceValue', value: '$0.00000001' },
+        { id: 'priceChange', value: '+0.00% (24h)' },
+        { id: 'marketCapValue', value: '$10' },
+        { id: 'marketCapChange', value: '+0.00% (24h)' },
+        { id: 'stakedValue', value: '0 AETH' },
+        { id: 'stakedChange', value: '150M AETH Pool' },
+        { id: 'holdersValue', value: '1+' },
+        { id: 'holdersChange', value: 'Growing' }
+    ];
+    
+    defaults.forEach(({ id, value }) => {
+        const el = document.getElementById(id);
+        if (el && (el.textContent === 'Loading...' || el.textContent === '--')) {
+            el.textContent = value;
+        }
+    });
+    
+    console.log('✅ Default values set');
 }
 
 function handleEthereumInit() {
-  console.log("Ethereum initialized event fired");
-  checkWalletStatus();
+    console.log('Ethereum initialized event fired');
+    checkWalletStatus();
+}
+
+function getInjectedProviders() {
+    if (!window.ethereum) {
+        return [];
+    }
+
+    return Array.isArray(window.ethereum.providers)
+        ? window.ethereum.providers
+        : [window.ethereum];
+}
+
+function resolveInjectedProvider(preferredWalletType = '') {
+    const providers = getInjectedProviders();
+    if (providers.length === 0) {
+        injectedProvider = null;
+        return null;
+    }
+
+    if (preferredWalletType === 'metamask') {
+        injectedProvider = providers.find((candidate) => candidate?.isMetaMask && !candidate?.isBraveWallet)
+            || providers.find((candidate) => candidate?.isMetaMask)
+            || null;
+        return injectedProvider;
+    }
+
+    if (preferredWalletType === 'coinbase') {
+        injectedProvider = providers.find((candidate) => candidate?.isCoinbaseWallet) || null;
+        return injectedProvider;
+    }
+
+    const exactMetaMask = providers.find((candidate) => candidate?.isMetaMask && !candidate?.isBraveWallet);
+    const anyMetaMask = providers.find((candidate) => candidate?.isMetaMask);
+    const coinbase = providers.find((candidate) => candidate?.isCoinbaseWallet);
+
+    injectedProvider = exactMetaMask || anyMetaMask || coinbase || window.ethereum;
+    return injectedProvider;
+}
+
+function getWalletName(targetProvider) {
+    if (!targetProvider) {
+        return '';
+    }
+
+    if (targetProvider.isCoinbaseWallet) {
+        return 'Coinbase Wallet';
+    }
+
+    if (targetProvider.isMetaMask) {
+        return 'MetaMask';
+    }
+
+    return 'Browser Wallet';
+}
+
+function ensureWalletChooser() {
+    let modal = document.getElementById('walletChooserModal');
+    if (modal) {
+        return modal;
+    }
+
+    modal = document.createElement('div');
+    modal.id = 'walletChooserModal';
+    modal.className = 'modal';
+    modal.style.display = 'none';
+    modal.innerHTML = `
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="walletChooserTitle">
+            <span class="close-modal" id="walletChooserClose" role="button" tabindex="0" aria-label="Close wallet chooser">&times;</span>
+            <h2 id="walletChooserTitle">Choose Wallet</h2>
+            <p class="text-gray paragraph-spacing">Select the wallet you want to connect on this device.</p>
+            <div class="quick-actions" style="margin-top:1rem;">
+                <button id="walletChooserMetaMask" class="quick-action-btn" type="button">
+                    <i class="fas fa-wallet"></i> MetaMask
+                </button>
+                <button id="walletChooserCoinbase" class="quick-action-btn" type="button">
+                    <i class="fas fa-wallet"></i> Coinbase Wallet
+                </button>
+                <button id="walletChooserBrowser" class="quick-action-btn" type="button">
+                    <i class="fas fa-plug"></i> Browser Wallet
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeChooser = () => {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    };
+
+    modal.querySelector('#walletChooserClose').addEventListener('click', closeChooser);
+    modal.addEventListener('mousedown', (event) => {
+        const content = modal.querySelector('.modal-content');
+        if (content && !content.contains(event.target)) {
+            closeChooser();
+        }
+    });
+
+    modal.querySelector('#walletChooserMetaMask').addEventListener('click', async () => {
+        closeChooser();
+        await connectWallet({ walletType: 'metamask' });
+    });
+
+    modal.querySelector('#walletChooserCoinbase').addEventListener('click', async () => {
+        closeChooser();
+        await connectWallet({ walletType: 'coinbase' });
+    });
+
+    modal.querySelector('#walletChooserBrowser').addEventListener('click', async () => {
+        closeChooser();
+        await connectWallet();
+    });
+
+    return modal;
+}
+
+function openWalletChooser() {
+    const providers = getInjectedProviders();
+
+    if (providers.length <= 1) {
+        return connectWallet();
+    }
+
+    const modal = ensureWalletChooser();
+    const metaMaskBtn = modal.querySelector('#walletChooserMetaMask');
+    const coinbaseBtn = modal.querySelector('#walletChooserCoinbase');
+    const browserBtn = modal.querySelector('#walletChooserBrowser');
+
+    metaMaskBtn.style.display = providers.some((candidate) => candidate?.isMetaMask) ? '' : 'none';
+    coinbaseBtn.style.display = providers.some((candidate) => candidate?.isCoinbaseWallet) ? '' : 'none';
+    browserBtn.style.display = '';
+
+    modal.style.display = 'block';
+    modal.classList.add('show');
 }
 
 async function detectWalletWithRetry() {
-  const delays = [500, 1000, 2000, 3000, 4000];
-  for (let i = 0; i < delays.length; i++) {
-    await new Promise((resolve) => setTimeout(resolve, delays[i]));
-    console.log(`Detection attempt ${i + 1}/${delays.length}`);
-    const detected = await checkWalletStatus();
-    if (detected) {
-      console.log("Wallet detected successfully!");
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        if (accounts.length > 0) {
-          await connectWallet();
+    const delays = [500, 1000, 2000, 3000, 4000];
+    for (let i = 0; i < delays.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, delays[i]));
+        console.log(`Detection attempt ${i + 1}/${delays.length}`);
+        const detected = await checkWalletStatus();
+        if (detected) {
+            console.log('Wallet detected successfully!');
+            try {
+                const wallet = resolveInjectedProvider();
+                const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
+                if (accounts.length > 0) {
+                    await connectWallet();
+                }
+            } catch (error) {
+                console.log('Could not check existing accounts:', error);
+            }
+            break;
         }
-      } catch (error) {
-        console.log("Could not check existing accounts:", error);
-      }
-      break;
     }
-  }
 }
 
 async function checkWalletStatus() {
-  const statusDiv = document.getElementById("walletStatus");
-  if (!statusDiv) {
-    console.warn(
-      "Wallet status element not found - page may not be fully loaded",
-    );
-    return false;
-  }
-  console.log("Checking wallet status...");
-  console.log("window.ethereum exists:", !!window.ethereum);
-  console.log("window.ethereum.isMetaMask:", window.ethereum?.isMetaMask);
-  console.log(
-    "window.ethereum.isCoinbaseWallet:",
-    window.ethereum?.isCoinbaseWallet,
-  );
-  console.log("window.ethereum providers:", window.ethereum?.providers);
-  let isSupportedWallet = false;
-  let walletName = "";
-
-  if (window.ethereum?.isCoinbaseWallet) {
-    isSupportedWallet = true;
-    walletName = "Coinbase Wallet";
-  } else if (window.ethereum?.isMetaMask) {
-    isSupportedWallet = true;
-    walletName = "MetaMask";
-  }
-
-  if (window.ethereum?.providers) {
-    const coinbaseProvider = window.ethereum.providers.find(
-      (p) => p.isCoinbaseWallet,
-    );
-    const metamaskProvider = window.ethereum.providers.find(
-      (p) => p.isMetaMask,
-    );
-    if (coinbaseProvider) {
-      isSupportedWallet = true;
-      walletName = "Coinbase Wallet";
-      console.log("Found Coinbase Wallet in providers array");
-    } else if (metamaskProvider) {
-      isSupportedWallet = true;
-      walletName = "MetaMask";
-      console.log("Found MetaMask in providers array");
+    const statusDiv = document.getElementById('walletStatus');
+    if (!statusDiv) {
+        console.warn('Wallet status element not found - page may not be fully loaded');
+        return false;
     }
-  }
-
-  if (isSupportedWallet) {
-    statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> ${walletName} Detected ✓<br><small style="color: #6b7280;">Ready to connect</small>`;
-    statusDiv.style.background =
-      "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))";
-    statusDiv.style.border = "2px solid var(--success)";
-    return true;
-  } else if (window.ethereum) {
-    statusDiv.innerHTML =
-      '<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Other wallet detected<br><small style="color: #6b7280;">Coinbase Wallet or MetaMask not found</small>';
-    statusDiv.style.background =
-      "linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))";
-    statusDiv.style.border = "2px solid var(--warning)";
-    return false;
-  } else {
-    statusDiv.innerHTML =
-      '<i class="fas fa-times-circle" style="color: var(--danger);"></i> Wallet Not Detected<br><small style="color: #6b7280;">Install Coinbase Wallet or MetaMask & refresh page</small>';
-    statusDiv.style.background =
-      "linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))";
-    statusDiv.style.border = "2px solid var(--danger)";
-    return false;
-  }
+    console.log('Checking wallet status...');
+    console.log('window.ethereum exists:', !!window.ethereum);
+    console.log('window.ethereum.isMetaMask:', window.ethereum?.isMetaMask);
+    console.log('window.ethereum.isCoinbaseWallet:', window.ethereum?.isCoinbaseWallet);
+    console.log('window.ethereum providers:', window.ethereum?.providers);
+    const wallet = resolveInjectedProvider();
+    const walletName = getWalletName(wallet);
+    
+    if (wallet?.isCoinbaseWallet) {
+        console.log('Found Coinbase Wallet in providers array');
+    } else if (wallet?.isMetaMask) {
+        console.log('Found MetaMask in providers array');
+    }
+    
+    
+    
+    if (wallet) {
+        statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> ${walletName} Detected ✓<br><small style="color: #6b7280;">Ready to connect</small>`;
+        statusDiv.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
+        statusDiv.style.border = '2px solid var(--success)';
+        return true;
+    } else if (window.ethereum) {
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Other wallet detected<br><small style="color: #6b7280;">Coinbase Wallet or MetaMask not found</small>';
+        statusDiv.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))';
+        statusDiv.style.border = '2px solid var(--warning)';
+        return false;
+    } else {
+        statusDiv.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger);"></i> Wallet Not Detected<br><small style="color: #6b7280;">Install Coinbase Wallet or MetaMask & refresh page</small>';
+        statusDiv.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))';
+        statusDiv.style.border = '2px solid var(--danger)';
+        return false;
+    }
 }
 
 async function recheckWallet() {
-  const statusDiv = document.getElementById("walletStatus");
-  if (!statusDiv) {
-    console.warn("Wallet status element not found");
-    return;
-  }
-  statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rechecking...';
-  let detected = false;
-  for (let i = 0; i < 3; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    detected = await checkWalletStatus();
-    if (detected) break;
-  }
-  if (detected) {
-    alert(
-      '✅ Wallet detected!\n\nYou can now click the "Connect Wallet" button in the navbar to connect your wallet.',
-    );
-  } else {
-    const action = confirm(
-      "❌ Wallet still not detected.\n\n" +
-        "Troubleshooting steps:\n" +
-        "1. Close and reopen your browser\n" +
-        "2. Make sure your wallet extension is enabled\n" +
-        "3. Click the wallet extension icon once\n" +
-        "4. Refresh this page (F5 or Ctrl+R)\n\n" +
-        "Press OK to see debug info, or Cancel to try installing Coinbase Wallet.",
-    );
-    if (action) {
-      alert(
-        "Debug Info:\n\n" +
-          "window.ethereum exists: " +
-          !!window.ethereum +
-          "\n" +
-          "window.ethereum.isCoinbaseWallet: " +
-          window.ethereum?.isCoinbaseWallet +
-          "\n" +
-          "window.ethereum.isMetaMask: " +
-          window.ethereum?.isMetaMask +
-          "\n" +
-          "Browser: " +
-          navigator.userAgent +
-          "\n\n" +
-          "Check browser console (F12) for more details.",
-      );
-    } else {
-      window.open("https://www.coinbase.com/wallet", "_blank");
+    const statusDiv = document.getElementById('walletStatus');
+    if (!statusDiv) {
+        console.warn('Wallet status element not found');
+        return;
     }
-  }
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rechecking...';
+    let detected = false;
+    for (let i = 0; i < 3; i++) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        detected = await checkWalletStatus();
+        if (detected) break;
+    }
+    if (detected) {
+        alert('✅ Wallet detected!\n\nYou can now click the "Connect Wallet" button in the navbar to connect your wallet.');
+    } else {
+        const action = confirm(
+            '❌ Wallet still not detected.\n\n' +
+            'Troubleshooting steps:\n' +
+            '1. Close and reopen your browser\n' +
+            '2. Make sure your wallet extension is enabled\n' +
+            '3. Click the wallet extension icon once\n' +
+            '4. Refresh this page (F5 or Ctrl+R)\n\n' +
+            'Press OK to see debug info, or Cancel to try installing Coinbase Wallet.'
+        );
+        if (action) {
+            alert('Debug Info:\n\n' +
+                'window.ethereum exists: ' + !!window.ethereum + '\n' +
+                'window.ethereum.isCoinbaseWallet: ' + window.ethereum?.isCoinbaseWallet + '\n' +
+                'window.ethereum.isMetaMask: ' + window.ethereum?.isMetaMask + '\n' +
+                'Browser: ' + navigator.userAgent + '\n\n' +
+                'Check browser console (F12) for more details.');
+        } else {
+            window.open('https://www.coinbase.com/wallet', '_blank');
+        }
+    }
 }
 
 // Staking function
@@ -375,262 +464,161 @@ async function stakeTokens(poolId) {
 
     } catch (error) {
         console.error('Staking error:', error);
-        showToast('Staking Failed', 'Failed to stake tokens. Check console for details.', 'error');
-        showAlert('Staking failed. Please try again later.', 'error', 'stakingAlert');
+        showToast('Staking Failed', error.message || 'Failed to stake tokens', 'error');
+        showAlert('Staking failed: ' + error.message, 'error', 'stakingAlert');
     } finally {
         stakeBtn.disabled = false;
         stakeBtn.innerHTML = originalText;
     }
 }
 
-async function claimRewards(poolId) {
-    if (!account) {
-        showAlert('Please connect your wallet first', 'error', 'stakingAlert');
-        return;
-    }
-
-    const claimBtn = document.getElementById(`claimBtn${poolId}`);
-    if (!claimBtn) {
-        console.warn('Claim button not found for pool:', poolId);
-        return;
-    }
-    
-    const originalText = claimBtn.innerHTML;
-    claimBtn.disabled = true;
-    claimBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Claiming...';
-
-    try {
-        showAlert('Claiming rewards...', 'info', 'stakingAlert');
-        
-        // Check pending rewards first
-        const pendingRewards = await stakingContract.calculateReward(account, poolId);
-        if (pendingRewards.isZero()) {
-            showAlert('No rewards available to claim', 'warning', 'stakingAlert');
-            return;
-        }
-
-        // Claim rewards
-        const claimTx = await stakingContract.claimRewards(poolId);
-        await claimTx.wait();
-
-        const rewardAmount = ethers.utils.formatEther(pendingRewards);
-        showToast('Success!', `${rewardAmount} AETH rewards claimed!`, 'success');
-        showAlert(`Successfully claimed ${rewardAmount} AETH rewards!`, 'success', 'stakingSuccess');
-
-        // Update stats
-        await updateStats();
-        await updateBalances();
-
-    } catch (error) {
-        console.error('Claim error:', error);
-        showToast('Claim Failed', 'Failed to claim rewards. Check console for details.', 'error');
-        showAlert('Claim failed. Please try again later.', 'error', 'stakingAlert');
-    } finally {
-        claimBtn.disabled = false;
-        claimBtn.innerHTML = originalText;
-    }
-}
-  const amount = amountInput.value;
-
-  if (!amount || amount <= 0) {
-    showAlert("Please enter a valid amount to stake", "error", "stakingAlert");
-    return;
-  }
-
-  const stakeBtn = document.getElementById(`stakeBtn${poolId}`);
-  const originalText = stakeBtn.innerHTML;
-  stakeBtn.disabled = true;
-  stakeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-  try {
-    showAlert("Approving tokens for staking...", "info", "stakingAlert");
-
-    // Approve tokens
-    const amountWei = ethers.utils.parseEther(amount);
-    const approvalTx = await aethContract.approve(STAKING_ADDRESS, amountWei);
-    await approvalTx.wait();
-
-    showAlert("Staking tokens...", "info", "stakingAlert");
-
-    // Stake tokens
-    const stakeTx = await stakingContract.stake(poolId, amountWei);
-    await stakeTx.wait();
-
-    showToast("Success!", `${amount} AETH staked successfully!`, "success");
-    showAlert(
-      `Successfully staked ${amount} AETH in pool ${poolId + 1}!`,
-      "success",
-      "stakingSuccess",
-    );
-    amountInput.value = "";
-
-    // Update stats
-    await updateStats();
-    await loadUserStakes();
-  } catch (error) {
-    console.error("Staking error:", error);
-    showToast(
-      "Staking Failed",
-      error.message || "Failed to stake tokens",
-      "error",
-    );
-    showAlert("Staking failed: " + error.message, "error", "stakingAlert");
-  } finally {
-    stakeBtn.disabled = false;
-    stakeBtn.innerHTML = originalText;
-  }
-}
-
 // Helper function to show alerts
 function showAlert(message, type, alertId) {
-  const alertEl = document.getElementById(alertId);
-  if (alertEl) {
-    alertEl.textContent = message;
-    alertEl.className = `alert alert-${type}`;
-    alertEl.classList.remove("hidden");
-    setTimeout(() => {
-      alertEl.classList.add("hidden");
-    }, 5000);
-  }
+    const alertEl = document.getElementById(alertId);
+    if (alertEl) {
+        alertEl.textContent = message;
+        alertEl.className = `alert alert-${type}`;
+        alertEl.classList.remove('hidden');
+        setTimeout(() => {
+            alertEl.classList.add('hidden');
+        }, 5000);
+    }
 }
 
 // Update stats function
 async function updateStats() {
-  try {
-    // Update price from DexScreener
-    await updatePrice();
+    try {
+        // Update price from DexScreener
+        await updatePrice();
 
-    // Update contract stats if connected
-    if (aethContract && account) {
-      await updateBalances();
+        // Update contract stats if connected
+        if (aethContract && account) {
+            await updateBalances();
+        }
+
+        // Update staking pool stats
+        if (stakingContract) {
+            await updateStakingStats();
+        }
+
+        console.log('Stats updated successfully');
+    } catch (error) {
+        console.error('Error updating stats:', error);
     }
-
-    // Update staking pool stats
-    if (stakingContract) {
-      await updateStakingStats();
-    }
-
-    console.log("Stats updated successfully");
-  } catch (error) {
-    console.error("Error updating stats:", error);
-  }
 }
 
 // Update price from DexScreener
 async function updatePrice() {
-  try {
-    console.log("📊 Fetching live price data...");
-    const response = await fetch(
-      "https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
-    );
+    try {
+        console.log('📊 Fetching live price data...');
+        const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        if (data.pairs && data.pairs.length > 0) {
+            const pair = data.pairs[0];
+            const price = parseFloat(pair.priceUsd) || 0;
+            const priceChange = parseFloat(pair.priceChange?.h24 || 0);
+            const volume24h = parseFloat(pair.volume?.h24 || 0);
+            const liquidity = parseFloat(pair.liquidity?.usd || 0);
+            const fdv = parseFloat(pair.fdv || 0);
+
+            // Update price
+            const priceEl = document.getElementById('priceValue');
+            if (priceEl) {
+                if (price > 0) {
+                    priceEl.textContent = price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toFixed(8)}`;
+                } else {
+                    priceEl.textContent = '$0.00000001';
+                }
+            }
+            
+            // Update price change
+            const changeEl = document.getElementById('priceChange');
+            if (changeEl) {
+                changeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% (24h)`;
+                changeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            // Update market cap (using FDV or calculating from price)
+            const marketCapEl = document.getElementById('marketCapValue');
+            if (marketCapEl) {
+                let marketCap = fdv;
+                if (!marketCap && price > 0 && aethContract) {
+                    try {
+                        const totalSupply = await aethContract.totalSupply();
+                        const supply = parseFloat(ethers.utils.formatEther(totalSupply));
+                        marketCap = price * supply;
+                    } catch (e) {
+                        marketCap = price * 1000000000; // Fallback: use 1B tokens
+                    }
+                }
+                
+                if (marketCap >= 1000000) {
+                    marketCapEl.textContent = `$${(marketCap / 1000000).toFixed(2)}M`;
+                } else if (marketCap >= 1000) {
+                    marketCapEl.textContent = `$${(marketCap / 1000).toFixed(1)}K`;
+                } else {
+                    marketCapEl.textContent = `$${marketCap.toFixed(0)}`;
+                }
+            }
+            
+            // Update market cap change
+            const marketCapChangeEl = document.getElementById('marketCapChange');
+            if (marketCapChangeEl) {
+                marketCapChangeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% (24h)`;
+                marketCapChangeEl.className = `change ${priceChange >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            // Update volume
+            const volumeEl = document.getElementById('volumeValue');
+            if (volumeEl) {
+                if (volume24h >= 1000000) {
+                    volumeEl.textContent = `$${(volume24h / 1000000).toFixed(2)}M`;
+                } else if (volume24h >= 1000) {
+                    volumeEl.textContent = `$${(volume24h / 1000).toFixed(1)}K`;
+                } else {
+                    volumeEl.textContent = `$${volume24h.toFixed(0)}`;
+                }
+            }
+            
+            // Update liquidity
+            const liquidityEl = document.getElementById('liquidityValue');
+            if (liquidityEl) {
+                if (liquidity >= 1000000) {
+                    liquidityEl.textContent = `$${(liquidity / 1000000).toFixed(2)}M`;
+                } else if (liquidity >= 1000) {
+                    liquidityEl.textContent = `$${(liquidity / 1000).toFixed(1)}K`;
+                } else {
+                    liquidityEl.textContent = `$${liquidity.toFixed(0)}`;
+                }
+            }
+            
+            console.log('✅ Live price updated:', price, '| Market Cap:', marketCap);
+        } else {
+            console.warn('⚠️  No price data available yet - showing defaults');
+            // Show default values instead of "Loading..."
+            const priceEl = document.getElementById('priceValue');
+            if (priceEl && priceEl.textContent === 'Loading...') {
+                priceEl.textContent = '$0.00000001';
+            }
+            const marketCapEl = document.getElementById('marketCapValue');
+            if (marketCapEl && marketCapEl.textContent === 'Loading...') {
+                marketCapEl.textContent = '$10';
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error updating price:', error);
+        // Show friendly error message
+        const priceEl = document.getElementById('priceValue');
+        if (priceEl && priceEl.textContent === 'Loading...') {
+            priceEl.textContent = '$0.00000001';
+        }
     }
-
-    const data = await response.json();
-
-    if (data.pairs && data.pairs.length > 0) {
-      const pair = data.pairs[0];
-      const price = parseFloat(pair.priceUsd) || 0;
-      const priceChange = parseFloat(pair.priceChange?.h24 || 0);
-      const volume24h = parseFloat(pair.volume?.h24 || 0);
-      const liquidity = parseFloat(pair.liquidity?.usd || 0);
-      const fdv = parseFloat(pair.fdv || 0);
-
-      // Update price
-      const priceEl = document.getElementById("priceValue");
-      if (priceEl) {
-        if (price > 0) {
-          priceEl.textContent =
-            price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toFixed(8)}`;
-        } else {
-          priceEl.textContent = "$0.00000001";
-        }
-      }
-
-      // Update price change
-      const changeEl = document.getElementById("priceChange");
-      if (changeEl) {
-        changeEl.textContent = `${priceChange >= 0 ? "+" : ""}${priceChange.toFixed(2)}% (24h)`;
-        changeEl.className = `change ${priceChange >= 0 ? "positive" : "negative"}`;
-      }
-
-      // Update market cap (using FDV or calculating from price)
-      const marketCapEl = document.getElementById("marketCapValue");
-      if (marketCapEl) {
-        let marketCap = fdv;
-        if (!marketCap && price > 0 && aethContract) {
-          try {
-            const totalSupply = await aethContract.totalSupply();
-            const supply = parseFloat(ethers.utils.formatEther(totalSupply));
-            marketCap = price * supply;
-          } catch (e) {
-            marketCap = price * 1000000000; // Fallback: use 1B tokens
-          }
-        }
-
-        if (marketCap >= 1000000) {
-          marketCapEl.textContent = `$${(marketCap / 1000000).toFixed(2)}M`;
-        } else if (marketCap >= 1000) {
-          marketCapEl.textContent = `$${(marketCap / 1000).toFixed(1)}K`;
-        } else {
-          marketCapEl.textContent = `$${marketCap.toFixed(0)}`;
-        }
-      }
-
-      // Update market cap change
-      const marketCapChangeEl = document.getElementById("marketCapChange");
-      if (marketCapChangeEl) {
-        marketCapChangeEl.textContent = `${priceChange >= 0 ? "+" : ""}${priceChange.toFixed(2)}% (24h)`;
-        marketCapChangeEl.className = `change ${priceChange >= 0 ? "positive" : "negative"}`;
-      }
-
-      // Update volume
-      const volumeEl = document.getElementById("volumeValue");
-      if (volumeEl) {
-        if (volume24h >= 1000000) {
-          volumeEl.textContent = `$${(volume24h / 1000000).toFixed(2)}M`;
-        } else if (volume24h >= 1000) {
-          volumeEl.textContent = `$${(volume24h / 1000).toFixed(1)}K`;
-        } else {
-          volumeEl.textContent = `$${volume24h.toFixed(0)}`;
-        }
-      }
-
-      // Update liquidity
-      const liquidityEl = document.getElementById("liquidityValue");
-      if (liquidityEl) {
-        if (liquidity >= 1000000) {
-          liquidityEl.textContent = `$${(liquidity / 1000000).toFixed(2)}M`;
-        } else if (liquidity >= 1000) {
-          liquidityEl.textContent = `$${(liquidity / 1000).toFixed(1)}K`;
-        } else {
-          liquidityEl.textContent = `$${liquidity.toFixed(0)}`;
-        }
-      }
-
-      console.log("✅ Live price updated:", price, "| Market Cap:", marketCap);
-    } else {
-      console.warn("⚠️  No price data available yet - showing defaults");
-      // Show default values instead of "Loading..."
-      const priceEl = document.getElementById("priceValue");
-      if (priceEl && priceEl.textContent === "Loading...") {
-        priceEl.textContent = "$0.00000001";
-      }
-      const marketCapEl = document.getElementById("marketCapValue");
-      if (marketCapEl && marketCapEl.textContent === "Loading...") {
-        marketCapEl.textContent = "$10";
-      }
-    }
-  } catch (error) {
-    console.error("❌ Error updating price:", error);
-    // Show friendly error message
-    const priceEl = document.getElementById("priceValue");
-    if (priceEl && priceEl.textContent === "Loading...") {
-      priceEl.textContent = "$0.00000001";
-    }
-  }
 }
 
 // Update user balances
@@ -644,17 +632,15 @@ async function updateBalances() {
         const balanceEl = document.getElementById('userBalance');
         if (balanceEl) balanceEl.textContent = balance.toFixed(2) + ' AETH';
 
-        // Calculate USD value (use cached price)
-        const pair = await fetchPriceData();
-        if (pair) {
-            const price = parseFloat(pair.priceUsd) || 0.00000001;
+        // Calculate USD value (need current price)
+        const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
+        const priceData = await priceResponse.json();
+        if (priceData.pairs && priceData.pairs.length > 0) {
+            const price = parseFloat(priceData.pairs[0].priceUsd);
             const usdValue = balance * price;
             const usdEl = document.getElementById('userBalanceUSD');
             if (usdEl) usdEl.textContent = `$${usdValue.toFixed(2)} USD`;
         }
-        
-        // Update portfolio values
-        await updatePortfolioValues(balance, price);
         
         console.log('✅ Balance updated:', balance, 'AETH');
     } catch (error) {
@@ -662,521 +648,343 @@ async function updateBalances() {
     }
 }
 
-async function updatePortfolioValues(balance, price) {
+// Update staking pool statistics
+async function updateStakingStats() {
     try {
-        let totalStaked = 0;
-        let pendingRewards = 0;
+        if (!stakingContract) {
+            console.warn('⚠️  Staking contract not initialized - keeping defaults');
+            return;
+        }
+
+        console.log('📊 Fetching live staking data...');
         
-        // Get staked amounts for all pools
-        if (stakingContract) {
-            for (let poolId = 0; poolId < 3; poolId++) {
-                try {
-                    const stakeInfo = await stakingContract.getStakeInfo(account, poolId);
-                    totalStaked += parseFloat(ethers.utils.formatEther(stakeInfo[0]));
-                    pendingRewards += parseFloat(ethers.utils.formatEther(stakeInfo[1]));
-                } catch (e) {
-                    // Pool might not have stake
-                }
+        // Add timeout to prevent hanging
+        const timeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 10000)
+        );
+        
+        // Race between the blockchain call and timeout
+        const totalStakedPromise = stakingContract.totalStaked();
+        const totalStaked = await Promise.race([totalStakedPromise, timeout]);
+        
+        const total = parseFloat(ethers.utils.formatEther(totalStaked));
+
+        const stakedEl = document.getElementById('stakedValue');
+        if (stakedEl) {
+            if (total >= 1000000) {
+                stakedEl.textContent = `${(total / 1000000).toFixed(2)}M AETH`;
+            } else if (total >= 1000) {
+                stakedEl.textContent = `${(total / 1000).toFixed(1)}K AETH`;
+            } else if (total > 0) {
+                stakedEl.textContent = `${total.toFixed(0)} AETH`;
+            } else {
+                stakedEl.textContent = '0 AETH';
             }
         }
         
-        // Calculate portfolio values
-        const stakedValue = totalStaked * price;
-        const rewardsValue = pendingRewards * price;
-        const totalValue = (balance + totalStaked + pendingRewards) * price;
-        const totalPnl = rewardsValue; // Simple P&L calculation
-        
-        // Update DOM
-        const totalValueEl = document.getElementById('portfolioTotalValue');
-        if (totalValueEl) totalValueEl.textContent = `$${totalValue.toFixed(2)}`;
-        
-        const stakedValueEl = document.getElementById('portfolioStakedValue');
-        if (stakedValueEl) stakedValueEl.textContent = `$${stakedValue.toFixed(2)}`;
-        
-        const pendingRewardsEl = document.getElementById('portfolioPendingRewards');
-        if (pendingRewardsEl) pendingRewardsEl.textContent = `$${rewardsValue.toFixed(2)}`;
-        
-        const totalPnlEl = document.getElementById('portfolioTotalPnL');
-        if (totalPnlEl) {
-            totalPnlEl.textContent = `$${totalPnl.toFixed(2)}`;
-            totalPnlEl.className = totalPnl >= 0 ? 'portfolio-stat-value positive' : 'portfolio-stat-value negative';
+        // Update change text
+        const stakedChangeEl = document.getElementById('stakedChange');
+        if (stakedChangeEl) {
+            stakedChangeEl.textContent = '150M AETH Pool';
+        }
+
+        // Get token total supply for percentage calculation
+        if (aethContract) {
+            try {
+                const totalSupplyPromise = aethContract.totalSupply();
+                const totalSupply = await Promise.race([totalSupplyPromise, timeout]);
+                const supply = parseFloat(ethers.utils.formatEther(totalSupply));
+                const stakedPercentage = (total / supply) * 100;
+                
+                const stakedPctEl = document.getElementById('stakedPercentage');
+                if (stakedPctEl) stakedPctEl.textContent = `${stakedPercentage.toFixed(1)}% of supply`;
+            } catch (e) {
+                console.warn('⚠️  Could not fetch total supply:', e.message);
+            }
         }
         
-        console.log('✅ Portfolio updated:', { totalValue, stakedValue, rewardsValue });
+        // Update holders count (estimate)
+        const holdersEl = document.getElementById('holdersValue');
+        if (holdersEl) {
+            if (total > 0) {
+                const estimatedHolders = Math.max(1, Math.floor(total / 10000));
+                holdersEl.textContent = `${estimatedHolders}+`;
+            } else {
+                holdersEl.textContent = '1+';
+            }
+        }
+        
+        console.log('✅ Staking stats updated:', total, 'AETH staked');
+
     } catch (error) {
-        console.error('❌ Error updating portfolio:', error);
+        if (error.message === 'Timeout') {
+            console.warn('⚠️  Blockchain call timed out - keeping previous values');
+        } else {
+            console.error('❌ Error updating staking stats:', error.message);
+        }
+        // Keep the default values that were already set - don't revert to "Loading..."
     }
-}
-
-    console.log("✅ Balance updated:", balance, "AETH");
-  } catch (error) {
-    console.error("❌ Error updating balances:", error);
-  }
-}
-
-// Update staking pool statistics
-async function updateStakingStats() {
-  try {
-    if (!stakingContract) {
-      console.warn("⚠️  Staking contract not initialized - keeping defaults");
-      return;
-    }
-
-    console.log("📊 Fetching live staking data...");
-
-    // Add timeout to prevent hanging
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 10000),
-    );
-
-    // Race between the blockchain call and timeout
-    const totalStakedPromise = stakingContract.totalStaked();
-    const totalStaked = await Promise.race([totalStakedPromise, timeout]);
-
-    const total = parseFloat(ethers.utils.formatEther(totalStaked));
-
-    const stakedEl = document.getElementById("stakedValue");
-    if (stakedEl) {
-      if (total >= 1000000) {
-        stakedEl.textContent = `${(total / 1000000).toFixed(2)}M AETH`;
-      } else if (total >= 1000) {
-        stakedEl.textContent = `${(total / 1000).toFixed(1)}K AETH`;
-      } else if (total > 0) {
-        stakedEl.textContent = `${total.toFixed(0)} AETH`;
-      } else {
-        stakedEl.textContent = "0 AETH";
-      }
-    }
-
-    // Update change text
-    const stakedChangeEl = document.getElementById("stakedChange");
-    if (stakedChangeEl) {
-      stakedChangeEl.textContent = "150M AETH Pool";
-    }
-
-    // Get token total supply for percentage calculation
-    if (aethContract) {
-      try {
-        const totalSupplyPromise = aethContract.totalSupply();
-        const totalSupply = await Promise.race([totalSupplyPromise, timeout]);
-        const supply = parseFloat(ethers.utils.formatEther(totalSupply));
-        const stakedPercentage = (total / supply) * 100;
-
-        const stakedPctEl = document.getElementById("stakedPercentage");
-        if (stakedPctEl)
-          stakedPctEl.textContent = `${stakedPercentage.toFixed(1)}% of supply`;
-      } catch (e) {
-        console.warn("⚠️  Could not fetch total supply:", e.message);
-      }
-    }
-
-    // Update holders count (estimate)
-    const holdersEl = document.getElementById("holdersValue");
-    if (holdersEl) {
-      if (total > 0) {
-        const estimatedHolders = Math.max(1, Math.floor(total / 10000));
-        holdersEl.textContent = `${estimatedHolders}+`;
-      } else {
-        holdersEl.textContent = "1+";
-      }
-    }
-
-    console.log("✅ Staking stats updated:", total, "AETH staked");
-  } catch (error) {
-    if (error.message === "Timeout") {
-      console.warn("⚠️  Blockchain call timed out - keeping previous values");
-    } else {
-      console.error("❌ Error updating staking stats:", error.message);
-    }
-    // Keep the default values that were already set - don't revert to "Loading..."
-  }
 }
 
 // Connect wallet function
-async function connectWallet() {
-  if (typeof window.ethereum === "undefined") {
-    alert(
-      "No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you're using a compatible browser",
-    );
-    window.open("https://metamask.io/download/", "_blank");
-    return;
-  }
+async function connectWallet(options = {}) {
+    const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
-  try {
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    signer = provider.getSigner();
-    account = await signer.getAddress();
-
-    // Switch to Polygon network
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: POLYGON_CHAIN_ID }],
-      });
-    } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: POLYGON_CHAIN_ID,
-                chainName: "Polygon Mainnet",
-                nativeCurrency: {
-                  name: "MATIC",
-                  symbol: "MATIC",
-                  decimals: 18,
-                },
-                rpcUrls: ["https://polygon-rpc.com/"],
-                blockExplorerUrls: ["https://polygonscan.com/"],
-              },
-            ],
-          });
-        } catch (addError) {
-          console.error("Error adding Polygon network:", addError);
-        }
-      }
+    if (!wallet) {
+        alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
+        window.open('https://metamask.io/download/', '_blank');
+        return;
     }
 
-    aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
-    stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+    try {
+        provider = new ethers.providers.Web3Provider(wallet, 'any');
+        await wallet.request({ method: 'eth_requestAccounts' });
+        signer = provider.getSigner();
+        account = await signer.getAddress();
 
-    console.log("\u2705 Wallet connected! Address:", account);
-    console.log("\ud83d\udd17 Contracts initialized with wallet signer");
+        // Switch to Polygon network
+        try {
+            await wallet.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: POLYGON_CHAIN_ID }],
+            });
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if (switchError.code === 4902) {
+                try {
+                    await wallet.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: POLYGON_CHAIN_ID,
+                            chainName: 'Polygon Mainnet',
+                            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+                            rpcUrls: ['https://polygon-bor-rpc.publicnode.com'],
+                            blockExplorerUrls: ['https://polygonscan.com/']
+                        }],
+                    });
+                } catch (addError) {
+                    console.error('Error adding Polygon network:', addError);
+                }
+            }
+        }
 
-    document.getElementById("connectBtn").textContent = "Connected ✓";
-    document.getElementById("connectBtn").classList.add("connected");
-    document.getElementById("walletConnected").classList.remove("hidden");
-    document.getElementById("walletNotConnected").classList.add("hidden");
-    document.getElementById("walletAddress").textContent =
-      account.slice(0, 6) + "..." + account.slice(-4);
+        aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
+        stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+        
+        console.log('\u2705 Wallet connected! Address:', account);
+        console.log('\ud83d\udd17 Contracts initialized with wallet signer');
 
-    // Update transaction history UI
-    document.getElementById("txNotConnected").classList.add("hidden");
-    document.getElementById("txConnected").classList.remove("hidden");
+        document.getElementById('connectBtn').textContent = 'Connected ✓';
+        document.getElementById('connectBtn').classList.add('connected');
+        document.getElementById('walletConnected').classList.remove('hidden');
+        document.getElementById('walletNotConnected').classList.add('hidden');
+        document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
 
-    // Load user data
-    showProgress();
-    await updateStats();
-    await loadUserStakes();
-    await loadTransactionHistory();
-    hideProgress();
+        // Update transaction history UI
+        document.getElementById('txNotConnected').classList.add('hidden');
+        document.getElementById('txConnected').classList.remove('hidden');
 
-    showToast(
-      "Connected!",
-      `Wallet ${account.slice(0, 6)}...${account.slice(-4)} connected`,
-      "success",
-    );
-  } catch (error) {
-    console.error("Error connecting:", error);
-    hideProgress();
-    showToast(
-      "Connection Failed",
-      error.message || "Failed to connect wallet",
-      "error",
-    );
-    showAlert("Failed to connect wallet. Please try again.", "error", "stakingAlert");
-  }
+        // Load user data
+        showProgress();
+        await updateStats();
+        await loadUserStakes();
+        await loadTransactionHistory();
+        hideProgress();
+        
+        showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+
+    } catch (error) {
+        console.error('Error connecting:', error);
+        hideProgress();
+        showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
+        showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 // Disconnect wallet function
 async function disconnectWallet() {
-  account = null;
-  signer = null;
-  aethContract = null;
-  stakingContract = null;
-
-  document.getElementById("connectBtn").textContent = "Connect Wallet";
-  document.getElementById("connectBtn").classList.remove("connected");
-  document.getElementById("walletConnected").classList.add("hidden");
-  document.getElementById("walletNotConnected").classList.remove("hidden");
-  document.getElementById("txConnected").classList.add("hidden");
-  document.getElementById("txNotConnected").classList.remove("hidden");
-
-  // Remove user stakes container if exists
-  const stakesContainer = document.getElementById("userStakesContainer");
-  if (stakesContainer) stakesContainer.remove();
-
-  showToast("Disconnected", "Wallet disconnected successfully", "info");
-  console.log("\ud83d\udd0c Wallet disconnected");
+    account = null;
+    signer = null;
+    aethContract = null;
+    stakingContract = null;
+    
+    document.getElementById('connectBtn').textContent = 'Connect Wallet';
+    document.getElementById('connectBtn').classList.remove('connected');
+    document.getElementById('walletConnected').classList.add('hidden');
+    document.getElementById('walletNotConnected').classList.remove('hidden');
+    document.getElementById('txConnected').classList.add('hidden');
+    document.getElementById('txNotConnected').classList.remove('hidden');
+    
+    // Remove user stakes container if exists
+    const stakesContainer = document.getElementById('userStakesContainer');
+    if (stakesContainer) stakesContainer.remove();
+    
+    showToast('Disconnected', 'Wallet disconnected successfully', 'info');
+    console.log('\ud83d\udd0c Wallet disconnected');
 }
+
+window.connectWallet = connectWallet;
+window.openWalletChooser = openWalletChooser;
+window.disconnectWallet = disconnectWallet;
+window.recheckWallet = recheckWallet;
 
 // Add token to wallet function
 async function addTokenToWallet() {
-  if (!window.ethereum) {
-    alert("No Ethereum wallet detected!");
-    return;
-  }
+    if (!window.ethereum) {
+        alert('No Ethereum wallet detected!');
+        return;
+    }
 
-  try {
-    await window.ethereum.request({
-      method: "wallet_watchAsset",
-      params: {
-        type: "ERC20",
-        options: {
-          address: AETH_ADDRESS,
-          symbol: "AETH",
-          decimals: 18,
-          image:
-            "https://raw.githubusercontent.com/MastaTrill/Aetheron_platform/main/aetheron-logo.svg",
-        },
-      },
-    });
-    showAlert("AETH token added to wallet!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error adding token:", error);
-    showAlert("Failed to add token to wallet.", "error", "stakingAlert");
-  }
+    try {
+        await window.ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+                type: 'ERC20',
+                options: {
+                    address: AETH_ADDRESS,
+                    symbol: 'AETH',
+                    decimals: 18,
+                    image: 'https://raw.githubusercontent.com/MastaTrill/Aetheron_platform/main/aetheron-logo.svg'
+                },
+            },
+        });
+        showAlert('AETH token added to wallet!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error adding token:', error);
+        showAlert('Failed to add token: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 // Calculate rewards function
 async function calculateRewards() {
-    const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
-    const poolId = parseInt(document.getElementById('calcPool').value) || 0;
-    
-    const apyRates = [5, 12, 25];
-    const apy = apyRates[poolId];
-    
-    if (amount <= 0) {
-        showAlert('Please enter a valid amount', 'error', 'stakingAlert');
+    if (!account) {
+        showAlert('Please connect your wallet first', 'error', 'stakingAlert');
         return;
     }
-    
-    const days = [30, 90, 180][poolId];
-    const dailyRate = apy / 365 / 100;
-    const rewards = amount * dailyRate * days;
-    
-    document.getElementById('rewardAmount').textContent = rewards.toFixed(2) + ' AETH';
-    document.getElementById('totalReturn').textContent = (amount + rewards).toFixed(2) + ' AETH';
-    document.getElementById('calcResult').classList.remove('hidden');
-    
-    showAlert(`Calculated ${rewards.toFixed(2)} AETH rewards!`, 'success', 'stakingSuccess');
-}
 
-// Calculate LP APY
-async function calculateLPApy() {
-    try {
-        const aethAmount = parseFloat(document.getElementById('lpAmount').value) || 0;
-        
-        if (aethAmount <= 0) {
-            showAlert('Please enter a valid AETH amount', 'error', 'stakingAlert');
-            return;
-        }
-        
-        // Get current price
-        const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
-        const priceData = await priceResponse.json();
-        
-        let maticPrice = 0.6; // Default MATIC price
-        let aethPrice = 0.00000001;
-        let volume24h = 1000;
-        let liquidity = 50000;
-        
-        if (priceData.pairs && priceData.pairs.length > 0) {
-            const pair = priceData.pairs[0];
-            aethPrice = parseFloat(pair.priceUsd) || 0.00000001;
-            volume24h = parseFloat(pair.volume?.h24 || 1000);
-            liquidity = parseFloat(pair.liquidity?.usd || 50000);
-            
-            // Calculate required MATIC for equal value
-            const requiredMatic = (aethAmount * aethPrice) / maticPrice;
-            document.getElementById('lpMatched').value = requiredMatic.toFixed(4);
-        }
-        
-        const days = parseInt(document.getElementById('lpDays').value) || 30;
-        
-        // LP calculations
-        const lpShare = (aethAmount * aethPrice * 2) / liquidity;
-        const dailyFees = (volume24h * 0.0025 * lpShare) / aethPrice; // 0.25% LP fee
-        const apy = ((dailyFees * 365) / aethAmount) * 100;
-        const totalReturns = dailyFees * days;
-        
-        // Impermanent loss calculation (20% price change assumption)
-        const priceRatioChange = 1.2;
-        const il = 2 * Math.sqrt(priceRatioChange) / (1 + priceRatioChange) - 1;
-        
-        // Update UI
-        document.getElementById('lpApy').textContent = apy.toFixed(2) + '%';
-        document.getElementById('dailyFees').textContent = dailyFees.toFixed(6) + ' AETH';
-        document.getElementById('lp30dReturns').textContent = totalReturns.toFixed(4) + ' AETH';
-        document.getElementById('impermanentLoss').textContent = (il * 100).toFixed(2) + '%';
-        document.getElementById('lpCalcResult').classList.remove('hidden');
-        
-    } catch (error) {
-        console.error('LP calculation error:', error);
-        showAlert('Failed to calculate LP returns. Please try again.', 'error', 'stakingAlert');
+    const stakeId = document.getElementById('stakeId').value;
+    if (!stakeId) {
+        showAlert('Please enter a stake ID', 'error', 'stakingAlert');
+        return;
     }
-}
 
-  const stakeId = document.getElementById("stakeId").value;
-  if (!stakeId) {
-    showAlert("Please enter a stake ID", "error", "stakingAlert");
-    return;
-  }
-
-  try {
-    const reward = await stakingContract.calculateReward(account, stakeId);
-    document.getElementById("calculatedReward").textContent =
-      ethers.utils.formatEther(reward) + " AETH";
-    showAlert("Reward calculated successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error calculating reward:", error);
-    showAlert(
-      "Failed to calculate reward: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const reward = await stakingContract.calculateReward(account, stakeId);
+        document.getElementById('calculatedReward').textContent = ethers.utils.formatEther(reward) + ' AETH';
+        showAlert('Reward calculated successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error calculating reward:', error);
+        showAlert('Failed to calculate reward: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 // Refresh transactions function
 async function refreshTransactions() {
-  await updateStats();
-  showAlert("Transactions refreshed!", "success", "stakingSuccess");
+    await updateStats();
+    showAlert('Transactions refreshed!', 'success', 'stakingSuccess');
 }
 
 // Owner functions (only work if connected wallet is owner)
 async function updateTaxes() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert("Only contract owner can update taxes", "error", "stakingAlert");
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can update taxes', 'error', 'stakingAlert');
+        return;
+    }
 
-  const buyTax = document.getElementById("buyTax").value;
-  const sellTax = document.getElementById("sellTax").value;
+    const buyTax = document.getElementById('buyTax').value;
+    const sellTax = document.getElementById('sellTax').value;
 
-  try {
-    const tx = await aethContract.updateTaxes(buyTax, sellTax);
-    await tx.wait();
-    showAlert("Taxes updated successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error updating taxes:", error);
-    showAlert(
-      "Failed to update taxes: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await aethContract.updateTaxes(buyTax, sellTax);
+        await tx.wait();
+        showAlert('Taxes updated successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error updating taxes:', error);
+        showAlert('Failed to update taxes: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 async function pauseTrading() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert("Only contract owner can pause trading", "error", "stakingAlert");
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can pause trading', 'error', 'stakingAlert');
+        return;
+    }
 
-  try {
-    const tx = await aethContract.pause();
-    await tx.wait();
-    showAlert("Trading paused successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error pausing trading:", error);
-    showAlert(
-      "Failed to pause trading: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await aethContract.pause();
+        await tx.wait();
+        showAlert('Trading paused successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error pausing trading:', error);
+        showAlert('Failed to pause trading: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 async function unpauseTrading() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert(
-      "Only contract owner can unpause trading",
-      "error",
-      "stakingAlert",
-    );
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can unpause trading', 'error', 'stakingAlert');
+        return;
+    }
 
-  try {
-    const tx = await aethContract.unpause();
-    await tx.wait();
-    showAlert("Trading unpaused successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error unpausing trading:", error);
-    showAlert(
-      "Failed to unpause trading: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await aethContract.unpause();
+        await tx.wait();
+        showAlert('Trading unpaused successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error unpausing trading:', error);
+        showAlert('Failed to unpause trading: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 async function withdrawTreasury() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert(
-      "Only contract owner can withdraw treasury",
-      "error",
-      "stakingAlert",
-    );
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can withdraw treasury', 'error', 'stakingAlert');
+        return;
+    }
 
-  try {
-    const tx = await aethContract.withdrawTreasury();
-    await tx.wait();
-    showAlert("Treasury withdrawn successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error withdrawing treasury:", error);
-    showAlert(
-      "Failed to withdraw treasury: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await aethContract.withdrawTreasury();
+        await tx.wait();
+        showAlert('Treasury withdrawn successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error withdrawing treasury:', error);
+        showAlert('Failed to withdraw treasury: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 async function emergencyWithdraw() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert(
-      "Only contract owner can perform emergency withdraw",
-      "error",
-      "stakingAlert",
-    );
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can perform emergency withdraw', 'error', 'stakingAlert');
+        return;
+    }
 
-  try {
-    const tx = await stakingContract.emergencyWithdraw();
-    await tx.wait();
-    showAlert("Emergency withdraw completed!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error emergency withdraw:", error);
-    showAlert(
-      "Failed emergency withdraw: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await stakingContract.emergencyWithdraw();
+        await tx.wait();
+        showAlert('Emergency withdraw completed!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error emergency withdraw:', error);
+        showAlert('Failed emergency withdraw: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 async function rescueTokens() {
-  if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
-    showAlert("Only contract owner can rescue tokens", "error", "stakingAlert");
-    return;
-  }
+    if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
+        showAlert('Only contract owner can rescue tokens', 'error', 'stakingAlert');
+        return;
+    }
 
-  const tokenAddress = document.getElementById("rescueToken").value;
-  const amount = document.getElementById("rescueAmount").value;
+    const tokenAddress = document.getElementById('rescueToken').value;
+    const amount = document.getElementById('rescueAmount').value;
 
-  try {
-    const tx = await aethContract.rescueTokens(
-      tokenAddress,
-      ethers.utils.parseEther(amount),
-    );
-    await tx.wait();
-    showAlert("Tokens rescued successfully!", "success", "stakingSuccess");
-  } catch (error) {
-    console.error("Error rescuing tokens:", error);
-    showAlert(
-      "Failed to rescue tokens: " + error.message,
-      "error",
-      "stakingAlert",
-    );
-  }
+    try {
+        const tx = await aethContract.rescueTokens(tokenAddress, ethers.utils.parseEther(amount));
+        await tx.wait();
+        showAlert('Tokens rescued successfully!', 'success', 'stakingSuccess');
+    } catch (error) {
+        console.error('Error rescuing tokens:', error);
+        showAlert('Failed to rescue tokens: ' + error.message, 'error', 'stakingAlert');
+    }
 }
 
 // ============================================
@@ -1185,142 +993,115 @@ async function rescueTokens() {
 
 // Add AETH to MetaMask
 async function addToMetaMask() {
-  if (typeof window.ethereum === "undefined") {
-    alert("Please install MetaMask first!");
-    return;
-  }
-
-  try {
-    const wasAdded = await window.ethereum.request({
-      method: "wallet_watchAsset",
-      params: {
-        type: "ERC20",
-        options: {
-          address: AETH_ADDRESS,
-          symbol: "AETH",
-          decimals: 18,
-          image:
-            "https://raw.githubusercontent.com/MastaTrill/Aetheron_platform/main/assets/logo.png",
-        },
-      },
-    });
-
-    if (wasAdded) {
-      showAlert("AETH added to MetaMask!", "success");
+    if (typeof window.ethereum === 'undefined') {
+        alert('Please install MetaMask first!');
+        return;
     }
-  } catch (error) {
-    console.error("Error adding to MetaMask:", error);
-    showAlert("Failed to add token to MetaMask", "error");
-  }
+
+    try {
+        const wasAdded = await window.ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+                type: 'ERC20',
+                options: {
+                    address: AETH_ADDRESS,
+                    symbol: 'AETH',
+                    decimals: 18,
+                    image: 'https://raw.githubusercontent.com/MastaTrill/Aetheron_platform/main/assets/logo.png'
+                }
+            }
+        });
+
+        if (wasAdded) {
+            showAlert('AETH added to MetaMask!', 'success');
+        }
+    } catch (error) {
+        console.error('Error adding to MetaMask:', error);
+        showAlert('Failed to add token to MetaMask', 'error');
+    }
 }
 
 // Copy contract address
 function copyContractAddress() {
-  const contractAddress = AETH_ADDRESS;
-  navigator.clipboard
-    .writeText(contractAddress)
-    .then(() => {
-      const btn = document.getElementById("copyBtnText");
-      const copyBtn = document.getElementById("copyContractBtn");
+    const contractAddress = AETH_ADDRESS;
+    navigator.clipboard.writeText(contractAddress).then(() => {
+        const btn = document.getElementById('copyBtnText');
+        const copyBtn = document.getElementById('copyContractBtn');
+        
+        btn.textContent = 'Copied! ✓';
+        copyBtn.classList.add('copied');
 
-      btn.textContent = "Copied! ✓";
-      copyBtn.classList.add("copied");
-
-      setTimeout(() => {
-        btn.textContent = "0xAb5a...71e";
-        copyBtn.classList.remove("copied");
-      }, 2000);
-    })
-    .catch((err) => {
-      console.error("Failed to copy:", err);
-      alert("Failed to copy address");
+        setTimeout(() => {
+            btn.textContent = '0xAb5a...71e';
+            copyBtn.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy address');
     });
 }
 
 // Update live holder count
 async function updateHolderCount() {
-  try {
-    // Estimate holders based on total supply and average holding
-    // In production, you'd query this from a backend or indexer
-    const response = await fetch(
-      `https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`,
-    );
-    const data = await response.json();
-
-    if (data.pairs && data.pairs.length > 0) {
-      // Rough estimate: use transaction count or volume as proxy
-      const txCount = data.pairs[0].txns?.h24?.total || 0;
-      const estimatedHolders = Math.max(Math.floor(txCount / 2) + 50, 100);
-      document.getElementById("liveHoldersCount").textContent =
-        estimatedHolders + "+";
+    const holdersCountEl = document.getElementById('liveHoldersCount');
+    if (!holdersCountEl) {
+        return;
     }
-  } catch (error) {
-    console.log("Could not fetch holder count:", error);
-    document.getElementById("liveHoldersCount").textContent = "100+";
-  }
+
+    try {
+        // Estimate holders based on total supply and average holding
+        // In production, you'd query this from a backend or indexer
+        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
+        const data = await response.json();
+        
+        if (data.pairs && data.pairs.length > 0) {
+            // Rough estimate: use transaction count or volume as proxy
+            const txCount = data.pairs[0].txns?.h24?.total || 0;
+            const estimatedHolders = Math.max(Math.floor(txCount / 2) + 50, 100);
+            holdersCountEl.textContent = estimatedHolders + '+';
+        } else {
+            holdersCountEl.textContent = '100+';
+        }
+    } catch (error) {
+        console.log('Could not fetch holder count:', error);
+        holdersCountEl.textContent = '100+';
+    }
 }
 
 // Toggle FAQ accordion
 function toggleFAQ(index) {
-  const answer = document.getElementById(`faq-answer-${index}`);
-  const toggle = document.getElementById(`faq-toggle-${index}`);
-
-  answer.classList.toggle("active");
-  toggle.classList.toggle("active");
+    const answer = document.getElementById(`faq-answer-${index}`);
+    const toggle = document.getElementById(`faq-toggle-${index}`);
+    
+    answer.classList.toggle('active');
+    toggle.classList.toggle('active');
 }
 
 // Enhanced price update with change indicator
 let lastPrice = null;
-let lastPriceFetch = 0;
-let priceCache = null;
-const PRICE_CACHE_DURATION = 10000; // 10 seconds
 
-let priceChart = null;
-let priceHistory = [];
-let chartLabels = [];
-let selectedTimeframe = "1h";
+async function updatePriceWithChange() {
+    const priceValueEl = document.getElementById('priceValue');
+    const arrow = document.getElementById('priceArrow');
+    const changePercent = document.getElementById('priceChangePercent');
+    const changeDiv = document.getElementById('priceChange');
 
-async function fetchPriceData() {
-    const now = Date.now();
-    if (priceCache && (now - lastPriceFetch) < PRICE_CACHE_DURATION) {
-        return priceCache;
+    if (!priceValueEl || !arrow || !changePercent || !changeDiv) {
+        return;
     }
-    
+
     try {
         const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
         const data = await response.json();
         
         if (data.pairs && data.pairs.length > 0) {
-            priceCache = data.pairs[0];
-            lastPriceFetch = now;
-            return priceCache;
-        }
-    } catch (error) {
-        console.log('Could not fetch price data:', error);
-    }
-    return null;
-}
-
-async function updatePriceWithChange() {
-    try {
-        const pair = await fetchPriceData();
-        if (!pair) return;
-        
-        const currentPrice = parseFloat(pair.priceUsd) || 0.00000001;
-        const priceChange = parseFloat(pair.priceChange?.h24 || 0);
-        
-        // Update price value
-        const priceEl = document.getElementById('priceValue');
-        if (priceEl) {
-            priceEl.textContent = currentPrice >= 0.01 ? `$${currentPrice.toFixed(4)}` : `$${currentPrice.toFixed(8)}`;
-        }
-        
-        // Update price change indicator
-        const arrow = document.getElementById('priceArrow');
-        const changePercent = document.getElementById('priceChangePercent');
-        const changeDiv = document.getElementById('priceChange');
-        
-        if (arrow && changePercent && changeDiv) {
+            const pair = data.pairs[0];
+            const currentPrice = parseFloat(pair.priceUsd);
+            const priceChange = parseFloat(pair.priceChange?.h24 || 0);
+            
+            // Update price value
+            priceValueEl.textContent = `$${currentPrice.toFixed(8)}`;
+            
             if (priceChange >= 0) {
                 arrow.className = 'fas fa-arrow-up';
                 changeDiv.className = 'change positive';
@@ -1330,336 +1111,170 @@ async function updatePriceWithChange() {
                 changeDiv.className = 'change negative';
                 changePercent.textContent = `${priceChange.toFixed(2)}%`;
             }
+            
+            lastPrice = currentPrice;
+        } else {
+            priceValueEl.textContent = '$0.00000001';
+            changeDiv.className = 'change positive';
+            changePercent.textContent = '+0.00%';
         }
-        
-        lastPrice = currentPrice;
     } catch (error) {
         console.log('Could not update price with change:', error);
+        priceValueEl.textContent = '$0.00000001';
+        changeDiv.className = 'change positive';
+        changePercent.textContent = '+0.00%';
     }
-}
-
-      // Add to price history
-      if (currentPrice > 0) {
-        const now = new Date();
-        priceHistory.push(currentPrice);
-        chartLabels.push(now.toLocaleTimeString());
-
-        // Keep only last 100 data points
-        if (priceHistory.length > 100) {
-          priceHistory.shift();
-          chartLabels.shift();
-        }
-
-        updateChart();
-      }
-
-      lastPrice = currentPrice;
-    }
-  } catch (error) {
-    console.log("Could not update price with change:", error);
-  }
-}
-
-function initPriceChart() {
-  const ctx = document.getElementById("priceChart");
-  if (!ctx) return;
-
-  priceChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: chartLabels,
-      datasets: [
-        {
-          label: "AETH Price (USD)",
-          data: priceHistory,
-          borderColor: "#667eea",
-          backgroundColor: "rgba(102, 126, 234, 0.1)",
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          mode: "index",
-          intersect: false,
-          callbacks: {
-            label: function (context) {
-              return `$${context.parsed.y.toFixed(8)}`;
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          display: true,
-          grid: {
-            display: false,
-          },
-          ticks: {
-            maxTicksLimit: 6,
-            maxRotation: 0,
-          },
-        },
-        y: {
-          display: true,
-          grid: {
-            color: "rgba(0, 0, 0, 0.05)",
-          },
-          ticks: {
-            callback: function (value) {
-              return "$" + value.toFixed(8);
-            },
-          },
-        },
-      },
-      interaction: {
-        mode: "nearest",
-        axis: "x",
-        intersect: false,
-      },
-    },
-  });
-
-  // Initialize timeframe buttons
-  document.querySelectorAll(".timeframe-btn").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      document
-        .querySelectorAll(".timeframe-btn")
-        .forEach((b) => b.classList.remove("active"));
-      this.classList.add("active");
-      selectedTimeframe = this.dataset.period;
-      fetchHistoricalData(selectedTimeframe);
-    });
-  });
-}
-
-function updateChart() {
-  if (priceChart) {
-    priceChart.data.labels = chartLabels;
-    priceChart.data.datasets[0].data = priceHistory;
-    priceChart.update("none");
-  }
-}
-
-async function fetchHistoricalData(timeframe) {
-  try {
-    const response = await fetch(
-      `https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`,
-    );
-    const data = await response.json();
-
-    if (data.pairs && data.pairs.length > 0) {
-      // Generate simulated historical data based on current price and volatility
-      const pair = data.pairs[0];
-      const basePrice = parseFloat(pair.priceUsd) || 0.00000001;
-      const volatility = 0.02; // 2% volatility
-
-      // Clear existing data
-      priceHistory = [];
-      chartLabels = [];
-
-      // Generate 50 data points
-      const now = new Date();
-      let points = 50;
-
-      for (let i = points; i >= 0; i--) {
-        const time = new Date(now.getTime() - i * 60000); // 1 minute intervals
-        const randomFactor = 1 + (Math.random() - 0.5) * volatility;
-        const price = basePrice * randomFactor;
-
-        priceHistory.push(price);
-        chartLabels.push(time.toLocaleTimeString());
-      }
-
-      updateChart();
-    }
-  } catch (error) {
-    console.log("Could not fetch historical data:", error);
-  }
 }
 
 // QR Code Modal Functions
 function showQRCode() {
-  const modal = document.getElementById("qrModal");
-  const qrcodeContainer = document.getElementById("qrcode");
-
-  // Clear previous QR code
-  qrcodeContainer.innerHTML = "";
-
-  // Generate new QR code
-  new QRCode(qrcodeContainer, {
-    text: AETH_ADDRESS,
-    width: 256,
-    height: 256,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H,
-  });
-
-  modal.style.display = "block";
-
-  // Track event
-  if (typeof gtag !== "undefined") {
-    gtag("event", "show_qr_code", {
-      event_category: "engagement",
-      event_label: "contract_qr",
+    const modal = document.getElementById('qrModal');
+    const qrcodeContainer = document.getElementById('qrcode');
+    
+    // Clear previous QR code
+    qrcodeContainer.innerHTML = '';
+    
+    // Generate new QR code
+    new QRCode(qrcodeContainer, {
+        text: AETH_ADDRESS,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
     });
-  }
+    
+    modal.style.display = 'block';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'show_qr_code', {
+            'event_category': 'engagement',
+            'event_label': 'contract_qr'
+        });
+    }
 }
 
 function closeQRModal() {
-  document.getElementById("qrModal").style.display = "none";
+    document.getElementById('qrModal').style.display = 'none';
 }
 
 // Share Modal Functions
 function showShareModal() {
-  document.getElementById("shareModal").style.display = "block";
-
-  // Track event
-  if (typeof gtag !== "undefined") {
-    gtag("event", "show_share_modal", {
-      event_category: "engagement",
-      event_label: "share_button",
-    });
-  }
+    document.getElementById('shareModal').style.display = 'block';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'show_share_modal', {
+            'event_category': 'engagement',
+            'event_label': 'share_button'
+        });
+    }
 }
 
 function closeShareModal() {
-  document.getElementById("shareModal").style.display = "none";
+    document.getElementById('shareModal').style.display = 'none';
 }
 
 function shareTwitter() {
-  const text = encodeURIComponent(
-    "🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto",
-  );
-  const url = encodeURIComponent(
-    "https://mastatrill.github.io/Aetheron_platform/",
-  );
-  window.open(
-    `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-    "_blank",
-  );
-  trackShare("twitter");
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    trackShare('twitter');
 }
 
 function shareFacebook() {
-  const url = encodeURIComponent(
-    "https://mastatrill.github.io/Aetheron_platform/",
-  );
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-  trackShare("facebook");
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    trackShare('facebook');
 }
 
 function shareTelegram() {
-  const text = encodeURIComponent(
-    "🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards!",
-  );
-  const url = encodeURIComponent(
-    "https://mastatrill.github.io/Aetheron_platform/",
-  );
-  window.open(`https://t.me/share/url?url=${url}&text=${text}`, "_blank");
-  trackShare("telegram");
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards!');
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+    trackShare('telegram');
 }
 
 function shareLinkedIn() {
-  const url = encodeURIComponent(
-    "https://mastatrill.github.io/Aetheron_platform/",
-  );
-  window.open(
-    `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-    "_blank",
-  );
-  trackShare("linkedin");
+    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+    trackShare('linkedin');
 }
 
-function copyShareLink(event) {
-  const url = "https://mastatrill.github.io/Aetheron_platform/";
-  navigator.clipboard
-    .writeText(url)
-    .then(() => {
-      const btn = event.target.closest(".share-btn");
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-      btn.style.background = "var(--success)";
-
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.background =
-          "linear-gradient(135deg, var(--primary), var(--secondary))";
-      }, 2000);
-
-      trackShare("copy_link");
-    })
-    .catch((err) => {
-      console.error("Failed to copy:", err);
-      alert("Failed to copy link");
+function copyShareLink() {
+    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target.closest('.share-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.style.background = 'var(--success)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+        }, 2000);
+        
+        trackShare('copy_link');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link');
     });
 }
 
 function trackShare(platform) {
-  if (typeof gtag !== "undefined") {
-    gtag("event", "share", {
-      event_category: "social",
-      event_label: platform,
-      value: 1,
-    });
-  }
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'share', {
+            'event_category': 'social',
+            'event_label': platform,
+            'value': 1
+        });
+    }
 }
 
 // Close modals when clicking outside
-window.onclick = function (event) {
-  const qrModal = document.getElementById("qrModal");
-  const shareModal = document.getElementById("shareModal");
-
-  if (event.target === qrModal) {
-    closeQRModal();
-  }
-  if (event.target === shareModal) {
-    closeShareModal();
-  }
-};
+window.onclick = function(event) {
+    const qrModal = document.getElementById('qrModal');
+    const shareModal = document.getElementById('shareModal');
+    
+    if (event.target === qrModal) {
+        closeQRModal();
+    }
+    if (event.target === shareModal) {
+        closeShareModal();
+    }
+}
 
 // Theme Toggle Functionality
 function initTheme() {
-  const savedTheme = localStorage.getItem("theme") || "dark";
-  document.documentElement.setAttribute("data-theme", savedTheme);
-  updateThemeIcon(savedTheme);
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
 }
 
 function toggleTheme() {
-  const currentTheme =
-    document.documentElement.getAttribute("data-theme") || "dark";
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-  document.documentElement.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme);
-  updateThemeIcon(newTheme);
-
-  // Track event
-  if (typeof gtag !== "undefined") {
-    gtag("event", "theme_toggle", {
-      event_category: "ui",
-      event_label: newTheme,
-      value: 1,
-    });
-  }
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'theme_toggle', {
+            'event_category': 'ui',
+            'event_label': newTheme,
+            'value': 1
+        });
+    }
 }
 
 function updateThemeIcon(theme) {
-  const icon = document.getElementById("themeIcon");
-  if (icon) {
-    icon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
-  }
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
 }
 
 // Initialize theme on load
@@ -1667,473 +1282,339 @@ initTheme();
 
 // Newsletter Signup Handler
 async function handleNewsletterSignup(event) {
-  event.preventDefault();
-
-  const emailInput = document.getElementById("emailInput");
-  const messageDiv = document.getElementById("newsletterMessage");
-  const email = emailInput.value.trim();
-
-  if (!email) return;
-
-  // Validate email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    messageDiv.textContent = "❌ Please enter a valid email address";
-    messageDiv.className = "newsletter-message error";
-    return;
-  }
-
-  // Store in localStorage (in production, send to backend)
-  const preferences = {
-    email,
-    governance: document.querySelector(
-      ".notification-options input:nth-child(1)",
-    ).checked,
-    features: document.querySelector(".notification-options input:nth-child(2)")
-      .checked,
-    priceAlerts: document.querySelector(
-      ".notification-options input:nth-child(3)",
-    ).checked,
-    digest: document.querySelector(".notification-options input:nth-child(4)")
-      .checked,
-    timestamp: new Date().toISOString(),
-  };
-
-  localStorage.setItem("emailNotificationPrefs", JSON.stringify(preferences));
-
-  // Request push notification permission
-  if ("Notification" in window && "serviceWorker" in navigator) {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        // Subscribe to push notifications
-        const registration = await navigator.serviceWorker.ready;
+    event.preventDefault();
+    
+    const emailInput = document.getElementById('emailInput');
+    const messageDiv = document.getElementById('newsletterMessage');
+    const email = emailInput.value.trim();
+    
+    if (!email) return;
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        messageDiv.textContent = '❌ Please enter a valid email address';
+        messageDiv.className = 'newsletter-message error';
+        return;
+    }
+    
+    // Store in localStorage (in production, send to backend)
+    const preferences = {
+        email,
+        governance: document.querySelector('.notification-options input:nth-child(1)').checked,
+        features: document.querySelector('.notification-options input:nth-child(2)').checked,
+        priceAlerts: document.querySelector('.notification-options input:nth-child(3)').checked,
+        digest: document.querySelector('.notification-options input:nth-child(4)').checked,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('emailNotificationPrefs', JSON.stringify(preferences));
+    
+    // Request push notification permission
+    if ('Notification' in window && 'serviceWorker' in navigator) {
         try {
-                    // Push notifications require valid VAPID key
-                    // const subscription = await registration.pushManager.subscribe({
-                    //     userVisibleOnly: true,
-                    //     applicationServerKey: urlBase64ToUint8Array('YOUR_PUBLIC_VAPID_KEY')
-                    // });
-                    // console.log('Push subscription:', subscription);
-                    console.log('Push notifications disabled (VAPID key not configured)');
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                // Subscribe to push notifications
+                const registration = await navigator.serviceWorker.ready;
+                try {
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array('BKY6WcJ8...') // Replace with real VAPID key
+                    });
+                    console.log('Push subscription:', subscription);
                 } catch (err) {
                     console.log('Push subscription failed:', err);
                 }
-      }
-    } catch (err) {
-      console.log("Notification permission error:", err);
+            }
+        } catch (err) {
+            console.log('Notification permission error:', err);
+        }
     }
-  }
-
-  messageDiv.textContent =
-    "✅ Successfully subscribed! You'll receive notifications for selected topics.";
-  messageDiv.className = "newsletter-message success";
-  emailInput.value = "";
-
-  // Track event
-  if (typeof gtag !== "undefined") {
-    gtag("event", "newsletter_signup", {
-      event_category: "engagement",
-      event_label: email,
-      value: 1,
-    });
-  }
-
-  // Show test notification
-  setTimeout(() => {
-    if (Notification.permission === "granted") {
-      new Notification("Welcome to Aetheron! 🚀", {
-        body: "You'll now receive updates about governance votes and platform features.",
-        icon: "/assets/icon-192.png",
-        badge: "/assets/icon-72.png",
-      });
+    
+    messageDiv.textContent = '✅ Successfully subscribed! You\'ll receive notifications for selected topics.';
+    messageDiv.className = 'newsletter-message success';
+    emailInput.value = '';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'newsletter_signup', {
+            'event_category': 'engagement',
+            'event_label': email,
+            'value': 1
+        });
     }
-  }, 1000);
+    
+    // Show test notification
+    setTimeout(() => {
+        if (Notification.permission === 'granted') {
+            new Notification('Welcome to Aetheron! 🚀', {
+                body: 'You\'ll now receive updates about governance votes and platform features.',
+                icon: './apple-touch-icon.png',
+                badge: './favicon.ico'
+            });
+        }
+    }, 1000);
 }
 
 // Helper function for push notifications
 function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
 }
 
 // Initialize new features on page load
-if (typeof window !== "undefined") {
-  window.addEventListener("load", () => {
-    // Hook up MetaMask button
-    const addToMetaMaskBtn = document.getElementById("addToMetaMaskBtn");
-    if (addToMetaMaskBtn) {
-      addToMetaMaskBtn.addEventListener("click", addToMetaMask);
-    }
-
-    // Hook up copy button
-    const copyBtn = document.getElementById("copyContractBtn");
-    if (copyBtn) {
-      copyBtn.addEventListener("click", copyContractAddress);
-    }
-
-    // Start holder count updates
-    updateHolderCount();
-    setInterval(updateHolderCount, 60000); // Update every minute
-
-    // Enhanced price updates
-    updatePriceWithChange();
-    setInterval(updatePriceWithChange, 30000); // Update every 30 seconds
-
-    // Hook up QR code and share buttons
-    const qrBtn = document.getElementById("qrCodeBtn");
-    if (qrBtn) {
-      qrBtn.addEventListener("click", showQRCode);
-    }
-
-    const shareBtn = document.getElementById("shareBtn");
-    if (shareBtn) {
-      shareBtn.addEventListener("click", showShareModal);
-    }
-
-    // Hook up theme toggle
-    const themeToggle = document.getElementById("themeToggle");
-    if (themeToggle) {
-      themeToggle.addEventListener("click", toggleTheme);
-    }
-
-    // Hook up newsletter form
-    const newsletterForm = document.getElementById("newsletterForm");
-    if (newsletterForm) {
-      newsletterForm.addEventListener("submit", handleNewsletterSignup);
-    }
-
-    // Initialize price chart
-    initPriceChart();
-    fetchHistoricalData("1h");
-  });
-
-  // ============================================================================
-  // WebSocket Real-Time Updates
-  // ============================================================================
-
-  function initializeWebSocket() {
-    console.log("🔌 Initializing WebSocket for real-time updates...");
-
-    // Connect to Polygon mainnet via Alchemy WebSocket (fallback to polling if unavailable)
-    try {
-      // Use Alchemy's WebSocket for Polygon
-      const wsProvider = new ethers.providers.WebSocketProvider(
-        "wss://polygon-mainnet.g.alchemy.com/v2/demo", // Use your own key in production
-      );
-
-      wsProvider.on("error", (error) => {
-        console.warn("⚠️ WebSocket error:", error.message);
-        reconnectWebSocket();
-      });
-
-      wsProvider.on("close", () => {
-        console.log("🔌 WebSocket connection closed");
-        reconnectWebSocket();
-      });
-
-      // Listen for new blocks (real-time blockchain updates)
-      wsProvider.on("block", async (blockNumber) => {
-        console.log(`📦 New block: ${blockNumber}`);
-        // Update stats when new block arrives (throttled)
-        if (blockNumber % 10 === 0) {
-          // Every 10 blocks (~20 seconds)
-          await updateStakingStats();
-          await updateHolderCount();
+if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+        // Hook up MetaMask button
+        const addToMetaMaskBtn = document.getElementById('addToMetaMaskBtn');
+        if (addToMetaMaskBtn) {
+            addToMetaMaskBtn.addEventListener('click', addToMetaMask);
         }
-      });
 
-      // Listen for Transfer events on AETH contract
-      if (aethContract) {
-        const filter = aethContract.filters.Transfer();
-        wsProvider.on(filter, (log) => {
-          console.log("💸 New AETH transfer detected");
-          updateHolderCount();
-        });
-      }
+        // Hook up copy button
+        const copyBtn = document.getElementById('copyContractBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', copyContractAddress);
+        }
 
-      console.log("✅ WebSocket connected for real-time updates");
-      reconnectAttempts = 0;
-    } catch (error) {
-      console.warn(
-        "⚠️ WebSocket not available, using polling fallback:",
-        error.message,
-      );
-    }
+        // Start holder count updates
+        updateHolderCount();
+        setInterval(updateHolderCount, 60000); // Update every minute
 
-    // Initialize DexScreener price updates via more frequent polling
+        // Enhanced price updates
+        updatePriceWithChange();
+        setInterval(updatePriceWithChange, 30000); // Update every 30 seconds
+        
+        // Hook up QR code and share buttons
+        const qrBtn = document.getElementById('qrCodeBtn');
+        if (qrBtn) {
+            qrBtn.addEventListener('click', showQRCode);
+        }
+        
+       const shareBtn = document.getElementById('shareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', showShareModal);
+        }
+        
+        // Hook up theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        
+        // Hook up newsletter form
+        const newsletterForm = document.getElementById('newsletterForm');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', handleNewsletterSignup);
+        }
+    });
+    
+// ============================================================================
+// WebSocket Real-Time Updates
+// ============================================================================
+
+function initializeWebSocket() {
+    console.log('Real-time updates running in polling mode');
+    reconnectAttempts = 0;
     initializePriceStream();
-  }
+}
 
-  function reconnectWebSocket() {
-    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-      reconnectAttempts++;
-      const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-      console.log(
-        `🔄 Reconnecting WebSocket in ${delay / 1000}s (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`,
-      );
-      setTimeout(initializeWebSocket, delay);
-    } else {
-      console.log(
-        "❌ Max WebSocket reconnection attempts reached. Using polling only.",
-      );
-    }
-  }
+function reconnectWebSocket() {
+    console.log('Polling mode active - websocket reconnect skipped');
+}
 
-  function initializePriceStream() {
+function initializePriceStream() {
     // DexScreener doesn't provide WebSocket, so we'll use more frequent polling for price
     const priceUpdateInterval = setInterval(async () => {
-      await updatePriceWithChange();
+        await updatePriceWithChange();
     }, 10000); // Update price every 10 seconds for near real-time experience
-
-    console.log("📊 Real-time price updates initialized (10s interval)");
-
+    
+    console.log('📊 Real-time price updates initialized (10s interval)');
+    
     // Clean up on page unload
-    window.addEventListener("beforeunload", () => {
-      clearInterval(priceUpdateInterval);
-      if (priceWebSocket) {
-        priceWebSocket.close();
-      }
+    window.addEventListener('beforeunload', () => {
+        clearInterval(priceUpdateInterval);
+        if (priceWebSocket) {
+            priceWebSocket.close();
+        }
     });
-  }
+}
 
-  // ============================================================================
-  // Service Worker Registration (Progressive Web App)
-  // ============================================================================
+// ============================================================================
+// Service Worker Registration (Progressive Web App)
+// ============================================================================
 
-  // Register Service Worker (moved from inline script)
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .then((registration) => {
-          console.log("✅ Service Worker registered:", registration.scope);
-        })
-        .catch((error) => {
-          console.log("❌ Service Worker registration failed:", error);
+// ============================================================================
+// Mobile Menu
+// ============================================================================
+
+function initMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    
+    if (!hamburger || !navLinks || !overlay) return;
+    
+    function toggleMenu() {
+        const isActive = hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        overlay.classList.toggle('active');
+        hamburger.setAttribute('aria-expanded', isActive);
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    }
+    
+    function closeMenu() {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+    
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+    
+    // Close menu when clicking nav links
+    navLinks.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+}
+
+// ============================================================================
+// Progress Bar
+// ============================================================================
+
+function initProgressBar() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+    
+    // Show progress on page navigation
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (link.href && !link.href.startsWith('javascript:') && !link.target) {
+                progressBar.classList.add('active');
+            }
         });
     });
-  }
+}
 
-  // ============================================================================
-  // Toast Notification System
-  // ============================================================================
+function showProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.classList.add('active');
+}
 
-  function showToast(title, message, type = "success") {
-    const container = document.getElementById("toastContainer");
-    if (!container) return;
-
-    const toast = document.createElement("div");
-    toast.className = `toast ${type}`;
-    toast.setAttribute("role", "alert");
-
-    const icons = {
-      success: "fa-check-circle",
-      error: "fa-exclamation-circle",
-      warning: "fa-exclamation-triangle",
-      info: "fa-info-circle",
-    };
-
-    toast.innerHTML = `
-        <i class="fas ${icons[type]} toast-icon" aria-hidden="true"></i>
-        <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <div class="toast-message">${message}</div>
-        </div>
-        <i class="fas fa-times toast-close" aria-label="Close notification"></i>
-    `;
-
-    container.appendChild(toast);
-
-    // Close button
-    toast.querySelector(".toast-close").addEventListener("click", () => {
-      toast.style.animation = "slideIn 0.3s ease-out reverse";
-      setTimeout(() => toast.remove(), 300);
-    });
-
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-      if (toast.parentElement) {
-        toast.style.animation = "slideIn 0.3s ease-out reverse";
-        setTimeout(() => toast.remove(), 300);
-      }
-    }, 5000);
-  }
-
-  // ============================================================================
-  // Mobile Menu
-  // ============================================================================
-
-  function initMobileMenu() {
-    const hamburger = document.getElementById("hamburger");
-    const navLinks = document.getElementById("navLinks");
-    const overlay = document.getElementById("mobileMenuOverlay");
-
-    if (!hamburger || !navLinks || !overlay) return;
-
-    function toggleMenu() {
-      const isActive = hamburger.classList.toggle("active");
-      navLinks.classList.toggle("active");
-      overlay.classList.toggle("active");
-      hamburger.setAttribute("aria-expanded", isActive);
-      document.body.style.overflow = isActive ? "hidden" : "";
-    }
-
-    function closeMenu() {
-      hamburger.classList.remove("active");
-      navLinks.classList.remove("active");
-      overlay.classList.remove("active");
-      hamburger.setAttribute("aria-expanded", "false");
-      document.body.style.overflow = "";
-    }
-
-    hamburger.addEventListener("click", toggleMenu);
-    overlay.addEventListener("click", closeMenu);
-
-    // Close menu when clicking nav links
-    navLinks.querySelectorAll(".nav-link").forEach((link) => {
-      link.addEventListener("click", closeMenu);
-    });
-  }
-
-  // ============================================================================
-  // Progress Bar
-  // ============================================================================
-
-  function initProgressBar() {
-    const progressBar = document.getElementById("progressBar");
-    if (!progressBar) return;
-
-    // Show progress on page navigation
-    document.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", (e) => {
-        if (link.href && !link.href.startsWith("javascript:") && !link.target) {
-          progressBar.classList.add("active");
-        }
-      });
-    });
-  }
-
-  function showProgress() {
-    const progressBar = document.getElementById("progressBar");
-    if (progressBar) progressBar.classList.add("active");
-  }
-
-  function hideProgress() {
-    const progressBar = document.getElementById("progressBar");
+function hideProgress() {
+    const progressBar = document.getElementById('progressBar');
     if (progressBar) {
-      setTimeout(() => progressBar.classList.remove("active"), 300);
+        setTimeout(() => progressBar.classList.remove('active'), 300);
     }
-  }
+}
 
-  // ============================================================================
-  // Data Caching System
-  // ============================================================================
+// ============================================================================
+// Data Caching System
+// ============================================================================
 
-  const cache = {
-    set(key, value, ttl = 60000) {
-      // Default 1 minute TTL
-      const item = {
-        value,
-        expiry: Date.now() + ttl,
-      };
-      try {
-        localStorage.setItem(`aeth_cache_${key}`, JSON.stringify(item));
-      } catch (e) {
-        console.warn("Cache storage failed:", e);
-      }
-    },
-
-    get(key) {
-      try {
-        const itemStr = localStorage.getItem(`aeth_cache_${key}`);
-        if (!itemStr) return null;
-
-        const item = JSON.parse(itemStr);
-        if (Date.now() > item.expiry) {
-          localStorage.removeItem(`aeth_cache_${key}`);
-          return null;
-        }
-        return item.value;
-      } catch (e) {
-        return null;
-      }
-    },
-
-    clear() {
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("aeth_cache_")) {
-          localStorage.removeItem(key);
-        }
-      });
-    },
-  };
-
-  // ============================================================================
-  // User Stakes Dashboard
-  // ============================================================================
-
-  async function loadUserStakes() {
-    if (!account || !stakingContract) {
-      console.log("No account connected for stakes");
-      return;
-    }
-
-    try {
-      showProgress();
-
-      const stakesCount = await stakingContract.getUserStakesCount(account);
-      const stakes = [];
-
-      for (let i = 0; i < stakesCount; i++) {
+const cache = {
+    set(key, value, ttl = 60000) { // Default 1 minute TTL
+        const item = {
+            value,
+            expiry: Date.now() + ttl
+        };
         try {
-          const stake = await stakingContract.getUserStake(account, i);
-          stakes.push({
-            id: i,
-            amount: ethers.utils.formatEther(stake.amount),
-            poolId: stake.poolId.toNumber(),
-            startTime: new Date(stake.startTime.toNumber() * 1000),
-            unlockTime: new Date(stake.unlockTime.toNumber() * 1000),
-            pendingReward: ethers.utils.formatEther(stake.pendingReward),
-          });
-        } catch (error) {
-          console.warn(`Failed to load stake ${i}:`, error);
+            localStorage.setItem(`aeth_cache_${key}`, JSON.stringify(item));
+        } catch (e) {
+            console.warn('Cache storage failed:', e);
         }
-      }
-
-      displayUserStakes(stakes);
-      hideProgress();
-
-      if (stakes.length > 0) {
-        showToast(
-          "Stakes Loaded",
-          `Found ${stakes.length} active stake(s)`,
-          "success",
-        );
-      }
-    } catch (error) {
-      console.error("Error loading user stakes:", error);
-      hideProgress();
-      showToast("Error", "Failed to load your stakes", "error");
+    },
+    
+    get(key) {
+        try {
+            const itemStr = localStorage.getItem(`aeth_cache_${key}`);
+            if (!itemStr) return null;
+            
+            const item = JSON.parse(itemStr);
+            if (Date.now() > item.expiry) {
+                localStorage.removeItem(`aeth_cache_${key}`);
+                return null;
+            }
+            return item.value;
+        } catch (e) {
+            return null;
+        }
+    },
+    
+    clear() {
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('aeth_cache_')) {
+                localStorage.removeItem(key);
+            }
+        });
     }
-  }
+};
 
-  function displayUserStakes(stakes) {
+// ============================================================================
+// User Stakes Dashboard
+// ============================================================================
+
+async function loadUserStakes() {
+    if (!account || !stakingContract) {
+        console.log('No account connected for stakes');
+        return;
+    }
+    
+    try {
+        showProgress();
+        
+        const stakesCount = await stakingContract.getUserStakesCount(account);
+        const stakes = [];
+        
+        for (let i = 0; i < stakesCount; i++) {
+            try {
+                const stake = await stakingContract.getUserStake(account, i);
+                stakes.push({
+                    id: i,
+                    amount: ethers.utils.formatEther(stake.amount),
+                    poolId: stake.poolId.toNumber(),
+                    startTime: new Date(stake.startTime.toNumber() * 1000),
+                    unlockTime: new Date(stake.unlockTime.toNumber() * 1000),
+                    pendingReward: ethers.utils.formatEther(stake.pendingReward)
+                });
+            } catch (error) {
+                console.warn(`Failed to load stake ${i}:`, error);
+            }
+        }
+        
+        displayUserStakes(stakes);
+        hideProgress();
+        
+        if (stakes.length > 0) {
+            showToast('Stakes Loaded', `Found ${stakes.length} active stake(s)`, 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error loading user stakes:', error);
+        hideProgress();
+        showToast('Error', 'Failed to load your stakes', 'error');
+    }
+}
+
+function displayUserStakes(stakes) {
     // Find or create stakes container
-    let container = document.getElementById("userStakesContainer");
+    let container = document.getElementById('userStakesContainer');
     if (!container) {
-      const walletCard = document.querySelector(".card.mb-2");
-      if (walletCard) {
-        container = document.createElement("div");
-        container.id = "userStakesContainer";
-        container.className = "card mb-2";
-        container.innerHTML = `
+        const walletCard = document.querySelector('.card.mb-2');
+        if (walletCard) {
+            container = document.createElement('div');
+            container.id = 'userStakesContainer';
+            container.className = 'card mb-2';
+            container.innerHTML = `
                 <div class="card-header">
                     <h2 class="card-title">Your Active Stakes</h2>
                     <button class="btn btn-outline btn-sm" onclick="loadUserStakes()">
@@ -2142,40 +1623,35 @@ if (typeof window !== "undefined") {
                 </div>
                 <div class="user-stakes" id="userStakesList"></div>
             `;
-        walletCard.parentNode.insertBefore(container, walletCard.nextSibling);
-      }
+            walletCard.parentNode.insertBefore(container, walletCard.nextSibling);
+        }
     }
-
-    const list = document.getElementById("userStakesList");
+    
+    const list = document.getElementById('userStakesList');
     if (!list) return;
-
+    
     if (stakes.length === 0) {
-      list.innerHTML = `
+        list.innerHTML = `
             <div class="wallet-section">
                 <i class="fas fa-inbox empty-icon"></i>
                 <p class="text-gray">No active stakes yet. Start staking to earn rewards!</p>
             </div>
         `;
-      return;
+        return;
     }
-
-    const poolNames = [
-      "30 Days (5% APY)",
-      "90 Days (12% APY)",
-      "180 Days (25% APY)",
-    ];
-
-    list.innerHTML = stakes
-      .map((stake) => {
+    
+    const poolNames = ['30 Days (5% APY)', '90 Days (12% APY)', '180 Days (25% APY)'];
+    
+    list.innerHTML = stakes.map(stake => {
         const isUnlocked = new Date() >= stake.unlockTime;
-        const status = isUnlocked ? "completed" : "active";
-        const statusText = isUnlocked ? "Unlocked" : "Locked";
-
+        const status = isUnlocked ? 'completed' : 'active';
+        const statusText = isUnlocked ? 'Unlocked' : 'Locked';
+        
         return `
             <div class="stake-item slide-up">
                 <div class="stake-header">
                     <div>
-                        <div class="fw-600">${poolNames[stake.poolId] || "Unknown Pool"}</div>
+                        <div class="fw-600">${poolNames[stake.poolId] || 'Unknown Pool'}</div>
                         <div class="text-sm text-gray">Stake #${stake.id}</div>
                     </div>
                     <span class="stake-badge ${status}">${statusText}</span>
@@ -2199,193 +1675,176 @@ if (typeof window !== "undefined") {
                     </div>
                 </div>
                 <div class="stake-actions">
-                    ${
-                      parseFloat(stake.pendingReward) > 0
-                        ? `
-                        <button class="btn btn-success btn-sm" onclick="claimStakeRewards(${stake.id})" ${!isUnlocked ? "disabled" : ""}>
+                    ${parseFloat(stake.pendingReward) > 0 ? `
+                        <button class="btn btn-success btn-sm" onclick="claimStakeRewards(${stake.id})" ${!isUnlocked ? 'disabled' : ''}>
                             <i class="fas fa-coins"></i> Claim Rewards
                         </button>
-                    `
-                        : ""
-                    }
-                    ${
-                      isUnlocked
-                        ? `
+                    ` : ''}
+                    ${isUnlocked ? `
                         <button class="btn btn-primary btn-sm" onclick="unstakeTokens(${stake.id})">
                             <i class="fas fa-unlock"></i> Unstake
                         </button>
-                    `
-                        : `
+                    ` : `
                         <button class="btn btn-warning btn-sm" onclick="emergencyUnstake(${stake.id})">
                             <i class="fas fa-exclamation-triangle"></i> Emergency Withdraw
                         </button>
-                    `
-                    }
+                    `}
                 </div>
             </div>
         `;
-      })
-      .join("");
-  }
+    }).join('');
+}
 
-  // Claim rewards from specific stake
-  async function claimStakeRewards(stakeId) {
+// Claim rewards from specific stake
+async function claimStakeRewards(stakeId) {
     if (!stakingContract || !account) {
-      showToast("Error", "Please connect your wallet first", "error");
-      return;
+        showToast('Error', 'Please connect your wallet first', 'error');
+        return;
     }
-
+    
     try {
-      showProgress();
-      showToast("Processing", "Claiming rewards...", "info");
-
-      const tx = await stakingContract.claimRewards(stakeId);
-      showToast("Transaction Sent", "Waiting for confirmation...", "warning");
-
-      await tx.wait();
-
-      hideProgress();
-      showToast("Success!", "Rewards claimed successfully!", "success");
-
-      // Refresh stakes display
-      await loadUserStakes();
-      await updateBalances();
+        showProgress();
+        showToast('Processing', 'Claiming rewards...', 'info');
+        
+        const tx = await stakingContract.claimRewards(stakeId);
+        showToast('Transaction Sent', 'Waiting for confirmation...', 'warning');
+        
+        await tx.wait();
+        
+        hideProgress();
+        showToast('Success!', 'Rewards claimed successfully!', 'success');
+        
+        // Refresh stakes display
+        await loadUserStakes();
+        await updateBalances();
+        
     } catch (error) {
-      console.error("Error claiming rewards:", error);
-      hideProgress();
-      showToast("Error", error.message || "Failed to claim rewards", "error");
+        console.error('Error claiming rewards:', error);
+        hideProgress();
+        showToast('Error', error.message || 'Failed to claim rewards', 'error');
     }
-  }
+}
 
-  // Unstake tokens
-  async function unstakeTokens(stakeId) {
+// Unstake tokens
+async function unstakeTokens(stakeId) {
     if (!stakingContract || !account) {
-      showToast("Error", "Please connect your wallet first", "error");
-      return;
+        showToast('Error', 'Please connect your wallet first', 'error');
+        return;
     }
-
+    
     try {
-      showProgress();
-      showToast("Processing", "Unstaking tokens...", "info");
-
-      const tx = await stakingContract.unstake(stakeId);
-      showToast("Transaction Sent", "Waiting for confirmation...", "warning");
-
-      await tx.wait();
-
-      hideProgress();
-      showToast("Success!", "Tokens unstaked successfully!", "success");
-
-      // Refresh displays
-      await loadUserStakes();
-      await updateBalances();
+        showProgress();
+        showToast('Processing', 'Unstaking tokens...', 'info');
+        
+        const tx = await stakingContract.unstake(stakeId);
+        showToast('Transaction Sent', 'Waiting for confirmation...', 'warning');
+        
+        await tx.wait();
+        
+        hideProgress();
+        showToast('Success!', 'Tokens unstaked successfully!', 'success');
+        
+        // Refresh displays
+        await loadUserStakes();
+        await updateBalances();
+        
     } catch (error) {
-      console.error("Error unstaking:", error);
-      hideProgress();
-      showToast("Error", error.message || "Failed to unstake", "error");
+        console.error('Error unstaking:', error);
+        hideProgress();
+        showToast('Error', error.message || 'Failed to unstake', 'error');
     }
-  }
+}
 
-  // Emergency unstake (forfeit rewards)
-  async function emergencyUnstake(stakeId) {
-    const confirmed = confirm(
-      "Emergency withdraw will forfeit all rewards. Continue?",
-    );
+// Emergency unstake (forfeit rewards)
+async function emergencyUnstake(stakeId) {
+    const confirmed = confirm('Emergency withdraw will forfeit all rewards. Continue?');
     if (!confirmed) return;
-
+    
     // Same as unstake but with warning
     await unstakeTokens(stakeId);
-  }
+}
 
-  // ============================================================================
-  // Enhanced Transaction History
-  // ============================================================================
+// ============================================================================
+// Enhanced Transaction History
+// ============================================================================
 
-  async function loadTransactionHistory() {
+async function loadTransactionHistory() {
     if (!account) return;
-
+    
     try {
-      showProgress();
-
-      // Check cache first
-      const cacheKey = `tx_history_${account}`;
-      const cached = cache.get(cacheKey);
-      if (cached) {
-        displayTransactions(cached);
+        showProgress();
+        
+        // Check cache first
+        const cacheKey = `tx_history_${account}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            displayTransactions(cached);
+            hideProgress();
+            return;
+        }
+        
+        // Fetch from blockchain
+        const provider = readOnlyProvider || new ethers.providers.JsonRpcProvider(POLYGON_RPC_URLS[0]);
+        const contract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, provider);
+        
+        // Get Transfer events
+        const filterFrom = contract.filters.Transfer(account, null);
+        const filterTo = contract.filters.Transfer(null, account);
+        
+        const currentBlock = await provider.getBlockNumber();
+        const fromBlock = Math.max(0, currentBlock - 10000); // Last ~10k blocks
+        
+        const [sentEvents, receivedEvents] = await Promise.all([
+            contract.queryFilter(filterFrom, fromBlock),
+            contract.queryFilter(filterTo, fromBlock)
+        ]);
+        
+        const allEvents = [...sentEvents, ...receivedEvents]
+            .sort((a, b) => b.blockNumber - a.blockNumber)
+            .slice(0, 20); // Latest 20 transactions
+        
+        const transactions = await Promise.all(allEvents.map(async event => {
+            const block = await provider.getBlock(event.blockNumber);
+            return {
+                hash: event.transactionHash,
+                from: event.args.from,
+                to: event.args.to,
+                value: ethers.utils.formatEther(event.args.value),
+                timestamp: new Date(block.timestamp * 1000),
+                type: event.args.from.toLowerCase() === account.toLowerCase() ? 'send' : 'receive'
+            };
+        }));
+        
+        // Cache for 2 minutes
+        cache.set(cacheKey, transactions, 120000);
+        
+        displayTransactions(transactions);
         hideProgress();
-        return;
-      }
-
-      // Fetch from blockchain
-      const provider =
-        readOnlyProvider ||
-        new ethers.providers.JsonRpcProvider(POLYGON_RPC_URLS[0]);
-      const contract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, provider);
-
-      // Get Transfer events
-      const filterFrom = contract.filters.Transfer(account, null);
-      const filterTo = contract.filters.Transfer(null, account);
-
-      const currentBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, currentBlock - 10000); // Last ~10k blocks
-
-      const [sentEvents, receivedEvents] = await Promise.all([
-        contract.queryFilter(filterFrom, fromBlock),
-        contract.queryFilter(filterTo, fromBlock),
-      ]);
-
-      const allEvents = [...sentEvents, ...receivedEvents]
-        .sort((a, b) => b.blockNumber - a.blockNumber)
-        .slice(0, 20); // Latest 20 transactions
-
-      const transactions = await Promise.all(
-        allEvents.map(async (event) => {
-          const block = await provider.getBlock(event.blockNumber);
-          return {
-            hash: event.transactionHash,
-            from: event.args.from,
-            to: event.args.to,
-            value: ethers.utils.formatEther(event.args.value),
-            timestamp: new Date(block.timestamp * 1000),
-            type:
-              event.args.from.toLowerCase() === account.toLowerCase()
-                ? "send"
-                : "receive",
-          };
-        }),
-      );
-
-      // Cache for 2 minutes
-      cache.set(cacheKey, transactions, 120000);
-
-      displayTransactions(transactions);
-      hideProgress();
+        
     } catch (error) {
-      console.error("Error loading transaction history:", error);
-      hideProgress();
-      showToast("Error", "Failed to load transaction history", "error");
+        console.error('Error loading transaction history:', error);
+        hideProgress();
+        showToast('Error', 'Failed to load transaction history', 'error');
     }
-  }
+}
 
-  function displayTransactions(transactions) {
-    const list = document.getElementById("txList");
+function displayTransactions(transactions) {
+    const list = document.getElementById('txList');
     if (!list) return;
-
+    
     if (!transactions || transactions.length === 0) {
-      document.getElementById("txEmpty").classList.remove("hidden");
-      list.classList.add("hidden");
-      return;
+        document.getElementById('txEmpty').classList.remove('hidden');
+        list.classList.add('hidden');
+        return;
     }
-
-    document.getElementById("txEmpty").classList.add("hidden");
-    list.classList.remove("hidden");
-
-    list.innerHTML = transactions
-      .map(
-        (tx) => `
+    
+    document.getElementById('txEmpty').classList.add('hidden');
+    list.classList.remove('hidden');
+    
+    list.innerHTML = transactions.map(tx => `
         <div class="tx-item">
             <div>
-                <span class="tx-type ${tx.type}">${tx.type === "send" ? "Sent" : "Received"}</span>
+                <span class="tx-type ${tx.type}">${tx.type === 'send' ? 'Sent' : 'Received'}</span>
                 <div class="text-sm text-gray mt-05">${tx.timestamp.toLocaleString()}</div>
             </div>
             <div style="text-align: right;">
@@ -2395,9 +1854,7 @@ if (typeof window !== "undefined") {
                 </a>
             </div>
         </div>
-    `,
-      )
-      .join("");
-  }
-
+    `).join('');
 }
+}
+

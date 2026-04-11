@@ -1,244 +1,320 @@
 /**
  * Aetheron Integration Module
- * Combines DeFi, Portfolio Management, and Advanced Trading Features
+ * Combines portfolio, staking, and market helpers for the advanced dashboard.
  */
 
+const DEFAULT_RPC_URL = 'https://polygon-rpc.com';
+
+function createWeb3Provider(injectedProvider) {
+  if (ethers?.BrowserProvider) {
+    return new ethers.BrowserProvider(injectedProvider);
+  }
+
+  if (ethers?.providers?.Web3Provider) {
+    return new ethers.providers.Web3Provider(injectedProvider);
+  }
+
+  throw new Error('Unsupported ethers provider API.');
+}
+
+function createJsonRpcProvider(rpcUrl = DEFAULT_RPC_URL) {
+  if (ethers?.JsonRpcProvider) {
+    return new ethers.JsonRpcProvider(rpcUrl);
+  }
+
+  if (ethers?.providers?.JsonRpcProvider) {
+    return new ethers.providers.JsonRpcProvider(rpcUrl);
+  }
+
+  throw new Error('Unsupported ethers JSON-RPC provider API.');
+}
+
+async function getSignerFromProvider(provider) {
+  const signerOrPromise = provider.getSigner();
+  return typeof signerOrPromise?.then === 'function'
+    ? signerOrPromise
+    : signerOrPromise;
+}
+
+async function getNetworkChainId(provider) {
+  const network = await provider.getNetwork();
+  return Number(network?.chainId);
+}
+
+function formatUnits(value, decimals = 18) {
+  if (ethers?.utils?.formatUnits) {
+    return ethers.utils.formatUnits(value, decimals);
+  }
+
+  return ethers.formatUnits(value, decimals);
+}
+
+function formatEther(value) {
+  if (ethers?.utils?.formatEther) {
+    return ethers.utils.formatEther(value);
+  }
+
+  return ethers.formatEther(value);
+}
+
 class AetheronIntegration {
-    constructor() {
-        this.initialized = false;
-        this.contracts = {
-            aeth: null,
-            staking: null
-        };
-        this.portfolio = {
-            totalValue: 0,
-            tokens: [],
-            performance: {}
-        };
-    }
+  constructor() {
+    this.initialized = false;
+    this.provider = null;
+    this.signer = null;
+    this.readProvider = createJsonRpcProvider();
+    this.contracts = {
+      aeth: null,
+      staking: null,
+      pair: null,
+    };
+    this.portfolio = {
+      totalValue: 0,
+      tokens: [],
+      performance: {},
+    };
+  }
 
-    async initialize(aethAddress, stakingAddress) {
+  async initialize(aethAddress, stakingAddress) {
+    try {
+      if (!window.ethereum) {
+        throw new Error(
+          'No Ethereum wallet detected. Please install MetaMask or Coinbase Wallet.',
+        );
+      }
+
+      this.provider = createWeb3Provider(window.ethereum);
+      this.signer = await getSignerFromProvider(this.provider);
+
+      const aethAbi = [
+        'function balanceOf(address) view returns (uint256)',
+        'function transfer(address to, uint256 amount) returns (bool)',
+        'function approve(address spender, uint256 amount) returns (bool)',
+        'function decimals() view returns (uint8)',
+        'function totalSupply() view returns (uint256)',
+      ];
+
+      const stakingAbi = [
+        'function stake(uint256 poolId, uint256 amount)',
+        'function unstake(uint256 poolId, uint256 amount)',
+        'function getStakeInfo(address user, uint256 poolId) view returns (uint256, uint256, uint256)',
+        'function claimRewards(uint256 poolId)',
+        'function pools(uint256) view returns (uint256, uint256, uint256, bool)',
+      ];
+
+      const pairAbi = [
+        'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
+        'function token0() view returns (address)',
+        'function token1() view returns (address)',
+      ];
+
+      this.contracts.aeth = new ethers.Contract(aethAddress, aethAbi, this.signer);
+      this.contracts.staking = new ethers.Contract(
+        stakingAddress,
+        stakingAbi,
+        this.signer,
+      );
+      this.contracts.pair = new ethers.Contract(
+        '0xd57c5E33ebDC1b565F99d06809debbf86142705D',
+        pairAbi,
+        this.readProvider,
+      );
+
+      this.initialized = true;
+      console.log('Aetheron integration initialized');
+      return true;
+    } catch (error) {
+      console.error('Aetheron integration error:', error);
+      this.initialized = false;
+      return false;
+    }
+  }
+
+  async getPortfolioValue(userAddress) {
+    try {
+      const aethBalance = await this.contracts.aeth.balanceOf(userAddress);
+      const decimals = await this.contracts.aeth.decimals();
+      const liquidBalance = parseFloat(formatUnits(aethBalance, decimals));
+
+      let totalStaked = 0;
+      for (let poolId = 0; poolId < 3; poolId += 1) {
         try {
-            if (!window.ethereum) {
-                throw new Error('No Ethereum wallet detected. Please install MetaMask or Coinbase Wallet');
-            }
+          const stakeInfo = await this.contracts.staking.getStakeInfo(userAddress, poolId);
+          totalStaked += parseFloat(formatUnits(stakeInfo[0], decimals));
+        } catch {}
+      }
 
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+      const price = await this.getTokenPrice();
+      const totalValue = liquidBalance + totalStaked;
 
-            // Initialize AETH Token Contract
-            const aethABI = [
-                "function balanceOf(address) view returns (uint256)",
-                "function transfer(address to, uint256 amount) returns (bool)",
-                "function approve(address spender, uint256 amount) returns (bool)",
-                "function decimals() view returns (uint8)",
-                "function totalSupply() view returns (uint256)"
-            ];
+      this.portfolio.totalValue = totalValue;
+      this.portfolio.tokens = [
+        {
+          symbol: 'AETH',
+          balance: liquidBalance,
+          staked: totalStaked,
+        },
+      ];
+      this.portfolio.performance = {
+        price,
+        totalValueUsd: totalValue * price,
+      };
 
-            // Initialize Staking Contract
-            const stakingABI = [
-                "function stake(uint256 poolId, uint256 amount)",
-                "function unstake(uint256 poolId, uint256 amount)",
-                "function getStakeInfo(address user, uint256 poolId) view returns (uint256, uint256, uint256)",
-                "function claimRewards(uint256 poolId)",
-                "function pools(uint256) view returns (uint256, uint256, uint256, bool)"
-            ];
+      return this.portfolio;
+    } catch (error) {
+      console.error('Portfolio error:', error);
+      return null;
+    }
+  }
 
-            this.contracts.aeth = new ethers.Contract(aethAddress, aethABI, signer);
-            this.contracts.staking = new ethers.Contract(stakingAddress, stakingABI, signer);
+  async getStakingPools() {
+    const poolDefaults = [
+      { duration: '30 Days', apy: 5, lockDays: 30, minStake: 100 },
+      { duration: '90 Days', apy: 12, lockDays: 90, minStake: 500 },
+      { duration: '180 Days', apy: 25, lockDays: 180, minStake: 1000 },
+    ];
 
-            this.initialized = true;
-            console.log('✅ Aetheron Integration Initialized');
-            return true;
-        } catch (error) {
-            console.error('❌ Initialization Error:', error);
-            return false;
-        }
+    const pools = [];
+    for (let poolId = 0; poolId < poolDefaults.length; poolId += 1) {
+      try {
+        const pool = await this.contracts.staking.pools(poolId);
+        pools.push({
+          id: poolId,
+          ...poolDefaults[poolId],
+          totalStaked: formatUnits(pool[2], 18),
+          isActive: pool[3],
+        });
+      } catch {
+        pools.push({
+          id: poolId,
+          ...poolDefaults[poolId],
+          totalStaked: '0',
+          isActive: false,
+        });
+      }
     }
 
-    // Portfolio Management
-    async getPortfolioValue(userAddress) {
-        try {
-            const aethBalance = await this.contracts.aeth.balanceOf(userAddress);
-            const decimals = await this.contracts.aeth.decimals();
-            const balance = ethers.formatUnits(aethBalance, decimals);
+    return pools;
+  }
 
-            // Get staked amounts across all pools
-            let totalStaked = 0;
-            for (let i = 0; i < 3; i++) {
-                try {
-                    const stakeInfo = await this.contracts.staking.getStakeInfo(userAddress, i);
-                    totalStaked += parseFloat(ethers.formatUnits(stakeInfo[0], decimals));
-                } catch (e) {
-                    // Pool might not exist
-                }
-            }
+  calculateRewards(amount, poolId, days) {
+    const apyRates = [5, 12, 25];
+    const apy = apyRates[poolId] || 0;
+    const dailyRate = apy / 365 / 100;
+    const rewards = amount * dailyRate * days;
 
-            this.portfolio.totalValue = parseFloat(balance) + totalStaked;
-            this.portfolio.tokens = [
-                { symbol: 'AETH', balance: parseFloat(balance), staked: totalStaked }
-            ];
+    return {
+      rewards: rewards.toFixed(2),
+      total: (amount + rewards).toFixed(2),
+      apy,
+    };
+  }
 
-            return this.portfolio;
-        } catch (error) {
-            console.error('Portfolio Error:', error);
-            return null;
-        }
+  async getTokenPrice() {
+    try {
+      const reserves = await this.contracts.pair.getReserves();
+      const reserve0 = parseFloat(formatEther(reserves[0]));
+      const reserve1 = parseFloat(formatEther(reserves[1]));
+
+      if (!reserve0 || !reserve1) {
+        return 0;
+      }
+
+      return reserve1 / reserve0;
+    } catch (error) {
+      console.error('Price fetch error:', error);
+      return 0;
+    }
+  }
+
+  async getTransactionHistory(userAddress, limit = 10) {
+    try {
+      const provider = this.readProvider;
+      const currentBlock = await provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - 10000);
+      const filter = this.contracts.aeth.filters.Transfer(null, userAddress);
+      const events = await this.contracts.aeth.queryFilter(filter, fromBlock, currentBlock);
+
+      const transactions = await Promise.all(
+        events.slice(-limit).map(async (event) => {
+          const block = await provider.getBlock(event.blockNumber);
+          return {
+            hash: event.transactionHash,
+            from: event.args[0],
+            to: event.args[1],
+            amount: formatUnits(event.args[2], 18),
+            timestamp: new Date(block.timestamp * 1000),
+            type:
+              event.args[1].toLowerCase() === userAddress.toLowerCase()
+                ? 'receive'
+                : 'send',
+          };
+        }),
+      );
+
+      return transactions.reverse();
+    } catch (error) {
+      console.error('Transaction history error:', error);
+      return [];
+    }
+  }
+
+  analyzeRisk(portfolio) {
+    const totalValue = portfolio?.totalValue || 0;
+    const staked = portfolio?.tokens?.[0]?.staked || 0;
+    const stakedPercentage = totalValue > 0 ? (staked / totalValue) * 100 : 0;
+    const diversification =
+      totalValue >= 1000 && stakedPercentage >= 40 ? 'Medium' : 'Low';
+    const volatilityRisk = totalValue >= 5000 ? 'Medium' : 'High';
+
+    const analysis = {
+      diversification,
+      volatilityRisk,
+      liquidityRisk: stakedPercentage > 80 ? 'Medium' : 'Low',
+      recommendations: [],
+    };
+
+    if (totalValue < 1000) {
+      analysis.recommendations.push('Consider growing your AETH position before splitting across pools.');
     }
 
-    // Advanced Staking with APY Calculation
-    async getStakingPools() {
-        const pools = [];
-        const poolData = [
-            { duration: '30 Days', apy: 5, lockDays: 30, minStake: 100 },
-            { duration: '90 Days', apy: 12, lockDays: 90, minStake: 500 },
-            { duration: '180 Days', apy: 25, lockDays: 180, minStake: 1000 }
-        ];
-
-        for (let i = 0; i < 3; i++) {
-            try {
-                const pool = await this.contracts.staking.pools(i);
-                pools.push({
-                    id: i,
-                    ...poolData[i],
-                    totalStaked: ethers.formatUnits(pool[2], 18),
-                    isActive: pool[3]
-                });
-            } catch (e) {
-                pools.push({
-                    id: i,
-                    ...poolData[i],
-                    totalStaked: '0',
-                    isActive: false
-                });
-            }
-        }
-
-        return pools;
+    if (stakedPercentage < 50) {
+      analysis.recommendations.push('Increase staking allocation to improve passive returns.');
     }
 
-    // Calculate potential rewards
-    calculateRewards(amount, poolId, days) {
-        const apyRates = [5, 12, 25]; // APY for each pool
-        const apy = apyRates[poolId] || 0;
-        const dailyRate = apy / 365 / 100;
-        const rewards = amount * dailyRate * days;
-        return {
-            rewards: rewards.toFixed(2),
-            total: (amount + rewards).toFixed(2),
-            apy: apy
-        };
+    if (stakedPercentage > 85) {
+      analysis.recommendations.push('Keep more AETH liquid for market moves and gas needs.');
     }
 
-    // DeFi Integration - Get token price from QuickSwap
-    async getTokenPrice() {
-        try {
-            // QuickSwap pair address for AETH/POL
-            const pairAddress = '0xd57c5E33ebDC1b565F99d06809debbf86142705D';
-            const pairABI = [
-                "function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
-                "function token0() view returns (address)",
-                "function token1() view returns (address)"
-            ];
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const pair = new ethers.Contract(pairAddress, pairABI, provider);
-
-            const reserves = await pair.getReserves();
-            const token0 = await pair.token0();
-
-            // Calculate price based on reserves
-            const price = parseFloat(ethers.formatUnits(reserves[1], 18)) /
-                parseFloat(ethers.utils.formatUnits(reserves[0], 18));
-
-            return price;
-        } catch (error) {
-            console.error('Price fetch error:', error);
-            return 0;
-        }
+    if (analysis.recommendations.length === 0) {
+      analysis.recommendations.push('Your allocation looks balanced for the current strategy.');
     }
 
-    // Transaction History
-    async getTransactionHistory(userAddress, limit = 10) {
-        try {
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const currentBlock = await provider.getBlockNumber();
-            const fromBlock = Math.max(0, currentBlock - 10000); // Last ~10k blocks
+    return analysis;
+  }
 
-            // Get Transfer events
-            const filter = this.contracts.aeth.filters.Transfer(null, userAddress);
-            const events = await this.contracts.aeth.queryFilter(filter, fromBlock, currentBlock);
+  async getMarketStats() {
+    try {
+      const totalSupply = await this.contracts.aeth.totalSupply();
+      const price = await this.getTokenPrice();
+      const formattedSupply = parseFloat(formatUnits(totalSupply, 18));
 
-            const transactions = await Promise.all(
-                events.slice(-limit).map(async (event) => {
-                    const block = await provider.getBlock(event.blockNumber);
-                    return {
-                        hash: event.transactionHash,
-                        from: event.args[0],
-                        to: event.args[1],
-                        amount: ethers.utils.formatUnits(event.args[2], 18),
-                        timestamp: new Date(block.timestamp * 1000),
-                        type: event.args[1].toLowerCase() === userAddress.toLowerCase() ? 'receive' : 'send'
-                    };
-                })
-            );
-
-            return transactions.reverse();
-        } catch (error) {
-            console.error('Transaction history error:', error);
-            return [];
-        }
+      return {
+        totalSupply: formattedSupply,
+        marketCap: formattedSupply * price,
+        price,
+        holders: 'Live',
+        volume24h: 'Live',
+      };
+    } catch (error) {
+      console.error('Market stats error:', error);
+      return null;
     }
-
-    // Risk Management - Portfolio Diversification Check
-    analyzeRisk(portfolio) {
-        const analysis = {
-            diversification: 'Low', // Single token
-            volatilityRisk: 'Medium',
-            liquidityRisk: 'Low', // Listed on QuickSwap
-            recommendations: []
-        };
-
-        if (portfolio.totalValue < 1000) {
-            analysis.recommendations.push('Consider staking for passive income');
-        }
-
-        const stakedPercentage = (portfolio.tokens[0].staked / portfolio.totalValue) * 100;
-        if (stakedPercentage < 50) {
-            analysis.recommendations.push('Increase staking allocation for better returns');
-        }
-
-        if (portfolio.totalValue > 10000) {
-            analysis.recommendations.push('Consider diversifying into other DeFi protocols');
-        }
-
-        return analysis;
-    }
-
-    // Market Analytics
-    async getMarketStats() {
-        try {
-            const totalSupply = await this.contracts.aeth.totalSupply();
-            const price = await this.getTokenPrice();
-
-            return {
-                totalSupply: ethers.utils.formatUnits(totalSupply, 18),
-                marketCap: parseFloat(ethers.utils.formatUnits(totalSupply, 18)) * price,
-                price: price,
-                holders: 'Loading...', // Would need to query blockchain or API
-                volume24h: 'Loading...' // Would need DEX API
-            };
-        } catch (error) {
-            console.error('Market stats error:', error);
-            return null;
-        }
-    }
+  }
 }
 
-// Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = AetheronIntegration;
+  module.exports = AetheronIntegration;
 }
 
-// Global instance
 window.AetheronIntegration = AetheronIntegration;

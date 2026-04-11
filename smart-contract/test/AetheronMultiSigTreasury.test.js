@@ -1,41 +1,58 @@
-// No setup import needed; Hardhat registers matchers
-import { expect } from 'chai';
-import pkg from 'hardhat';
-const { ethers, upgrades } = pkg;
+import assert from "node:assert/strict";
+import { before, beforeEach, describe, it } from "node:test";
+import hre from "hardhat";
+import { deployUupsProxy } from "../utils/uups.mjs";
 
-describe('AetheronMultiSigTreasury', function () {
+const { ethers } = hre;
+const MULTISIG_CONTRACT_FQN =
+  "contracts/AetheronMultiSigTreasury.sol:AetheronMultiSigTreasury";
+
+describe("AetheronMultiSigTreasury", { concurrency: false }, function () {
   let MultiSig, multiSig, owner, addr1, addr2, addr3;
 
-  beforeEach(async function () {
+  before(async function () {
     [owner, addr1, addr2, addr3] = await ethers.getSigners();
-    MultiSig = await ethers.getContractFactory('AetheronMultiSigTreasury');
-    multiSig = await upgrades.deployProxy(
-      MultiSig,
-      [[owner.address, addr1.address, addr2.address], 2],
-      { initializer: 'initialize' },
-    );
   });
 
-  it('should deploy with the owner set', async function () {
-    expect(await multiSig.owner()).to.equal(owner.address);
+  beforeEach(async function () {
+    MultiSig = await ethers.getContractFactory(MULTISIG_CONTRACT_FQN);
+    ({ instance: multiSig } = await deployUupsProxy(MultiSig, [
+      [owner.address, addr1.address, addr2.address],
+      2,
+    ]));
   });
 
-  it('should allow the owner to submit a transaction', async function () {
+  it("should deploy with the owner set", async function () {
+    assert.equal(await multiSig.owner(), owner.address);
+  });
+
+  it("should allow the owner to submit a transaction", async function () {
     const to = addr1.address;
-    const value = ethers.utils.parseEther('1');
-    const data = '0x';
-    await expect(multiSig.submitTransaction(to, value, data)).to.emit(
-      multiSig,
-      'SubmitTransaction',
-    );
+    const value = ethers.parseEther("1");
+    const data = "0x";
+    const tx = await multiSig.submitTransaction(to, value, data);
+    await tx.wait();
+
+    assert.equal(await multiSig.getTransactionCount(), 1n);
+    const transaction = await multiSig.getTransaction(0);
+
+    assert.equal(transaction.to, to);
+    assert.equal(transaction.value, value);
+    assert.equal(transaction.executed, false);
   });
 
-  it('should not allow non-owners to submit a transaction', async function () {
+  it("should not allow non-owners to submit a transaction", async function () {
     const to = addr1.address;
-    const value = ethers.utils.parseEther('1');
-    const data = '0x';
-    await expect(
-      multiSig.connect(addr1).submitTransaction(to, value, data),
-    ).to.be.revertedWith('Ownable: caller is not the owner');
+    const value = ethers.parseEther("1");
+    const data = "0x";
+    let errorMessage = "";
+
+    try {
+      await multiSig.connect(addr1).submitTransaction(to, value, data);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+
+    assert.match(errorMessage, /Ownable: caller is not the owner/);
   });
 });

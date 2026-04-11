@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,9 +12,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
   <!-- FAQ Structured Data: JSON-LD -->
   <script type="application/ld+json" src="dashboard-faq-ldjson.js"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script src="dashboard-gtag-init.js"></script>
   <!-- Structured Data: JSON-LD -->
   <script type="application/ld+json" src="dashboard-ldjson.js"></script>
   <!-- SEO Meta Tags -->
@@ -27,895 +24,60 @@
   <meta property="og:description"
     content="Your decentralized hub for token management, staking, analytics, and community engagement.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://aetheron.online/dashboard.html">
-  <meta property="og:image" content="https://aetheron.online/assets/aetheron-og-image.png">
+  <meta property="og:url" content="https://mastatrill.github.io/Aetheron_platform/dashboard.html">
+  <meta property="og:image" content="https://mastatrill.github.io/Aetheron_platform/apple-touch-icon.png">
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Aetheron Platform Dashboard">
   <meta name="twitter:description"
     content="Your decentralized hub for token management, staking, analytics, and community engagement.">
-  <meta name="twitter:image" content="https://aetheron.online/assets/aetheron-og-image.png">
+  <meta name="twitter:image" content="https://mastatrill.github.io/Aetheron_platform/apple-touch-icon.png">
   <meta name="twitter:site" content="@AetheronPlatform">
+  <meta name="aetheron-api-base" content="https://vercel-node-app-1.vercel.app">
+  <meta name="aetheron-plausible-domain" content="mastatrill.github.io">
   <!-- Sitemap Link -->
-  <link rel="sitemap" type="application/xml" href="https://aetheron.online/sitemap.xml">
+  <link rel="sitemap" type="application/xml" href="https://mastatrill.github.io/Aetheron_platform/sitemap.xml">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://accounts.google.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net/npm/chart.js https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider https://accounts.google.com/gsi/client; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;">
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://accounts.google.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net/npm/chart.js https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://fonts.reown.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://polygon-rpc.com https://rpc-mainnet.matic.network https://etherscan.io https://api.etherscan.io https://api.polygonscan.com https://polygonscan.com https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io https://api.web3modal.org https://bridge.walletconnect.org https://echo.walletconnect.org https://pulse.walletconnect.org https://relay.walletconnect.org https://rpc.walletconnect.com https://secure.walletconnect.org https://secure-mobile.walletconnect.org https://secure-mobile.walletconnect.com https://verify.walletconnect.org https://verify.walletconnect.com https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com https://vercel-node-app-1.vercel.app https://hub.snapshot.org wss://*.walletconnect.com wss://*.walletconnect.org; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com https://secure.walletconnect.org https://secure-mobile.walletconnect.org https://secure-mobile.walletconnect.com https://verify.walletconnect.org https://verify.walletconnect.com https://*.walletconnect.org https://*.walletconnect.com;">
+  <meta name="walletconnect-project-id" content="46dcf0807c8c4e4cf747aac2fdd5139b">
   <title>Aetheron Platform</title>
-  <link rel="canonical" href="https://aetheron.online/dashboard.html">
+  <link rel="canonical" href="https://mastatrill.github.io/Aetheron_platform/dashboard.html">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <script defer data-domain="aetheron.online" src="https://plausible.io/js/plausible.js"></script>
-  <script src="dashboard-init.js" defer></script>
-  <style>
-    /* --- UI/UX Polish Additions --- */
-    html {
-      scroll-behavior: smooth;
-    }
-
-    .card {
-      box-shadow: 0 4px 24px rgba(0, 212, 255, 0.07), 0 1.5px 8px rgba(26, 26, 46, 0.13);
-      border-radius: 18px;
-      border: 1px solid rgba(0, 212, 255, 0.08);
-      margin-bottom: 28px;
-      padding: 28px 22px 22px 22px;
-      background: var(--card-bg);
-      transition: box-shadow 0.2s, border 0.2s;
-    }
-
-    .card:hover,
-    .card:focus-within {
-      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.13), 0 2px 12px rgba(26, 26, 46, 0.18);
-      border: 1.5px solid var(--primary);
-    }
-
-    .card-title {
-      font-size: 1.35em;
-      color: var(--primary);
-      margin-bottom: 18px;
-      letter-spacing: 0.01em;
-    }
-
-    .mb-2 {
-      margin-bottom: 22px;
-    }
-
-    .btn,
-    .btn-outline {
-      padding: 10px 22px;
-      border-radius: 8px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
-      outline: none;
-      box-shadow: 0 1px 4px rgba(0, 212, 255, 0.07);
-    }
-
-    .btn {
-      background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
-      color: #fff;
-      border: none;
-      position: relative;
-    }
-
-    .btn:hover,
-    .btn:focus {
-      background: linear-gradient(135deg, #ff6b35 0%, #00d4ff 100%);
-      color: #fff;
-      box-shadow: 0 2px 12px rgba(0, 212, 255, 0.18);
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1.5px solid var(--primary);
-      color: var(--primary);
-    }
-
-    .btn-outline:hover,
-    .btn-outline:focus {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: 0 2px 12px rgba(0, 212, 255, 0.18);
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-
-    /* Responsive card grid */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-
-    /* Input focus state for accessibility */
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-      box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.13);
-      background: rgba(0, 212, 255, 0.03);
-    }
-
-    /* Mobile bottom nav polish */
-    .mobile-bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--card-bg);
-      box-shadow: 0 -2px 16px rgba(0, 212, 255, 0.13);
-      border-radius: 18px 18px 0 0;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 8px 0 4px 0;
-      z-index: 1000;
-    }
-
-    .mobile-bottom-nav a {
-      color: var(--primary);
-      text-align: center;
-      flex: 1;
-      padding: 6px 0;
-      border-radius: 10px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .mobile-bottom-nav a:focus,
-    .mobile-bottom-nav a:hover {
-      background: rgba(0, 212, 255, 0.08);
-      color: #fff;
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-
-    /* Spinner consistency */
-    .spinner svg,
-    .loading-spinner svg {
-      width: 36px !important;
-      height: 36px !important;
-      stroke: var(--primary);
-    }
-
-    /* Profile modal close button */
-    .modal .close-modal-btn {
-      position: absolute;
-      top: 12px;
-      right: 18px;
-      background: transparent;
-      border: none;
-      font-size: 1.5em;
-      color: var(--primary);
-      cursor: pointer;
-      z-index: 10;
-      transition: color 0.2s;
-    }
-
-    .modal .close-modal-btn:hover,
-    .modal .close-modal-btn:focus {
-      color: #ef4444;
-      outline: 2px solid #ef4444;
-    }
-
-    /* Section heading spacing */
-    .card h2,
-    .card-title {
-      margin-top: 0;
-      margin-bottom: 18px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-
-    /* Animate theme toggle icon */
-    .theme-toggle-btn {
-      transition: background 0.2s, color 0.2s, transform 0.3s;
-    }
-
-    .theme-toggle-btn:active {
-      transform: rotate(180deg) scale(1.1);
-    }
-
-    .help-icon {
-      font-size: 1em;
-      color: var(--primary);
-      margin-left: 4px;
-      cursor: pointer;
-      border-radius: 50%;
-      background: rgba(0, 212, 255, 0.07);
-      padding: 0 6px;
-      transition: background 0.2s;
-      outline: none;
-    }
-
-    .help-icon:focus,
-    .help-icon:hover {
-      background: rgba(0, 212, 255, 0.18);
-      color: #fff;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .info-label {
-      font-weight: 500;
-      color: var(--primary);
-      min-width: 120px;
-    }
-
-    .info-value {
-      font-family: 'Inter', monospace;
-      font-size: 1.08em;
-      color: var(--text);
-      word-break: break-all;
-    }
-
-    .font-08 {
-      font-size: 0.98em;
-    }
-
-    .text-gray {
-      color: #b0b8c1;
-    }
-
-    .center-spinner {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .loading-spinner svg,
-    .spinner svg {
-      display: block;
-      margin: 0 auto;
-    }
-
-    .modal-bg {
-      background: rgba(10, 10, 20, 0.75);
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 10001;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 32px 28px 22px 28px;
-      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.13);
-      min-width: 320px;
-      max-width: 95vw;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 18px;
-      justify-content: flex-end;
-    }
-
-    /* --- End UI/UX Polish Additions --- */
-    /* Accessibility: Focus outline for keyboard navigation */
-    * {
-      .header h1 {
-        color: #00d4ff;
-        font-size: 2.5em;
-        margin-bottom: 10px;
-      }
-
-      .logo {
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .header p {
-        color: #fff;
-        font-size: 1.1em;
-      }
-
-      .wallet-section {
-        background: rgba(26, 26, 46, .9);
-        -webkit-backdrop-filter: blur(10px);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 212, 255, .2);
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 0 30px rgba(0, 212, 255, .1);
-        margin-bottom: 30px;
-      }
-
-      /* Nebula orange */
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --dark: #0a0a0a;
-      /* Deep space black */
-      --light: #1a1a2e;
-      /* Dark blue-gray */
-      --text: #ffffff;
-      --card-bg: rgba(26, 26, 46, 0.8);
-      --bg-gradient-start: #0a0a0a;
-      --bg-gradient-mid: #1a1a2e;
-      --bg-gradient-end: #16213e;
-    }
-
-    [data-theme="light"] {
-      --primary: #0099cc;
-      --secondary: #6b21a8;
-      --accent: #ea580c;
-      --success: #059669;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --dark: #f8fafc;
-      --light: #e2e8f0;
-      --text: #1e293b;
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --bg-gradient-start: #f1f5f9;
-      --bg-gradient-mid: #e2e8f0;
-      --bg-gradient-end: #cbd5e1;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(ellipse at center, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
-      color: var(--text);
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Animated starfield background */
-    #starfield-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 1;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: radial-gradient(2px 2px at 20px 30px, #eee, transparent), radial-gradient(2px 2px at 40px 70px, #fff, transparent), radial-gradient(1px 1px at 90px 40px, #eee, transparent), radial-gradient(1px 1px at 130px 80px, #fff, transparent), radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
-      background-repeat: repeat;
-      background-size: 200px 100px;
-      animation: twinkle 4s ease-in-out infinite alternate;
-      z-index: -1;
-    }
-
-    @keyframes twinkle {
-      0% {
-        filter: brightness(0.3);
-      }
-
-      100% {
-        filter: brightness(0.8);
-      }
-    }
-
-    @keyframes twinkle {
-      0% {
-        filter: brightness(0.3);
-      }
-
-      100% {
-        filter: brightness(0.8);
-      }
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .theme-toggle-btn {
-      float: right;
-      margin-top: -40px;
-      margin-right: 10px;
-      background: var(--card-bg);
-      color: var(--primary);
-      border: 1px solid var(--border-main);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1.3em;
-      cursor: pointer;
-      box-shadow: var(--shadow-main);
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .theme-toggle-btn:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .header {
-      background: rgba(26, 26, 46, .9);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 212, 255, .3);
-      padding: 30px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 0 40px rgba(0, 212, 255, .1);
-    }
-
-    .header h1 {
-      color: #00d4ff;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    .logo {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header p {
-      color: #fff;
-      font-size: 1.1em;
-    }
-
-    .wallet-section {
-      background: rgba(26, 26, 46, .9);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 212, 255, .2);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 30px rgba(0, 212, 255, .1);
-      margin-bottom: 30px;
-    }
-
-
-
-    .card h2 {
-      color: #00d4ff;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .input-group {
-      margin: 15px 0;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #666;
-      font-weight: 500;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1em;
-    }
-
-    .action-btn {
-      background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
-      color: #fff;
-      border: none;
-      padding: 14px 32px;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 15px;
-      width: 100%;
-      font-size: 1.08em;
-      box-shadow: 0 2px 8px rgba(0, 212, 255, 0.10);
-      transition: background .3s, box-shadow .3s;
-    }
-
-    .action-btn:hover {
-      background: linear-gradient(135deg, #ff6b35 0%, #00d4ff 100%);
-      box-shadow: 0 6px 18px rgba(255, 107, 53, 0.13);
-    }
-
-    .status-message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .status-message.success {
-      background: rgba(16, 185, 129, .2);
-      color: #10b981;
-      border: 1px solid #10b981;
-      display: block;
-    }
-
-    .status-message.error {
-      background: rgba(239, 68, 68, .2);
-      color: #ef4444;
-      border: 1px solid #ef4444;
-      display: block;
-    }
-
-    .pools-list {
-      margin-top: 20px;
-    }
-
-    .header h1 {
-      color: #00d4ff;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    .logo {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header p {
-      color: #fff;
-      font-size: 1.1em;
-    }
-
-    .wallet-section {
-      background: rgba(26, 26, 46, .9);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 212, 255, .2);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 30px rgba(0, 212, 255, .1);
-      margin-bottom: 30px;
-    }
-
-    /* Toast Container Styles moved from inline */
-    #toastContainer.toast-container {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    /* Skip link styles moved from inline */
-    .skip-link {
-      position: absolute;
-      left: -999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      background: #00d4ff;
-      color: #fff;
-      padding: 8px 16px;
-      z-index: 10000;
-      transition: left 0.2s;
-    }
-
-    /* Quick Stats Card margin-bottom moved from inline */
-    #quickStatsCard {
-      margin-bottom: 24px;
-    }
-
-    /* Screen reader only class */
-    .sr-only {
-      position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-    }
-  </style>
+  <script src="dashboard-plausible-init.js"></script>
+  <link rel="stylesheet" href="dashboard-shell.css?v=1.0.1">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
     crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.3.1">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.3.1">
   <link rel="stylesheet" href="dashboard-enhanced.css?v=1.3.1">
-
-  <head>
-    <style>
-      /* Button feedback animation */
-      .btn.loading {
-        pointer-events: none;
-        opacity: 0.7;
-        position: relative;
-      }
-
-      .btn.loading:after {
-        content: '';
-        display: inline-block;
-        width: 1em;
-        height: 1em;
-        border: 2px solid #00d4ff;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 0.8s linear infinite;
-        margin-left: 0.5em;
-        vertical-align: middle;
-      }
-
-      @keyframes spin {
-        to {
-          animation: spinFrame 1s linear infinite;
-        }
-      }
-
-      @keyframes spinFrame {
-        to {
-          opacity: 1;
-        }
-      }
-
-      /* Success/failure states */
-      .btn.success {
-        background: #28a745 !important;
-        color: #fff !important;
-        border-color: #28a745 !important;
-      }
-
-      .btn.failure {
-        background: #dc3545 !important;
-        color: #fff !important;
-        border-color: #dc3545 !important;
-      }
-
-      /* Smooth transitions for modals/cards */
-      .modal,
-      .card {
-        transition: box-shadow 0.3s, transform 0.3s, opacity 0.3s;
-      }
-
-      .modal.hidden {
-        opacity: 0;
-        pointer-events: none;
-        transform: scale(0.98);
-      }
-
-      .modal:not(.hidden) {
-        opacity: 1;
-        pointer-events: auto;
-        transform: scale(1);
-      }
-
-      /* Dark mode styles */
-      body.dark-mode,
-      .dark-mode .container,
-      .dark-mode .card,
-      .dark-mode .modal-content {
-        background: #181a1b !important;
-        color: #e0e0e0 !important;
-      }
-
-      .dark-mode .btn,
-      .dark-mode .btn-outline,
-      .dark-mode .theme-toggle-btn,
-      .dark-mode .connect-btn {
-        background: #222 !important;
-        color: #00d4ff !important;
-        border: 2px solid #00d4ff !important;
-      }
-
-      .dark-mode .btn-outline {
-        background: #181a1b !important;
-        color: #00d4ff !important;
-        border: 2px solid #00d4ff !important;
-      }
-
-      .dark-mode .text-gray {
-        color: #aaa !important;
-      }
-    </style>
     <script src="dashboard-theme-init.js"></script>
-    <style>
-      /* Responsive design tweaks for mobile/tablet */
-      @media (max-width: 900px) {
-
-        .container,
-        .card,
-        .cards-grid,
-        .header,
-        .wallet-section {
-          width: 100% !important;
-          max-width: 100vw;
-          padding: 0.5em;
-        }
-
-        .cards-grid {
-          grid-template-columns: 1fr !important;
-        }
-
-        .card {
-          margin-bottom: 1.5em;
-        }
-
-        .modal-content {
-          width: 95vw !important;
-          min-width: unset;
-        }
-      }
-
-      /* Improved color contrast for readability */
-      body,
-      .container,
-      .card,
-      .modal-content {
-        background: #fff;
-        color: #222;
-      }
-
-      .btn,
-      .btn-outline,
-      .theme-toggle-btn,
-      .connect-btn {
-        background: #00d4ff;
-        color: #222;
-        border: 2px solid #222;
-      }
-
-      .btn-outline {
-        background: #fff;
-        color: #00d4ff;
-        border: 2px solid #00d4ff;
-      }
-
-      .text-gray {
-        color: #555 !important;
-      }
-
-      /* Visually distinct focus outline for accessibility */
-      .focus-visible:focus,
-      button:focus,
-      a:focus,
-      input:focus,
-      select:focus {
-        outline: 3px solid #00d4ff !important;
-        outline-offset: 2px;
-        box-shadow: 0 0 0 2px #fff, 0 0 8px #00d4ff;
-        z-index: 2;
-      }
-
-      /* Tooltip styling */
-      .help-icon {
-        cursor: help;
-        border-bottom: 1px dotted #00d4ff;
-        color: #00d4ff;
-        font-size: 1em;
-        margin-left: 0.25em;
-      }
-
-      .help-icon[title]:hover:after {
-        content: attr(title);
-        position: absolute;
-        background: #222;
-        color: #fff;
-        padding: 0.5em 1em;
-        border-radius: 4px;
-        font-size: 0.95em;
-        white-space: pre-line;
-        z-index: 9999;
-        left: 0;
-        top: 2em;
-      }
-    </style>
-    <style>
-      /* Visually distinct focus outline for accessibility */
-      .focus-visible:focus,
-      button:focus,
-      a:focus,
-      input:focus,
-      select:focus {
-        outline: 3px solid #00d4ff !important;
-        outline-offset: 2px;
-        box-shadow: 0 0 0 2px #fff, 0 0 8px #00d4ff;
-        z-index: 2;
-      }
-    </style>
-    <!-- Sentry Error Tracking (fill in your DSN) -->
-    <script src="https://browser.sentry-cdn.com/7.92.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
+    <!-- Optional Sentry Error Tracking -->
     <script src="dashboard-sentry-init.js"></script>
-    <!-- Google Analytics 4 (GA4) (fill in your Measurement ID) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <!-- Optional Google Analytics 4 (GA4) -->
     <script src="dashboard-ga4-init.js"></script>
-    <script type="module" src="firebase-messaging-init.js"></script>
-    ...existing code...
     <link rel="stylesheet" href="dashboard.css?v=1.3.1">
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      /* Remove any light theme or mobile overrides for body background */
-      body[data-theme="light"],
-      body.light-mode,
-      .container,
-      .card,
-      .modal-content {
-        background: transparent !important;
-        color: inherit;
-      }
-
-      #starfield-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 1;
-      }
-
-      /* Remove body::before overlay if present */
-      body::before {
-        display: none !important;
-      }
-    </style>
-    ...existing code...
+  <link rel="stylesheet" href="dashboard-head-overrides.css?v=1.0.1">
   </head>
+  <body>
   <div id="criticalAlerts" class="critical-alerts"></div>
   <!-- Hamburger menu for mobile navigation -->
   <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false"
     type="button"><span></span> <span></span> <span></span></button>
   <!-- Mobile navigation overlay -->
   <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-  <script src="dashboard-skiplink-init.js"></script>
   <a href="#mainContent" class="skip-to-content" tabindex="0" aria-label="Skip to main content">Skip to main content</a>
   <canvas id="starfield-canvas"></canvas>
   <!-- Toast Notification Container -->
   <div id="toastContainer" aria-live="assertive" aria-atomic="true" class="toast-container" role="alert"></div>
   <div class="container">
-    <!-- Home Screen Welcome/Overview -->
-    <div class="card home-welcome-card prominent-welcome" aria-label="Welcome to Aetheron Platform" role="region"
-      tabindex="0">
-      <h2 class="logo" tabindex="0">🌌 Welcome to Aetheron Platform</h2>
-      <p class="home-overview">Your decentralized hub for token management, staking, analytics, and community
-        engagement.<br>
-        <span class="text-gray">Connect your wallet to unlock full features.</span>
-      </p>
-      <button id="onboardingBtnHome" class="btn onboarding-btn focus-visible" type="button"
-        aria-label="Start onboarding tour">❓ Start
-        Tour</button>
-      <div class="onboarding-info">
-        <strong>New here?</strong> <span class="text-gray">Explore the dashboard features, connect your wallet, and join
-          the community chat. Use <kbd>Tab</kbd> to navigate.</span>
-      </div>
-    </div>
     <!-- Quick Stats Card -->
     <div class="card" id="quickStatsCard" role="region" aria-label="Quick Stats" tabindex="0">
-      <h2>🚀 Quick Stats</h2>
+      <h2>Quick Stats</h2>
       <div class="info-row"><span class="info-label">Wallet:</span> <span class="info-value" id="quickWallet">-</span>
       </div>
       <div class="info-row"><span class="info-label">AETH Balance:</span> <span class="info-value"
@@ -947,32 +109,32 @@
               repeatCount="indefinite" />
           </circle>
         </svg>
-        <div class="global-loading-text" aria-label="Loading...">Loading...</div>
+        <div class="global-loading-text" aria-label="Initializing dashboard">Initializing dashboard</div>
       </div>
     </div>
     <!-- Header and Wallet Section -->
     <div class="header" aria-label="Aetheron Platform Header" role="banner" tabindex="0">
-      <h1 class="logo" tabindex="0">🌌 Aetheron Platform</h1>
+      <h1 class="logo" tabindex="0">Aetheron Platform</h1>
       <p>Decentralized Token & Staking Platform</p>
       <button id="themeToggleBtn" class="theme-toggle-btn focus-visible" aria-label="Toggle dark/light mode"
-        type="button"><span aria-label="Toggle dark/light mode" role="img">🌙</span></button>
+        type="button"><span aria-label="Toggle dark/light mode" role="img">Theme</span></button>
     </div>
     <div id="walletStatusBar" class="wallet-status-bar status-bar" aria-live="polite" role="status"
       aria-label="Wallet Status Bar" tabindex="0">
-      <span id="walletStatusIcon">🔴</span>
+      <span id="walletStatusIcon">Disconnected</span>
       <span id="walletStatusText">Wallet not connected</span>
     </div>
     <div class="wallet-section" aria-label="Wallet Section" role="region" tabindex="0">
       <button id="connectBtn" type="button" class="connect-btn focus-visible" aria-label="Connect Wallet"><span
-          aria-label="Connect Wallet" role="img">🔗</span> Connect Wallet</button>
+          aria-label="Connect Wallet" role="img">Connect</span> Wallet</button>
       <button type="button" class="btn buy-btn focus-visible" aria-label="Buy AETH"><span aria-label="Buy AETH"
-          role="img">🛒</span> Buy
+          role="img">Buy</span> Buy
         AETH</button>
       <button type="button" class="btn coinbase-btn focus-visible" aria-label="Pay with Crypto (Coinbase)"><span
-          aria-label="Pay with Crypto (Coinbase)" role="img">💳</span> Pay with Crypto
+          aria-label="Pay with Crypto (Coinbase)" role="img">Pay</span> Pay with Crypto
         (Coinbase)</button>
       <button id="refreshBalancesBtn" type="button" class="btn refresh-btn focus-visible"
-        aria-label="Refresh Balances"><span aria-label="Refresh Balances" role="img">🔄</span>
+        aria-label="Refresh Balances"><span aria-label="Refresh Balances" role="img">Refresh</span>
         Refresh</button>
       <div id="walletInfo" class="wallet-info" aria-live="polite" role="status">
         <div id="balanceLiveRegion" aria-live="assertive" class="sr-only">Balance updated.</div>
@@ -981,7 +143,7 @@
         <div class="info-row"><span class="info-label">Connected Account:</span> <span class="info-value"
             id="accountAddress">-</span>
           <button id="copyAccountBtn" class="btn-outline copy-account-btn" aria-label="Copy Account Address"
-            type="button">📋</button>
+            type="button">Copy</button>
         </div>
         <div class="info-row"><span class="info-label">Network:</span> <span class="info-value" id="networkName">Polygon
             Mainnet</span></div>
@@ -994,12 +156,12 @@
     <!-- Cards Grid and Features -->
     <div class="cards-grid">
       <div class="card" role="region" aria-label="DeFi Aggregator" tabindex="0">
-        <h2>🔄 DeFi Aggregator</h2>
+        <h2>DeFi Aggregator</h2>
         <p>Compare rates and swap tokens across multiple DEXs.</p>
         <button class="btn" id="openAggregatorBtn" type="button" aria-label="Open Aggregator">Open Aggregator</button>
       </div>
       <div class="card" role="region" aria-label="Staking Analytics" tabindex="0">
-        <h2>📊 Staking Analytics</h2>
+        <h2>Staking Analytics</h2>
         <canvas id="stakingAnalyticsChart" width="400" height="200" role="img"
           aria-label="Staking Analytics Chart"></canvas>
         <div id="stakingAnalyticsPlaceholder" class="text-gray" role="img" aria-label="Staking Analytics Placeholder">
@@ -1011,7 +173,7 @@
       </div>
       <!-- Help Center Modal -->
       <div id="helpCenterModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpCenterTitle"
-        tabindex="-1">
+        tabindex="-1" hidden aria-hidden="true">
         <div class="modal-content help-modal-content">
           <button class="close-modal-btn" id="closeHelpCenterModal" aria-label="Close Help Center"
             type="button">&times;</button>
@@ -1032,25 +194,24 @@
               class="modal-link">support@aetheron.com</a>.</p>
         </div>
       </div>
-      <script src="dashboard-helpcenter-init.js"></script>
       <div class="card" role="region" aria-label="Transfer AETH" tabindex="0">
-        <h2>💰 Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
-            title="Send AETH tokens to another wallet. Enter the recipient address and amount, then click Transfer.">❔</span>
+        <h2>Transfer AETH <span class="help-icon" tabindex="0" aria-label="Help: Transfer AETH"
+            title="Send AETH tokens to another wallet. Enter the recipient address and amount, then click Transfer.">?</span>
         </h2>
         <div class="input-group"><label for="transferTo">Recipient Address: <span class="help-icon" tabindex="0"
               aria-label="Help: Recipient Address"
-              title="Paste the wallet address you want to send AETH to.">❔</span></label> <input type="text"
+              title="Paste the wallet address you want to send AETH to.">?</span></label> <input type="text"
             id="transferTo" name="transferTo" placeholder="0x..." aria-label="Recipient Address"></div>
         <div class="input-group">
           <label for="transferAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Amount"
-              title="Enter the number of AETH tokens to transfer.">❔</span></label>
+              title="Enter the number of AETH tokens to transfer.">?</span></label>
           <input type="number" id="transferAmount" name="transferAmount" title="Amount of AETH to transfer"
             placeholder="Enter amount" aria-label="Amount to Transfer">
         </div>
         <button class="btn" id="transferBtn" type="button" title="Send AETH to the recipient address"
           aria-label="Transfer AETH">Transfer</button>
         <div class="quick-action-btn live-indicator" role="status" aria-label="Live Holders Count"><span
-            class="pulse-dot"></span> <span id="liveHoldersCount">Loading...</span> Holders</div>
+            class="pulse-dot"></span> <span id="liveHoldersCount">100+</span> Holders</div>
       </div>
     </div>
     <!-- --- BEGIN: New Feature Scaffolding --- -->
@@ -1374,8 +535,8 @@
       <!-- SushiSwap Integration -->
       <section id="sushiswap-section-2" class="card mb-2">
         <h2 class="card-title">SushiSwap (DEX & Yield)</h2>
-        <div id="sushiswapPlaceholder" class="text-gray">Connect your wallet to swap tokens, provide liquidity, or
-          withdraw from SushiSwap pools.</div>
+      <div id="sushiswapSecondaryPlaceholder" class="text-gray">Connect your wallet to swap tokens, provide liquidity, or
+        withdraw from SushiSwap pools.</div>
         <button id="openSushiSwapMainBtn" class="btn mt-1em" type="button">Swap Tokens</button>
         <button id="openSushiLiquidityBtn" class="btn mt-1em ml-10" type="button">Provide Liquidity</button>
         <button id="openSushiWithdrawBtn" class="btn mt-1em ml-10" type="button">Withdraw</button>
@@ -1448,10 +609,10 @@
       <div id="localizationPlaceholder" class="text-gray">Select your preferred language and layout direction.</div>
       <select id="languageSelector" class="mt-1em" title="Select language">
         <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="ar">العربية (Arabic)</option>
-        <option value="zh">中文 (Chinese)</option>
+        <option value="es">EspaÃ±ol</option>
+        <option value="fr">FranÃ§ais</option>
+        <option value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© (Arabic)</option>
+        <option value="zh">ä¸­æ–‡ (Chinese)</option>
       </select>
       <label class="mt-1em" for="rtlToggle">
         <input type="checkbox" id="rtlToggle"> Enable RTL (Right-to-Left)
@@ -1514,53 +675,18 @@
       <table id="stakingHistoryTable" class="w-full" role="table" aria-label="Staking History Table">
         <thead>
           <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Action</th>
+            <th scope="col">Type</th>
             <th scope="col">Amount</th>
-            <!DOCTYPE html>
-            <html lang="en">
-            {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-            {
-            "@type": "Question",
-            "name": "How do I transfer AETH?",
-            "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Use the Transfer AETH card, enter the recipient address and amount, then click Transfer."
-            }
-            },
-            {
-            "@type": "Question",
-            "name": "How do I stake tokens?",
-            "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Go to the Staking section, enter the amount, and confirm the transaction in your wallet."
-            }
-            },
-            ...existing code...
-            ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
-            ctx.fillStyle = 'white';
-            ctx.globalAlpha = 0.7;
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            star.y += star.speed;
-            if (star.y > canvas.height) {
-            star.x = Math.random() * canvas.width;
-            star.y = 0;
-            star.r = 1 + Math.random() * 2;
-            star.speed = 0.2 + Math.random() * 0.5;
-            }
-            }
-            requestAnimationFrame(animate);
-            }
-            </script>
-            <script src="dashboard-starfield-init.js"></script>
-            ...existing code...
-            </body>
+            <th scope="col">Pool</th>
+            <th scope="col">Time</th>
+            <th scope="col">Tx</th>
           </tr>
-          </tbody>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" class="text-gray">Connect your wallet to view staking history.</td>
+          </tr>
+        </tbody>
       </table>
     </section>
 
@@ -1590,12 +716,12 @@
 
     <section id="referral-leaderboard-section" class="card mb-2">
       <h2 class="card-title">Referral Leaderboard <span class="help-icon" tabindex="0"
-          aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">❔</span></h2>
+          aria-label="Help: Referral Leaderboard" title="See the top referrers and your referral link.">â”</span></h2>
       <div id="referralLeaderboardPlaceholder" class="text-gray" aria-live="polite">Leaderboard will appear here.</div>
       <div id="referralLinkSection">
         <label for="referralLink">Your Referral Link: <span class="help-icon" tabindex="0"
-            aria-label="Help: Referral Link" title="Share this link to invite others and earn rewards.">❔</span></label>
-        <input type="text" id="referralLink" readonly value="https://aetheron.online/?ref=YOURADDRESS"
+            aria-label="Help: Referral Link" title="Share this link to invite others and earn rewards.">â”</span></label>
+                  <input type="text" id="referralLink" readonly value="https://mastatrill.github.io/Aetheron_platform/?ref=YOURADDRESS"
           title="Your referral link" placeholder="Referral link">
         <button class="btn btn-outline" id="copyReferralBtn" type="button"
           title="Copy your referral link to clipboard">Copy</button>
@@ -1607,8 +733,8 @@
       <label for="languageSelect" class="sr-only">Select language</label>
       <select id="languageSelect" title="Select language">
         <option value="en" selected>English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
+        <option value="es">EspaÃ±ol</option>
+        <option value="fr">FranÃ§ais</option>
         <option value="de">Deutsch</option>
         <!-- Add more languages as needed -->
       </select>
@@ -1623,23 +749,23 @@
     </section>
     <!-- --- END: New Feature Scaffolding --- -->
     <div class="card" aria-label="Stake AETH Section">
-      <h2>🎯 Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
-          title="Stake your AETH tokens in different pools to earn rewards.">❔</span></h2>
+      <h2>Stake AETH <span class="help-icon" tabindex="0" aria-label="Help: Stake AETH"
+          title="Stake your AETH tokens in different pools to earn rewards.">?</span></h2>
       <div id="stakeSpinner" class="spinner center-spinner" hidden aria-label="Loading Stake"
         title="Processing stake...">
       </div>
-      <form aria-label="Stake Form" onsubmit="return false;" role="form" tabindex="0">
+      <form id="stakeForm" aria-label="Stake Form" role="form" tabindex="0">
         <div class="input-group">
           <label for="poolId">Pool ID: <span class="help-icon" tabindex="0" aria-label="Help: Pool ID"
-              title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">❔</span></label>
+              title="Choose 0 for Short, 1 for Medium, 2 for Long term staking.">?</span></label>
           <input type="number" id="poolId" name="poolId" placeholder="0, 1, or 2" value="0" aria-label="Pool ID">
         </div>
         <div class="input-group">
           <label for="stakeAmount">Amount (AETH): <span class="help-icon" tabindex="0" aria-label="Help: Stake Amount"
-              title="Enter the amount of AETH you want to stake.">❔</span></label>
+              title="Enter the amount of AETH you want to stake.">?</span></label>
           <input type="number" id="stakeAmount" name="stakeAmount" placeholder="1000" aria-label="Amount to Stake">
         </div>
-        <button id="stakeBtn" type="submit" class="btn" aria-label="Stake AETH"
+        <button id="stakeBtn" type="button" class="btn" aria-label="Stake AETH"
           title="Stake your AETH tokens">Stake</button>
       </form>
       <div id="stakeStatus" class="status-message" aria-live="polite"></div>
@@ -1660,20 +786,20 @@
       <div id="transferStatus" class="status-message"></div>
     </div>
     <div class="card" aria-label="Contract Information">
-      <h2>📊 Contract Information</h2>
+      <h2>Contract Information</h2>
       <div class="info-row">
         <span class="info-label">AETH Token Address:</span>
         <span class="info-value font-08" aria-label="AETH Token Address"
           tabindex="0">0x072091F554df794852E0A9d1c809F2B2bBda171E</span>
-        <button class="btn-outline" aria-label="Copy AETH Token Address" type="button"
-          onclick="navigator.clipboard.writeText('0x072091F554df794852E0A9d1c809F2B2bBda171E')">Copy</button>
+        <button id="copyAethAddressBtn" class="btn-outline" aria-label="Copy AETH Token Address" type="button"
+          data-copy-text="0x072091F554df794852E0A9d1c809F2B2bBda171E">Copy</button>
       </div>
       <div class="info-row">
         <span class="info-label">Staking Contract Address:</span>
         <span class="info-value font-08" aria-label="Staking Contract Address"
           tabindex="0">0x896D9d37A67B0bBf81dde0005975DA7850FFa638</span>
-        <button class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
-          onclick="navigator.clipboard.writeText('0x896D9d37A67B0bBf81dde0005975DA7850FFa638')">Copy</button>
+        <button id="copyStakingAddressBtn" class="btn-outline" aria-label="Copy Staking Contract Address" type="button"
+          data-copy-text="0x896D9d37A67B0bBf81dde0005975DA7850FFa638">Copy</button>
       </div>
       <div class="info-row">
         <span class="info-label">Network:</span>
@@ -1705,7 +831,7 @@
           </thead>
           <tbody id="paymentHistoryTableBody">
             <tr>
-              <td colspan="5">Loading...</td>
+              <td colspan="5">No payment history available yet.</td>
             </tr>
           </tbody>
         </table>
@@ -1713,14 +839,14 @@
     </div>
     <!-- Analytics/Engagement Chart Card -->
     <div class="card" id="analyticsCard">
-      <h2>📈 Engagement Analytics</h2>
+      <h2>Engagement Analytics</h2>
       <div id="analyticsSpinner" class="spinner center-spinner" hidden aria-label="Loading Analytics"
         title="Loading analytics data..."></div>
       <canvas id="engagementChart" class="chart-canvas"></canvas>
     </div>
     <!-- Removed duplicate chart canvases for price, volume, TVL, and staking -->
     <div class="card" id="treasuryCard">
-      <h2>💼 Treasury & Revenue</h2>
+      <h2>Treasury & Revenue</h2>
       <div class="info-row">
         <span class="info-label">Total Treasury:</span>
         <span class="info-value" id="treasuryTotal">- AETH</span>
@@ -1736,14 +862,14 @@
       <button class="btn" id="refreshTreasuryBtn" type="button">Refresh Treasury</button>
     </div>
     <div class="card">
-      <h2>📊 Treasury & Revenue Chart</h2>
+      <h2>Treasury & Revenue Chart</h2>
       <canvas id="treasuryChart" class="chart-canvas"></canvas>
     </div>
     <!-- User Profile Section -->
     <div class="card" id="userProfileCard">
-      <h2>👤 User Profile</h2>
+      <h2>User Profile</h2>
       <div class="profile-flex">
-        <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">🧑</div>
+        <div id="profileAvatar" class="profile-avatar" tabindex="0" aria-label="Profile Avatar">User</div>
         <div>
           <div id="profileName" class="profile-name">Guest</div>
           <div id="profileEmail" class="profile-email">Not signed in</div>
@@ -1758,7 +884,7 @@
           <h3>Edit Profile</h3>
           <form id="profileForm" aria-label="Profile Form" role="form" tabindex="0">
             <label for="avatarInput">Avatar Emoji</label>
-            <input id="avatarInput" name="avatarInput" maxlength="2" placeholder="🧑" aria-label="Avatar Emoji" />
+            <input id="avatarInput" name="avatarInput" maxlength="12" placeholder="User" aria-label="Avatar Emoji" />
             <label for="nicknameInput">Nickname</label>
             <input id="nicknameInput" name="nicknameInput" maxlength="24" placeholder="Your nickname"
               aria-label="Nickname" />
@@ -1776,29 +902,26 @@
           </form>
         </div>
       </div>
-      <script>
-        // Profile modal close button logic
-        <script src="dashboard-profilemodal-init.js"></script>
     </div>
     <!-- Onboarding Tour Button -->
-    <button id="onboardingBtn" class="btn onboarding-btn" type="button">❓ Tour</button>
+    <button id="onboardingBtn" class="btn onboarding-btn" type="button">Tour</button>
     <!-- Payment Status Modal -->
     <div id="paymentStatusModal" class="payment-status-modal-bg">
       <div class="payment-status-modal">
-        <div id="paymentStatusIcon" class="payment-status-icon">💸</div>
+        <div id="paymentStatusIcon" class="payment-status-icon">Pay</div>
         <div id="paymentStatusText" class="payment-status-text">Processing payment...</div>
         <button class="btn-outline payment-status-close-btn" type="button">Close</button>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" async></script>
-    <script src="dashboard-main.js?v=1.3.1" async></script>
-    <script src="dashboard.js?v=1.3.1" async></script>
-    <script src="dashboard-quickstats-init.js"></script>
-    <script type="module" src="global-announcements.js" async></script>
-    <script src="coinbase-commerce-frontend.js?v=1.3.1" async></script>
-    <script src="payment-history.js?v=1.3.1" async></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" async></script>
-    <script src="dashboard-features.js?v=1.3.1" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+    <script type="module" src="global-announcements.js"></script>
+    <script src="dashboard-metamask-connect.js?v=1.0.3" defer></script>
+    <script src="dashboard-main.js?v=1.4.4" defer></script>
+    <script src="dashboard.js?v=1.4.4" defer></script>
+    <script src="coinbase-commerce-frontend.js?v=1.4.2" defer></script>
+    <script src="payment-history.js?v=1.4.2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="dashboard-features.js?v=1.4.2" defer></script>
     <!-- Language Selector -->
     <!-- Removed duplicate language selector to avoid multiple elements with the same ID -->
     <!-- Localization/i18n -->
@@ -1811,14 +934,13 @@
           <button class="btn-outline" id="toggleWhitepaperBtn" type="button" aria-expanded="true">Collapse</button>
         </div>
         <nav class="whitepaper-nav">
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('summary')">Executive
+          <button class="btn-outline" type="button" data-whitepaper-section="summary">Executive
             Summary</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('tokenomics')">Tokenomics</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('staking')">Staking</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('security')">Security</button>
-          <button class="btn-outline" type="button" onclick="showWhitepaperSection('roadmap')">Roadmap</button>
-          <button class="btn whitepaper-download-btn" type="button"
-            onclick="window.open('WHITEPAPER.md','_blank')">Download
+          <button class="btn-outline" type="button" data-whitepaper-section="tokenomics">Tokenomics</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="staking">Staking</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="security">Security</button>
+          <button class="btn-outline" type="button" data-whitepaper-section="roadmap">Roadmap</button>
+          <button id="downloadWhitepaperBtn" class="btn whitepaper-download-btn" type="button">Download
             Full
             Whitepaper</button>
         </nav>
@@ -1884,16 +1006,10 @@
           </div>
         </div>
       </section>
-      <script>
-        // Expand/Collapse
-        document.getElementById('toggleWhitepaperBtn').addEventListener('click', function () {
-          // Whitepaper expand/collapse and section navigation logic
-          <script src="dashboard-whitepaper-init.js"></script>
       <!-- Existing content for the main dashboard -->
       <section class="wallet-social-wrap" aria-label="Wallet and Social Login Options" role="region">
         <button id="walletConnectBtn" class="connect-btn walletconnect-btn" type="button" aria-label="WalletConnect"
-          tabindex="0">🔗
-          WalletConnect</button>
+          tabindex="0">WalletConnect</button>
         <button id="googleLoginBtn" class="connect-btn google-btn" type="button" aria-label="Sign in with Google"
           tabindex="0">G
           <span class="google-btn-text">oogle</span></button>
@@ -1912,14 +1028,14 @@
             class="fas fa-wallet"></i><span>Portfolio</span></a>
       </nav>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js" defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="dashboard-wallet.js?v=1.3.1" defer></script>
-    <script src="dashboard-accessibility.js?v=1.3.1" defer></script>
+    <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.23.8/dist/index.umd.js" defer></script>
+    <script src="dashboard-wallet.js?v=1.6.2" defer></script>
+    <script src="dashboard-body-init.js?v=1.0.4" defer></script>
     <!-- Onboarding Tour Disabled - CSP Compliance -->
     <!-- New Features Scripts -->
-    <script src="dashboard-treasury-chart.js?v=1.3.1" defer></script>
-    <script src="dashboard-starfield.js?v=1.3.1" defer></script>
+    <script src="dashboard-starfield.js?v=1.4.2" defer></script>
     </body>
 
 </html>
+

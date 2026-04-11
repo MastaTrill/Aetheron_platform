@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aetheron Wallet</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #00d4ff;
+        --primary-dark: #0099cc;
+        --secondary: #7b2cbf;
+        --accent: #ff006e;
+        --bg-dark: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-elevated: #1a1a25;
+        --text: #e0e0e0;
+        --text-muted: #8a8a9a;
+        --success: #00ff88;
+        --error: #ff3366;
+        --warning: #ffaa00;
+        --border: #2a2a3a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Rajdhani", sans-serif;
+        background: var(--bg-dark);
+        color: var(--text);
+        min-height: 100vh;
+        background-image:
+          radial-gradient(
+            ellipse at top,
+            rgba(123, 44, 191, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at bottom,
+            rgba(0, 212, 255, 0.08) 0%,
+            transparent 50%
+          );
+      }
+
+      .container {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        font-family: "Orbitron", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 3px;
+      }
+
+      .tagline {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        margin-top: 5px;
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .card-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 14px;
+        color: var(--primary);
+        margin-bottom: 16px;
+        letter-spacing: 1px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 12px;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: var(--bg-dark);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(0, 212, 255, 0.1);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, var(--error) 0%, #cc0033 100%);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        box-shadow: 0 8px 25px rgba(255, 51, 102, 0.3);
+      }
+
+      .input-group {
+        margin-bottom: 16px;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+      }
+
+      .input-group input,
+      .input-group textarea {
+        width: 100%;
+        padding: 14px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      .input-group input:focus,
+      .input-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .input-group textarea {
+        resize: none;
+        height: 100px;
+        font-family: monospace;
+        letter-spacing: 1px;
+      }
+
+      .balance-display {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .balance-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+
+      .balance-amount {
+        font-family: "Orbitron", sans-serif;
+        font-size: 42px;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .balance-symbol {
+        font-size: 18px;
+        color: var(--text-muted);
+      }
+
+      .address-display {
+        background: var(--bg-elevated);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-family: monospace;
+        font-size: 13px;
+        word-break: break-all;
+        color: var(--text-muted);
+        margin-top: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .address-display:hover {
+        background: var(--border);
+      }
+
+      .actions-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .action-btn {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .action-btn:hover {
+        border-color: var(--primary);
+        background: rgba(0, 212, 255, 0.05);
+      }
+
+      .action-btn i {
+        font-size: 24px;
+        color: var(--primary);
+        margin-bottom: 8px;
+      }
+
+      .action-btn span {
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+      }
+
+      .seed-phrase-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin: 16px 0;
+      }
+
+      .seed-word {
+        background: var(--bg-elevated);
+        padding: 10px 8px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 12px;
+        border: 1px solid var(--border);
+      }
+
+      .seed-word .number {
+        color: var(--primary);
+        font-size: 10px;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .warning-box {
+        background: rgba(255, 170, 0, 0.1);
+        border: 1px solid var(--warning);
+        border-radius: 10px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+
+      .warning-box i {
+        color: var(--warning);
+        margin-right: 8px;
+      }
+
+      .warning-box p {
+        font-size: 13px;
+        color: var(--warning);
+        line-height: 1.6;
+      }
+
+      .tab-nav {
+        display: flex;
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 4px;
+        margin-bottom: 16px;
+      }
+
+      .tab-btn {
+        flex: 1;
+        padding: 12px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: all 0.3s;
+      }
+
+      .tab-btn.active {
+        background: var(--primary);
+        color: var(--bg-dark);
+      }
+
+      .transaction-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .tx-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background: var(--bg-elevated);
+        border-radius: 10px;
+        margin-bottom: 8px;
+      }
+
+      .tx-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+      }
+
+      .tx-icon.receive {
+        background: rgba(0, 255, 136, 0.2);
+        color: var(--success);
+      }
+
+      .tx-icon.send {
+        background: rgba(255, 51, 102, 0.2);
+        color: var(--error);
+      }
+
+      .tx-details {
+        flex: 1;
+      }
+
+      .tx-type {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .tx-address {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: monospace;
+      }
+
+      .tx-amount {
+        text-align: right;
+      }
+
+      .tx-amount.receive {
+        color: var(--success);
+      }
+
+      .tx-amount.send {
+        color: var(--error);
+      }
+
+      .tx-time {
+        font-size: 10px;
+        color: var(--text-muted);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+      }
+
+      .modal-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
+        color: var(--primary);
+        margin-bottom: 16px;
+      }
+
+      .qr-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 16px 0;
+        display: inline-block;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-muted);
+      }
+
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+
+      .network-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+      }
+
+      .network-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+      }
+
+      .back-btn {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 18px;
+        cursor: pointer;
+        padding: 8px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
+      }
+
+      .checkbox-group input {
+        width: auto;
+      }
+
+      .checkbox-group label {
+        font-size: 13px;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .error-msg {
+        color: var(--error);
+        font-size: 13px;
+        margin-top: 8px;
+      }
+
+      .success-msg {
+        color: var(--success);
+        font-size: 13px;
+        margin-top: 8px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-in {
+        animation: fadeIn 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="logo"><i class="fas fa-cube"></i> AETHERON</div>
+        <div class="tagline">NATIVE WALLET</div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar" id="statusBar">
+        <div class="network-badge">
+          <span class="network-dot"></span>
+          <span>Polygon</span>
+        </div>
+        <div
+          id="connectionStatus"
+          style="font-size: 12px; color: var(--text-muted)"
+        >
+          <i class="fas fa-sync fa-spin"></i> Connecting...
+        </div>
+      </div>
+
+      <!-- Welcome Screen (No Wallet) -->
+      <div id="welcomeScreen" class="screen active">
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-wallet"></i> CREATE OR IMPORT
+          </div>
+          <p
+            style="
+              color: var(--text-muted);
+              margin-bottom: 20px;
+              font-size: 14px;
+            "
+          >
+            Welcome to Aetheron Wallet. Create a new wallet or import an existing one.
+          </p>
+          <button class="btn btn-primary" onclick="showScreen('create')">
+            <i class="fas fa-plus"></i> CREATE NEW WALLET
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="showScreen('import')"
+            style="margin-top: 12px"
+          >
+            <i class="fas fa-key"></i> IMPORT WITH SEED PHRASE
+          </button>
+        </div>
+      </div>
+
+      <!-- Login Screen (Unlock) -->
+      <div id="loginScreen" class="screen">
+        <div class="card animate-in" style="margin-top: 40px;">
+          <div class="card-title">
+            <i class="fas fa-lock"></i> UNLOCK WALLET
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+            Enter your password to unlock your wallet.
+          </p>
+          <div class="input-group">
+            <label>PASSWORD</label>
+            <input type="password" id="unlockPassword" placeholder="Enter password" onkeypress="if(event.key==='Enter')attemptUnlock()" />
+          </div>
+          <div id="unlockError" class="error-msg"></div>
+          <button class="btn btn-primary" onclick="attemptUnlock()">
+            <i class="fas fa-unlock"></i> UNLOCK
+          </button>
+        </div>
+      </div>
+          <p
+            style="
+              color: var(--text-muted);
+              margin-bottom: 20px;
+              font-size: 14px;
+            "
+          >
+            Welcome to Aetheron Wallet. Create a new wallet or import an
+            existing one.
+          </p>
+          <button class="btn btn-primary" onclick="showScreen('create')">
+            <i class="fas fa-plus"></i> CREATE NEW WALLET
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="showScreen('import')"
+            style="margin-top: 12px"
+          >
+            <i class="fas fa-key"></i> IMPORT WITH SEED PHRASE
+          </button>
+        </div>
+      </div>
+
+      <!-- Create Wallet Screen -->
+      <div id="createScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('welcome')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-shield-alt"></i> YOUR SEED PHRASE
+          </div>
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 13px;
+              margin-bottom: 16px;
+            "
+          >
+            Write down these 12 words in order and store them safely. This is
+            the ONLY way to recover your wallet.
+          </p>
+
+          <div class="seed-phrase-grid" id="seedPhraseDisplay"></div>
+
+          <div class="warning-box">
+            <p>
+              <i class="fas fa-exclamation-triangle"></i> Never share your seed
+              phrase with anyone. Anyone with this phrase can access your funds.
+            </p>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="seedSaved" />
+            <label for="seedSaved">I have securely saved my seed phrase</label>
+          </div>
+
+          <div class="input-group">
+            <label>WALLET PASSWORD (REQUIRED)</label>
+            <input
+              type="password"
+              id="walletPasswordCreate"
+              placeholder="Create a password"
+            />
+            <p
+              style="font-size: 11px; color: var(--text-muted); margin-top: 4px"
+            >
+              This password encrypts your wallet. Don't forget it - you need it
+              to access your wallet!
+            </p>
+          </div>
+
+          <div class="input-group">
+            <label>CONFIRM PASSWORD</label>
+            <input
+              type="password"
+              id="walletPasswordCreateConfirm"
+              placeholder="Confirm password"
+            />
+            <div id="createPasswordError" class="error-msg"></div>
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="createWalletFromSeed()"
+            id="createWalletBtn"
+            disabled
+          >
+            <i class="fas fa-check"></i> I UNDERSTAND - CREATE WALLET
+          </button>
+        </div>
+      </div>
+
+      <!-- Import Wallet Screen -->
+      <div id="importScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('welcome')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-key"></i> IMPORT SEED PHRASE
+          </div>
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 13px;
+              margin-bottom: 16px;
+            "
+          >
+            Enter your 12 or 24 word seed phrase, separated by spaces.
+          </p>
+
+          <div class="input-group">
+            <label>SEED PHRASE</label>
+            <textarea
+              id="importSeedInput"
+              placeholder="word1 word2 word3 ..."
+            ></textarea>
+            <div id="importError" class="error-msg"></div>
+          </div>
+
+          <div class="input-group">
+            <label>WALLET PASSWORD</label>
+            <input
+              type="password"
+              id="walletPasswordImport"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button class="btn btn-primary" onclick="importWallet()">
+            <i class="fas fa-unlock"></i> IMPORT WALLET
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Screen (Wallet Loaded) -->
+      <div id="dashboardScreen" class="screen">
+        <!-- Balance Card -->
+        <div class="card animate-in">
+          <div class="balance-display">
+            <div class="balance-label">TOTAL BALANCE</div>
+            <div class="balance-amount">
+              <span id="balanceAmount">0.00</span>
+              <span class="balance-symbol">AETH</span>
+            </div>
+            <div
+              id="balanceUsd"
+              style="color: var(--text-muted); font-size: 14px"
+            >
+              $0.00 USD
+            </div>
+          </div>
+
+          <div
+            class="address-display"
+            id="walletAddress"
+            onclick="copyAddress()"
+          >
+            <i class="fas fa-copy"></i> <span id="addressText">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions-row">
+          <div class="action-btn" onclick="showScreen('send')">
+            <i class="fas fa-paper-plane"></i>
+            <span>SEND</span>
+          </div>
+          <div class="action-btn" onclick="showReceiveModal()">
+            <i class="fas fa-qrcode"></i>
+            <span>RECEIVE</span>
+          </div>
+          <div class="action-btn" onclick="showScreen('stake')">
+            <i class="fas fa-coins"></i>
+            <span>STAKE</span>
+          </div>
+          <div class="action-btn" onclick="showScreen('swap')">
+            <i class="fas fa-exchange-alt"></i>
+            <span>SWAP</span>
+          </div>
+        </div>
+
+        <!-- Staked Balance -->
+        <div class="card">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <div>
+              <div class="balance-label" style="color: var(--success)">
+                STAKED
+              </div>
+              <div
+                id="stakedAmount"
+                style="font-size: 24px; font-weight: 700; color: var(--success)"
+              >
+                0.00 AETH
+              </div>
+            </div>
+            <div style="text-align: right">
+              <div class="balance-label" style="color: var(--warning)">
+                EARNED
+              </div>
+              <div
+                id="stakingRewards"
+                style="font-size: 18px; font-weight: 600; color: var(--warning)"
+              >
+                0.00 AETH
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="card">
+          <div class="card-title">
+            <i class="fas fa-history"></i> RECENT TRANSACTIONS
+          </div>
+          <div class="transaction-list" id="txHistory">
+            <p
+              style="
+                color: var(--text-muted);
+                text-align: center;
+                padding: 20px;
+                font-size: 13px;
+              "
+            >
+              No transactions yet
+            </p>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <button class="btn btn-secondary" onclick="showSeedPhrase()">
+            <i class="fas fa-eye"></i> VIEW SEED PHRASE
+          </button>
+          <button
+            class="btn btn-danger"
+            onclick="logout()"
+            style="margin-top: 12px"
+          >
+            <i class="fas fa-sign-out-alt"></i> LOGOUT
+          </button>
+        </div>
+      </div>
+
+      <!-- Send Screen -->
+      <div id="sendScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-paper-plane"></i> SEND AETH
+          </div>
+
+          <div class="input-group">
+            <label>RECIPIENT ADDRESS</label>
+            <input type="text" id="sendToAddress" placeholder="0x..." />
+          </div>
+
+          <div class="input-group">
+            <label>AMOUNT (AETH)</label>
+            <input
+              type="number"
+              id="sendAmount"
+              placeholder="0.00"
+              step="0.0001"
+            />
+          </div>
+
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 16px;
+            "
+          >
+            <span style="color: var(--text-muted); font-size: 13px"
+              >Available:</span
+            >
+            <span id="sendMaxBalance" style="color: var(--primary)"
+              >0 AETH</span
+            >
+          </div>
+
+          <div id="sendError" class="error-msg"></div>
+
+          <button class="btn btn-primary" onclick="sendTransaction()">
+            <i class="fas fa-paper-plane"></i> SEND
+          </button>
+        </div>
+
+        <!-- Internal Transfer Toggle -->
+        <div class="card">
+          <div class="checkbox-group">
+            <input type="checkbox" id="internalTransfer" />
+            <label for="internalTransfer"
+              >Internal Aetheron Transfer (Instant, No Gas)</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- View Seed Screen -->
+      <div id="viewSeedScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-eye"></i> YOUR SEED PHRASE
+          </div>
+
+          <div class="warning-box">
+            <p>
+              <i class="fas fa-exclamation-triangle"></i> Never share this with
+              anyone!
+            </p>
+          </div>
+
+          <div class="seed-phrase-grid" id="viewSeedPhrase"></div>
+
+          <button class="btn btn-secondary" onclick="copySeedPhrase()">
+            <i class="fas fa-copy"></i> COPY TO CLIPBOARD
+          </button>
+        </div>
+      </div>
+
+      <!-- Stake Screen -->
+      <div id="stakeScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title"><i class="fas fa-coins"></i> STAKE AETH</div>
+
+          <div class="tab-nav">
+            <button class="tab-btn active" onclick="selectStakePool(0)">
+              30 Days
+            </button>
+            <button class="tab-btn" onclick="selectStakePool(1)">
+              90 Days
+            </button>
+            <button class="tab-btn" onclick="selectStakePool(2)">
+              180 Days
+            </button>
+          </div>
+
+          <div
+            class="pool-info"
+            id="poolInfo"
+            style="
+              background: var(--bg-elevated);
+              padding: 16px;
+              border-radius: 10px;
+              margin-bottom: 16px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+              "
+            >
+              <span style="color: var(--text-muted)">APY</span>
+              <span id="poolApy" style="color: var(--success); font-weight: 700"
+                >8%</span
+              >
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+              "
+            >
+              <span style="color: var(--text-muted)">Lock Period</span>
+              <span id="poolLock">30 Days</span>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <span style="color: var(--text-muted)">Min Stake</span>
+              <span>100 AETH</span>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>AMOUNT TO STAKE</label>
+            <input
+              type="number"
+              id="stakeAmount"
+              placeholder="0.00"
+              step="0.01"
+            />
+            <div style="text-align: right; margin-top: 8px">
+              <a
+                href="#"
+                onclick="setMaxStake()"
+                style="color: var(--primary); font-size: 12px"
+                >Set Max</a
+              >
+            </div>
+          </div>
+
+          <div id="stakeError" class="error-msg"></div>
+
+          <button class="btn btn-primary" onclick="stakeTokens()">
+            <i class="fas fa-lock"></i> STAKE TOKENS
+          </button>
+        </div>
+
+        <!-- Active Stakes -->
+        <div class="card">
+          <div class="card-title">
+            <i class="fas fa-layer-group"></i> YOUR STAKES
+          </div>
+          <div id="activeStakes">
+            <p
+              style="
+                color: var(--text-muted);
+                text-align: center;
+                padding: 20px;
+                font-size: 13px;
+              "
+            >
+              No active stakes
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <button class="btn btn-secondary" onclick="claimStakingRewards()">
+            <i class="fas fa-gift"></i> CLAIM REWARDS
+          </button>
+        </div>
+      </div>
+
+      <!-- Swap Screen -->
+      <div id="swapScreen" class="screen">
+        <button class="back-btn" onclick="showScreen('dashboard')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="card animate-in">
+          <div class="card-title">
+            <i class="fas fa-exchange-alt"></i> SWAP TOKENS
+          </div>
+
+          <div class="input-group">
+            <label>FROM</label>
+            <div style="display: flex; gap: 8px">
+              <select
+                id="fromToken"
+                style="
+                  flex: 1;
+                  padding: 12px;
+                  background: var(--bg-elevated);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                "
+              >
+                <option value="AETH">AETH</option>
+                <option value="MATIC">MATIC</option>
+                <option value="USDC">USDC</option>
+              </select>
+              <input
+                type="number"
+                id="swapFromAmount"
+                placeholder="0.00"
+                style="flex: 1"
+              />
+            </div>
+            <div
+              style="
+                text-align: right;
+                margin-top: 8px;
+                font-size: 12px;
+                color: var(--text-muted);
+              "
+            >
+              Balance: <span id="fromTokenBalance">0.00</span>
+            </div>
+          </div>
+
+          <div style="text-align: center; padding: 10px">
+            <i class="fas fa-arrow-down" style="color: var(--primary)"></i>
+          </div>
+
+          <div class="input-group">
+            <label>TO</label>
+            <div style="display: flex; gap: 8px">
+              <select
+                id="toToken"
+                style="
+                  flex: 1;
+                  padding: 12px;
+                  background: var(--bg-elevated);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                "
+              >
+                <option value="USDC">USDC</option>
+                <option value="MATIC">MATIC</option>
+                <option value="AETH">AETH</option>
+              </select>
+              <input
+                type="text"
+                id="swapToAmount"
+                placeholder="~0.00"
+                readonly
+                style="flex: 1; background: var(--bg-dark)"
+              />
+            </div>
+          </div>
+
+          <div
+            style="
+              background: var(--bg-elevated);
+              padding: 12px;
+              border-radius: 10px;
+              margin: 16px 0;
+              font-size: 12px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 4px;
+              "
+            >
+              <span style="color: var(--text-muted)">Rate</span>
+              <span id="swapRate">1 AETH = $0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <span style="color: var(--text-muted)">Fee</span>
+              <span>~0.5%</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="executeSwap()">
+            <i class="fas fa-exchange-alt"></i> SWAP
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receive Modal -->
+    <div class="modal" id="receiveModal">
+      <div class="modal-content">
+        <div class="modal-title">RECEIVE AETH</div>
+        <p style="color: var(--text-muted); font-size: 13px">
+          Scan this QR code or copy the address below
+        </p>
+
+        <div class="qr-container" id="qrCode"></div>
+
+        <div
+          class="address-display"
+          id="receiveAddress"
+          onclick="copyAddress()"
+        >
+          <i class="fas fa-copy"></i> <span></span>
+        </div>
+
+        <button class="btn btn-secondary" onclick="closeReceiveModal()">
+          CLOSE
+        </button>
+      </div>
+    </div>
+
+    <!-- Transaction Sent Modal -->
+    <div class="modal" id="txSentModal">
+      <div class="modal-content">
+        <i
+          class="fas fa-check-circle"
+          style="font-size: 48px; color: var(--success); margin-bottom: 16px"
+        ></i>
+        <div class="modal-title">TRANSACTION SENT</div>
+        <p
+          style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px"
+          id="txHashDisplay"
+        ></p>
+        <a
+          href="#"
+          id="txExplorerLink"
+          target="_blank"
+          style="color: var(--primary); font-size: 12px"
+          >View on PolygonScan</a
+        >
+        <button
+          class="btn btn-primary"
+          onclick="closeTxSentModal()"
+          style="margin-top: 20px"
+        >
+          DONE
+        </button>
+      </div>
+    </div>
+
+    <script src="aetheron-wallet.js"></script>
+  </body>
+</html>

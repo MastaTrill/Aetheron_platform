@@ -1,31 +1,71 @@
-import { task } from 'hardhat/config';
-import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-ethers';
-import '@openzeppelin/hardhat-upgrades';
-import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
+import hardhatEthers from "@nomicfoundation/hardhat-ethers";
+import dotenv from "dotenv";
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
-const POLYGON_RPC_URL =
-  process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com';
+dotenv.config();
 
-module.exports = {
-  solidity: '0.8.20',
-  networks: {
-    polygon: {
-      url: POLYGON_RPC_URL,
-      accounts: [PRIVATE_KEY],
-    },
-    mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com',
-      accounts: [PRIVATE_KEY],
+export default {
+  mocha: {
+    timeout: 60000,
+  },
+  plugins: [hardhatEthers],
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
     },
   },
-  etherscan: {
-    apiKey: {
-      polygon: POLYGONSCAN_API_KEY,
-      mumbai: POLYGONSCAN_API_KEY,
+  networks: {
+    hardhat: {
+      chainId: 1337,
     },
+    polygon: {
+      type: "http",
+      url: process.env.POLYGON_RPC_URL || "https://polygon-rpc.com",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 137,
+    },
+    mumbai: {
+      type: "http",
+      url: process.env.MUMBAI_RPC_URL || "https://rpc-amoy.polygon.technology",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 80002,
+      gasPrice: 30000000000,
+    },
+    sepolia: {
+      type: "http",
+      url: process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
+    base: {
+      type: "http",
+      url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 8453,
+    },
+    baseSepolia: {
+      type: "http",
+      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 84532,
+    },
+    mainnet: {
+      type: "http",
+      url:
+        process.env.MAINNET_RPC_URL ||
+        "https://eth-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1,
+      gasPrice: 30000000000,
+    },
+  },
+  paths: {
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts",
   },
 };

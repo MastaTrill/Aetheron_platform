@@ -39,7 +39,7 @@
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js >= 20.19.4
 - React Native CLI
 - Xcode (for iOS) or Android Studio (for Android)
 - CocoaPods (for iOS)
@@ -266,7 +266,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](../CONTRIBUTING.MD) for 
 
 ## 📞 Support
 
-- **Website**: [mastatrill.github.io/aetheron-platform](https://mastatrill.github.io/aetheron-platform)
+- **Website**: [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform)
 - **GitHub**: [github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)
 - **Documentation**: See main repo README
 
@@ -291,4 +291,3 @@ Contributions are welcome! Please see [CONTRIBUTING.md](../CONTRIBUTING.MD) for 
 ---
 
 Built with ❤️ for the Aetheron community
-

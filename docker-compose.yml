@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  aetheron-node-1:
+    build: ./aetheron-node
+    container_name: aetheron-node-1
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "8545:8545"
+    environment:
+      - NODE_NAME=validator-1
+      - PORT=3000
+      - METRICS_PORT=8080
+      - RPC_PORT=8545
+      - PEER_ADDRESSES=aetheron-node-2:3000,aetheron-node-3:3000
+      - PRIVATE_KEY=${VALIDATOR_1_KEY:-testkey1}
+    networks:
+      aetheron_net:
+        ipv4_address: 192.168.10.10
+
+  aetheron-node-2:
+    build: ./aetheron-node
+    container_name: aetheron-node-2
+    ports:
+      - "3001:3000"
+      - "8081:8080"
+      - "8546:8545"
+    environment:
+      - NODE_NAME=validator-2
+      - PORT=3000
+      - METRICS_PORT=8080
+      - RPC_PORT=8545
+      - PEER_ADDRESSES=aetheron-node-1:3000,aetheron-node-3:3000
+      - PRIVATE_KEY=${VALIDATOR_2_KEY:-testkey2}
+    networks:
+      aetheron_net:
+        ipv4_address: 192.168.10.11
+
+  aetheron-node-3:
+    build: ./aetheron-node
+    container_name: aetheron-node-3
+    ports:
+      - "3002:3000"
+      - "8082:8080"
+      - "8547:8545"
+    environment:
+      - NODE_NAME=validator-3
+      - PORT=3000
+      - METRICS_PORT=8080
+      - RPC_PORT=8545
+      - PEER_ADDRESSES=aetheron-node-1:3000,aetheron-node-2:3000
+      - PRIVATE_KEY=${VALIDATOR_3_KEY:-testkey3}
+    networks:
+      aetheron_net:
+        ipv4_address: 192.168.10.12
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aetheron-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks:
+      aetheron_net:
+        ipv4_address: 192.168.10.20
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aetheron-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+    networks:
+      aetheron_net:
+        ipv4_address: 192.168.10.21
+    depends_on:
+      - prometheus
+
+networks:
+  aetheron_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+
+volumes:
+  prometheus-data:
+  grafana-data:

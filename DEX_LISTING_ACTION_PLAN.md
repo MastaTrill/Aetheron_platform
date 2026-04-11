@@ -45,7 +45,7 @@
    - **Token Name**: Aetheron
    - **Symbol**: AETH
    - **Description**: Next-generation DeFi staking platform on Polygon offering 8-18% APY with $0.01 transaction fees. Three flexible staking pools (7/30/90 days) with transparent, real-time analytics.
-   - **Website**: [https://aetheronplatform.github.io](https://aetheronplatform.github.io)
+   - **Website**: [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform)
    - **Telegram**: [Your link]
    - **Twitter**: [https://x.com/William*McCoy*](https://x.com/William_McCoy_)
    - **Discord**: [Your link]
@@ -83,7 +83,7 @@ Logo: [Upload 200x200 PNG]
 Description (Max 500 chars):
 Aetheron is a next-generation DeFi staking platform built on Polygon, offering 8-18% APY across three flexible pools (7/30/90 days). With $0.01 transaction fees, real-time analytics, and mobile optimization, Aetheron makes high-yield staking accessible to everyone. Verified smart contracts, transparent tokenomics, and professional documentation ensure security and trust.
 
-Website: https://aetheronplatform.github.io
+Website: https://mastatrill.github.io/Aetheron_platform
 Whitepaper: [Your link]
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 ```
@@ -188,9 +188,9 @@ Category: DeFi, Staking, Polygon Ecosystem
 **Project Links**:
 
 ```
-Website: https://aetheronplatform.github.io
-Analytics: https://aetheronplatform.github.io/analytics-dashboard.html
-Calculator: https://aetheronplatform.github.io/staking-calculator.html
+Website: https://mastatrill.github.io/Aetheron_platform
+Analytics: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+Calculator: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
 Whitepaper: [Your PDF link]
 
 Block Explorer 1: https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
@@ -517,8 +517,8 @@ Pair Contract: 0xd57c5E33ebDC1b565F99d06809debbf86142705D
 DEX: QuickSwap V2
 Pair: AETH/WMATIC
 
-Website: https://aetheronplatform.github.io
-Analytics: https://aetheronplatform.github.io/analytics-dashboard.html
+Website: https://mastatrill.github.io/Aetheron_platform
+Analytics: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 Polygonscan: https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 

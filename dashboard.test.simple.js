@@ -2,7 +2,7 @@
 // Simple smoke tests without Jest
 // This file uses ESM syntax for compatibility with "type": "module".
 
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 
 function assert(condition, message) {
   if (!condition) {
@@ -26,11 +26,10 @@ console.log('🚀 Starting Aetheron Dashboard Tests\n');
 
 // Test 1: Profile edit modal functionality
 test('Profile edit modal opens and saves', () => {
-  const dom = new JSDOM(
+  const dom = parseHTML(
     '<!DOCTYPE html><html><body><div id="userProfilesPlaceholder"></div><button id="editProfileBtn"></button></body></html>',
   );
-  const window = dom.window;
-  const document = window.document;
+  const { window, document } = dom;
   global.window = window;
   global.document = document;
 
@@ -69,8 +68,7 @@ test('Profile edit modal opens and saves', () => {
 
 // Test 2: Theme toggle functionality
 test('Theme toggle functionality', () => {
-  const dom = new JSDOM('<html><body></body></html>');
-  const document = dom.window.document;
+  const { document } = parseHTML('<html><body></body></html>');
 
   // Create theme toggle button
   const themeToggle = document.createElement('button');
@@ -100,8 +98,7 @@ test('Theme toggle functionality', () => {
 
 // Test 3: Basic DOM manipulation
 test('DOM element creation and manipulation', () => {
-  const dom = new JSDOM('<html><body></body></html>');
-  const document = dom.window.document;
+  const { document } = parseHTML('<html><body></body></html>');
 
   // Create a div
   const div = document.createElement('div');

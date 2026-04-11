@@ -25,7 +25,7 @@
 - [ ] Set up Twitter account @William_McCoy_ (Primary account)
   - Upload logo as profile pic
   - Create header banner in Canva
-  - Write bio: "Next-gen DeFi staking on Polygon. 8-18% APY, $0.01 fees, real-time analytics. https://aetheronplatform.github.io"
+  - Write bio: "Next-gen DeFi staking on Polygon. 8-18% APY, $0.01 fees, real-time analytics. https://mastatrill.github.io/Aetheron_platform"
   - Pin first tweet (use Tweet 1 from SOCIAL_MEDIA_CAMPAIGN.md)
 
 **Afternoon (2-3 hours)**:
@@ -580,7 +580,7 @@ Celebrate with your community when you hit:
 Before you start Day 1:
 
 **Platform**:
-- [ ] Website accessible: https://aetheronplatform.github.io ✅
+- [ ] Website accessible: https://mastatrill.github.io/Aetheron_platform ✅
 - [ ] Analytics dashboard working ✅
 - [ ] Calculator functional ✅
 - [ ] Contracts verified ✅

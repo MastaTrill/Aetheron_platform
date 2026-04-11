@@ -1,4 +1,4 @@
-export function initGlobalAnnouncements() {
+function initGlobalAnnouncements() {
   const ANNOUNCEMENT_STORAGE_KEY = 'aethAnnouncementDismissed';
   const OFFLINE_TOAST_KEY = 'aethOfflineReadyShown';
 
@@ -123,6 +123,14 @@ export function initGlobalAnnouncements() {
 
   function setupServiceWorker() {
     if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    const swSetting = document
+      .querySelector('meta[name="aetheron-sw"]')
+      ?.getAttribute('content');
+
+    if (swSetting === 'off') {
       return;
     }
 

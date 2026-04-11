@@ -10,7 +10,7 @@
 4. **Fill out developer information**:
    - Developer name: Aetheron
    - Email: <support@aetheron.com>
-   - Website: <https://mastatrill.github.io/aetheron-platform>
+   - Website: <https://mastatrill.github.io/Aetheron_platform>
    - Address: [Your address]
 5. **Accept terms and conditions**
 6. **Verify your account** (may take 24-48 hours)

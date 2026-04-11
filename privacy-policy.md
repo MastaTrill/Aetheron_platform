@@ -92,7 +92,7 @@ We may update this Privacy Policy periodically. We will notify you of significan
 If you have questions about this Privacy Policy, please contact us:
 
 - **Email:** <support@aetheron.com>
-- **Website:** <https://mastatrill.github.io/aetheron-platform>
+- **Website:** <https://mastatrill.github.io/Aetheron_platform>
 
 ## 13. Governing Law
 

@@ -17,7 +17,7 @@ The Aetheron Platform is **100% technically operational** and **100% prepared fo
 - AETH Token: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - Staking Contract: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - Trading active on QuickSwap
-- Dashboard live: https://aetheronplatform.github.io
+- Dashboard live: https://mastatrill.github.io/Aetheron_platform
 - Current liquidity: 9.5M AETH + 5.25 POL
 
 **✅ GROWTH ASSETS PREPARED:**

@@ -6,14 +6,18 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test",
-    "test:coverage": "hardhat coverage",
+    "test": "node --test test/*.test.js",
+    "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
     "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
-    "verify:mumbai": "hardhat verify --network mumbai",
-    "verify:polygon": "hardhat verify --network polygon",
+    "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
+    "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
+    "verify": "node scripts/verify-contracts.mjs",
+    "verify:mumbai": "node scripts/verify-contracts.mjs mumbai",
+    "verify:polygon": "node scripts/verify-contracts.mjs polygon",
+    "verify:sepolia": "node scripts/verify-contracts.mjs sepolia",
     "node": "hardhat node",
     "clean": "hardhat clean"
   },
@@ -28,25 +32,17 @@
   "author": "MastaTrill",
   "license": "MIT",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "2.2.2",
-    "@nomiclabs/hardhat-waffle": "2.0.3",
-    "@openzeppelin/hardhat-upgrades": "^1.25.0",
+    "@nomicfoundation/hardhat-ethers": "^3.1.3",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
-    "@nomicfoundation/hardhat-verify": "^2.1.0",
-    "@typechain/ethers-v5": "^10.2.0",
-    "@typechain/hardhat": "^6.1.2",
-    "@types/chai": "^4.3.4",
-    "@types/mocha": "^9.1.1",
-    "chai": "^4.3.7",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.28.6",
-    "hardhat-gas-reporter": "^1.0.8",
-    "solidity-coverage": "^0.8.17",
-    "typechain": "^8.1.0"
+    "ethers": "^6.16.0",
+    "hardhat": "^2.28.2"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.3.1"
+  },
+  "overrides": {
+    "undici": "^6.24.1"
   },
   "directories": {
     "test": "test"

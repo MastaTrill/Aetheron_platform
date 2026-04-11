@@ -1,0 +1,27 @@
+{
+  "name": "Aetheron Platform",
+  "short_name": "Aetheron",
+  "description": "Revolutionary DeFi Platform with staking rewards up to 50% APY",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00D4FF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "finance",
+    "utilities"
+  ]
+}

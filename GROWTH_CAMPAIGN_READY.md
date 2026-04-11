@@ -162,7 +162,7 @@
   → Username: @AetheronDeFi or @AetheronStaking
   → Upload logo as profile pic
   → Upload banner (create in Canva, 1500x500)
-  → Bio: "Next-gen DeFi staking on Polygon. 8-18% APY, $0.01 fees. https://aetheronplatform.github.io 🚀"
+  → Bio: "Next-gen DeFi staking on Polygon. 8-18% APY, $0.01 fees. https://mastatrill.github.io/Aetheron_platform 🚀"
 ```
 
 ### Hour 2: Listings (10:00 AM - 11:00 AM)

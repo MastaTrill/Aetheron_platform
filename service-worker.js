@@ -1,26 +1,30 @@
-const CACHE_VERSION = 'v1.4.0';
+const CACHE_VERSION = 'v1.4.2';
 const CACHE_NAME = `aetheron-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `aetheron-runtime-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './index.min.js',
+  './index.js',
   './charts.min.js',
   './monitor.js',
   './performance-monitor.js',
   './marketing-launch.js',
   './shared-utils.js',
-  './critical.min.css',
+  './critical.css',
+  './index.css',
+  './shared-styles.css',
+  './mobile-optimization.css',
   './shared-mobile-polish.css',
+  './sw-init.js',
+  './dom-bindings.js',
+  './dashboard-starfield.js',
   './global-announcements.js',
   './announcements.json',
   './referral-leaderboard.json',
   './manifest.json',
+  './manifest.webmanifest',
   './offline.html',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
 ];
 
 self.addEventListener('install', (event) => {
@@ -75,9 +79,8 @@ self.addEventListener('fetch', (event) => {
     event.request.headers.get('accept')?.includes('text/html');
   const isSameOrigin = requestUrl.origin === self.location.origin;
 
-  // Handle external requests differently
-  if (!isSameOrigin && !requestUrl.hostname.includes('cdn')) {
-    // Cache external API calls for 5 minutes
+  // Let third-party CDN assets load directly and only manage selected APIs.
+  if (!isSameOrigin) {
     if (
       requestUrl.hostname.includes('polygon-rpc.com') ||
       requestUrl.hostname.includes('polygonscan.com') ||
@@ -99,19 +102,14 @@ self.addEventListener('fetch', (event) => {
 
             return fetch(event.request).then((response) => {
               if (response.status === 200) {
-                // Clone response and add custom header for cache freshness
                 try {
-                  if (response.bodyUsed) {
-                    // Avoid cloning if body is already used
-                    return response;
-                  }
                   const headers = new Headers(response.headers);
                   headers.set('sw-cache-time', new Date().toISOString());
-                  const clonedResponse = response.clone();
-                  clonedResponse.blob().then((blob) => {
+                  const responseClone = response.clone();
+                  responseClone.blob().then((blob) => {
                     const cachedResponse = new Response(blob, {
-                      status: clonedResponse.status,
-                      statusText: clonedResponse.statusText,
+                      status: responseClone.status,
+                      statusText: responseClone.statusText,
                       headers: headers,
                     });
                     cache.put(event.request, cachedResponse);
@@ -151,7 +149,7 @@ self.addEventListener('fetch', (event) => {
           self.registration.showNotification &&
             self.registration.showNotification('You are offline', {
               body: 'Some features may be unavailable.',
-              icon: './assets/aetheron-og-image.png',
+              icon: './apple-touch-icon.png',
             });
           return caches.match('./offline.html');
         }),
@@ -173,8 +171,9 @@ self.addEventListener('fetch', (event) => {
           fetch(event.request)
             .then((response) => {
               if (response && response.status === 200) {
+                const responseClone = response.clone();
                 caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, response.clone());
+                  cache.put(event.request, responseClone);
                 });
               }
             })
@@ -185,15 +184,14 @@ self.addEventListener('fetch', (event) => {
         return fetch(event.request)
           .then((response) => {
             if (response && response.status === 200) {
+              const responseClone = response.clone();
               caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, response.clone());
+                cache.put(event.request, responseClone);
               });
-              return response;
             }
-            // Fallback to offline if fetch fails
-            return caches.match('./offline.html');
+            return response;
           })
-          .catch(() => caches.match('./offline.html'));
+          .catch(() => cachedResponse || Response.error());
       }),
     );
     return;
@@ -204,9 +202,10 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
           caches
             .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, networkResponse.clone()));
+            .then((cache) => cache.put(event.request, responseClone));
         }
         return networkResponse;
       });

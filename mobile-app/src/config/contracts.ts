@@ -21,11 +21,13 @@ export const TOKEN_INFO = {
   symbol: 'AETH',
   decimals: 18,
   totalSupply: '1000000000',
-  logo: require('../assets/logo.png'),
+  logo: {
+    uri: 'https://mastatrill.github.io/Aetheron_platform/logo192.png',
+  },
 };
 
 export const LINKS = {
-  WEBSITE: 'https://mastatrill.github.io/aetheron-platform',
+  WEBSITE: 'https://mastatrill.github.io/Aetheron_platform',
   BUY_QUICKSWAP: `https://quickswap.exchange/#/swap?outputCurrency=${CONTRACTS.AETH_TOKEN}`,
   DEXTOOLS: `https://www.dextools.io/app/polygon/pair-explorer/${CONTRACTS.LIQUIDITY_PAIR}`,
   DEXSCREENER: `https://dexscreener.com/polygon/${CONTRACTS.AETH_TOKEN}`,

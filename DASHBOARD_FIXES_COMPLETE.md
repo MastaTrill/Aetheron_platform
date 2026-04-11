@@ -280,7 +280,7 @@ window.addEventListener('load', async () => {
    - GitHub Pages will auto-deploy
 
 3. **Verify live:**
-   - Visit: [https://aetheronplatform.github.io](https://aetheronplatform.github.io)
+   - Visit: [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform)
    - Ensure all data loads
    - Test wallet connection
    - Verify staking works

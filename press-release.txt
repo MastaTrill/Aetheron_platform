@@ -38,7 +38,7 @@ Aetheron is building the future of decentralized finance by making DeFi accessib
 **Media Contact:**
 Aetheron Team
 Email: contact@aetheronplatform.com
-Website: https://mastatrill.github.io/aetheron-platform
+Website: https://mastatrill.github.io/Aetheron_platform
 Discord: https://discord.gg/aetheronplatform
 
 ---
