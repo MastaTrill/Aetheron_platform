@@ -1,0 +1,17 @@
+{
+  "name": "aetheron-launch-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server-launch.js",
+    "start": "node server-launch.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}

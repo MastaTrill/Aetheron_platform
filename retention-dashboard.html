@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aetheron User Insights</title>
+<link rel="stylesheet" href="homepage-conversion.css">
+</head>
+<body>
+
+<div class="wrap">
+
+<h1>User Insights</h1>
+
+<div class="grid3">
+  <div class="card"><div class="label">Visits</div><div id="rtVisits" class="value">0</div></div>
+  <div class="card"><div class="label">Wallet Connects</div><div id="rtConnects" class="value">0</div></div>
+  <div class="card"><div class="label">Trades</div><div id="rtTrades" class="value">0</div></div>
+</div>
+
+<div class="card">
+  <div class="label">Retention Score</div>
+  <div id="rtRetentionScore" class="value">0</div>
+  <div id="rtStatus" class="muted"></div>
+</div>
+
+<div class="card">
+  <h3>Recent Activity</h3>
+  <div id="rtEventFeed"></div>
+</div>
+
+<div class="card">
+  <h3>Next Action</h3>
+  <div id="rtNudge"></div>
+</div>
+
+</div>
+
+<script src="retention-tracking.js"></script>
+</body>
+</html>

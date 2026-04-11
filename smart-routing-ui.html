@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aetheron Smart Routing Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<style>
+body{background:#0b0b0b;color:#fff;font-family:Arial;text-align:center}
+.card{background:#151515;padding:20px;margin:20px;border-radius:10px}
+input,select,button{padding:10px;margin:5px}
+</style>
+</head>
+<body>
+
+<h1>Aetheron Smart Trading</h1>
+
+<div class="card">
+<button onclick="srConnect()">Connect Wallet</button>
+<p id="srWallet"></p>
+<p id="srStatus"></p>
+</div>
+
+<div class="card">
+<h3>Swap</h3>
+<select id="srTokenIn"><option>AETH</option><option>WMATIC</option><option>USDC</option></select>
+Balance: <span id="srBalanceIn">-</span>
+<br><br>
+<select id="srTokenOut"><option>WMATIC</option><option>AETH</option><option>USDC</option></select>
+Balance: <span id="srBalanceOut">-</span>
+<br><br>
+<input id="srAmountIn" placeholder="Amount">
+<br>
+<input id="srSlippage" value="1">
+<br>
+<button onclick="srBestRoute()">Find Best Route</button>
+<button onclick="srEstimateGas()">Estimate Gas</button>
+<button onclick="srApprove()">Approve</button>
+<button onclick="srExecute(false)">Execute</button>
+<button onclick="srExecute(true)">One-Click Trade</button>
+
+<p>Best Route: <span id="srBestRouter">-</span></p>
+<p>Output: <span id="srQuoteOut">-</span></p>
+<p>Gas: <span id="srGas">-</span></p>
+<p>Fee (ETH): <span id="srFee">-</span></p>
+</div>
+
+<div class="card">
+<h3>Trade History</h3>
+<div id="srHistory"></div>
+</div>
+
+<script src="smart-routing-engine.js"></script>
+</body>
+</html>

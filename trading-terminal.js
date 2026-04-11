@@ -1,0 +1,18 @@
+const TT={prices:[],labels:[],max:120};
+let ttChart;
+function ttNum(v,d=2){if(v===null||v===undefined||isNaN(v))return '--';return Number(v).toLocaleString(undefined,{maximumFractionDigits:d});}
+function ttMoney(v){if(v===null||v===undefined||isNaN(v))return '--';return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:v<1?6:2}).format(v);} 
+function ttRead(id){const el=document.getElementById(id); if(!el) return NaN; return parseFloat(String(el.innerText).replace(/[^0-9.\-]/g,''));}
+function ttRenderChart(){const ctx=document.getElementById('ttChart'); if(!ctx) return; if(ttChart) ttChart.destroy(); ttChart=new Chart(ctx,{type:'line',data:{labels:TT.labels,datasets:[{label:'AETH Price',data:TT.prices,tension:.35,borderWidth:2,fill:false}]},options:{responsive:true,plugins:{legend:{display:false}}}});} 
+function ttUpdateSeries(){const p=ttRead('statPrice'); if(!isNaN(p)&&p>0){TT.prices.push(p); TT.labels.push(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})); if(TT.prices.length>TT.max){TT.prices.shift(); TT.labels.shift();}} ttRenderChart();}
+function ttBuildOrderBook(){const liq=ttRead('statLiquidity')||0; const mid=ttRead('statPrice')||0; const el=document.getElementById('orderBook'); if(!el) return; let html='<div class="book-head">Price | Size | Side</div>'; for(let i=0;i<10;i++){const spread=(i+1)*0.001; const bid=mid*(1-spread); const ask=mid*(1+spread); const size=(liq/10000)*(1/(i+1)); html+=`<div class="book-row"><div>${ttMoney(ask)}</div><div>${ttNum(size,4)}</div><div class="bad">Ask</div></div>`;} for(let i=9;i>=0;i--){const spread=(i+1)*0.001; const bid=mid*(1-spread); const size=(liq/10000)*(1/(i+1)); html+=`<div class="book-row"><div>${ttMoney(bid)}</div><div>${ttNum(size,4)}</div><div class="good">Bid</div></div>`;} el.innerHTML=html;}
+function ttFlow(){const vol=ttRead('statVolume')||0; const change=ttRead('statChange')||0; const el=document.getElementById('flow'); if(!el) return; const buy=vol*(0.5+Math.max(-0.3,Math.min(0.3,change/20))); const sell=vol-buy; el.innerHTML=`<div class="flow-head">Type | USD | %</div>
+ <div class="flow-row"><div>Buy</div><div>${ttMoney(buy)}</div><div>${ttNum((buy/Math.max(1,vol))*100,2)}%</div></div>
+ <div class="flow-row"><div>Sell</div><div>${ttMoney(sell)}</div><div>${ttNum((sell/Math.max(1,vol))*100,2)}%</div></div>`;}
+function ttPositions(){const bal=ttRead('bal')||0; const stk=ttRead('stk')||0; const price=ttRead('statPrice')||0; const el=document.getElementById('positions'); if(!el) return; const spot=bal*price; const staked=stk*price; const total=spot+staked; el.innerHTML=`<div class="pos-head">Type | Value | Weight</div>
+ <div class="pos-row"><div>Spot</div><div>${ttMoney(spot)}</div><div>${ttNum((spot/Math.max(1,total))*100,2)}%</div></div>
+ <div class="pos-row"><div>Staked</div><div>${ttMoney(staked)}</div><div>${ttNum((staked/Math.max(1,total))*100,2)}%</div></div>
+ <div class="pos-row"><div>Total</div><div>${ttMoney(total)}</div><div>100%</div></div>`;}
+function ttStrategy(){const change=ttRead('statChange')||0; const vol=ttRead('statVolume')||0; const liq=ttRead('statLiquidity')||0; const score=Math.max(0,Math.min(100,Math.round((liq/2000)+(vol/4000)-(Math.abs(change)*2)))); const txt= score>70?'Momentum long bias': score>45?'Range accumulation':'Risk reduction'; const el=document.getElementById('ttStrategy'); if(el) el.innerText=txt; const s=document.getElementById('ttScore'); if(s) s.innerText=String(score);} 
+function ttTick(){ttUpdateSeries(); ttBuildOrderBook(); ttFlow(); ttPositions(); ttStrategy();}
+document.addEventListener('DOMContentLoaded',()=>{setInterval(ttTick,3000);});

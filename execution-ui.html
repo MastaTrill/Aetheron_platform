@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aetheron Execution Engine</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <h1>Aetheron Trading Engine</h1>
+  <button onclick="execConnect()">Connect Wallet</button>
+  <p>Wallet: <span id="execWallet">Not connected</span></p>
+  <h3>Swap</h3>
+  <select id="tokenIn">
+    <option value="AETH">AETH</option>
+    <option value="WMATIC">WMATIC</option>
+    <option value="USDC">USDC</option>
+  </select>
+  Balance: <span id="balanceIn">-</span>
+  <br><br>
+  <select id="tokenOut">
+    <option value="WMATIC">WMATIC</option>
+    <option value="AETH">AETH</option>
+    <option value="USDC">USDC</option>
+  </select>
+  Balance: <span id="balanceOut">-</span>
+  <br><br>
+  <input id="amountIn" placeholder="Amount" />
+  <br><br>
+  <input id="slippage" value="1" />
+  <br><br>
+  <button onclick="quoteSwap()">Quote</button>
+  <button onclick="approveExecution()">Approve</button>
+  <button onclick="executeSwap()">Execute</button>
+  <p>Output: <span id="quoteOut">-</span></p>
+  <p id="execStatus">Idle</p>
+  <script src="execution-engine.js"></script>
+</body>
+</html>
