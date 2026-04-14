@@ -9,7 +9,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const NEW_OWNER = "0xa0Bd76BDA539cF45e2963e84757516B50FfefFf7";
+  const NEW_OWNER = "0x4d20F6FB9f64f32Db4a10bfb2d63866b735510DB";
   const owners = [NEW_OWNER];
   const numConfirmationsRequired = 1; // TODO: Set required confirmations
 
