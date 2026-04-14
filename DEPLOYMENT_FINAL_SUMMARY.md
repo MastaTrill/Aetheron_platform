@@ -99,4 +99,4 @@ Once liquidity is added, your token will be **live and tradeable** on QuickSwap!
 
 ---
 
-*Generated: February 15, 2026*
+_Generated: April 14, 2026_

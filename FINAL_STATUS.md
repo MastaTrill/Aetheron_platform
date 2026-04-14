@@ -154,5 +154,5 @@ TOTAL:              ██████████████████░░
 
 ---
 
-Generated: June 21, 2024
+Generated: April 14, 2026
 Status: Ready for Launch (pending liquidity)

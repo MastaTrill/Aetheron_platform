@@ -2,12 +2,10 @@
 // Deploys the AetheronMultiSigTreasury contract as a UUPS upgradeable proxy
 
 import hre from "hardhat";
+const { ethers } = hre;
 import { deployUupsProxy, getImplementationAddress } from "../utils/uups.mjs";
 
 async function main() {
-  const connection = await hre.network.connect();
-  const { ethers } = connection;
-
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
