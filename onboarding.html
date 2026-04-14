@@ -1,78 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Aetheron Onboarding</title>
-  <link rel="stylesheet" href="onboarding-flow.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-</head>
-<body>
+  <head>
+    <title>Aetheron Onboarding</title>
+    <link rel="stylesheet" href="onboarding-flow.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card hero">
+        <h1>Get Started with Aetheron</h1>
+        <p>Follow this quick setup to make your first trade.</p>
+      </div>
 
-<div class="wrap">
+      <div class="steps">
+        <div class="step card" data-step="1">
+          <div class="step-badge">1</div>
+          <h3>Connect Wallet</h3>
+          <p>Securely connect your wallet.</p>
+        </div>
 
-  <div class="card hero">
-    <h1>Get Started with Aetheron</h1>
-    <p>Follow this quick setup to make your first trade.</p>
-  </div>
+        <div class="step card" data-step="2">
+          <div class="step-badge">2</div>
+          <h3>Choose Trade</h3>
+          <p>Select tokens and amount.</p>
+        </div>
 
-  <div class="steps">
-    <div class="step card" data-step="1">
-      <div class="step-badge">1</div>
-      <h3>Connect Wallet</h3>
-      <p>Securely connect your wallet.</p>
+        <div class="step card" data-step="3">
+          <div class="step-badge">3</div>
+          <h3>Execute</h3>
+          <p>Open smart routing to trade.</p>
+        </div>
+
+        <div class="step card" data-step="4">
+          <div class="step-badge">4</div>
+          <h3>Done</h3>
+          <p>Explore analytics next.</p>
+        </div>
+      </div>
+
+      <div class="panel card">
+        <div class="row">
+          <button class="btn btn-main" onclick="aoConnectWallet()">
+            Connect Wallet
+          </button>
+        </div>
+
+        <div id="aoWallet" class="wallet-box muted">Not connected</div>
+
+        <select id="aoPair" class="select">
+          <option>AETH/USDC</option>
+          <option>WMATIC/USDC</option>
+        </select>
+
+        <input
+          id="aoAmount"
+          class="input"
+          placeholder="Amount (USD)"
+          value="10"
+        />
+
+        <div class="row">
+          <button class="btn btn-soft" onclick="aoPrefillTrade()">
+            Continue to Trade
+          </button>
+          <button class="btn btn-main" onclick="aoGoToTrade()">
+            Open Terminal
+          </button>
+        </div>
+
+        <div class="links">
+          <a class="link-pill" href="trading-terminal-pro.html">Terminal</a>
+          <a class="link-pill" href="smart-routing-ui.html">Routing</a>
+          <a class="link-pill" href="pro-charts-portfolio.html">Portfolio</a>
+        </div>
+      </div>
     </div>
 
-    <div class="step card" data-step="2">
-      <div class="step-badge">2</div>
-      <h3>Choose Trade</h3>
-      <p>Select tokens and amount.</p>
-    </div>
+    <div id="aoToast" class="toast"></div>
 
-    <div class="step card" data-step="3">
-      <div class="step-badge">3</div>
-      <h3>Execute</h3>
-      <p>Open smart routing to trade.</p>
-    </div>
-
-    <div class="step card" data-step="4">
-      <div class="step-badge">4</div>
-      <h3>Done</h3>
-      <p>Explore analytics next.</p>
-    </div>
-  </div>
-
-  <div class="panel card">
-
-    <div class="row">
-      <button class="btn btn-main" onclick="aoConnectWallet()">Connect Wallet</button>
-    </div>
-
-    <div id="aoWallet" class="wallet-box muted">Not connected</div>
-
-    <select id="aoPair" class="select">
-      <option>AETH/USDC</option>
-      <option>WMATIC/USDC</option>
-    </select>
-
-    <input id="aoAmount" class="input" placeholder="Amount (USD)" value="10">
-
-    <div class="row">
-      <button class="btn btn-soft" onclick="aoPrefillTrade()">Continue to Trade</button>
-      <button class="btn btn-main" onclick="aoGoToTrade()">Open Terminal</button>
-    </div>
-
-    <div class="links">
-      <a class="link-pill" href="trading-terminal-pro.html">Terminal</a>
-      <a class="link-pill" href="smart-routing-ui.html">Routing</a>
-      <a class="link-pill" href="pro-charts-portfolio.html">Portfolio</a>
-    </div>
-
-  </div>
-
-</div>
-
-<div id="aoToast" class="toast"></div>
-
-<script src="onboarding-flow.js"></script>
-
-</body>
+    <script src="onboarding-flow.js"></script>
+  </body>
 </html>
