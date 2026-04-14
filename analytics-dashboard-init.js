@@ -2,6 +2,9 @@
 (function(){
   'use strict';
 
+  function el(tag,{className,text,attrs}={}){const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);if(attrs)Object.entries(attrs).forEach(([k,v])=>{if(v!==undefined&&v!==null)n.setAttribute(k,String(v));});return n;}
+  function clear(node){if(node)node.replaceChildren();}
+
   async function updateKeyMetrics() {
     try {
       const r = await fetch('https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D');
@@ -18,7 +21,7 @@
         const tvlEl = document.getElementById('tvl-value');
         if (priceEl) priceEl.textContent = '$' + price.toFixed(6);
         if (priceChangeEl) {
-          priceChangeEl.innerHTML = (change24h >= 0 ? '▲ ' : '▼ ') + Math.abs(change24h).toFixed(2) + '%';
+          priceChangeEl.textContent = (change24h >= 0 ? '▲ ' : '▼ ') + Math.abs(change24h).toFixed(2) + '%';
           priceChangeEl.className = 'stat-change ' + (change24h >= 0 ? 'positive' : 'negative');
         }
         if (volEl) volEl.textContent = '$' + vol24h.toFixed(2);
@@ -59,20 +62,23 @@
   }
 
   function generateInsights() {
-    const el = document.getElementById('insights-container');
-    if (!el) return;
+    const container = document.getElementById('insights-container');
+    if (!container) return;
     const items = [
       { title: '📈 Price Performance', text: 'AETH is actively trading on QuickSwap V2. Price updates every 30 seconds from live DEX data.' },
       { title: '🎯 Staking Participation', text: 'Three staking pools are available with APYs ranging from 8% to 18%. Lock periods vary from 7 to 90 days.' },
       { title: '💰 Liquidity Status', text: 'Current liquidity pool contains AETH/POL on QuickSwap. Consider adding more liquidity for better price stability.' },
       { title: '🚀 Growth Opportunity', text: 'Platform is technically complete with verified contracts. Ready for marketing and user acquisition campaigns.' }
     ];
-    el.innerHTML = items.map(t => (
-      `<div class="insight-item"><h4>${t.title}</h4><p>${t.text}</p></div>`
-    )).join('');
+    clear(container);
+    items.forEach((item)=>{
+      const node=el('div',{className:'insight-item'});
+      node.append(el('h4',{text:item.title}),el('p',{text:item.text}));
+      container.appendChild(node);
+    });
   }
 
   console.log('📊 Analytics dashboard initializing...');
-  setTimeout(() => { updateKeyMetrics(); setInterval(updateKeyMetrics, 30_000); }, 2_000);
+  setTimeout(() => { updateKeyMetrics(); setInterval(updateKeyMetrics, 30000); }, 2000);
   console.log('✅ Analytics dashboard ready');
 })();
