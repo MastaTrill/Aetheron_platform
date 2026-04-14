@@ -1,1 +1,43 @@
-<html><head><title>Aetheron HF Analytics</title><link rel="stylesheet" href="investor-dashboard.css"><script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head><body><div class="wrap"><h1>Hedge Fund Analytics</h1><button onclick="connect()">Connect</button><p id="addr"></p><div class="grid"><div class="panel card"><h3>Performance Metrics</h3><p>Sharpe: <b id="hfSharpe">--</b></p><p>Volatility: <b id="hfVol">--</b></p><p>Drawdown: <b id="hfDrawdown">--</b>%</p><p>Signal Score: <b id="hfSignalScore">--</b></p></div><div class="panel card"><h3>Risk + Flow</h3><p>Liquidity/Volume: <b id="hfLiqVol">--</b></p><p>Turnover: <b id="hfTurnover">--</b>%</p><p>Yield (est): <b id="hfYieldAnnual">--</b></p><p>Regime: <b id="hfRegime">--</b></p></div></div><div class="panel card"><h3>AI Recommendation</h3><p id="hfRecommendation">--</p><p id="hfDeskNote"></p></div><div class="grid"><div class="panel card"><canvas id="hfPerfChart"></canvas></div><div class="panel card"><canvas id="hfRiskChart"></canvas></div></div></div><script src="production-stats.js"></script><script src="investor-dashboard.js"></script><script src="hedge-fund-analytics.js"></script></body></html>
+<html>
+  <head>
+    <title>Aetheron HF Analytics</title>
+    <link rel="stylesheet" href="investor-dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Hedge Fund Analytics</h1>
+      <button onclick="connect()">Connect</button>
+      <p id="addr"></p>
+      <div class="grid">
+        <div class="panel card">
+          <h3>Performance Metrics</h3>
+          <p>Sharpe: <b id="hfSharpe">--</b></p>
+          <p>Volatility: <b id="hfVol">--</b></p>
+          <p>Drawdown: <b id="hfDrawdown">--</b>%</p>
+          <p>Signal Score: <b id="hfSignalScore">--</b></p>
+        </div>
+        <div class="panel card">
+          <h3>Risk + Flow</h3>
+          <p>Liquidity/Volume: <b id="hfLiqVol">--</b></p>
+          <p>Turnover: <b id="hfTurnover">--</b>%</p>
+          <p>Yield (est): <b id="hfYieldAnnual">--</b></p>
+          <p>Regime: <b id="hfRegime">--</b></p>
+        </div>
+      </div>
+      <div class="panel card">
+        <h3>AI Recommendation</h3>
+        <p id="hfRecommendation">--</p>
+        <p id="hfDeskNote"></p>
+      </div>
+      <div class="grid">
+        <div class="panel card"><canvas id="hfPerfChart"></canvas></div>
+        <div class="panel card"><canvas id="hfRiskChart"></canvas></div>
+      </div>
+    </div>
+    <script src="production-stats.js"></script>
+    <script src="investor-dashboard.js"></script>
+    <script src="hedge-fund-analytics.js"></script>
+  </body>
+</html>
