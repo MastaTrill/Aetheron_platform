@@ -1,60 +1,59 @@
 import { renderWalletStatus, renderTransactions } from './index-safe-renderers.js';
-import { renderUserStakes, renderWalletChooser } from './index-safe-renderers-extra.js';
 
-function patchIndexRenderers(){
-  const g=window;
-  const originalCheckWalletStatus=g.checkWalletStatus;
-  if(typeof originalCheckWalletStatus==='function'){
-    g.checkWalletStatus=async function(...args){
-      const statusDiv=document.getElementById('walletStatus');
-      const wallet=typeof g.resolveInjectedProvider==='function'?g.resolveInjectedProvider():null;
-      const walletName=typeof g.getWalletName==='function'?g.getWalletName(wallet):'';
-      if(wallet&&statusDiv){renderWalletStatus(statusDiv,{state:'detected',walletName});return true;}
-      if(g.ethereum&&statusDiv){renderWalletStatus(statusDiv,{state:'other-wallet'});return false;}
-      if(statusDiv)renderWalletStatus(statusDiv,{state:'missing'});
-      return originalCheckWalletStatus.apply(this,args);
-    };
-  }
+function patchIndexRenderers() {
+  const g = window;
 
-  const originalDisplayTransactions=g.displayTransactions;
-  g.displayTransactions=function(transactions){
-    const list=document.getElementById('txList');
-    const txEmpty=document.getElementById('txEmpty');
-    if(list&&txEmpty){renderTransactions(list,txEmpty,transactions||[]);return;}
-    if(typeof originalDisplayTransactions==='function')return originalDisplayTransactions.call(this,transactions);
+  const originalCheckWalletStatus = g.checkWalletStatus;
+  g.checkWalletStatus = async function () {
+    const statusDiv = document.getElementById('walletStatus');
+    if (!statusDiv) {
+      console.warn('Wallet status element not found - page may not be fully loaded');
+      return false;
+    }
+
+    const wallet = typeof g.resolveInjectedProvider === 'function' ? g.resolveInjectedProvider() : null;
+    const walletName = typeof g.getWalletName === 'function' ? g.getWalletName(wallet) : '';
+
+    if (wallet) {
+      renderWalletStatus(statusDiv, 'detected', walletName);
+      return true;
+    }
+
+    if (window.ethereum) {
+      renderWalletStatus(statusDiv, 'other');
+      return false;
+    }
+
+    renderWalletStatus(statusDiv, 'missing');
+    return false;
   };
 
-  const originalDisplayUserStakes=g.displayUserStakes;
-  g.displayUserStakes=function(stakes){
-    let container=document.getElementById('userStakesContainer');
-    if(!container){
-      const walletCard=document.querySelector('.card.mb-2');
-      if(walletCard){
-        container=document.createElement('div');
-        container.id='userStakesContainer';
-        container.className='card mb-2';
-        container.innerHTML='<div class="card-header"><h2 class="card-title">Your Active Stakes</h2><button class="btn btn-outline btn-sm" id="refreshUserStakesBtn" type="button"><i class="fas fa-sync-alt"></i> Refresh</button></div><div class="user-stakes" id="userStakesList"></div>';
-        walletCard.parentNode.insertBefore(container,walletCard.nextSibling);
-        container.querySelector('#refreshUserStakesBtn')?.addEventListener('click',()=>g.loadUserStakes?.());
+  const originalDisplayTransactions = g.displayTransactions;
+  g.displayTransactions = function (transactions) {
+    const list = document.getElementById('txList');
+    const txEmpty = document.getElementById('txEmpty');
+    if (!list || !txEmpty) {
+      if (typeof originalDisplayTransactions === 'function') {
+        return originalDisplayTransactions.call(this, transactions);
       }
-    }
-    const list=document.getElementById('userStakesList');
-    if(list){
-      renderUserStakes(list,stakes||[],{onClaim:(id)=>g.claimStakeRewards?.(id),onUnstake:(id)=>g.unstakeTokens?.(id),onEmergencyUnstake:(id)=>g.emergencyUnstake?.(id)});
       return;
     }
-    if(typeof originalDisplayUserStakes==='function')return originalDisplayUserStakes.call(this,stakes);
-  };
 
-  g.ensureWalletChooser=function(){
-    let modal=document.getElementById('walletChooserModal');
-    if(!modal){modal=document.createElement('div');modal.id='walletChooserModal';document.body.appendChild(modal);}    
-    const providers=typeof g.getInjectedProviders==='function'?g.getInjectedProviders():[];
-    const closeChooser=()=>{modal.style.display='none';modal.classList.remove('show');};
-    renderWalletChooser(modal,{providers,onClose:closeChooser,onMetaMask:async()=>{closeChooser();await g.connectWallet?.({walletType:'metamask'});},onCoinbase:async()=>{closeChooser();await g.connectWallet?.({walletType:'coinbase'});},onBrowser:async()=>{closeChooser();await g.connectWallet?.();}});
-    modal.addEventListener('mousedown',(event)=>{const content=modal.querySelector('.modal-content');if(content&&!content.contains(event.target))closeChooser();},{once:true});
-    return modal;
+    if (!transactions || transactions.length === 0) {
+      txEmpty.classList.remove('hidden');
+      list.classList.add('hidden');
+      list.replaceChildren();
+      return;
+    }
+
+    txEmpty.classList.add('hidden');
+    list.classList.remove('hidden');
+    renderTransactions(list, transactions);
   };
 }
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchIndexRenderers);else patchIndexRenderers();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', patchIndexRenderers);
+} else {
+  patchIndexRenderers();
+}
