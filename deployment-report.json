@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-01-25T04:28:48.862Z",
-  "version": "2.0.0",
+  "deployer": "0x4d20F6FB9f64f32Db4a10bfb2d63866b735510DB",
   "contracts": {
     "aetheron": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
     "staking": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638"
