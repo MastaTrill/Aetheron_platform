@@ -1,5 +1,9 @@
 (function () {
   document.addEventListener('DOMContentLoaded', () => {
+    import('./index-dom-overrides.js').catch((error) => {
+      console.error('Failed to load index DOM overrides', error);
+    });
+
     const bind = (id, handler) => {
       const el = document.getElementById(id);
       if (!el) return;
