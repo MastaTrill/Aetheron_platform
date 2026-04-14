@@ -4,16 +4,33 @@
 document.addEventListener('DOMContentLoaded', function () {
   const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
 
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, function (character) {
-      return {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      }[character];
-    });
+  function text(value) {
+    return document.createTextNode(String(value));
+  }
+
+  function el(tagName, options) {
+    const node = document.createElement(tagName);
+    const opts = options || {};
+    if (opts.className) node.className = opts.className;
+    if (opts.text !== undefined) node.textContent = String(opts.text);
+    if (opts.attrs) {
+      Object.entries(opts.attrs).forEach(function ([key, value]) {
+        if (value !== undefined && value !== null) node.setAttribute(key, String(value));
+      });
+    }
+    return node;
+  }
+
+  function fragment() {
+    return document.createDocumentFragment();
+  }
+
+  function lineBreak() {
+    return document.createElement('br');
+  }
+
+  function spacer() {
+    return el('div', { className: 'result-spacer' });
   }
 
   function getConfiguredApiBase() {
@@ -21,15 +38,10 @@ document.addEventListener('DOMContentLoaded', function () {
       .querySelector('meta[name="aetheron-api-base"]')
       ?.getAttribute('content')
       ?.trim();
-    const globalBase =
-      typeof window.AETHERON_API_BASE_URL === 'string'
-        ? window.AETHERON_API_BASE_URL.trim()
-        : '';
+    const globalBase = typeof window.AETHERON_API_BASE_URL === 'string' ? window.AETHERON_API_BASE_URL.trim() : '';
     const configuredBase = globalBase || metaBase || '';
 
-    if (configuredBase) {
-      return configuredBase.replace(/\/+$/, '');
-    }
+    if (configuredBase) return configuredBase.replace(/\/+$/, '');
 
     const hostname = window.location.hostname;
     const isStaticHost = STATIC_HOST_SUFFIXES.some(function (suffix) {
@@ -39,22 +51,22 @@ document.addEventListener('DOMContentLoaded', function () {
     return isStaticHost ? '' : window.location.origin;
   }
 
-  function setResult(element, tone, messageHtml) {
-    if (!element) {
-      return;
-    }
-
+  function setResult(element, tone, content) {
+    if (!element) return;
     element.className = 'result-message result-' + tone;
-    element.innerHTML = messageHtml;
+    element.replaceChildren();
+    if (content instanceof Node) element.appendChild(content);
+    else element.textContent = String(content || '');
   }
 
   function buildApiRequiredMessage(featureName) {
-    return (
-      escapeHtml(featureName) +
-      ' needs the Aetheron backend API. Configure ' +
-      '<code>window.AETHERON_API_BASE_URL</code> or the ' +
-      '<code>aetheron-api-base</code> meta tag to point at a deployed backend.'
-    );
+    const frag = fragment();
+    frag.appendChild(text(featureName + ' needs the Aetheron backend API. Configure '));
+    frag.appendChild(el('code', { text: 'window.AETHERON_API_BASE_URL' }));
+    frag.appendChild(text(' or the '));
+    frag.appendChild(el('code', { text: 'aetheron-api-base' }));
+    frag.appendChild(text(' meta tag to point at a deployed backend.'));
+    return frag;
   }
 
   async function postJson(url, payload) {
@@ -70,61 +82,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!response.ok) {
       if ([404, 405, 501].includes(response.status)) {
-        throw new Error(
-          'Backend API not found at this origin. Run the backend server or configure AETHERON_API_BASE_URL.',
-        );
+        throw new Error('Backend API not found at this origin. Run the backend server or configure AETHERON_API_BASE_URL.');
       }
-
-      throw new Error(
-        data.details || data.error || 'Request failed with status ' + response.status + '.',
-      );
+      throw new Error(data.details || data.error || 'Request failed with status ' + response.status + '.');
     }
 
     return data;
   }
 
   function buildLaunchSuccessMessage(data) {
-    const contractAddress = escapeHtml(data.contractAddress || '');
-    const teamWallet = escapeHtml(data.teamWallet || '');
-    const allocation = escapeHtml(String(data.allocationPercent ?? ''));
-    const message = escapeHtml(data.message || 'Token deployed successfully.');
-
-    return (
-      '<strong>Launch submitted successfully.</strong><br />' +
-      message +
-      '<div class="result-spacer"></div>' +
-      'Contract: <code>' +
-      contractAddress +
-      '</code><br />' +
-      'Team wallet: <code>' +
-      teamWallet +
-      '</code><br />' +
-      'Allocation: ' +
-      allocation +
-      '%<br />' +
-      '<a class="result-link" href="https://polygonscan.com/token/' +
-      contractAddress +
-      '" target="_blank" rel="noopener">Open in PolygonScan</a>'
-    );
+    const frag = fragment();
+    frag.appendChild(el('strong', { text: 'Launch submitted successfully.' }));
+    frag.appendChild(lineBreak());
+    frag.appendChild(text(data.message || 'Token deployed successfully.'));
+    frag.appendChild(spacer());
+    frag.appendChild(text('Contract: '));
+    frag.appendChild(el('code', { text: data.contractAddress || '' }));
+    frag.appendChild(lineBreak());
+    frag.appendChild(text('Team wallet: '));
+    frag.appendChild(el('code', { text: data.teamWallet || '' }));
+    frag.appendChild(lineBreak());
+    frag.appendChild(text('Allocation: ' + String(data.allocationPercent ?? '') + '%'));
+    frag.appendChild(lineBreak());
+    frag.appendChild(el('a', {
+      className: 'result-link',
+      text: 'Open in PolygonScan',
+      attrs: {
+        href: 'https://polygonscan.com/token/' + String(data.contractAddress || ''),
+        target: '_blank',
+        rel: 'noopener',
+      },
+    }));
+    return frag;
   }
 
   function buildScanSuccessMessage(data, isFullScan) {
-    const riskScore = escapeHtml(String(data.riskScore ?? 'N/A'));
-    const summary = escapeHtml(data.summary || 'No summary returned.');
-    let html = '<strong>Scan complete.</strong><br />Risk Score: ' + riskScore + '/100<br />Summary: ' + summary;
+    const frag = fragment();
+    frag.appendChild(el('strong', { text: 'Scan complete.' }));
+    frag.appendChild(lineBreak());
+    frag.appendChild(text('Risk Score: ' + String(data.riskScore ?? 'N/A') + '/100'));
+    frag.appendChild(lineBreak());
+    frag.appendChild(text('Summary: ' + String(data.summary || 'No summary returned.')));
 
     if (isFullScan && Array.isArray(data.issues) && data.issues.length > 0) {
-      html +=
-        '<div class="result-spacer"></div><div class="result-section-title">Reported issues</div><ul class="result-list">' +
-        data.issues
-          .map(function (issue) {
-            return '<li>' + escapeHtml(issue) + '</li>';
-          })
-          .join('') +
-        '</ul>';
+      frag.appendChild(spacer());
+      frag.appendChild(el('div', { className: 'result-section-title', text: 'Reported issues' }));
+      const list = el('ul', { className: 'result-list' });
+      data.issues.forEach(function (issue) {
+        list.appendChild(el('li', { text: issue }));
+      });
+      frag.appendChild(list);
     }
 
-    return html;
+    return frag;
   }
 
   const apiBase = getConfiguredApiBase();
@@ -136,11 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
       event.preventDefault();
 
       if (!apiBase) {
-        setResult(
-          launchResult,
-          'warning',
-          buildApiRequiredMessage('Token launchpad'),
-        );
+        setResult(launchResult, 'warning', buildApiRequiredMessage('Token launchpad'));
         return;
       }
 
@@ -161,11 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = await postJson(apiBase + '/api/launch-token', payload);
         setResult(launchResult, 'success', buildLaunchSuccessMessage(data));
       } catch (error) {
-        setResult(
-          launchResult,
-          'error',
-          'Error launching token: ' + escapeHtml(error.message),
-        );
+        setResult(launchResult, 'error', 'Error launching token: ' + String(error.message));
       }
     });
   }
@@ -177,11 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
       event.preventDefault();
 
       if (!apiBase) {
-        setResult(
-          scanResult,
-          'warning',
-          buildApiRequiredMessage('Token scanner'),
-        );
+        setResult(scanResult, 'warning', buildApiRequiredMessage('Token scanner'));
         return;
       }
 
@@ -192,17 +190,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const isFullScan = type === 'full';
 
       try {
-        const data = await postJson(apiBase + '/api/scan-token', {
-          address,
-          full: isFullScan,
-        });
+        const data = await postJson(apiBase + '/api/scan-token', { address, full: isFullScan });
         setResult(scanResult, 'success', buildScanSuccessMessage(data, isFullScan));
       } catch (error) {
-        setResult(
-          scanResult,
-          'error',
-          'Error connecting to scanner API: ' + escapeHtml(error.message),
-        );
+        setResult(scanResult, 'error', 'Error connecting to scanner API: ' + String(error.message));
       }
     });
   }
