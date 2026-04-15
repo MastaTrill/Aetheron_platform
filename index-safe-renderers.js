@@ -80,6 +80,147 @@ export function renderTransactions(list, transactions) {
   }
 }
 
+export function createIndexWalletChooserModal() {
+  const modal = document.createElement('div');
+  modal.id = 'walletChooserModal';
+  modal.className = 'modal';
+  modal.style.display = 'none';
+
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+  content.setAttribute('role', 'dialog');
+  content.setAttribute('aria-modal', 'true');
+  content.setAttribute('aria-labelledby', 'walletChooserTitle');
+
+  const close = document.createElement('span');
+  close.id = 'walletChooserClose';
+  close.className = 'close-modal';
+  close.setAttribute('role', 'button');
+  close.setAttribute('tabindex', '0');
+  close.setAttribute('aria-label', 'Close wallet chooser');
+  close.textContent = '×';
+
+  const title = document.createElement('h2');
+  title.id = 'walletChooserTitle';
+  title.textContent = 'Choose Wallet';
+
+  const paragraph = document.createElement('p');
+  paragraph.className = 'text-gray paragraph-spacing';
+  paragraph.textContent = 'Select the wallet you want to connect on this device.';
+
+  const actions = document.createElement('div');
+  actions.className = 'quick-actions';
+  actions.style.marginTop = '1rem';
+
+  const choices = [
+    ['walletChooserMetaMask', 'fas fa-wallet', 'MetaMask'],
+    ['walletChooserCoinbase', 'fas fa-wallet', 'Coinbase Wallet'],
+    ['walletChooserBrowser', 'fas fa-plug', 'Browser Wallet'],
+  ];
+
+  for (const [id, iconClass, label] of choices) {
+    const button = document.createElement('button');
+    button.id = id;
+    button.className = 'quick-action-btn';
+    button.type = 'button';
+    const icon = document.createElement('i');
+    icon.className = iconClass;
+    button.append(icon, document.createTextNode(` ${label}`));
+    actions.appendChild(button);
+  }
+
+  content.append(close, title, paragraph, actions);
+  modal.appendChild(content);
+  return modal;
+}
+
+export function renderUserStakes(list, stakes) {
+  clearNode(list);
+
+  if (!stakes.length) {
+    const empty = document.createElement('div');
+    empty.className = 'wallet-section';
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-inbox empty-icon';
+    const text = document.createElement('p');
+    text.className = 'text-gray';
+    text.textContent = 'No active stakes yet. Start staking to earn rewards!';
+    empty.append(icon, text);
+    list.appendChild(empty);
+    return;
+  }
+
+  const poolNames = ['30 Days (5% APY)', '90 Days (12% APY)', '180 Days (25% APY)'];
+
+  for (const stake of stakes) {
+    const item = document.createElement('div');
+    item.className = 'stake-item slide-up';
+
+    const header = document.createElement('div');
+    header.className = 'stake-header';
+    const headerLeft = document.createElement('div');
+    const title = document.createElement('div');
+    title.className = 'fw-600';
+    title.textContent = poolNames[stake.poolId] || 'Unknown Pool';
+    const subtitle = document.createElement('div');
+    subtitle.className = 'text-sm text-gray';
+    subtitle.textContent = `Stake #${stake.id}`;
+    headerLeft.append(title, subtitle);
+    const badge = document.createElement('span');
+    const isUnlocked = new Date() >= stake.unlockTime;
+    badge.className = `stake-badge ${isUnlocked ? 'completed' : 'active'}`;
+    badge.textContent = isUnlocked ? 'Unlocked' : 'Locked';
+    header.append(headerLeft, badge);
+
+    const details = document.createElement('div');
+    details.className = 'stake-details';
+    const detailItems = [
+      ['Staked Amount', `${Number.parseFloat(stake.amount).toFixed(2)} AETH`],
+      ['Pending Rewards', `${Number.parseFloat(stake.pendingReward).toFixed(4)} AETH`],
+      ['Started', stake.startTime.toLocaleDateString()],
+      ['Unlock Date', stake.unlockTime.toLocaleDateString()],
+    ];
+    for (const [label, value] of detailItems) {
+      const detail = document.createElement('div');
+      detail.className = 'stake-detail-item';
+      const detailLabel = document.createElement('span');
+      detailLabel.className = 'stake-detail-label';
+      detailLabel.textContent = label;
+      const detailValue = document.createElement('span');
+      detailValue.className = 'stake-detail-value';
+      detailValue.textContent = value;
+      detail.append(detailLabel, detailValue);
+      details.appendChild(detail);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'stake-actions';
+    if (Number.parseFloat(stake.pendingReward) > 0) {
+      const claim = document.createElement('button');
+      claim.className = 'btn btn-success btn-sm';
+      claim.type = 'button';
+      claim.disabled = !isUnlocked;
+      claim.dataset.claimStakeId = String(stake.id);
+      const icon = document.createElement('i');
+      icon.className = 'fas fa-coins';
+      claim.append(icon, document.createTextNode(' Claim Rewards'));
+      actions.appendChild(claim);
+    }
+    const actionBtn = document.createElement('button');
+    actionBtn.className = `btn ${isUnlocked ? 'btn-primary' : 'btn-warning'} btn-sm`;
+    actionBtn.type = 'button';
+    actionBtn.dataset.stakeAction = isUnlocked ? 'unstake' : 'emergency';
+    actionBtn.dataset.stakeId = String(stake.id);
+    const actionIcon = document.createElement('i');
+    actionIcon.className = isUnlocked ? 'fas fa-unlock' : 'fas fa-exclamation-triangle';
+    actionBtn.append(actionIcon, document.createTextNode(isUnlocked ? ' Unstake' : ' Emergency Withdraw'));
+    actions.appendChild(actionBtn);
+
+    item.append(header, details, actions);
+    list.appendChild(item);
+  }
+}
+
 export function renderSearchResults(container, results) {
   clearNode(container);
 
