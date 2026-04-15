@@ -11,7 +11,6 @@ import {
 function patchDashboardMain() {
   const g = window;
 
-  const originalEnsureWalletChooser = g.ensureWalletChooser;
   g.ensureWalletChooser = function () {
     let modal = document.getElementById('walletChooserModal');
     if (modal) return modal;
@@ -39,7 +38,6 @@ function patchDashboardMain() {
     return modal;
   };
 
-  const originalRenderWalletChooserOptions = g.renderWalletChooserOptions;
   g.renderWalletChooserOptions = function () {
     const optionsContainer = document.getElementById('walletChooserOptions');
     if (!optionsContainer) return;
@@ -103,10 +101,6 @@ function patchDashboardMain() {
       });
     });
   };
-
-  if (typeof originalEnsureWalletChooser !== 'function' || typeof originalRenderWalletChooserOptions !== 'function') {
-    // no-op; the overrides above still provide the safer path if globals are used later
-  }
 }
 
 function patchDashboardApp() {
@@ -154,9 +148,12 @@ function patchDashboardApp() {
     setTimeout(() => notification.remove(), 3000);
   };
 
+  const previousCreateDashboardModal = window.createDashboardModal;
   window.createDashboardModal = function (contentHtml) {
     if (typeof contentHtml !== 'string') {
-      return createSimpleModal({ titleText: '', bodyNodes: [] });
+      return typeof previousCreateDashboardModal === 'function'
+        ? previousCreateDashboardModal(contentHtml)
+        : createSimpleModal({ titleText: '', bodyNodes: [] });
     }
 
     if (contentHtml.includes('Edit Profile')) {
@@ -178,22 +175,16 @@ function patchDashboardApp() {
 
       const br1 = document.createElement('br');
       const br2 = document.createElement('br');
-
       const save = document.createElement('button');
       save.id = 'saveProfileBtn';
       save.type = 'button';
       save.textContent = 'Save';
-
       const close = document.createElement('button');
       close.id = 'closeProfileModalBtn';
       close.type = 'button';
       close.textContent = 'Close';
 
-      const modal = createSimpleModal({
-        titleText: 'Edit Profile',
-        bodyNodes: [nameLabel, br1, emailLabel, br2],
-        actionButtons: [save, close],
-      });
+      const modal = createSimpleModal({ titleText: 'Edit Profile', bodyNodes: [nameLabel, br1, emailLabel, br2], actionButtons: [save, close] });
       document.body.appendChild(modal);
       return modal;
     }
@@ -228,12 +219,59 @@ function patchDashboardApp() {
       return modal;
     }
 
+    if (contentHtml.includes('API Explorer')) {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'API Explorer support is available in a future dashboard update.';
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.id = 'closeApiExplorerModalBtn';
+      close.textContent = 'Close';
+      const modal = createSimpleModal({ titleText: 'API Explorer', bodyNodes: [paragraph], actionButtons: [close] });
+      document.body.appendChild(modal);
+      close.addEventListener('click', () => modal.remove());
+      return modal;
+    }
+
+    if (contentHtml.includes('Contract Playground')) {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'Contract playground support is available in a future dashboard update.';
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.id = 'closeContractPlaygroundModalBtn';
+      close.textContent = 'Close';
+      const modal = createSimpleModal({ titleText: 'Contract Playground', bodyNodes: [paragraph], actionButtons: [close] });
+      document.body.appendChild(modal);
+      close.addEventListener('click', () => modal.remove());
+      return modal;
+    }
+
     const fallbackText = document.createElement('p');
-    fallbackText.textContent = 'Modal content is available.';
+    fallbackText.textContent = contentHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() || 'Modal content is available.';
     const modal = createSimpleModal({ titleText: 'Aetheron Modal', bodyNodes: [fallbackText] });
     document.body.appendChild(modal);
     return modal;
   };
+
+  if (typeof window.setContainerHtml === 'function') {
+    const originalSetContainerHtml = window.setContainerHtml;
+    window.setContainerHtml = function (container, html) {
+      if (!container) return;
+      if (typeof html !== 'string') {
+        return originalSetContainerHtml(container, html);
+      }
+      if (html.includes('No data (stub)')) {
+        container.replaceChildren();
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.textContent = 'No data (stub)';
+        tr.appendChild(td);
+        container.appendChild(tr);
+        return;
+      }
+      container.textContent = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    };
+  }
 
   return true;
 }
