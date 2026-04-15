@@ -164,6 +164,37 @@ function patchIndexRenderers() {
       });
     });
   };
+
+  const originalShowQRCode = g.showQRCode;
+  g.showQRCode = function () {
+    const modal = document.getElementById('qrModal');
+    const qrcodeContainer = document.getElementById('qrcode');
+    if (!modal || !qrcodeContainer) {
+      if (typeof originalShowQRCode === 'function') {
+        return originalShowQRCode.call(this);
+      }
+      return;
+    }
+
+    qrcodeContainer.replaceChildren();
+    new QRCode(qrcodeContainer, {
+      text: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+      width: 256,
+      height: 256,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+
+    modal.style.display = 'block';
+
+    if (typeof g.gtag !== 'undefined') {
+      g.gtag('event', 'show_qr_code', {
+        event_category: 'engagement',
+        event_label: 'contract_qr',
+      });
+    }
+  };
 }
 
 if (document.readyState === 'loading') {
