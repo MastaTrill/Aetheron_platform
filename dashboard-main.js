@@ -244,25 +244,75 @@ async function resolveWalletProvider(requestedProvider, walletType, auto) {
   return isUsableWalletProvider(window.ethereum) ? window.ethereum : null;
 }
 
+function clearNode(node) {
+  if (!node) return;
+  node.replaceChildren();
+}
+
+function createWalletChooserModal() {
+  const modal = document.createElement('div');
+  modal.id = 'walletChooserModal';
+  modal.className = 'modal-bg';
+  modal.hidden = true;
+
+  const dialog = document.createElement('div');
+  dialog.className = 'modal wallet-chooser-modal';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute('aria-labelledby', 'walletChooserTitle');
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'close-modal-btn';
+  closeButton.id = 'closeWalletChooserBtn';
+  closeButton.setAttribute('aria-label', 'Close Wallet Chooser');
+  closeButton.textContent = '×';
+
+  const title = document.createElement('h3');
+  title.id = 'walletChooserTitle';
+  title.textContent = 'Choose a wallet';
+
+  const subtitle = document.createElement('p');
+  subtitle.className = 'text-muted';
+  subtitle.textContent = 'Connect with an installed wallet or use WalletConnect.';
+
+  const options = document.createElement('div');
+  options.id = 'walletChooserOptions';
+  options.className = 'modal-actions wallet-chooser-options';
+
+  dialog.append(closeButton, title, subtitle, options);
+  modal.appendChild(dialog);
+  return modal;
+}
+
+function renderWalletChooserOptionsDom(container, chooserOptions) {
+  clearNode(container);
+
+  chooserOptions.forEach((option) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn wallet-choice-btn';
+    button.dataset.walletChoice = option.choice;
+    button.setAttribute('aria-label', option.label);
+
+    const strong = document.createElement('strong');
+    strong.textContent = option.label;
+    const span = document.createElement('span');
+    span.textContent = option.helper;
+
+    button.append(strong, span);
+    container.appendChild(button);
+  });
+}
+
 function ensureWalletChooser() {
   let modal = document.getElementById('walletChooserModal');
   if (modal) {
     return modal;
   }
 
-  const chooserMarkup = `
-    <div id="walletChooserModal" class="modal-bg" hidden>
-      <div class="modal wallet-chooser-modal" role="dialog" aria-modal="true" aria-labelledby="walletChooserTitle">
-        <button type="button" class="close-modal-btn" id="closeWalletChooserBtn" aria-label="Close Wallet Chooser">&times;</button>
-        <h3 id="walletChooserTitle">Choose a wallet</h3>
-        <p class="text-muted">Connect with an installed wallet or use WalletConnect.</p>
-        <div id="walletChooserOptions" class="modal-actions wallet-chooser-options"></div>
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML('beforeend', chooserMarkup);
-  modal = document.getElementById('walletChooserModal');
+  modal = createWalletChooserModal();
+  document.body.appendChild(modal);
   const closeButton = document.getElementById('closeWalletChooserBtn');
 
   if (closeButton) {
@@ -348,21 +398,7 @@ function renderWalletChooserOptions() {
     );
   }
 
-  optionsContainer.innerHTML = chooserOptions
-    .map(
-      (option) => `
-        <button
-          type="button"
-          class="btn wallet-choice-btn"
-          data-wallet-choice="${option.choice}"
-          aria-label="${option.label}"
-        >
-          <strong>${option.label}</strong>
-          <span>${option.helper}</span>
-        </button>
-      `,
-    )
-    .join('');
+  renderWalletChooserOptionsDom(optionsContainer, chooserOptions);
 
   optionsContainer.querySelectorAll('[data-wallet-choice]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -424,13 +460,8 @@ async function switchToPolygon(injectedProvider) {
 }
 
 async function connectWallet(request = false) {
-  const { auto, walletType = null, provider: requestedProvider = null } =
-    normalizeConnectRequest(request);
-  const injectedProvider = await resolveWalletProvider(
-    requestedProvider,
-    walletType,
-    auto,
-  );
+  const { auto, walletType = null, provider: requestedProvider = null } = normalizeConnectRequest(request);
+  const injectedProvider = await resolveWalletProvider(requestedProvider, walletType, auto);
 
   if (!injectedProvider) {
     if (!auto) {
@@ -439,9 +470,7 @@ async function connectWallet(request = false) {
         walletType === 'metamask' && !bridge
           ? 'MetaMask Connect is still loading. Please try again in a moment.'
           : 'No browser wallet detected. Choose WalletConnect or install a wallet.',
-        {
-          type: 'error',
-        },
+        { type: 'error' },
       );
       openWalletChooser();
     }
@@ -454,9 +483,7 @@ async function connectWallet(request = false) {
     !window.ethers.providers.Web3Provider
   ) {
     if (!auto) {
-      showToast('Wallet libraries are still loading. Please try again.', {
-        type: 'error',
-      });
+      showToast('Wallet libraries are still loading. Please try again.', { type: 'error' });
     }
     return;
   }
@@ -472,9 +499,7 @@ async function connectWallet(request = false) {
         injectedProvider.accounts.length > 0;
 
       if (!auto && !hasWalletConnectSession) {
-        await injectedProvider.request({
-          method: 'eth_requestAccounts',
-        });
+        await injectedProvider.request({ method: 'eth_requestAccounts' });
       }
       await switchToPolygon(injectedProvider);
       activeInjectedProvider = injectedProvider;
@@ -484,16 +509,9 @@ async function connectWallet(request = false) {
       signer = provider.getSigner();
       account = await signer.getAddress();
       localStorage.setItem('aetheron_connected', account);
-      localStorage.setItem(
-        'aetheron_connected_wallet',
-        getWalletStorageKey(walletType, injectedProvider),
-      );
+      localStorage.setItem('aetheron_connected_wallet', getWalletStorageKey(walletType, injectedProvider));
       aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
-      stakingContract = new ethers.Contract(
-        STAKING_ADDRESS,
-        STAKING_ABI,
-        signer,
-      );
+      stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
       const walletInfo = document.getElementById('walletInfo');
       if (walletInfo) walletInfo.classList.add('active');
       const accountAddress = document.getElementById('accountAddress');
@@ -502,10 +520,7 @@ async function connectWallet(request = false) {
       }
       const walletTypeElement = document.getElementById('walletType');
       if (walletTypeElement) {
-        walletTypeElement.textContent = getWalletDisplayLabel(
-          activeWalletType,
-          injectedProvider,
-        );
+        walletTypeElement.textContent = getWalletDisplayLabel(activeWalletType, injectedProvider);
       }
       syncLegacyDashboard(account);
       dispatchWalletEvent('aetheron:wallet-connected', {
@@ -517,23 +532,16 @@ async function connectWallet(request = false) {
     } catch (err) {
       retries++;
       console.error('Wallet/contract connection failed:', err);
-      showToast('Connection failed. Retrying (' + retries + '/3)...', {
-        type: 'error',
-      });
+      showToast('Connection failed. Retrying (' + retries + '/3)...', { type: 'error' });
       await new Promise((res) => setTimeout(res, 1500));
     }
   }
   if (!success) {
-    showToast(
-      'Unable to connect wallet or contracts. Please check your network and try again.',
-      { type: 'error' },
-    );
-    // Fallback UI for stats
+    showToast('Unable to connect wallet or contracts. Please check your network and try again.', { type: 'error' });
     const ethBalance = document.getElementById('ethBalance');
     const aethBalance = document.getElementById('aethBalance');
     if (ethBalance) ethBalance.textContent = '--';
     if (aethBalance) aethBalance.textContent = '--';
-    // Add more fallback for holders, staked, market cap, health if needed
     syncLegacyDashboard(null);
     dispatchWalletEvent('aetheron:wallet-disconnected');
   }
@@ -555,10 +563,7 @@ async function autoReconnect() {
   }
 
   if (saved && (window.ethereum || savedWalletType === 'metamask')) {
-    connectWallet({
-      auto: true,
-      walletType: savedWalletType || 'browser',
-    });
+    connectWallet({ auto: true, walletType: savedWalletType || 'browser' });
   }
 }
 
@@ -574,8 +579,7 @@ async function updateBalances() {
     const matic = await provider.getBalance(account);
     const ethBalance = document.getElementById('ethBalance');
     if (ethBalance) {
-      ethBalance.textContent =
-        parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
+      ethBalance.textContent = parseFloat(ethers.utils.formatEther(matic)).toFixed(4) + ' MATIC';
     }
   } catch (err) {
     const ethBalance = document.getElementById('ethBalance');
@@ -586,8 +590,7 @@ async function updateBalances() {
     const aeth = await aethContract.balanceOf(account);
     const aethBalance = document.getElementById('aethBalance');
     if (aethBalance) {
-      aethBalance.textContent =
-        parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
+      aethBalance.textContent = parseFloat(ethers.utils.formatEther(aeth)).toFixed(2) + ' AETH';
     }
   } catch (err) {
     const aethBalance = document.getElementById('aethBalance');
@@ -601,18 +604,12 @@ function handleAccountsChanged(accounts) {
     account = accounts[0];
     const walletTypeElement = document.getElementById('walletType');
     if (walletTypeElement) {
-      walletTypeElement.textContent = getWalletDisplayLabel(
-        activeWalletType,
-        activeInjectedProvider || window.ethereum,
-      );
+      walletTypeElement.textContent = getWalletDisplayLabel(activeWalletType, activeInjectedProvider || window.ethereum);
     }
     syncLegacyDashboard(account);
     dispatchWalletEvent('aetheron:wallet-connected', {
       account,
-      walletType: getWalletDisplayLabel(
-        activeWalletType,
-        activeInjectedProvider || window.ethereum,
-      ),
+      walletType: getWalletDisplayLabel(activeWalletType, activeInjectedProvider || window.ethereum),
     });
     updateBalances();
     return;
@@ -654,11 +651,7 @@ function bindWalletEvents(injectedProvider = activeInjectedProvider || window.et
     return;
   }
 
-  if (
-    walletEventsProvider &&
-    walletEventsProvider !== injectedProvider &&
-    typeof walletEventsProvider.removeListener === 'function'
-  ) {
+  if (walletEventsProvider && walletEventsProvider !== injectedProvider && typeof walletEventsProvider.removeListener === 'function') {
     walletEventsProvider.removeListener('accountsChanged', handleAccountsChanged);
     walletEventsProvider.removeListener('chainChanged', handleChainChanged);
     walletEventsBound = false;
@@ -676,24 +669,17 @@ function bindWalletEvents(injectedProvider = activeInjectedProvider || window.et
 
 async function transferTokens() {
   const to = document.getElementById('transferTo').value;
-
   const amount = document.getElementById('transferAmount').value;
-
   if (!to || !amount) return;
 
   try {
     showGlobalLoading(true);
-
     const tx = await aethContract.transfer(to, ethers.utils.parseEther(amount));
-
     await tx.wait();
-
     showToast('Transfer successful', { type: 'success' });
-
     updateBalances();
   } catch (err) {
     console.error(err);
-
     showToast('Transfer failed', { type: 'error' });
   }
 
@@ -702,25 +688,16 @@ async function transferTokens() {
 
 async function stakeTokens() {
   const poolId = document.getElementById('poolId').value;
-
   const amount = document.getElementById('stakeAmount').value;
 
   try {
     showGlobalLoading(true);
-
-    const tx = await stakingContract.stake(
-      poolId,
-      ethers.utils.parseEther(amount),
-    );
-
+    const tx = await stakingContract.stake(poolId, ethers.utils.parseEther(amount));
     await tx.wait();
-
     showToast('Stake successful', { type: 'success' });
-
     updateBalances();
   } catch (err) {
     console.error(err);
-
     showToast('Stake failed', { type: 'error' });
   }
 
@@ -737,40 +714,29 @@ function initDashboardMain() {
   autoReconnect();
 
   const connectBtn = document.getElementById('connectBtn');
-  if (connectBtn)
-    connectBtn.addEventListener('click', openWalletChooser);
+  if (connectBtn) connectBtn.addEventListener('click', openWalletChooser);
 
-  // Refresh balances
   const refreshBtn = document.getElementById('refreshBalancesBtn');
   if (refreshBtn) refreshBtn.addEventListener('click', updateBalances);
 
-  // Transfer
   const transferBtn = document.getElementById('transferBtn');
   if (transferBtn) transferBtn.addEventListener('click', transferTokens);
 
-  // Stake
   const stakeBtn = document.getElementById('stakeBtn');
   if (stakeBtn) stakeBtn.addEventListener('click', stakeTokens);
 
-  // Buy AETH
   const buyBtn = document.querySelector('.buy-btn');
   if (buyBtn)
     buyBtn.addEventListener('click', () => {
-      window.open(
-        'https://quickswap.exchange/#/swap?outputCurrency=' + AETH_ADDRESS,
-        '_blank',
-      );
+      window.open('https://quickswap.exchange/#/swap?outputCurrency=' + AETH_ADDRESS, '_blank');
     });
 
-  // Coinbase
   const coinbaseBtn = document.querySelector('.coinbase-btn');
   if (coinbaseBtn)
     coinbaseBtn.addEventListener('click', () => {
-      // Placeholder for Coinbase payment
       showToast('Coinbase payment integration coming soon!', { type: 'info' });
     });
 
-  // Mobile menu logic
   const hamburger = document.getElementById('hamburger');
   const overlay = document.getElementById('mobileMenuOverlay');
   const body = document.body;
@@ -794,9 +760,7 @@ function initDashboardMain() {
 
 window.openWalletChooser = openWalletChooser;
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDashboardMain, {
-    once: true,
-  });
+  document.addEventListener('DOMContentLoaded', initDashboardMain, { once: true });
 } else {
   initDashboardMain();
 }
