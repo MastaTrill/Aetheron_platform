@@ -164,19 +164,6 @@ async function initApp() {
     updateConnectionStatus("error");
   }
 }
-      } catch (decryptError) {
-        console.error("Failed to decrypt wallet:", decryptError);
-        localStorage.removeItem("aetheron_wallet");
-        localStorage.removeItem("aetheron_wallet_verifier");
-      }
-    }
-
-    updateConnectionStatus("connected");
-  } catch (error) {
-    console.error("Init error:", error);
-    updateConnectionStatus("error");
-  }
-}
 
 // Show password prompt on load
 function showPasswordPrompt(encryptedData) {

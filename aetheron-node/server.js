@@ -187,7 +187,3 @@ server.listen(PORT, () => {
 ╚═══════════════════════════════════════════╝
     `);
 });
-
-server.listen(METRICS_PORT, "0.0.0.0", () => {
-  console.log(`Metrics server listening on port ${METRICS_PORT}`);
-});
