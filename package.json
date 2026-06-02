@@ -15,6 +15,7 @@
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",
     "test:smart-contract": "node run-smart-contract.cjs test",
+    "stress:test": "node Scripts/stress-test.mjs",
     "deploy": "echo 'Deploy manually to GitHub Pages'",
     "verify": "node run-smart-contract.cjs verify",
     "hardhat:compile": "node run-smart-contract.cjs compile",

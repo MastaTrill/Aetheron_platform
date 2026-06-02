@@ -134,6 +134,18 @@ DevOps
 
 ---
 
+## Stress Testing
+
+A new stress-test harness has been added to the repository for throughput and availability validation.
+
+- Run it with: `npm run stress:test`
+- Default targets: `/`, `/dashboard-enhanced.html`, `/analytics/index.html`
+- Enable API path testing with `STRESS_INCLUDE_API=true`
+- Use `STRESS_TARGET_URL`, `STRESS_REQUESTS`, `STRESS_CONCURRENCY`, and `STRESS_TIMEOUT_MS`
+- If admin endpoints are included, set `STRESS_ADMIN_USER` and `STRESS_ADMIN_PASS`
+
+---
+
 📁 Project Structure
 
 `aetheron-platform/
