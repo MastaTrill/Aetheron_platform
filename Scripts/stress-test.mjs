@@ -73,7 +73,7 @@ const ADMIN_SCENARIOS = [
 const includeApi = parseBoolean(env.STRESS_INCLUDE_API, false);
 const customPaths = parsePaths(env.STRESS_PATHS);
 let scenarios = customPaths
-  ? customPaths.map((path) => ({ name: `Custom request ${path}`, method: 'GET', path }))
+  ? customPaths.map(path => ({ name: `Custom request ${path}`, method: 'GET', path }))
   : [...DEFAULT_PAGE_SCENARIOS];
 
 if (includeApi) {
@@ -84,7 +84,9 @@ if (includeApi) {
 }
 
 if (authHeader && !includeApi) {
-  console.warn('STRESS_ADMIN_USER/STRESS_ADMIN_PASS is configured, but STRESS_INCLUDE_API is not enabled. Admin endpoints are skipped.');
+  console.warn(
+    'STRESS_ADMIN_USER/STRESS_ADMIN_PASS is configured, but STRESS_INCLUDE_API is not enabled. Admin endpoints are skipped.'
+  );
 }
 
 if (scenarios.length === 0) {
@@ -98,7 +100,7 @@ console.log(`  concurrency: ${concurrency}`);
 console.log(`  totalRequests: ${totalRequests}`);
 console.log(`  timeoutMs: ${timeoutMs}`);
 console.log(`  includeApi: ${includeApi}`);
-console.log(`  request targets: ${scenarios.map((sc) => sc.path).join(', ')}`);
+console.log(`  request targets: ${scenarios.map(sc => sc.path).join(', ')}`);
 console.log(`  admin auth configured: ${authHeader ? 'yes' : 'no'}`);
 console.log('');
 
