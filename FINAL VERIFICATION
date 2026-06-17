@@ -1,12 +1,41 @@
+```bat
 @echo off
+setlocal
+
+REM --- Check if running on Windows ---
+ver | find "Windows" >nul
+if errorlevel 1 (
+    echo This script must be run on Windows.
+    exit /b 1
+)
+
+REM --- Check for required commands ---
+where tree >nul 2>nul
+if errorlevel 1 (
+    echo The 'tree' command is required but not found.
+    exit /b 1
+)
+where dir >nul 2>nul
+if errorlevel 1 (
+    echo The 'dir' command is required but not found.
+    exit /b 1
+)
+
+REM --- Aetheron Platform Structure Creation Confirmation ---
 echo 🎉 AETHERON PLATFORM STRUCTURE CREATED SUCCESSFULLY!
 echo.
+
+REM --- Show Directory Structure ---
 echo 📁 Directory Structure:
 tree /f /a
 echo.
+
+REM --- Show File Count ---
 echo 📊 File Count:
 dir /s /-c | find "File(s)"
 echo.
+
+REM --- GitHub Upload Instructions ---
 echo ✅ Ready for GitHub Upload!
 echo.
 echo 🚀 Next Steps:
@@ -16,5 +45,9 @@ echo 3. Run: git remote add origin https://github.com/YOUR-USERNAME/aetheron-pla
 echo 4. Run: git push -u origin main
 echo 5. Enable GitHub Pages in repository settings
 echo.
+
+REM --- Final Message ---
 echo 🌌 Your Aetheron Platform is ready for launch!
 pause
+endlocal
+```

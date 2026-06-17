@@ -203,4 +203,4 @@ echo     .stats-grid {
 echo         grid-template-columns: 1fr;
 echo     }
 echo }
-) > admin-dashboard\styles\dashboard.css
+) > admin-dashboard/styles/dashboard.css
