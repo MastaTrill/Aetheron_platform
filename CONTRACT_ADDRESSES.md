@@ -15,11 +15,11 @@
 
 #### Staking Contract
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
+- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - **Type:** Staking Contract
 - **Manages:** AETH token staking rewards
 - **Pools:** 3 (30/90/180 days)
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82)
+- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 
 ---
 
@@ -69,7 +69,7 @@
 
 ### Keeper's Lantern Wallet
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
+- **Address:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
 - **Type:** Personal wallet
 
 ---

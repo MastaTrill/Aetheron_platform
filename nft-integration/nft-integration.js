@@ -53,14 +53,12 @@ class NFTIntegration {
   }
 
   setupEventListeners() {
-    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         this.switchTab(e.target.closest('.tab-btn').dataset.tab);
       });
     });
 
-    // Search and filters
     document.getElementById('searchInput').addEventListener('input', (e) => {
       this.filters.search = e.target.value.toLowerCase();
       this.applyFilters();
@@ -81,17 +79,14 @@ class NFTIntegration {
       this.applyFilters();
     });
 
-    // Load more button
     document.getElementById('loadMoreBtn').addEventListener('click', () => {
       this.loadMoreNFTs();
     });
 
-    // Wallet connection
     document.getElementById('connectWallet').addEventListener('click', () => {
       this.connectWallet();
     });
 
-    // Create NFT form
     document.getElementById('nftCollection').addEventListener('change', (e) => {
       this.toggleNewCollectionField(e.target.value === 'custom');
     });
@@ -112,7 +107,6 @@ class NFTIntegration {
       this.mintNFT();
     });
 
-    // Analytics time filters
     document.querySelectorAll('.time-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -121,7 +115,6 @@ class NFTIntegration {
       });
     });
 
-    // Drag and drop for file upload
     const uploadArea = document.getElementById('uploadArea');
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -143,34 +136,28 @@ class NFTIntegration {
   handleFileUpload(file) {
     if (!file) return;
 
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg', 'audio/mp3'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg'];
     if (!allowedTypes.includes(file.type)) {
-      this.showToast('Unsupported file type. Please upload JPG, PNG, GIF, MP4, MP3, or MPEG files.', 'error');
+      this.showToast('Unsupported file type. Please upload JPG, PNG, GIF, MP4, or MP3 files.', 'error');
       return;
     }
 
-    // Validate file size (50MB limit)
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
       this.showToast('File size too large. Maximum size is 50MB.', 'error');
       return;
     }
 
-    // Store the file for minting
     this.selectedFile = file;
-
-    // Show preview
-    this.showFilePreview(file);
+    this.displayFilePreview(file);
   }
 
-  showFilePreview(file) {
+  displayFilePreview(file) {
     const previewContainer = document.getElementById('previewContainer');
     const previewImage = document.getElementById('previewImage');
     const previewVideo = document.getElementById('previewVideo');
     const previewAudio = document.getElementById('previewAudio');
 
-    // Hide all previews first
     previewImage.style.display = 'none';
     previewVideo.style.display = 'none';
     previewAudio.style.display = 'none';
@@ -899,55 +886,7 @@ class NFTIntegration {
   }
 
   loadUserNFTs() {
-    // Reload user NFTs after wallet connection
     this.renderGallery();
-  }
-
-  handleFileUpload(file) {
-    if (!file) return;
-
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg'];
-    if (!validTypes.includes(file.type)) {
-      this.showToast('Invalid file type. Please upload JPG, PNG, GIF, MP4, or MP3 files.', 'error');
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) { // 50MB limit
-      this.showToast('File size too large. Maximum size is 50MB.', 'error');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.displayFilePreview(file, e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  displayFilePreview(file, dataUrl) {
-    const previewContainer = document.getElementById('previewContainer');
-    const previewImage = document.getElementById('previewImage');
-    const previewVideo = document.getElementById('previewVideo');
-    const previewAudio = document.getElementById('previewAudio');
-
-    // Hide all previews first
-    previewImage.style.display = 'none';
-    previewVideo.style.display = 'none';
-    previewAudio.style.display = 'none';
-
-    if (file.type.startsWith('image/')) {
-      previewImage.src = dataUrl;
-      previewImage.style.display = 'block';
-    } else if (file.type.startsWith('video/')) {
-      previewVideo.src = dataUrl;
-      previewVideo.style.display = 'block';
-    } else if (file.type.startsWith('audio/')) {
-      previewAudio.src = dataUrl;
-      previewAudio.style.display = 'block';
-    }
-
-    previewContainer.style.display = 'block';
-    this.showToast('File uploaded successfully!', 'success');
   }
 
   toggleNewCollectionField(show) {

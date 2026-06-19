@@ -370,40 +370,6 @@ async function attemptUnlock() {
     errorEl.textContent = 'Incorrect password';
   }
 }
-      break;
-    case "send":
-      if (wallet) {
-        document.getElementById("sendScreen").classList.add("active");
-        updateSendMaxBalance();
-      } else {
-        showScreen("welcome");
-      }
-      break;
-    case "stake":
-      if (wallet) {
-        document.getElementById("stakeScreen").classList.add("active");
-        loadStakingInfo();
-      } else {
-        showScreen("welcome");
-      }
-      break;
-    case "swap":
-      if (wallet) {
-        document.getElementById("swapScreen").classList.add("active");
-        updateSwapRates();
-      } else {
-        showScreen("welcome");
-      }
-      break;
-    case "viewSeed":
-      document.getElementById("viewSeedScreen").classList.add("active");
-      displayStoredSeed();
-      break;
-    case "login":
-      document.getElementById("loginScreen").classList.add("active");
-      break;
-  }
-}
 
 // Seed Phrase Generation
 function generateSeedPhrase() {
@@ -499,36 +465,6 @@ async function importWallet() {
     const checkWallet = ethers.Wallet.fromMnemonic(mnemonic);
 
     await saveAndLoadWallet(mnemonic, password);
-  } catch (error) {
-    console.error("Import error:", error);
-    errorEl.textContent = "Invalid seed phrase. Please check and try again.";
-  }
-}
-
-// Import Existing Wallet
-function importWallet() {
-  const seedInput = document.getElementById("importSeedInput").value.trim();
-  const errorEl = document.getElementById("importError");
-
-  if (!seedInput) {
-    errorEl.textContent = "Please enter your seed phrase";
-    return;
-  }
-
-  const words = seedInput.toLowerCase().split(/\s+/);
-
-  // Validate word count
-  if (words.length !== 12 && words.length !== 24) {
-    errorEl.textContent = "Seed phrase must be 12 or 24 words";
-    return;
-  }
-
-  try {
-    // Validate mnemonic
-    const mnemonic = words.join(" ");
-    const checkWallet = ethers.Wallet.fromMnemonic(mnemonic);
-
-    saveAndLoadWallet(mnemonic);
   } catch (error) {
     console.error("Import error:", error);
     errorEl.textContent = "Invalid seed phrase. Please check and try again.";

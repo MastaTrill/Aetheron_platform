@@ -5,7 +5,7 @@ async function main() {
 
     // 1. Get the AETH Token Address (from your existing deployment)
     // Replace this with your actual AETH token address if different
-    const AETH_TOKEN_ADDRESS = "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82";
+    const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 
     // 2. Set the Rate
     // 1 MATIC = 1000 AETH (Example rate, fully adjustable)
