@@ -1,4 +1,7 @@
 const request = require('supertest');
+
+process.env.ADMIN_PASSWORD = 'test-admin-password';
+
 const app = require('./server');
 
 describe('Backend server', () => {

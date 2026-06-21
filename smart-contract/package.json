@@ -36,10 +36,10 @@
   "author": "MastaTrill",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^4.0.7",
+    "@nomicfoundation/hardhat-ethers": "^4.0.13",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
     "ethers": "^6.16.0",
-    "hardhat": "^3.3.0"
+    "hardhat": "^3.9.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",

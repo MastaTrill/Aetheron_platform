@@ -36,7 +36,7 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         super._burn(tokenId);
     }
 
-    function mint(string memory tokenURI) public payable returns (uint256) {
+    function mint(string memory metadataURI) public payable returns (uint256) {
         require(msg.value >= MINT_PRICE, "Insufficient payment");
         require(_tokenIdCounter.current() < MAX_SUPPLY, "Max supply reached");
         require(mintCount[msg.sender] < MAX_PER_MINT, "Max per mint reached");
@@ -46,9 +46,9 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         mintCount[msg.sender]++;
 
         _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, metadataURI);
 
-        emit NFTMinted(msg.sender, tokenId, tokenURI);
+        emit NFTMinted(msg.sender, tokenId, metadataURI);
 
         return tokenId;
     }

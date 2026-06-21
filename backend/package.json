@@ -19,8 +19,11 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "eslint": "^9.0.0",
     "jest": "^30.0.0",
-    "supertest": "^7.1.0",
-    "eslint": "^9.0.0"
+    "supertest": "^7.1.0"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }

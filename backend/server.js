@@ -258,10 +258,27 @@ app.use((req, res, next) => {
   return next();
 });
 
+app.use((req, res, next) => {
+  if (req.path === '/api' || req.path === '/api/') {
+    return res.json({
+      status: 'online',
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  return next();
+});
+
 app.use(
   express.static(rootDir, {
     dotfiles: 'ignore',
     index: false,
+    setHeaders(res, filePath) {
+      if (filePath === path.join(rootDir, 'index.html')) {
+        res.setHeader('Cache-Control', 'no-store');
+      }
+    },
   }),
 );
 
@@ -270,6 +287,14 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/api', (req, res) => {
+  res.json({
+    status: 'online',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/', (req, res) => {
   res.json({
     status: 'online',
     version: '1.0.0',
@@ -518,7 +543,7 @@ async function startServer() {
     res.sendFile(path.join(rootDir, 'index.html'));
   });
 
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     console.error(err.stack);
     logEvent('ERROR', { message: err.message, path: req.path });
     res.status(500).json({ error: 'Internal server error' });
@@ -545,9 +570,11 @@ async function startServer() {
   });
 }
 
-startServer().catch((error) => {
-  console.error('Failed to start backend server:', error);
-  process.exit(1);
-});
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error('Failed to start backend server:', error);
+    process.exit(1);
+  });
+}
 
 module.exports = app;

@@ -1,18 +1,17 @@
 import assert from 'node:assert/strict';
 import { before, beforeEach, describe, it } from 'node:test';
-import hre from 'hardhat';
-
-const { ethers } = hre;
+import { network } from 'hardhat';
 
 describe('AetheronVendor', { concurrency: false }, function () {
-  let token, vendor, owner, user1;
+  let ethers, token, vendor, owner, user1;
 
   before(async function () {
+    ({ ethers } = await network.connect());
     [owner, user1] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
-    const Token = await ethers.getContractFactory('Aetheron');
+    const Token = await ethers.getContractFactory('contracts/Aetheron.sol:Aetheron');
     token = await Token.deploy(owner.address, owner.address, owner.address);
     await token.waitForDeployment();
     const tokenAddress = await token.getAddress();

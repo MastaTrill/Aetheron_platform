@@ -41,8 +41,9 @@ app.post("/api/ingest", (req,res)=>{
   res.json({ok:true});
 });
 
-app.listen(PORT, ()=>{
+const server = app.listen(PORT, ()=>{
   console.log("Aetheron backend running on", PORT);
 });
 
+export { app, server };
 export default app;

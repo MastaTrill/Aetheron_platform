@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "test": "jest --testPathPatterns=server.test.js"
+    "test": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config jest.config.cjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -16,5 +16,8 @@
   "devDependencies": {
     "jest": "^30.0.0",
     "supertest": "^7.1.0"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }
