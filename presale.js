@@ -2,6 +2,7 @@
 let provider, signer, presaleContract;
 const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS";
+const MAX_PRESALE_TOKENS = 40000000;
 const PRESALE_ABI = [
     "function buyTokens() public payable",
     "function rate() public view returns (uint256)",
@@ -25,7 +26,8 @@ const PRESALE_ABI = [
     "function updateContributionLimits(uint256,uint256) external onlyOwner",
     "function updateSchedule(uint256,uint256) external onlyOwner",
     "function timeRemaining() external view returns (uint256)",
-    "function softCapReached() external view returns (bool)",
+    "function withdrawFunds() external",
+    "function treasury() public view returns (address)",
     "event TokensPurchased(address indexed buyer, uint256 weiAmount, uint256 tokenAmount)",
     "event Finalized(uint256 totalWeiRaised, uint256 totalTokensSold)",
     "event Cancelled()",
@@ -33,13 +35,13 @@ const PRESALE_ABI = [
     "event TokensClaimed(address indexed contributor, uint256 tokenAmount)"
 ];
 
-let provider, signer, presaleContract;
-const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS";
-
 let currentRate = 1000;
 let totalRaisedMatic = 0;
 let hardCapMatic = 0;
+
+function getEffectiveMaticCap(rate) {
+    return hardCapMatic || 33333;
+}
 
 function formatNumber(value, decimals = 2) {
     return Number(value).toLocaleString(undefined, {
@@ -60,6 +62,20 @@ function updateTimeRemaining(startTime, endTime) {
         const hours = Math.floor(diff / 3600);
         const mins = Math.floor((diff % 3600) / 60);
         document.getElementById('timeRemaining').innerText = `${hours}h ${mins}m`;
+    }
+}
+
+async function withdrawToTreasury() {
+    if(!presaleContract || !signer) return;
+    try {
+        const presaleWithSigner = presaleContract.connect(signer);
+        const tx = await presaleWithSigner.withdrawFunds();
+        alert("Transaction sent! Waiting for confirmation...");
+        await tx.wait();
+        alert("Funds withdrawn to treasury successfully!");
+        loadPresaleData();
+    } catch (error) {
+        alert("Withdraw failed: " + (error.reason || error.message));
     }
 }
 
@@ -148,8 +164,12 @@ async function loadPresaleData() {
 
         if (isEnded && !finalized) {
             document.getElementById('capStatus').innerHTML = '<span style="color:#ef4444;">Presale ended. </span><button onclick="loadPresaleData()" style="margin-left:8px;padding:4px 8px;font-size:12px;">Refund Available</button>';
+            document.getElementById('refundSection').style.display = 'block';
         } else if (isLive) {
             document.getElementById('capStatus').innerText = `Soft Cap: ${formatNumber(softCapMatic, 2)} MATIC | Hard Cap: ${formatNumber(hardCapMatic, 2)} MATIC`;
+        } else if (finalized) {
+            document.getElementById('capStatus').innerHTML = '<span style="color:#22c55e;">Presale finalized! </span>Tokens can be claimed.';
+            document.getElementById('withdrawSection').style.display = 'block';
         } else {
             document.getElementById('capStatus').innerHTML = '<span style="color:#f59e0b;">Presale starts in: </span><span id="timeRemaining"></span>';
             updateTimeRemaining(startTime.toNumber(), endTime.toNumber());

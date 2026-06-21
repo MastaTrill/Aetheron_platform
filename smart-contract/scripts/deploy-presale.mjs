@@ -21,6 +21,7 @@ async function main() {
     const presaleArtifact = JSON.parse(readFileSync("./artifacts/contracts/AetheronPresale.sol/AetheronPresaleV2.json", "utf8"));
 
     const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+    const TREASURY_ADDRESS = "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
     const RATE = 1000;
     const SOFT_CAP = ethers.parseEther("5000");
     const MAX_WEI_RAISED = ethers.parseEther("33333.333333333333333333");
@@ -39,7 +40,8 @@ async function main() {
         minContribution,
         maxContribution,
         startTime,
-        endTime
+        endTime,
+        TREASURY_ADDRESS
     );
     await presale.waitForDeployment();
     const address = await presale.getAddress();

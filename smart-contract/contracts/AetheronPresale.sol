@@ -15,6 +15,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 ///         both a refund AND the tokens.
 contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     IERC20 public immutable token;
+    address public treasury;
 
     uint256 public rate;
     uint256 public softCap;
@@ -58,7 +59,8 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         uint256 _minContribution,
         uint256 _maxContribution,
         uint256 _startTime,
-        uint256 _endTime
+        uint256 _endTime,
+        address _treasury
     ) {
         require(_token != address(0), "Token address cannot be zero");
         require(_rate > 0, "Rate must be > 0");
@@ -66,6 +68,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(_minContribution > 0 && _minContribution <= _maxContribution, "Invalid contribution limits");
         require(_startTime >= block.timestamp, "Start time in the past");
         require(_endTime > _startTime, "End time must be after start time");
+        require(_treasury != address(0), "Treasury address cannot be zero");
 
         token = IERC20(_token);
         rate = _rate;
@@ -75,6 +78,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         maxContribution = _maxContribution;
         startTime = _startTime;
         endTime = _endTime;
+        treasury = _treasury;
     }
 
     receive() external payable {
@@ -126,10 +130,10 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
 
-        (bool success, ) = payable(owner()).call{value: balance}("");
+        (bool success, ) = payable(treasury).call{value: balance}("");
         require(success, "Transfer failed");
 
-        emit FundsWithdrawn(owner(), balance);
+        emit FundsWithdrawn(treasury, balance);
     }
 
     function withdrawUnsoldTokens() external onlyOwner nonReentrant {
