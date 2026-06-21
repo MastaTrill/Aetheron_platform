@@ -67,6 +67,8 @@ h1 {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 8px;
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
 }
 .stat-change {
   font-size: 0.9rem;

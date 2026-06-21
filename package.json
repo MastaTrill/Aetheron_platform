@@ -10,7 +10,7 @@
     "build": "npm run build:metamask-connect && node build-cloudflare-dist.cjs",
     "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
     "test": "npm run test:smoke",
-    "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
+    "test:dashboard": "jest --config jest.config.cjs --testPathPatterns=dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",

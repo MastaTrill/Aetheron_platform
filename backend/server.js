@@ -487,6 +487,7 @@ async function mountApiRouters() {
     './scanner/coinbase-commerce.mjs',
     './scanner/payment-history-backend.mjs',
     './scanner/all-payments-backend.mjs',
+    './scanner/nft-api.mjs',
   ];
 
   for (const modulePath of routerModules) {

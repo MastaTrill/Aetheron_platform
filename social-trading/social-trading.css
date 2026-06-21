@@ -187,7 +187,8 @@ body {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
   margin-bottom: 0.25rem;
 }
 
@@ -1357,7 +1358,8 @@ body {
 .stat-card .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
   margin-bottom: 0.5rem;
 }
 

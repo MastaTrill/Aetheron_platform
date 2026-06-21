@@ -132,7 +132,8 @@ body {
 .stat-value {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--primary);
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
 }
 
 .stat-label {
@@ -582,7 +583,8 @@ body {
 .stat-value {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--primary);
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
   margin-bottom: 0.5rem;
 }
 
@@ -900,9 +902,11 @@ body {
     padding: 2rem 1rem;
   }
 
-  .stat-value {
-    font-size: 1.5rem;
-  }
+   .stat-value {
+     font-size: 1.5rem;
+     color: rgba(110, 231, 255, 0.95);
+     text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
+   }
 
   .mode-details {
     flex-direction: column;

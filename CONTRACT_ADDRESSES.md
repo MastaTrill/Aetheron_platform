@@ -61,11 +61,16 @@
 
 ## Wallet Addresses
 
-### Team Wallet / Owner Wallet
+### Team Wallet / Treasury Wallet
+
+- **Address:** `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`
+- **Role:** Platform treasury, contract owner, deployer, marketing, and staking pool
+- **Allocation:** 200,000,000 AETH (20%)
+
+### Deployer Wallet (Historical)
 
 - **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Coinbase wallet)
-- **Role:** Contract owner, deployer, marketing, and staking pool
-- **Allocation:** 200,000,000 AETH (20%)
+- **Role:** Original deployer account
 
 ### Keeper's Lantern Wallet
 

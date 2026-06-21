@@ -188,7 +188,7 @@ button, input { font: inherit; }
   border: 1px solid rgba(255,255,255,.05);
 }
 .stat-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
-.stat-value { font-size: 28px; font-weight: 800; }
+.stat-value { font-size: 28px; font-weight: 800; color: rgba(110, 231, 255, 0.95); text-shadow: 0 0 18px rgba(110, 231, 255, 0.12); }
 .stat-foot { color: var(--muted); font-size: 12px; margin-top: 8px; }
 
 .dashboard-grid {

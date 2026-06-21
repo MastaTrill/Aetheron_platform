@@ -12,15 +12,15 @@ const allNetworks = ['polygon', 'mumbai', 'mainnet', 'sepolia'];
 const allContractTypes = ['Aetheron', 'AetxToken', 'AetheronStaking'];
 const contractDefinitions = {
   Aetheron: {
-    sourceName: 'contracts/Aetheron.sol',
+    sourceName: 'project/contracts/Aetheron.sol',
     contractName: 'Aetheron',
   },
   AetxToken: {
-    sourceName: 'contracts/AetxToken.sol',
+    sourceName: 'project/contracts/AetxToken.sol',
     contractName: 'AetxToken',
   },
   AetheronStaking: {
-    sourceName: 'contracts/AetheronStaking.sol',
+    sourceName: 'project/contracts/AetheronStaking.sol',
     contractName: 'AetheronStaking',
   },
 };
@@ -40,9 +40,9 @@ if (contractTypes.length === 0) {
   contractTypes = allContractTypes;
 }
 
-const TEAM_WALLET = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
-const MARKETING_WALLET = '0x8D3442424F8F6BEEd97496C7E54e056166f96746';
-const STAKING_POOL = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
+const TEAM_WALLET = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
+const MARKETING_WALLET = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
+const STAKING_POOL = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
 
 function fail(message, code = 1) {
   console.error(message);

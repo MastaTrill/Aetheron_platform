@@ -198,124 +198,83 @@ class NFTIntegration {
   }
 
   async loadNFTData() {
-    // Simulate API call - replace with real API endpoints
-    this.nfts = await this.fetchNFTs();
-    this.collections = await this.fetchCollections();
-    this.userNFTs = await this.loadUserNFTsFromStorage();
+    try {
+      const [listings, minted] = await Promise.all([
+        this.fetchListings(),
+        this.fetchMinted(),
+      ]);
+      this.nfts = [...listings, ...minted];
+      this.collections = await this.fetchCollections();
+      this.userNFTs = await this.loadUserNFTsFromStorage();
+    } catch (error) {
+      console.error('Failed to load NFT data:', error);
+      this.showToast('Failed to load NFT data. Using fallback.', 'warning');
+      this.nfts = [];
+      this.collections = [];
+      this.userNFTs = [];
+    }
   }
 
-  async fetchNFTs() {
-    // Mock NFT data - replace with real API
-    return [
-      {
-        id: 1,
-        name: "Cosmic Explorer #001",
-        collection: "Aetheron",
-        image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+1",
-        price: 2.5,
-        currency: "ETH",
-        rarity: "Legendary",
-        owner: "0x1234...5678",
-        likes: 245,
-        views: 1250,
-        description: "A unique cosmic explorer NFT from the Aetheron collection.",
-        attributes: [
-          { trait_type: "Background", value: "Cosmic" },
-          { trait_type: "Character", value: "Explorer" },
-          { trait_type: "Rarity", value: "Legendary" }
-        ]
-      },
-      {
-        id: 2,
-        name: "Bored Ape #1234",
-        collection: "Bored Ape Yacht Club",
-        image: "https://via.placeholder.com/400x400/10b981/ffffff?text=BAYC",
-        price: 45.8,
-        currency: "ETH",
-        rarity: "Epic",
-        owner: "0xabcd...efgh",
-        likes: 892,
-        views: 3450,
-        description: "A rare Bored Ape Yacht Club NFT.",
-        attributes: [
-          { trait_type: "Fur", value: "Golden" },
-          { trait_type: "Eyes", value: "Laser" },
-          { trait_type: "Hat", value: "Crown" }
-        ]
-      },
-      {
-        id: 3,
-        name: "CryptoPunk #5678",
-        collection: "CryptoPunks",
-        image: "https://via.placeholder.com/400x400/f59e0b/ffffff?text=PUNK",
-        price: 89.2,
-        currency: "ETH",
-        rarity: "Mythic",
-        owner: "0x9876...5432",
-        likes: 1205,
-        views: 5670,
-        description: "An iconic CryptoPunk with unique attributes.",
-        attributes: [
-          { trait_type: "Type", value: "Alien" },
-          { trait_type: "Accessory", value: "Pipe" },
-          { trait_type: "Mouth", value: "Smile" }
-        ]
-      },
-      {
-        id: 4,
-        name: "Azuki #999",
-        collection: "Azuki",
-        image: "https://via.placeholder.com/400x400/ef4444/ffffff?text=AZUKI",
-        price: 12.3,
-        currency: "ETH",
-        rarity: "Rare",
-        owner: "0x1111...2222",
-        likes: 456,
-        views: 2100,
-        description: "A beautiful Azuki NFT from the garden.",
-        attributes: [
-          { trait_type: "Background", value: "Garden" },
-          { trait_type: "Clothing", value: "Kimono" },
-          { trait_type: "Eyes", value: "Determined" }
-        ]
-      },
-      {
-        id: 5,
-        name: "World of Women #777",
-        collection: "World of Women",
-        image: "https://via.placeholder.com/400x400/8b5cf6/ffffff?text=WOW",
-        price: 8.9,
-        currency: "ETH",
-        rarity: "Uncommon",
-        owner: "0x3333...4444",
-        likes: 678,
-        views: 2890,
-        description: "An empowering World of Women NFT.",
-        attributes: [
-          { trait_type: "Background", value: "Urban" },
-          { trait_type: "Hair", value: "Purple" },
-          { trait_type: "Expression", value: "Confident" }
-        ]
-      },
-      {
-        id: 6,
-        name: "Pancake Bunny #456",
-        collection: "PancakeSwap",
-        image: "https://via.placeholder.com/400x400/f97316/ffffff?text=BUNNY",
-        price: 3.2,
-        currency: "ETH",
-        rarity: "Common",
-        owner: "0x5555...6666",
-        likes: 234,
-        views: 1450,
-        description: "A cute PancakeSwap bunny NFT.",
-        attributes: [
-          { trait_type: "Type", value: "Bunny" },
-          { trait_type: "Color", value: "Pink" },
-          { trait_type: "Accessory", value: "Bow" }
-        ]
-      }
-    ];
+  getApiBase() {
+    return window.AETHERON_API_BASE_URL || 'https://vercel-node-app-1.vercel.app';
+  }
+
+  async fetchListings() {
+    try {
+      const res = await fetch(`${this.getApiBase()}/api/nft/listings`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      return data.map((listing) => ({
+        id: `listing-${listing.listingId}`,
+        listingId: listing.listingId,
+        tokenId: listing.tokenId,
+        contractAddress: listing.nftContract,
+        name: `NFT #${listing.tokenId}`,
+        collection: 'Aetheron',
+        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT',
+        price: parseFloat(listing.price),
+        currency: 'ETH',
+        rarity: 'Common',
+        owner: listing.seller,
+        likes: 0,
+        views: 0,
+        description: 'Aetheron NFT listed for sale',
+        attributes: [],
+        isListed: true,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch listings:', error);
+      return [];
+    }
+  }
+
+  async fetchMinted() {
+    try {
+      const res = await fetch(`${this.getApiBase()}/api/nft/minted`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      return data.map((nft) => ({
+        id: nft.id,
+        tokenId: nft.id,
+        contractAddress: nft.contractAddress,
+        name: `Aetheron NFT #${nft.id}`,
+        collection: 'Aetheron',
+        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT',
+        price: 0,
+        currency: 'ETH',
+        rarity: 'Common',
+        owner: nft.owner,
+        likes: 0,
+        views: 0,
+        description: 'Aetheron NFT',
+        attributes: [],
+        isListed: false,
+        tokenURI: nft.tokenURI,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch minted NFTs:', error);
+      return [];
+    }
   }
 
   async fetchCollections() {
@@ -849,32 +808,34 @@ class NFTIntegration {
       return;
     }
 
-    const nft = this.nfts.find(n => n.id === nftId);
+    const nft = this.nfts.find(n => n.id === nftId || n.listingId === nftId);
     if (!nft) return;
 
     try {
       this.showLoading();
-      // Simulate blockchain transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Add to user's collection
+      const apiBase = this.getApiBase();
+      const res = await fetch(`${apiBase}/api/nft/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId: nft.listingId || nftId }),
+      });
+      const result = await res.json();
+      if (!res.ok || result.error) {
+        throw new Error(result.error || 'Purchase failed');
+      }
+      this.nfts = this.nfts.filter(n => n.id !== nftId && n.listingId !== nftId);
       this.userNFTs.push({
         ...nft,
-        floorPrice: nft.price * 0.8, // Mock floor price
+        floorPrice: nft.price * 0.8,
         lastPrice: nft.price,
-        acquired: new Date().toISOString().split('T')[0]
+        acquired: new Date().toISOString().split('T')[0],
       });
-
-      // Remove from marketplace
-      this.nfts = this.nfts.filter(n => n.id !== nftId);
-
       this.renderMarketplace();
       this.renderGallery();
       this.closeModal();
-
       this.showToast(`Successfully purchased ${nft.name}!`, 'success');
     } catch (error) {
-      this.showToast('Purchase failed. Please try again.', 'error');
+      this.showToast('Purchase failed: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -929,62 +890,109 @@ class NFTIntegration {
       return;
     }
 
-    const name = document.getElementById('nftName').value;
-    const description = document.getElementById('nftDescription').value;
+    const name = document.getElementById('nftName').value.trim();
+    const description = document.getElementById('nftDescription').value.trim();
 
     if (!name || !this.selectedFile) {
-      this.showToast('Please fill in all required fields', 'warning');
+      this.showToast('Please fill in all required fields and upload a file', 'warning');
       return;
     }
 
     try {
       this.showLoading();
-      // Simulate minting process
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const apiBase = this.getApiBase();
 
-      // Create new NFT object
+      const tokenURI = await this.uploadNFTMetadata({
+        name,
+        description,
+        file: this.selectedFile,
+        attributes: this.getNFTAttributes(),
+      });
+
+      const res = await fetch(`${apiBase}/api/nft/mint`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tokenURI }),
+      });
+      const result = await res.json();
+      if (!res.ok || result.error) {
+        throw new Error(result.error || 'Minting failed');
+      }
+
+      const tokenId = result.txHash || `minted-${Date.now()}`;
       const newNFT = {
-        id: Date.now(),
-        name: name,
+        id: tokenId,
+        tokenId,
+        name,
         collection: 'Aetheron',
         image: URL.createObjectURL(this.selectedFile),
-        price: 0.1,
+        price: 0,
         currency: 'ETH',
         rarity: 'Common',
         owner: this.walletAddress,
         likes: 0,
         views: 0,
-        description: description,
-        attributes: [],
-        floorPrice: 0.1,
-        lastPrice: 0.1,
-        acquired: new Date().toISOString().split('T')[0]
+        description,
+        attributes: this.getNFTAttributes(),
+        floorPrice: 0,
+        lastPrice: 0,
+        acquired: new Date().toISOString().split('T')[0],
+        txHash: result.txHash,
       };
 
-      // Add to marketplace
       this.nfts.unshift(newNFT);
-      this.renderMarketplace();
-
-      // Add to user's gallery
       this.userNFTs.unshift(newNFT);
+      this.renderMarketplace();
       this.renderGallery();
-
-      // Save to localStorage for persistence
       this.saveUserNFTsToStorage();
 
-      // Reset form
       document.getElementById('nftName').value = '';
       document.getElementById('nftDescription').value = '';
       document.getElementById('fileInput').value = '';
       document.getElementById('previewContainer').style.display = 'none';
       this.selectedFile = null;
 
-      this.showToast(`Successfully minted ${name}!`, 'success');
+      this.showToast(`Successfully minted ${name}! TX: ${result.txHash.slice(0, 10)}...`, 'success');
     } catch (error) {
-      this.showToast('Minting failed. Please try again.', 'error');
+      this.showToast('Minting failed: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
+  }
+
+  getNFTAttributes() {
+    const properties = document.querySelectorAll('.property-item');
+    const attributes = [];
+    properties.forEach((item) => {
+      const type = item.querySelector('.trait-type')?.value?.trim();
+      const value = item.querySelector('.trait-value')?.value?.trim();
+      if (type && value) {
+        attributes.push({ trait_type: type, value });
+      }
+    });
+    return attributes;
+  }
+
+  async uploadNFTMetadata({ name, description, file, attributes }) {
+    const apiBase = this.getApiBase();
+    const metadata = {
+      name,
+      description,
+      image: `https://aetrs.com/assets/nft/${Date.now()}-${file.name}`,
+      attributes,
+    };
+
+    const res = await fetch(`${apiBase}/api/nft/upload-metadata`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(metadata),
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Failed to upload metadata');
+    }
+    return result.tokenURI;
   }
 
   updateStats() {

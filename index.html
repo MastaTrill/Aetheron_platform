@@ -56,17 +56,24 @@
   <script src="monitor.js?v=1.4.2" defer></script>
   <script src="marketing-launch.js?v=1.4.2" defer></script>
   <script src="shared-utils.js?v=1.4.4" defer></script>
-  <link rel="stylesheet" href="critical.css?v=1.4.2">
-  <link rel="stylesheet" href="index.css?v=1.4.2">
-  <link rel="preload" href="shared-styles.css?v=1.4.2" as="style">
-  <link rel="preload" href="mobile-optimization.css?v=1.4.2" as="style">
-  <link rel="stylesheet" href="shared-styles.css?v=1.4.2">
-  <link rel="stylesheet" href="mobile-optimization.css?v=1.4.2">
+  <link rel="stylesheet" href="critical.css?v=1.4.3">
+  <link rel="stylesheet" href="index.css?v=1.4.3">
+  <link rel="preload" href="shared-styles.css?v=1.4.3" as="style">
+  <link rel="preload" href="mobile-optimization.css?v=1.4.3" as="style">
+  <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
+  <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
+  <style>
+    #priceValue, #marketCapValue, #stakedValue, #holdersValue {
+      color: rgba(110, 231, 255, 0.95) !important;
+      text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
+      background: rgba(255, 255, 0, 0.3) !important;
+    }
+  </style>
   <noscript>
-    <link rel="stylesheet" href="shared-styles.css?v=1.4.2">
-    <link rel="stylesheet" href="mobile-optimization.css?v=1.4.2">
+    <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
+    <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
   </noscript>
-  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.2">
+  <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.3">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
     crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -201,7 +208,7 @@
         <div class="stat-card primary">
           <div class="icon"><i class="fas fa-coins"></i></div>
           <div class="label">AETH Price</div>
-          <div class="value" id="priceValue">$0.00000001</div>
+          <div class="value" id="priceValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">$0.00000001</div>
           <div class="change" id="priceChange"><i class="fas fa-arrow-up" id="priceArrow"></i> <span
               id="priceChangePercent">+0.00%</span></div>
           <div class="price-action-row">
@@ -218,19 +225,19 @@
         <div class="stat-card success">
           <div class="icon"><i class="fas fa-chart-line"></i></div>
           <div class="label">Market Cap</div>
-          <div class="value" id="marketCapValue">$10</div>
+          <div class="value" id="marketCapValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">$10</div>
           <div class="change" id="marketCapChange">+0.00% (24h)</div>
         </div>
         <div class="stat-card warning">
           <div class="icon"><i class="fas fa-fire"></i></div>
           <div class="label">Total Staked</div>
-          <div class="value" id="stakedValue">0 AETH</div>
+          <div class="value" id="stakedValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">0 AETH</div>
           <div class="change" id="stakedChange">150M AETH Pool</div>
         </div>
         <div class="stat-card info">
           <div class="icon"><i class="fas fa-users"></i></div>
           <div class="label">Holders</div>
-          <div class="value" id="holdersValue">1+</div>
+          <div class="value" id="holdersValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">1+</div>
           <div class="change positive" id="holdersChange">Growing</div>
         </div>
       </div>
@@ -662,6 +669,20 @@
   <script src="dom-bindings.js?v=1.4.2" defer></script>
   <script src="global-announcements.js?v=1.4.7" defer="defer"></script>
   <script type="module" src="index-dom-overrides.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const statIds = ['priceValue', 'marketCapValue', 'stakedValue', 'holdersValue'];
+      const blueColor = 'rgba(110, 231, 255, 0.95)';
+      const blueShadow = '0 0 22px rgba(110, 231, 255, 0.16)';
+      statIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.setProperty('color', blueColor, 'important');
+          el.style.setProperty('text-shadow', blueShadow, 'important');
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
