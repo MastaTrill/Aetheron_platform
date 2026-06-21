@@ -3,6 +3,18 @@ let provider, signer, presaleContract;
 const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS";
 const MAX_PRESALE_TOKENS = 40000000;
+const POLYGON_CHAIN_ID = "0x89";
+const POLYGON_CHAIN_PARAMS = {
+    chainId: POLYGON_CHAIN_ID,
+    chainName: "Polygon Mainnet",
+    nativeCurrency: {
+        name: "POL",
+        symbol: "POL",
+        decimals: 18
+    },
+    rpcUrls: ["https://polygon-rpc.com"],
+    blockExplorerUrls: ["https://polygonscan.com"]
+};
 const PRESALE_ABI = [
     "function buyTokens() public payable",
     "function rate() public view returns (uint256)",
@@ -38,9 +50,49 @@ const PRESALE_ABI = [
 let currentRate = 1000;
 let totalRaisedMatic = 0;
 let hardCapMatic = 0;
+let minContributionMatic = 0.1;
+let maxContributionMatic = 1000;
+let presaleIsLive = false;
 
-function getEffectiveMaticCap(rate) {
-    return hardCapMatic || 33333;
+function getElement(id) {
+    return document.getElementById(id);
+}
+
+function setText(id, value) {
+    const element = getElement(id);
+    if (element) element.innerText = value;
+}
+
+function setHtml(id, value) {
+    const element = getElement(id);
+    if (element) element.innerHTML = value;
+}
+
+function isPresaleConfigured() {
+    return /^0x[a-fA-F0-9]{40}$/.test(PRESALE_CONTRACT_ADDRESS) &&
+        PRESALE_CONTRACT_ADDRESS !== "0x0000000000000000000000000000000000000000";
+}
+
+function setPurchaseControlsEnabled(enabled, label) {
+    const buyBtn = getElement('buyBtn');
+    const amountInput = getElement('maticAmount');
+    if (buyBtn) {
+        buyBtn.disabled = !enabled;
+        if (label) buyBtn.innerText = label;
+    }
+    if (amountInput) amountInput.disabled = !enabled;
+}
+
+function setPresaleUnavailable(message) {
+    presaleContract = null;
+    presaleIsLive = false;
+    setText('contractAddr', isPresaleConfigured() ? PRESALE_CONTRACT_ADDRESS : 'Not deployed');
+    setHtml('capStatus', `<span style="color:#ef4444;">${message}</span>`);
+    setPurchaseControlsEnabled(false, 'Coming Soon');
+}
+
+function getEffectiveMaticCap() {
+    return hardCapMatic || (MAX_PRESALE_TOKENS / currentRate);
 }
 
 function formatNumber(value, decimals = 2) {
@@ -62,6 +114,28 @@ function updateTimeRemaining(startTime, endTime) {
         const hours = Math.floor(diff / 3600);
         const mins = Math.floor((diff % 3600) / 60);
         document.getElementById('timeRemaining').innerText = `${hours}h ${mins}m`;
+    }
+}
+
+async function ensurePolygonNetwork() {
+    if (!window.ethereum) {
+        throw new Error("No Ethereum wallet detected.");
+    }
+
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    if (chainId === POLYGON_CHAIN_ID) return;
+
+    try {
+        await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: POLYGON_CHAIN_ID }]
+        });
+    } catch (error) {
+        if (error.code !== 4902) throw error;
+        await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [POLYGON_CHAIN_PARAMS]
+        });
     }
 }
 
@@ -95,28 +169,31 @@ async function claimRefund() {
 async function connectWallet() {
     if (window.ethereum) {
         try {
-            provider = new ethers.providers.Web3Provider(window.ethereum);
+            if (!window.ethers) {
+                throw new Error("Ethers library failed to load.");
+            }
+
+            await ensurePolygonNetwork();
+            provider = new ethers.providers.Web3Provider(window.ethereum, "any");
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
             const address = await signer.getAddress();
             
-            document.getElementById('connectBtn').style.display = 'none';
-            document.getElementById('walletAddress').style.display = 'inline-block';
-            document.getElementById('walletAddress').innerText = `Connected: ${address.substring(0,6)}...${address.substring(38)}`;
-            document.getElementById('buyBtn').disabled = false;
+            getElement('connectBtn').style.display = 'none';
+            getElement('walletAddress').style.display = 'inline-block';
+            setText('walletAddress', `Connected: ${address.substring(0,6)}...${address.substring(38)}`);
             
-            if (PRESALE_CONTRACT_ADDRESS !== "REPLACE_WITH_DEPLOYED_ADDRESS") {
+            if (isPresaleConfigured()) {
                 presaleContract = new ethers.Contract(PRESALE_CONTRACT_ADDRESS, PRESALE_ABI, provider);
-                document.getElementById('contractAddr').innerText = PRESALE_CONTRACT_ADDRESS;
+                setText('contractAddr', PRESALE_CONTRACT_ADDRESS);
                 loadPresaleData();
             } else {
-                document.getElementById('contractAddr').innerText = "Presale contract not deployed yet";
-                document.getElementById('buyBtn').disabled = true;
-                document.getElementById('buyBtn').innerText = "Coming Soon";
+                setPresaleUnavailable("Presale contract is not deployed yet.");
             }
 
         } catch (error) {
             console.error("Connection failed", error);
+            alert("Wallet connection failed: " + (error.reason || error.message));
         }
     } else {
         alert("Please install MetaMask!");
@@ -140,43 +217,48 @@ async function loadPresaleData() {
         ]);
         
         currentRate = rate.toNumber();
-        document.getElementById('rateDisplay').innerText = `1 MATIC = ${currentRate} AETH`;
+        setText('rateDisplay', `1 MATIC = ${currentRate} AETH`);
 
         const raisedMatic = parseFloat(ethers.utils.formatEther(raised));
         totalRaisedMatic = raisedMatic;
-        document.getElementById('raisedDisplay').innerText = `${formatNumber(raisedMatic, 2)} MATIC`;
+        setText('raisedDisplay', `${formatNumber(raisedMatic, 2)} MATIC`);
 
-        const maxMaticByTokens = currentRate;
         const softCapMatic = parseFloat(ethers.utils.formatEther(softCap));
-        const hardCapMatic = parseFloat(ethers.utils.formatEther(hardCap));
-        const minMatic = parseFloat(ethers.utils.formatEther(minContrib));
-        const maxMaticPerWallet = parseFloat(ethers.utils.formatEther(maxContrib));
+        hardCapMatic = parseFloat(ethers.utils.formatEther(hardCap));
+        minContributionMatic = parseFloat(ethers.utils.formatEther(minContrib));
+        maxContributionMatic = parseFloat(ethers.utils.formatEther(maxContrib));
 
-        document.getElementById('maxTokensDisplay').innerText = `${(hardCapMatic * currentRate).toLocaleString()} AETH`;
-        document.getElementById('maxRaiseDisplay').innerText = `$${formatNumber(hardCapMatic * 0.75, 0)}`;
+        setText('maxTokensDisplay', `${Math.min(hardCapMatic * currentRate, MAX_PRESALE_TOKENS).toLocaleString()} AETH`);
+        setText('maxRaiseDisplay', `${formatNumber(hardCapMatic, 2)} MATIC`);
 
         const progress = Math.min((raisedMatic / hardCapMatic) * 100, 100);
-        document.getElementById('progressBar').style.width = `${progress.toFixed(2)}%`;
+        getElement('progressBar').style.width = `${progress.toFixed(2)}%`;
 
         const now = Date.now() / 1000;
         const isLive = now >= startTime.toNumber() && now < endTime.toNumber() && !finalized && !cancelled;
         const isEnded = finalized || cancelled || now >= endTime.toNumber();
+        presaleIsLive = isLive;
 
         if (isEnded && !finalized) {
-            document.getElementById('capStatus').innerHTML = '<span style="color:#ef4444;">Presale ended. </span><button onclick="loadPresaleData()" style="margin-left:8px;padding:4px 8px;font-size:12px;">Refund Available</button>';
-            document.getElementById('refundSection').style.display = 'block';
+            setHtml('capStatus', '<span style="color:#ef4444;">Presale ended. Refunds may be available.</span>');
+            getElement('refundSection').style.display = 'block';
+            setPurchaseControlsEnabled(false, 'Presale Ended');
         } else if (isLive) {
-            document.getElementById('capStatus').innerText = `Soft Cap: ${formatNumber(softCapMatic, 2)} MATIC | Hard Cap: ${formatNumber(hardCapMatic, 2)} MATIC`;
+            setText('capStatus', `Soft Cap: ${formatNumber(softCapMatic, 2)} MATIC | Hard Cap: ${formatNumber(hardCapMatic, 2)} MATIC`);
+            setPurchaseControlsEnabled(Boolean(signer), signer ? 'Enter Amount' : 'Connect Wallet');
         } else if (finalized) {
-            document.getElementById('capStatus').innerHTML = '<span style="color:#22c55e;">Presale finalized! </span>Tokens can be claimed.';
-            document.getElementById('withdrawSection').style.display = 'block';
+            setHtml('capStatus', '<span style="color:#22c55e;">Presale finalized! </span>Tokens can be claimed.');
+            getElement('withdrawSection').style.display = 'block';
+            setPurchaseControlsEnabled(false, 'Finalized');
         } else {
-            document.getElementById('capStatus').innerHTML = '<span style="color:#f59e0b;">Presale starts in: </span><span id="timeRemaining"></span>';
+            setHtml('capStatus', '<span style="color:#f59e0b;">Presale starts in: </span><span id="timeRemaining"></span>');
             updateTimeRemaining(startTime.toNumber(), endTime.toNumber());
+            setPurchaseControlsEnabled(false, 'Not Started');
         }
         
     } catch(err) {
         console.error("Error loading data", err);
+        setPresaleUnavailable("Unable to read presale contract data. Purchases are disabled.");
     }
 }
 
@@ -188,12 +270,33 @@ function calculateTokens() {
     warning.style.display = 'none';
     warning.innerText = '';
 
-    if(maticInput > 0) {
-        const effectiveMaticCap = getEffectiveMaticCap(currentRate);
+    if(!isPresaleConfigured() || !presaleContract || !presaleIsLive) {
+        setPurchaseControlsEnabled(false, 'Coming Soon');
+        return;
+    }
+
+    if(Number(maticInput) > 0) {
+        const effectiveMaticCap = getEffectiveMaticCap();
         const remainingMatic = Math.max(effectiveMaticCap - totalRaisedMatic, 0);
         const maticAmount = parseFloat(maticInput);
         const tokens = maticInput * currentRate;
-        document.getElementById('tokenAmount').value = tokens + " AETH";
+        getElement('tokenAmount').value = tokens.toLocaleString() + " AETH";
+
+        if (maticAmount < minContributionMatic) {
+            warning.innerText = `Minimum contribution is ${formatNumber(minContributionMatic, 2)} MATIC.`;
+            warning.style.display = 'block';
+            buyBtn.disabled = true;
+            buyBtn.innerText = "Below Minimum";
+            return;
+        }
+
+        if (maticAmount > maxContributionMatic) {
+            warning.innerText = `Maximum contribution per wallet is ${formatNumber(maxContributionMatic, 2)} MATIC.`;
+            warning.style.display = 'block';
+            buyBtn.disabled = true;
+            buyBtn.innerText = "Above Maximum";
+            return;
+        }
 
         if (maticAmount > remainingMatic) {
             warning.innerText = `Cap reached or exceeded. Remaining capacity: ${formatNumber(remainingMatic, 2)} MATIC.`;
@@ -220,18 +323,21 @@ function calculateTokens() {
 }
 
 async function buyTokens() {
-    if(!presaleContract || !signer) return;
+    if(!isPresaleConfigured() || !presaleContract || !signer || !presaleIsLive) {
+        alert("Presale is not live yet.");
+        return;
+    }
     
     const maticAmount = document.getElementById('maticAmount').value;
     if(!maticAmount) return;
 
     const maticValue = parseFloat(maticAmount);
-    if (maticValue < 0.1) {
-        alert("Minimum contribution is 0.1 MATIC");
+    if (maticValue < minContributionMatic) {
+        alert(`Minimum contribution is ${formatNumber(minContributionMatic, 2)} MATIC`);
         return;
     }
-    if (maticValue > 1000) {
-        alert("Maximum contribution per wallet is 1000 MATIC");
+    if (maticValue > maxContributionMatic) {
+        alert(`Maximum contribution per wallet is ${formatNumber(maxContributionMatic, 2)} MATIC`);
         return;
     }
 
@@ -261,7 +367,19 @@ async function buyTokens() {
     }
 }
 
+function initializePresalePage() {
+    if (!isPresaleConfigured()) {
+        setPresaleUnavailable("Presale contract is not deployed yet.");
+        return;
+    }
+
+    setText('contractAddr', PRESALE_CONTRACT_ADDRESS);
+    setPurchaseControlsEnabled(false, 'Connect Wallet');
+}
+
 // Auto connect if already permitted
+initializePresalePage();
+
 if(window.ethereum && window.ethereum.selectedAddress) {
     connectWallet();
 }
