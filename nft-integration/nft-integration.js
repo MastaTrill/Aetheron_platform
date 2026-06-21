@@ -231,7 +231,7 @@ class NFTIntegration {
         contractAddress: listing.nftContract,
         name: `NFT #${listing.tokenId}`,
         collection: 'Aetheron',
-        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT',
+        image: 'https://placehold.co/400x400/6366f1/white?text=NFT',
         price: parseFloat(listing.price),
         currency: 'ETH',
         rarity: 'Common',
@@ -259,7 +259,7 @@ class NFTIntegration {
         contractAddress: nft.contractAddress,
         name: `Aetheron NFT #${nft.id}`,
         collection: 'Aetheron',
-        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT',
+        image: 'https://placehold.co/400x400/6366f1/white?text=NFT',
         price: 0,
         currency: 'ETH',
         rarity: 'Common',
@@ -295,7 +295,7 @@ class NFTIntegration {
         id: 1,
         name: "Cosmic Explorer #001",
         collection: "Aetheron",
-        image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+1",
+        image: "https://placehold.co/400x400/6366f1/white?text=NFT+1",
         floorPrice: 1.2,
         lastPrice: 2.5,
         acquired: "2024-01-15"
@@ -346,15 +346,15 @@ class NFTIntegration {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         data: [25.5, 28.2, 32.1, 29.8, 31.5, 35.2]
       },
-      topCollections: [
-        { name: 'Bored Ape Yacht Club', image: 'https://via.placeholder.com/40x40/10b981/ffffff?text=B', volume: 2500000, change: 12.5 },
-        { name: 'CryptoPunks', image: 'https://via.placeholder.com/40x40/f59e0b/ffffff?text=C', volume: 1800000, change: -3.2 },
-        { name: 'Azuki', image: 'https://via.placeholder.com/40x40/ef4444/ffffff?text=A', volume: 890000, change: 8.7 }
+        topCollections: [
+        { name: 'Bored Ape Yacht Club', image: 'https://placehold.co/40x40/10b981/white?text=B', volume: 2500000, change: 12.5 },
+        { name: 'CryptoPunks', image: 'https://placehold.co/40x40/f59e0b/white?text=C', volume: 1800000, change: -3.2 },
+        { name: 'Azuki', image: 'https://placehold.co/40x40/ef4444/white?text=A', volume: 890000, change: 8.7 }
       ],
       tradingActivity: [
-        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: 'https://via.placeholder.com/40x40/10b981/ffffff?text=B' },
-        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: 'https://via.placeholder.com/40x40/6366f1/ffffff?text=A' },
-        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: 'https://via.placeholder.com/40x40/f59e0b/ffffff?text=C' }
+        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: 'https://placehold.co/40x40/10b981/white?text=B' },
+        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: 'https://placehold.co/40x40/6366f1/white?text=A' },
+        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: 'https://placehold.co/40x40/f59e0b/white?text=C' }
       ]
     };
   }
@@ -380,7 +380,7 @@ class NFTIntegration {
 
     card.innerHTML = `
             <div class="nft-image">
-                <img src="${nft.image}" alt="${nft.name}" loading="lazy">
+                <img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
                 <div class="nft-badge">${nft.rarity}</div>
             </div>
             <div class="nft-info">
@@ -438,7 +438,7 @@ class NFTIntegration {
 
     card.innerHTML = `
             <div class="nft-image">
-                <img src="${nft.image}" alt="${nft.name}" loading="lazy">
+                <img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
             </div>
             <div class="nft-info">
                 <div class="nft-name">${nft.name}</div>
@@ -696,7 +696,7 @@ class NFTIntegration {
           id: 7,
           name: "Space Explorer #002",
           collection: "Aetheron",
-          image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+7",
+          image: "https://placehold.co/400x400/6366f1/white?text=NFT+7",
           price: 1.8,
           currency: "ETH",
           rarity: "Rare",
@@ -727,7 +727,7 @@ class NFTIntegration {
     modalBody.innerHTML = `
             <div class="nft-modal-content">
                 <div class="nft-modal-image">
-                    <img src="${nft.image}" alt="${nft.name}">
+                    <img src="${nft.image}" alt="${nft.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
                 </div>
                 <div class="nft-modal-details">
                     <div class="nft-modal-info">
