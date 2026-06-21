@@ -1,37 +1,79 @@
 // Presale Logic
 let provider, signer, presaleContract;
-const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS"; // You must update this after deployment
+const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS";
 const PRESALE_ABI = [
     "function buyTokens() public payable",
     "function rate() public view returns (uint256)",
     "function weiRaised() public view returns (uint256)",
-    "event TokensPurchased(address indexed purchaser, uint256 value, uint256 amount)"
+    "function token() public view returns (address)",
+    "function softCap() public view returns (uint256)",
+    "function hardCap() public view returns (uint256)",
+    "function minContribution() public view returns (uint256)",
+    "function maxContribution() public view returns (uint256)",
+    "function startTime() public view returns (uint256)",
+    "function endTime() public view returns (uint256)",
+    "function finalized() public view returns (bool)",
+    "function cancelled() public view returns (bool)",
+    "function contributions(address) public view returns (uint256)",
+    "function tokensOwed(address) public view returns (uint256)",
+    "function refundsAvailable() public view returns (bool)",
+    "function claimTokens() external",
+    "function claimRefund() external",
+    "function updateRate(uint256) external onlyOwner",
+    "function updateCaps(uint256,uint256) external onlyOwner",
+    "function updateContributionLimits(uint256,uint256) external onlyOwner",
+    "function updateSchedule(uint256,uint256) external onlyOwner",
+    "function timeRemaining() external view returns (uint256)",
+    "function softCapReached() external view returns (bool)",
+    "event TokensPurchased(address indexed buyer, uint256 weiAmount, uint256 tokenAmount)",
+    "event Finalized(uint256 totalWeiRaised, uint256 totalTokensSold)",
+    "event Cancelled()",
+    "event RefundClaimed(address indexed contributor, uint256 weiAmount)",
+    "event TokensClaimed(address indexed contributor, uint256 tokenAmount)"
 ];
+
+let provider, signer, presaleContract;
+const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS";
 
 let currentRate = 1000;
 let totalRaisedMatic = 0;
-
-const MAX_PRESALE_TOKENS = 40000000;
-const MAX_TOTAL_USD = 25000;
-const MATIC_USD = 0.75;
-
-function getMaxMaticByUsd() {
-    return MAX_TOTAL_USD / MATIC_USD;
-}
-
-function getMaxMaticByTokens(rate) {
-    return MAX_PRESALE_TOKENS / rate;
-}
-
-function getEffectiveMaticCap(rate) {
-    return Math.min(getMaxMaticByUsd(), getMaxMaticByTokens(rate));
-}
+let hardCapMatic = 0;
 
 function formatNumber(value, decimals = 2) {
     return Number(value).toLocaleString(undefined, {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
     });
+}
+
+function updateTimeRemaining(startTime, endTime) {
+    const now = Date.now() / 1000;
+    if (now < startTime) {
+        const diff = startTime - now;
+        const hours = Math.floor(diff / 3600);
+        const mins = Math.floor((diff % 3600) / 60);
+        document.getElementById('timeRemaining').innerText = `${hours}h ${mins}m`;
+    } else if (now < endTime) {
+        const diff = endTime - now;
+        const hours = Math.floor(diff / 3600);
+        const mins = Math.floor((diff % 3600) / 60);
+        document.getElementById('timeRemaining').innerText = `${hours}h ${mins}m`;
+    }
+}
+
+async function claimRefund() {
+    if(!presaleContract || !signer) return;
+    try {
+        const tx = await presaleContract.claimRefund();
+        alert("Transaction sent! Waiting for confirmation...");
+        await tx.wait();
+        alert("Refund claimed successfully!");
+        loadPresaleData();
+    } catch (error) {
+        alert("Refund failed: " + (error.reason || error.message));
+    }
 }
 
 async function connectWallet() {
@@ -47,13 +89,14 @@ async function connectWallet() {
             document.getElementById('walletAddress').innerText = `Connected: ${address.substring(0,6)}...${address.substring(38)}`;
             document.getElementById('buyBtn').disabled = false;
             
-            // Initialize Contract
             if (PRESALE_CONTRACT_ADDRESS !== "REPLACE_WITH_DEPLOYED_ADDRESS") {
                 presaleContract = new ethers.Contract(PRESALE_CONTRACT_ADDRESS, PRESALE_ABI, provider);
                 document.getElementById('contractAddr').innerText = PRESALE_CONTRACT_ADDRESS;
                 loadPresaleData();
             } else {
-                alert("Presale contract address not set yet. Please check back later.");
+                document.getElementById('contractAddr').innerText = "Presale contract not deployed yet";
+                document.getElementById('buyBtn').disabled = true;
+                document.getElementById('buyBtn').innerText = "Coming Soon";
             }
 
         } catch (error) {
@@ -67,29 +110,50 @@ async function connectWallet() {
 async function loadPresaleData() {
     if(!presaleContract) return;
     try {
-        const rate = await presaleContract.rate();
+        const [rate, raised, softCap, hardCap, minContrib, maxContrib, startTime, endTime, finalized, cancelled] = await Promise.all([
+            presaleContract.rate(),
+            presaleContract.weiRaised(),
+            presaleContract.softCap(),
+            presaleContract.hardCap(),
+            presaleContract.minContribution(),
+            presaleContract.maxContribution(),
+            presaleContract.startTime(),
+            presaleContract.endTime(),
+            presaleContract.finalized(),
+            presaleContract.cancelled()
+        ]);
+        
         currentRate = rate.toNumber();
         document.getElementById('rateDisplay').innerText = `1 MATIC = ${currentRate} AETH`;
 
-        const raised = await presaleContract.weiRaised();
-        const raisedMatic = ethers.utils.formatEther(raised);
-        totalRaisedMatic = parseFloat(raisedMatic);
-        document.getElementById('raisedDisplay').innerText = `${formatNumber(totalRaisedMatic, 2)} MATIC`;
+        const raisedMatic = parseFloat(ethers.utils.formatEther(raised));
+        totalRaisedMatic = raisedMatic;
+        document.getElementById('raisedDisplay').innerText = `${formatNumber(raisedMatic, 2)} MATIC`;
 
-        const maxMaticByUsd = getMaxMaticByUsd();
-        const maxMaticByTokens = getMaxMaticByTokens(currentRate);
-        const effectiveMaticCap = getEffectiveMaticCap(currentRate);
+        const maxMaticByTokens = currentRate;
+        const softCapMatic = parseFloat(ethers.utils.formatEther(softCap));
+        const hardCapMatic = parseFloat(ethers.utils.formatEther(hardCap));
+        const minMatic = parseFloat(ethers.utils.formatEther(minContrib));
+        const maxMaticPerWallet = parseFloat(ethers.utils.formatEther(maxContrib));
 
-        const tokenCapDisplay = `${MAX_PRESALE_TOKENS.toLocaleString()} AETH`;
-        const usdCapDisplay = `$${MAX_TOTAL_USD.toLocaleString()}`;
-        document.getElementById('maxTokensDisplay').innerText = tokenCapDisplay;
-        document.getElementById('maxRaiseDisplay').innerText = usdCapDisplay;
+        document.getElementById('maxTokensDisplay').innerText = `${(hardCapMatic * currentRate).toLocaleString()} AETH`;
+        document.getElementById('maxRaiseDisplay').innerText = `$${formatNumber(hardCapMatic * 0.75, 0)}`;
 
-        const progress = Math.min((totalRaisedMatic / effectiveMaticCap) * 100, 100);
+        const progress = Math.min((raisedMatic / hardCapMatic) * 100, 100);
         document.getElementById('progressBar').style.width = `${progress.toFixed(2)}%`;
 
-        const capNote = `Caps: ${formatNumber(maxMaticByUsd, 2)} MATIC ($${MAX_TOTAL_USD.toLocaleString()}) or ${formatNumber(maxMaticByTokens, 2)} MATIC (${MAX_PRESALE_TOKENS.toLocaleString()} AETH), whichever comes first.`;
-        document.getElementById('capStatus').innerText = capNote;
+        const now = Date.now() / 1000;
+        const isLive = now >= startTime.toNumber() && now < endTime.toNumber() && !finalized && !cancelled;
+        const isEnded = finalized || cancelled || now >= endTime.toNumber();
+
+        if (isEnded && !finalized) {
+            document.getElementById('capStatus').innerHTML = '<span style="color:#ef4444;">Presale ended. </span><button onclick="loadPresaleData()" style="margin-left:8px;padding:4px 8px;font-size:12px;">Refund Available</button>';
+        } else if (isLive) {
+            document.getElementById('capStatus').innerText = `Soft Cap: ${formatNumber(softCapMatic, 2)} MATIC | Hard Cap: ${formatNumber(hardCapMatic, 2)} MATIC`;
+        } else {
+            document.getElementById('capStatus').innerHTML = '<span style="color:#f59e0b;">Presale starts in: </span><span id="timeRemaining"></span>';
+            updateTimeRemaining(startTime.toNumber(), endTime.toNumber());
+        }
         
     } catch(err) {
         console.error("Error loading data", err);
@@ -141,11 +205,13 @@ async function buyTokens() {
     const maticAmount = document.getElementById('maticAmount').value;
     if(!maticAmount) return;
 
-    const effectiveMaticCap = getEffectiveMaticCap(currentRate);
-    const remainingMatic = Math.max(effectiveMaticCap - totalRaisedMatic, 0);
     const maticValue = parseFloat(maticAmount);
-    if (maticValue > remainingMatic) {
-        alert(`Cap reached. Remaining capacity: ${formatNumber(remainingMatic, 2)} MATIC.`);
+    if (maticValue < 0.1) {
+        alert("Minimum contribution is 0.1 MATIC");
+        return;
+    }
+    if (maticValue > 1000) {
+        alert("Maximum contribution per wallet is 1000 MATIC");
         return;
     }
 
@@ -162,7 +228,7 @@ async function buyTokens() {
         
         await tx.wait();
         
-        alert("Success! tokens purchased.");
+        alert("Success! Tokens purchased.");
         document.getElementById('buyBtn').innerText = "Buy Tokens";
         document.getElementById('maticAmount').value = "";
         loadPresaleData();

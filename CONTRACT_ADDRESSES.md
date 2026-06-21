@@ -25,38 +25,6 @@
 
 ### Additional Contracts
 
-#### Contract 1 (Test/Previous Token)
-
-- **Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 142 days ago (Jul 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 20 transactions
-- **Functions:** Approve, Mint, Batch Airdrop, Transfer Ownership, Unpause
-- **Status:** Previous deployment with failed mint/airdrop attempts
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x072091F554df794852E0A9d1c809F2B2bBda171E)
-
-#### Contract 2 (Oldest Test Token)
-
-- **Address:** `0xb687083F85c59f3dE192ab001d2D52c8D87181d5`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 162 days ago (Jun 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 2 transactions (Approve only)
-- **Status:** Minimal activity, likely abandoned test deployment
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0xb687083F85c59f3dE192ab001d2D52c8D87181d5)
-
-#### Contract 3 (Another Test Token)
-
-- **Address:** `0x25ed26BD8A6Cd2551AA3CCA8D4022A7efc276D54`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 158 days ago (Jun 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 13 transactions
-- **Functions:** Approve, Batch Airdrop, Unpause, Renounce Ownership
-- **Status:** Previous deployment with failed unpause/airdrop attempts
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x25ed26BD8A6Cd2551AA3CCA8D4022A7efc276D54)
-
 ---
 
 ## Wallet Addresses

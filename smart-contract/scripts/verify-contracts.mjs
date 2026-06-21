@@ -88,7 +88,7 @@ function readContractAddresses(selectedNetwork) {
 
   return {
     Aetheron: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
-    AetxToken: { address: '0x072091F554df794852E0A9d1c809F2B2bBda171E' },
+    AetxToken: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
     AetheronStaking: {
       address: '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82',
     },

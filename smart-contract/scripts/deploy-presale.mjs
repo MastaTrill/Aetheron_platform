@@ -1,54 +1,73 @@
-import hre from "hardhat";
+import { ethers } from "ethers";
+import { readFileSync } from "fs";
+
+const RPC_URL = process.env.POLYGON_RPC_URL || "https://polygon.drpc.org";
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
+if (!PRIVATE_KEY) {
+    console.error("PRIVATE_KEY environment variable is required");
+    process.exit(1);
+}
 
 async function main() {
-    console.log("Deploying AetheronPresale...");
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 
-    // 1. Get the AETH Token Address (from your existing deployment)
-    // Replace this with your actual AETH token address if different
+    console.log("Deploying from address:", wallet.address);
+
+    const balance = await provider.getBalance(wallet.address);
+    console.log("Account balance:", ethers.formatEther(balance), "MATIC");
+
+    const presaleArtifact = JSON.parse(readFileSync("./artifacts/contracts/AetheronPresale.sol/AetheronPresaleV2.json", "utf8"));
+
     const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-
-    // 2. Set the Rate
-    // 1 MATIC = 1000 AETH (Example rate, fully adjustable)
-    // If MATIC is $0.50, then 1000 AETH = $0.50 -> 1 AETH = $0.0005
     const RATE = 1000;
+    const SOFT_CAP = ethers.parseEther("5000");
+    const MAX_WEI_RAISED = ethers.parseEther("33333.333333333333333333");
+    const startTime = Math.floor(Date.now() / 1000) + 3600;
+    const endTime = startTime + 14 * 24 * 3600;
+    const minContribution = ethers.parseEther("0.1");
+    const maxContribution = ethers.parseEther("1000");
 
-    // 3. Presale Caps
-    // Max tokens: 40,000,000 AETH
-    // Max raise: $25,000 at $0.75/MATIC => 33,333.333... MATIC
-    const MAX_TOKENS_FOR_SALE = hre.ethers.parseEther("40000000");
-    const MAX_WEI_RAISED = hre.ethers.parseEther("33333.333333333333333333");
-
-    // 4. Deploy
-    const AetheronPresale = await hre.ethers.getContractFactory("AetheronPresale");
-    const presale = await AetheronPresale.deploy(AETH_TOKEN_ADDRESS, RATE, MAX_TOKENS_FOR_SALE, MAX_WEI_RAISED);
-
+    const presaleFactory = new ethers.ContractFactory(presaleArtifact.abi, presaleArtifact.bytecode, wallet);
+    console.log("Deploying AetheronPresaleV2...");
+    const presale = await presaleFactory.deploy(
+        AETH_TOKEN_ADDRESS,
+        RATE,
+        SOFT_CAP,
+        MAX_WEI_RAISED,
+        minContribution,
+        maxContribution,
+        startTime,
+        endTime
+    );
     await presale.waitForDeployment();
     const address = await presale.getAddress();
 
     console.log("------------------------------------------");
     console.log("✅ Presale Deployed to:", address);
     console.log("------------------------------------------");
+    console.log("Start Time:", new Date(startTime * 1000).toISOString());
+    console.log("End Time:", new Date(endTime * 1000).toISOString());
 
-    // 5. Exclude Presale from Tax
     console.log("⚙️  Excluding Presale Contract from Tax...");
     try {
-        const token = await hre.ethers.getContractAt("Aetheron", AETH_TOKEN_ADDRESS);
-        const tx = await token.setExcludedFromTax(address, true);
+        const tokenAbi = ["function setExcludedFromTax(address, bool)"];
+        const tokenContract = new ethers.Contract(AETH_TOKEN_ADDRESS, tokenAbi, wallet);
+        const tx = await tokenContract.setExcludedFromTax(address, true);
         await tx.wait();
         console.log("✅ Presale contract excluded from tax restrictions.");
     } catch (error) {
-        console.error("⚠️  Failed to exclude presale from tax. Ensure you are the owner of the AETH token contract.");
-        console.error("   Error:", error.message);
+        console.error("⚠️  Failed to exclude presale from tax:", error.message);
     }
 
     console.log("------------------------------------------");
     console.log("Next Steps:");
     console.log("1. Send AETH tokens to this contract address to fund the sale.");
-    console.log(`   Transfer amount: up to 40,000,000 AETH to ${address}`);
-    console.log("2. Update 'presale.js' with the new contract address.");
+    console.log("2. Update 'presale.js' with the new contract address:", address);
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+    console.error("Deployment failed:", error);
+    process.exit(1);
 });

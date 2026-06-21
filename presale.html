@@ -208,6 +208,7 @@
         <div class="progress-fill" id="progressBar"></div>
       </div>
       <p class="text-center text-muted" id="capStatus">Goal: Raise liquidity for QuickSwap Listing</p>
+      <p class="text-center" id="refundSection" style="display:none;margin-top:10px;"><button onclick="claimRefund()" style="background:#ef4444;color:#fff;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;">Claim Refund</button></p>
     </div>
     <div class="card">
       <h3>Buy AETH</h3>
@@ -219,7 +220,8 @@
         disabled="disabled">Enter Amount</button>
     </div>
     <div class="text-center margin-top">
-      <p><small>Contract: <span id="contractAddr">...</span></small></p>
+      <p><small>Contract: <span id="contractAddr">Deploying...</span></small></p>
+      <p class="text-muted" style="font-size:12px;margin-top:5px;">Presale contract will be deployed to Polygon. Stay tuned!</p>
     </div>
   </div>
   <script src="presale.js"></script>
