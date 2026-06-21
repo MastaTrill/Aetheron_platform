@@ -234,7 +234,7 @@ class NFTIntegrationValidator {
         }
 
         // Check for mock data
-        if (!jsContent.includes('fetchNFTs()') || !jsContent.includes('fetchCollections()')) {
+        if (!jsContent.includes('fetchListings()') || !jsContent.includes('fetchCollections()') || !jsContent.includes('fetchMinted()')) {
             this.errors.push('Mock data functions not found');
             jsValid = false;
         }

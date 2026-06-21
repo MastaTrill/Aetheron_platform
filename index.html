@@ -215,175 +215,20 @@
           <div class="change" id="priceChange"><i class="fas fa-arrow-up" id="priceArrow"></i> <span
               id="priceChangePercent">+0.00%</span></div>
           <div class="price-action-row">
-            <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-              target="_blank" rel="noopener noreferrer" class="btn btn-primary buy-quickswap-btn">
-              <i class="fas fa-shopping-cart"></i> Buy on QuickSwap
-            </a>
-            <a href="https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D" target="_blank"
-              rel="noopener noreferrer" class="btn btn-info dexscreener-btn">
-              <i class="fas fa-chart-line"></i> View on DexScreener
-            </a>
-          </div>
-        </div>
-        <div class="stat-card success">
-          <div class="icon"><i class="fas fa-chart-line"></i></div>
-          <div class="label">Market Cap</div>
-          <div class="value" id="marketCapValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">$10</div>
-          <div class="change" id="marketCapChange">+0.00% (24h)</div>
-        </div>
-        <div class="stat-card warning">
-          <div class="icon"><i class="fas fa-fire"></i></div>
-          <div class="label">Total Staked</div>
-          <div class="value" id="stakedValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">0 AETH</div>
-          <div class="change" id="stakedChange">150M AETH Pool</div>
-        </div>
-        <div class="stat-card info">
-          <div class="icon"><i class="fas fa-users"></i></div>
-          <div class="label">Holders</div>
-          <div class="value" id="holdersValue" style="color: rgba(110, 231, 255, 0.95) !important; text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;">1+</div>
-          <div class="change positive" id="holdersChange">Growing</div>
-        </div>
-      </div>
-      <div class="main-grid">
-        <div>
-          <div class="card mb-2">
-            <div class="card-header">
-              <h2 class="card-title">Your Wallet</h2>
-            </div>
-            <div id="walletNotConnected" class="wallet-section"><i class="fas fa-wallet wallet-icon"></i>
-              <h3>Connect Your Wallet</h3>
-              <p class="text-gray paragraph-spacing">Connect your Ethereum wallet (MetaMask, Coinbase Wallet, etc.) to
-                start using Aetheron Platform</p>
-              <div id="walletStatus" class="wallet-status"><i class="fas fa-spinner fa-spin"></i> Checking for wallet...
-              </div><button class="btn btn-outline mt-05" id="refreshWalletBtn" type="button"><i
-                  class="fas fa-sync-alt"></i> Refresh Detection</button>
-            </div>
-            <div id="walletConnected" class="hidden">
-              <div class="wallet-connected">
-                <div>
-                  <div class="text-sm text-gray">Connected Wallet</div>
-                  <div id="walletAddress" class="fw-600 font-mono"></div>
-                </div>
-                <button class="btn btn-outline" id="disconnectBtn" type="button"><i class="fas fa-sign-out-alt"></i>
-                  Disconnect</button>
-              </div>
-              <div class="balance-display">
-                <div class="text-sm text-gray mb-05">Your AETH Balance</div>
-                <div class="amount" id="userBalance">0.00</div>
-                <div class="text-gray mt-05" id="userBalanceUSD">$0.00 USD</div>
-              </div>
-              <div class="d-grid grid-2 mt-1">
-                <button class="btn btn-primary" id="buyAethBtn" type="button"><i class="fas fa-shopping-cart"></i> Buy
-                  AETH</button>
-                <button class="btn btn-success" id="addToWalletBtn" type="button"><i class="fas fa-plus"></i> Add
-                  to Wallet</button>
-                <a class="btn btn-info btn-coinbase" href="https://commerce.coinbase.com/checkout/1a2b3c4d5e6f7g8h9i0j"
-                  target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> Pay with Crypto (Coinbase)</a>
-              </div>
-            </div>
-          </div>
-          <div class="card" id="staking">
-            <div class="card-header">
-              <h2 class="card-title">Staking Pools</h2><span class="text-gray text-sm">Earn up to 25% APY</span>
-            </div>
-            <div id="stakingAlert" class="alert alert-error hidden"></div>
-            <div id="stakingSuccess" class="alert alert-success hidden"></div>
-            <div class="staking-pools">
-              <div class="pool-card">
-                <div class="pool-header">
-                  <div>
-                    <div class="pool-duration">30 Days</div>
-                    <div class="text-sm text-gray">Short-term staking</div>
-                  </div>
-                  <div class="pool-apy">5% APY</div>
-                </div>
-                <div class="pool-details">
-                  <div><i class="fas fa-clock"></i> Lock: 30 days</div>
-                  <div><i class="fas fa-coins"></i> Min: 100 AETH</div>
-                </div>
-                <div class="input-group"><label for="stakeAmount0">Amount to stake</label><input type="number"
-                    id="stakeAmount0" placeholder="Amount to stake" min="100">
-                  <button class="btn btn-primary" id="stakeBtn0" type="button"><i class="fas fa-lock"></i>
-                    Stake</button>
-                </div>
-              </div>
-              <div class="pool-card">
-                <div class="pool-header">
-                  <div>
-                    <div class="pool-duration">90 Days</div>
-                    <div class="text-sm text-gray">Medium-term staking</div>
-                  </div>
-                  <div class="pool-apy">12% APY</div>
-                </div>
-                <div class="pool-details">
-                  <div><i class="fas fa-clock"></i> Lock: 90 days</div>
-                  <div><i class="fas fa-coins"></i> Min: 500 AETH</div>
-                </div>
-                <div class="input-group"><label for="stakeAmount1">Amount to stake</label><input type="number"
-                    id="stakeAmount1" placeholder="Amount to stake" min="500">
-                  <button class="btn btn-primary" id="stakeBtn1" type="button"><i class="fas fa-lock"></i>
-                    Stake</button>
-                </div>
-              </div>
-              <div class="pool-card">
-                <div class="pool-header">
-                  <div>
-                    <div class="pool-duration">180 Days</div>
-                    <div class="text-sm text-gray">Long-term staking</div>
-                  </div>
-                  <div class="pool-apy pool-apy-orange">25% APY</div>
-                </div>
-                <div class="pool-details">
-                  <div><i class="fas fa-clock"></i> Lock: 180 days</div>
-                  <div><i class="fas fa-coins"></i> Min: 1000 AETH</div>
-                </div>
-                <div class="input-group"><label for="stakeAmount2">Amount to stake</label><input type="number"
-                    id="stakeAmount2" placeholder="Amount to stake" min="1000">
-                  <button class="btn btn-primary" id="stakeBtn2" type="button"><i class="fas fa-lock"></i>
-                    Stake</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="card mb-2">
-            <div class="card-header">
-              <h2 class="card-title">Quick Links</h2>
-            </div>
-            <div class="quick-links"><a href="https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
-                target="_blank" rel="noopener" class="quick-link">
-                <div class="icon"><i class="fas fa-search"></i></div>
-                <div>
-                  <div class="fw-600">View Contract</div>
-                  <div class="text-sm text-gray">PolygonScan</div>
-                </div>
-              </a><a href="https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
-                target="_blank" rel="noopener noreferrer" class="quick-link">
-                <div class="icon"><i class="fas fa-chart-area"></i></div>
-                <div>
-                  <div class="fw-600">Live Chart</div>
-                  <div class="text-sm text-gray">DexTools</div>
-                </div>
-              </a><a href="https://quickswap.exchange/#/pool" target="_blank" rel="noopener noreferrer"
-                class="quick-link">
-                <div class="icon"><i class="fas fa-water"></i></div>
-                <div>
-                  <div class="fw-600">Liquidity Pool</div>
-                  <div class="text-sm text-gray">QuickSwap</div>
-                </div>
-              </a><a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
+              <a href="https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e"
                 target="_blank" rel="noopener noreferrer" class="quick-link">
                 <div class="icon"><i class="fas fa-exchange-alt"></i></div>
                 <div>
                   <div class="fw-600">Trade AETH</div>
                   <div class="text-sm text-gray">Buy/Sell</div>
                 </div>
-          </a><a href="https://aetrs.com" class="feature-card">
-            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-            <h3>Aetheron Sentinel</h3>
-            <p>L3 baseline security layer targeting 10,000 TPS throughput with Sentinel2 and AetheronRetainerVault contracts</p>
-          </a></div>
+              </a>
+            </div>
+            <a href="https://aetrs.com" class="feature-card">
+              <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+              <h3>Aetheron Sentinel</h3>
+              <p>L3 baseline security layer targeting 10,000 TPS throughput with Sentinel2 and AetheronRetainerVault contracts</p>
+            </a>
           </div>
           <div class="card mb-2">
             <div class="card-header">
