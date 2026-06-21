@@ -219,6 +219,11 @@ class NFTIntegration {
     return window.AETHERON_API_BASE_URL || 'https://vercel-node-app-1.vercel.app';
   }
 
+  getPlaceholderImage(text, bgColor = '#1a1a2e', textColor = '#6366f1') {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="${bgColor}" width="400" height="400"/><text fill="${textColor}" font-family="sans-serif" font-size="18" x="200" y="200" text-anchor="middle" dy=".3em">${encodeURIComponent(text)}</text></svg>`;
+    return `data:image/svg+xml,${svg}`;
+  }
+
   async fetchListings() {
     try {
       const res = await fetch(`${this.getApiBase()}/api/nft/listings`);
@@ -231,7 +236,7 @@ class NFTIntegration {
         contractAddress: listing.nftContract,
         name: `NFT #${listing.tokenId}`,
         collection: 'Aetheron',
-        image: 'https://placehold.co/400x400/6366f1/white?text=NFT',
+        image: this.getPlaceholderImage(`NFT #${listing.tokenId}`),
         price: parseFloat(listing.price),
         currency: 'ETH',
         rarity: 'Common',
@@ -259,7 +264,7 @@ class NFTIntegration {
         contractAddress: nft.contractAddress,
         name: `Aetheron NFT #${nft.id}`,
         collection: 'Aetheron',
-        image: 'https://placehold.co/400x400/6366f1/white?text=NFT',
+        image: this.getPlaceholderImage(`Aetheron NFT #${nft.id}`),
         price: 0,
         currency: 'ETH',
         rarity: 'Common',
@@ -295,7 +300,7 @@ class NFTIntegration {
         id: 1,
         name: "Cosmic Explorer #001",
         collection: "Aetheron",
-        image: "https://placehold.co/400x400/6366f1/white?text=NFT+1",
+        image: this.getPlaceholderImage("Cosmic Explorer #001"),
         floorPrice: 1.2,
         lastPrice: 2.5,
         acquired: "2024-01-15"
@@ -347,14 +352,14 @@ class NFTIntegration {
         data: [25.5, 28.2, 32.1, 29.8, 31.5, 35.2]
       },
         topCollections: [
-        { name: 'Bored Ape Yacht Club', image: 'https://placehold.co/40x40/10b981/white?text=B', volume: 2500000, change: 12.5 },
-        { name: 'CryptoPunks', image: 'https://placehold.co/40x40/f59e0b/white?text=C', volume: 1800000, change: -3.2 },
-        { name: 'Azuki', image: 'https://placehold.co/40x40/ef4444/white?text=A', volume: 890000, change: 8.7 }
+        { name: 'Bored Ape Yacht Club', image: this.getPlaceholderImage('B', '#10b981', '#ffffff'), volume: 2500000, change: 12.5 },
+        { name: 'CryptoPunks', image: this.getPlaceholderImage('C', '#f59e0b', '#ffffff'), volume: 1800000, change: -3.2 },
+        { name: 'Azuki', image: this.getPlaceholderImage('A', '#ef4444', '#ffffff'), volume: 890000, change: 8.7 }
       ],
       tradingActivity: [
-        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: 'https://placehold.co/40x40/10b981/white?text=B' },
-        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: 'https://placehold.co/40x40/6366f1/white?text=A' },
-        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: 'https://placehold.co/40x40/f59e0b/white?text=C' }
+        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: this.getPlaceholderImage('B', '#10b981', '#ffffff') },
+        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: this.getPlaceholderImage('A', '#6366f1', '#ffffff') },
+        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: this.getPlaceholderImage('C', '#f59e0b', '#ffffff') }
       ]
     };
   }
@@ -584,7 +589,7 @@ class NFTIntegration {
       const changeIcon = collection.change >= 0 ? '↗️' : '↘️';
 
       item.innerHTML = `
-                <img src="${collection.image}" alt="${collection.name}">
+                <img src="${collection.image}" alt="${collection.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%231a1a2e%22 width=%2240%22 height=%2240%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2214%22 x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(collection.name.charAt(0))}</text></svg>'">
                 <div class="collection-info">
                     <div class="collection-name">${collection.name}</div>
                     <div class="collection-stats">Volume: ${(collection.volume / 1000000).toFixed(1)}M ETH</div>
@@ -610,7 +615,7 @@ class NFTIntegration {
         activity.type === 'mint' ? 'fas fa-magic' : 'fas fa-exchange-alt';
 
       item.innerHTML = `
-                <img src="${activity.image}" alt="Activity">
+                <img src="${activity.image}" alt="Activity" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%231a1a2e%22 width=%2240%22 height=%2240%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2212%22 x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22>A</text></svg>'">
                 <div class="activity-info">
                     <div class="activity-text">${activity.text}</div>
                     <div class="activity-meta">${activity.time}</div>
@@ -696,7 +701,7 @@ class NFTIntegration {
           id: 7,
           name: "Space Explorer #002",
           collection: "Aetheron",
-          image: "https://placehold.co/400x400/6366f1/white?text=NFT+7",
+          image: this.getPlaceholderImage("Space Explorer #002"),
           price: 1.8,
           currency: "ETH",
           rarity: "Rare",
