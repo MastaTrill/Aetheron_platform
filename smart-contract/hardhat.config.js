@@ -1,4 +1,5 @@
 import hardhatEthers from "@nomicfoundation/hardhat-ethers";
+import hardhatVerify from "@nomicfoundation/hardhat-verify";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -7,7 +8,7 @@ export default {
   mocha: {
     timeout: 60000,
   },
-  plugins: [hardhatEthers],
+  plugins: [hardhatEthers, hardhatVerify],
   solidity: {
     version: "0.8.20",
     settings: {
@@ -32,7 +33,6 @@ export default {
       url: process.env.MUMBAI_RPC_URL || "https://rpc-amoy.polygon.technology",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 80002,
-      gasPrice: 30000000000,
     },
     sepolia: {
       type: "http",
@@ -67,5 +67,20 @@ export default {
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts",
+  },
+  etherscan: {
+    apiKey: {
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
+    },
+    customChains: [
+      {
+        network: "polygonAmoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+    ],
   },
 };

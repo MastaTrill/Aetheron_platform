@@ -120,6 +120,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(amount > 0, "No tokens to claim");
 
         tokensOwed[msg.sender] = 0;
+        tokensReserved -= amount;
         require(token.transfer(msg.sender, amount), "Token transfer failed");
 
         emit TokensClaimed(msg.sender, amount);
@@ -137,7 +138,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     }
 
     function withdrawUnsoldTokens() external onlyOwner nonReentrant {
-        require(finalized, "Presale not finalized");
+        require(finalized || refundsAvailable(), "Presale not finalized or refundable");
         uint256 balance = token.balanceOf(address(this));
         uint256 unsold = balance - tokensReserved;
         require(unsold > 0, "Nothing unsold to withdraw");
@@ -167,6 +168,8 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(amount > 0, "Nothing to refund");
 
         refunded[msg.sender] = true;
+        contributions[msg.sender] = 0;
+        tokensReserved -= tokensOwed[msg.sender];
         tokensOwed[msg.sender] = 0;
 
         (bool success, ) = payable(msg.sender).call{value: amount}("");

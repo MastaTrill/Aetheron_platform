@@ -12,6 +12,7 @@
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
     "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
+    "deploy:presale": "node scripts/deploy-presale.mjs",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
     "deploy:treasury": "hardhat run scripts/deploy-treasury.js --network polygon",
@@ -37,11 +38,15 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
+    "@nomicfoundation/hardhat-verify": "^3.0.20",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
     "ethers": "^6.16.0",
     "hardhat": "^3.9.0"
   },
   "dependencies": {
+    "@biconomy/account": "^4.5.7",
+    "@biconomy/bundler": "^3.1.4",
+    "@biconomy/paymaster": "^3.1.4",
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.3.1"
   },

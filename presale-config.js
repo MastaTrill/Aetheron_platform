@@ -1,0 +1,5 @@
+window.AETHERON_PRESALE_CONFIG = {
+  aethTokenAddress: "0x74203C9B1fC36e08114Bc57fc473df1798409428",
+  presaleContractAddress: "0x8eB1171E720f5ae30086D154277777Aa65340cf7",
+  maxPresaleTokens: 33333000
+};
