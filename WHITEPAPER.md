@@ -866,9 +866,10 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 
 - **Website**: <https://mastatrill.github.io/Aetheron_platform>
 - **GitHub**: <https://github.com/MastaTrill/Aetheron_platform>
-- **Twitter**: @AetheronPlatform (planned)
-- **Discord**: discord.gg/aetheron (planned)
-- **Telegram**: t.me/aetheron (planned)
+- **Twitter**: https://x.com/AetheronPlatform
+- **Discord**: https://discord.gg/aetheron
+- **Telegram**: https://t.me/AetheronPlatform
+- **Telegram Announcements**: https://t.me/AETHannouncements
 
 ### Smart Contract Addresses
 
