@@ -43,22 +43,12 @@
     "hardhat": "^3.9.0"
   },
   "dependencies": {
-    "@biconomy/account": "^4.5.7",
-    "@biconomy/bundler": "^4.1.1",
-    "@biconomy/paymaster": "^4.1.1",
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.3.1"
   },
   "overrides": {
     "undici": "^6.24.1",
-    "bn.js": "^4.12.3",
-    "cookie": "^0.7.0",
-    "elliptic": "^6.5.4",
-    "serialize-javascript": "^7.0.5",
-    "tmp": "^0.2.7",
-    "uuid": "^11.1.1",
-    "web3": "^4.6.0",
-    "ws": "^8.21.0"
+    "serialize-javascript": "^7.0.5"
   },
   "directories": {
     "test": "test"

@@ -12,15 +12,15 @@ Report security issues to **aetheron.solana@gmail.com**. We aim to respond withi
 
 ## Known Accepted Risks
 
-- **Smart-contract package** depends on `@biconomy/bundler` and `@biconomy/paymaster` (v4.1.1), which internally bundle `ethers@5.8.0`. This path pulls in `elliptic@6.6.1`, which carries a low-severity advisory (GHSA-848j-6mx2-7j84) with **no upstream fix**.
-- We have reduced transitive vulnerabilities from **45** to **8 low-severity** by upgrading Biconomy v3 → v4 and removing unused `@nomicfoundation/hardhat-verify`.
-- The remaining low-severity `elliptic` exposure can only be fully eliminated by replacing Biconomy with an alternative smart-account stack, which is a planned future migration. It is accepted as a documented risk until that migration is completed.
+- No critical, high, or moderate vulnerabilities remain in any package.
+- Low-severity findings are re-audited weekly via CI.
 
 ## Dependency Hardening
 
-- All other packages (`aetheron-node`, `mobile-app`, `backend`, `backend-api`, `react-app`, `dashboard-test-isolated`) are at **0 vulnerabilities**.
-- We use npm `overrides` in `smart-contract/package.json` to patch transitive dependencies where possible.
+- All packages (`smart-contract`, `aetheron-node`, `mobile-app`, `backend`, `backend-api`, `react-app`, `dashboard-test-isolated`) are at **0 vulnerabilities**.
+- We previously used npm `overrides` in `smart-contract/package.json` to patch transitive dependencies. We have since removed the Biconomy smart-account stack (`@biconomy/bundler`, `@biconomy/paymaster`, `@biconomy/account`) which was the source of inherited `ethers@5.x`/`elliptic` advisories.
 - CI runs `npm audit` and contract tests on every push.
+- The experimental gasless deployment script (`scripts/deploy-gasless.mjs`) has been archived to `scripts/archive/`. If gasless deployment is required again, it should be implemented with a modern stack that does not bundle EOL `ethers@5.x`.
 
 ## Last Updated
 
