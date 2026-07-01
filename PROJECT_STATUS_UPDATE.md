@@ -21,7 +21,7 @@
 
 - **AETH Token:** `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - **Staking Contract:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
-- **Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+- **Dashboard:** https://aetrs.com/
 
 ---
 

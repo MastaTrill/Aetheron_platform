@@ -11,7 +11,7 @@
 - [ ] **Profile Picture**: Aetheron logo (convert-logo.bat to create)
 - [ ] **Banner Image**: Create 1500x500px banner with key features
 - [ ] **Bio**: "Building the future of DeFi on @0xPolygon 🚀 | AETH Token & Staking Platform | Developer | #DeFi #Polygon"
-- [ ] **Website Link**: https://mastatrill.github.io/Aetheron_platform/
+- [ ] **Website Link**: https://aetrs.com/
 - [ ] **Pinned Tweet**: Launch announcement (Post #1 below)
 
 ### Pre-Launch Actions
@@ -35,7 +35,7 @@
 ✅ Staking LIVE with up to 25% APY
 
 Trade: quickswap.exchange
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 #DeFi #Polygon #CryptoLaunch #AETH
 ```
@@ -63,7 +63,7 @@ Choose your lock period:
 🔸 90 days → 12% APY  
 🔸 180 days → 25% APY
 
-Start earning: https://mastatrill.github.io/Aetheron_platform/
+Start earning: https://aetrs.com/
 
 #PassiveIncome #DeFiStaking
 ```
@@ -111,7 +111,7 @@ Join us in democratizing finance 🌍
 3️⃣ Stake for rewards
 4️⃣ Join our community
 
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 Let's build together! 🚀
 
@@ -130,7 +130,7 @@ Choose your pool:
 
 The longer you stake, the more you earn 📈
 
-Start earning: https://mastatrill.github.io/Aetheron_platform/
+Start earning: https://aetrs.com/
 
 #PassiveIncome #DeFi #Staking
 ```
@@ -179,7 +179,7 @@ Staking AETH on Polygon costs less than $0.01 in gas fees!
 
 That's the power of L2 scaling 💪
 
-Try it yourself: https://mastatrill.github.io/Aetheron_platform/
+Try it yourself: https://aetrs.com/
 
 #Polygon #DeFi #AETH
 ```
@@ -220,7 +220,7 @@ Questions? Reply below 👇
 
 Thank you for the support! 🙏
 
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 #AETH #DeFi
 ```
@@ -411,7 +411,7 @@ Your funds are safe. Thanks for your patience 🙏
 
 **Trade:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
-**Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+**Dashboard:** https://aetrs.com/
 
 **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 

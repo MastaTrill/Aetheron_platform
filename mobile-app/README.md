@@ -266,7 +266,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](../CONTRIBUTING.MD) for 
 
 ## 📞 Support
 
-- **Website**: [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform)
+- **Website**: [https://aetrs.com](https://aetrs.com)
 - **GitHub**: [github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)
 - **Documentation**: See main repo README
 

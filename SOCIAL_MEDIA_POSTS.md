@@ -15,7 +15,7 @@ Revolutionary DeFi ecosystem on @0xPolygon
 
 📊 Chart: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D
 💰 Buy: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://aetrs.com/
 
 #DeFi #Polygon #Crypto #AETH
 ```
@@ -46,7 +46,7 @@ Chart: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705
 
 🔗 Direct swap link: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
-Full guide: https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+Full guide: https://aetrs.com/how-to-buy.html
 
 #AETH #Tutorial
 ```
@@ -60,7 +60,7 @@ Three pools available:
 🟡 30-Day Lock: 12% APY
 🔴 90-Day Lock: 25% APY
 
-Start staking now: https://mastatrill.github.io/Aetheron_platform/
+Start staking now: https://aetrs.com/
 
 #PassiveIncome #DeFi #Staking #AETH
 ```
@@ -91,7 +91,7 @@ Twitter followers: [X]
 Join the revolution: 
 💬 Telegram: [your link]
 🐦 Follow us here
-🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://aetrs.com/
 
 #Community #AETH
 ```
@@ -151,7 +151,7 @@ Aetheron ($AETH) is a DeFi platform built on Polygon that offers:
 **Current Stats:**
 - Market Cap: $276
 - Liquidity: QuickSwap
-- Dashboard: https://mastatrill.github.io/Aetheron_platform/
+- Dashboard: https://aetrs.com/
 
 ---
 
@@ -190,7 +190,7 @@ Even a small $100 investment could turn into life-changing money.
 
 ## 📊 Links
 
-- **Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+- **Dashboard:** https://aetrs.com/
 - **Chart:** https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D
 - **Buy Now:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - **Contract:** https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
@@ -218,7 +218,7 @@ Let's grow this together! 🚀💎
 
 1. **Ultra Low Market Cap** - $276 is basically ground floor
 2. **Real Utility** - Not just a meme, actual staking platform
-3. **Professional Dashboard** - https://mastatrill.github.io/Aetheron_platform/
+3. **Professional Dashboard** - https://aetrs.com/
 4. **Polygon Native** - Fast transactions, low fees
 5. **Early Phase** - Get in before the pump
 
@@ -241,7 +241,7 @@ DYOR, NFA
 💎 $AETH - $276 Market Cap DeFi Gem on Polygon
 
 Staking platform with up to 25% APY
-Live dashboard: https://mastatrill.github.io/Aetheron_platform/
+Live dashboard: https://aetrs.com/
 QuickSwap: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e (Verified)
@@ -261,13 +261,13 @@ DYOR
 
 $AETH is a DeFi platform on Polygon offering staking rewards up to 25% APY!
 
-📊 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+📊 Dashboard: https://aetrs.com/
 💰 Buy on QuickSwap: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 📈 Chart: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D
 📝 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 🐦 Twitter: [your handle]
-📘 How to Buy: https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+📘 How to Buy: https://aetrs.com/how-to-buy.html
 
 Rules:
 ✅ Be respectful
@@ -314,7 +314,7 @@ Need help? Ask here! 💬
 ```
 💰 How to Stake $AETH:
 
-1. Go to https://mastatrill.github.io/Aetheron_platform/
+1. Go to https://aetrs.com/
 2. Connect your MetaMask wallet
 3. Choose a staking pool:
    🟢 Flexible (5% APY) - Withdraw anytime
@@ -342,7 +342,7 @@ $AETH - Aetheron Platform
 - Up to 25% APY staking rewards
 - Professional dashboard with live data
 
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 Would you be interested in checking it out? Happy to provide tokens for a review or collaborate on a giveaway for your community.
@@ -372,7 +372,7 @@ I love what you're building with [their project], and I think our communities wo
 - Active community building
 - Professional development
 
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 Interested in discussing? Would love to hop on a call!
 
@@ -465,7 +465,7 @@ Good luck! 🍀🚀
 
 **Buy Link:** `https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 
-**Dashboard:** `https://mastatrill.github.io/Aetheron_platform/`
+**Dashboard:** `https://aetrs.com/`
 
 **Chart:** `https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D`
 

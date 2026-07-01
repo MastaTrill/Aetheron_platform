@@ -484,7 +484,7 @@ uint256 public constant QUORUM_PERCENTAGE = 20; // 20% of total supply
    - Replace `0x0000...` with deployed contract address
 
 5. **Test Live Site**
-   - Visit [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)
+   - Visit [https://aetrs.com/](https://aetrs.com/)
    - Test all new features
    - Verify contract interactions
 

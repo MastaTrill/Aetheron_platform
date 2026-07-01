@@ -26,7 +26,7 @@
 | **Primary DEX** | QuickSwap (Polygon) |
 | **Primary pair** | AETH / POL (MATIC) |
 | **Tax** | 3% buy / 5% sell |
-| **Website** | https://mastatrill.github.io/Aetheron_platform |
+| **Website** | https://aetrs.com |
 | **Whitepaper** | https://github.com/MastaTrill/Aetheron_platform/blob/main/WHITEPAPER.md |
 | **GitHub** | https://github.com/MastaTrill/Aetheron_platform |
 | **Explorer** | https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e |
@@ -50,7 +50,7 @@ Verify every box BEFORE applying. Incomplete applications are dropped or sent to
 - [ ] **Trading activity:** At least 10–20 organic transactions in the last 24h; no obvious wash-trading loops.
 - [ ] **Holder count:** ≥ 100 unique holders on Polygonscan (the more the better; 250+ is strong for DEX-only).
 - [ ] **Contract verified:** Source code verified on Polygonscan for BOTH the token (`0xAb5ae0D8…`) and staking (`0x896D9d37…`) contracts.
-- [ ] **Website live:** https://mastatrill.github.io/Aetheron_platform loads, has no dead links, shows token contract, buy link, and roadmap.
+- [ ] **Website live:** https://aetrs.com loads, has no dead links, shows token contract, buy link, and roadmap.
 - [ ] **Whitepaper hosted:** WHITEPAPER.md is publicly viewable on GitHub and does not 404.
 - [ ] **Logo ready:** PNG 200×200 with transparent background; hosted on a hot-linkable URL (e.g. raw GitHub / imgur).
 - [ ] **Social channels alive:** Twitter, Telegram, Discord exist and have real members (not bot-only).
@@ -98,7 +98,7 @@ Attach the following to your application (images or links):
 | **Token Decimals** | 18 |
 | **Total Supply** | 1000000000 |
 | **Circulating Supply** | `[ INSERT ]` |
-| **Project Website** | https://mastatrill.github.io/Aetheron_platform |
+| **Project Website** | https://aetrs.com |
 | **Whitepaper URL** | https://github.com/MastaTrill/Aetheron_platform/blob/main/WHITEPAPER.md |
 | **Explorer URL** | https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e |
 | **DEX / Exchange** | QuickSwap (Polygon) |
@@ -138,7 +138,7 @@ Attach the following to your application (images or links):
 | **Decimals** | 18 |
 | **Total Supply** | 1,000,000,000 |
 | **Circulating Supply** | `[ INSERT ]` |
-| **Website** | https://mastatrill.github.io/Aetheron_platform |
+| **Website** | https://aetrs.com |
 | **Whitepaper** | https://github.com/MastaTrill/Aetheron_platform/blob/main/WHITEPAPER.md |
 | **Explorer** | https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e |
 | **DEX / Exchange** | QuickSwap (Polygon) |

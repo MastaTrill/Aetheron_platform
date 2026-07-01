@@ -2,7 +2,7 @@
 
 ## 🌐 Your Live Platform
 
-**Main URL:** https://mastatrill.github.io/Aetheron_platform/
+**Main URL:** https://aetrs.com/
 
 **Repository:** https://github.com/MastaTrill/Aetheron_platform
 
@@ -36,16 +36,16 @@ Date: February 8, 2026
 
 #### Main Pages:
 ```
-✅ Home: https://mastatrill.github.io/Aetheron_platform/
-✅ Dashboard: https://mastatrill.github.io/Aetheron_platform/dashboard.html
-✅ Token Info: https://mastatrill.github.io/Aetheron_platform/token-info.html
+✅ Home: https://aetrs.com/
+✅ Dashboard: https://aetrs.com/dashboard.html
+✅ Token Info: https://aetrs.com/token-info.html
 ```
 
 #### Guides (NEW):
 ```
-✅ CMC Application: https://mastatrill.github.io/Aetheron_platform/CMC_APPLICATION_READY.md
-✅ Mobile Testing: https://mastatrill.github.io/Aetheron_platform/MOBILE_TESTING_GUIDE.md
-✅ Twitter Launch: https://mastatrill.github.io/Aetheron_platform/TWITTER_LAUNCH_NOW.md
+✅ CMC Application: https://aetrs.com/CMC_APPLICATION_READY.md
+✅ Mobile Testing: https://aetrs.com/MOBILE_TESTING_GUIDE.md
+✅ Twitter Launch: https://aetrs.com/TWITTER_LAUNCH_NOW.md
 ```
 
 ---
@@ -57,7 +57,7 @@ Date: February 8, 2026
 #### 1. **Google PageSpeed Insights**
 ```
 URL: https://pagespeed.web.dev/
-Test: https://mastatrill.github.io/Aetheron_platform/
+Test: https://aetrs.com/
 
 Target Scores:
 - Performance: > 80
@@ -87,7 +87,7 @@ Review opportunities
 ### Check Cache Headers:
 
 **Using Browser DevTools:**
-1. Open https://mastatrill.github.io/Aetheron_platform/
+1. Open https://aetrs.com/
 2. Press F12 → Network tab
 3. Reload page (Ctrl+R)
 4. Click any file
@@ -400,7 +400,7 @@ F12 → Network tab
 
 ### Monday Morning (10 minutes):
 
-1. Check platform loads: https://mastatrill.github.io/Aetheron_platform/
+1. Check platform loads: https://aetrs.com/
 2. Review any user reports from weekend
 3. Check console for errors
 4. Verify wallet connection works
@@ -527,5 +527,5 @@ Tag: github-pages
 
 **Your GitHub Pages platform is live, polished, and ready for growth! 🚀**
 
-**Monitor here:** https://mastatrill.github.io/Aetheron_platform/
+**Monitor here:** https://aetrs.com/
 **Repo:** https://github.com/MastaTrill/Aetheron_platform

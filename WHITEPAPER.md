@@ -856,7 +856,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 
 ### Get Started Today
 
-1. **Visit**: <https://mastatrill.github.io/Aetheron_platform>
+1. **Visit**: <https://aetrs.com>
 2. **Connect**: MetaMask or WalletConnect
 3. **Buy**: AETH on QuickSwap
 4. **Stake**: Choose your pool
@@ -864,7 +864,7 @@ Aetheron Platform represents a new generation of DeFi applications that prioriti
 
 ### Join Our Community
 
-- **Website**: <https://mastatrill.github.io/Aetheron_platform>
+- **Website**: <https://aetrs.com>
 - **GitHub**: <https://github.com/MastaTrill/Aetheron_platform>
 - **Twitter**: https://x.com/AetheronPlatform
 - **Discord**: https://discord.gg/aetheron

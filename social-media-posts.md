@@ -9,7 +9,7 @@
 ✅ Staking LIVE with up to 25% APY
 
 Trade now: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 Follow me: @William_McCoy_
 
@@ -38,7 +38,7 @@ Choose your pool:
 🔸 90 days → 12% APY  
 🔸 180 days → 25% APY
 
-Start earning: https://mastatrill.github.io/Aetheron_platform/
+Start earning: https://aetrs.com/
 
 Built by @William_McCoy_
 
@@ -54,7 +54,7 @@ We're thrilled to announce that AETH is now tradeable on QuickSwap!
 📊 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💱 Trade: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💰 Staking: Up to 25% APY
-🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://aetrs.com/
 
 Follow the founder: @William_McCoy_ on X/Twitter
 
@@ -77,7 +77,7 @@ After months of development, Aetheron is officially launched!
 QuickSwap: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 **Dashboard:**
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 
 **Developer:**
 Follow @William_McCoy_ on X/Twitter for updates
@@ -100,7 +100,7 @@ AETH is now LIVE and tradeable on QuickSwap!
 🔗 **Trade Link:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 📊 **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 💰 **Staking:** Available with up to 25% APY
-🌐 **Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+🌐 **Dashboard:** https://aetrs.com/
 
 Follow the founder → @William_McCoy_ on X/Twitter
 
