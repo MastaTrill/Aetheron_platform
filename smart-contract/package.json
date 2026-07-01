@@ -45,8 +45,8 @@
   },
   "dependencies": {
     "@biconomy/account": "^4.5.7",
-    "@biconomy/bundler": "^3.1.4",
-    "@biconomy/paymaster": "^3.1.4",
+    "@biconomy/bundler": "^4.1.1",
+    "@biconomy/paymaster": "^4.1.1",
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.3.1"
   },
