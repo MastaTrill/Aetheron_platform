@@ -38,7 +38,6 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
-    "@nomicfoundation/hardhat-verify": "^3.0.20",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
     "ethers": "^6.16.0",
     "hardhat": "^3.9.0"

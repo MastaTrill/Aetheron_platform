@@ -1,5 +1,4 @@
 import hardhatEthers from "@nomicfoundation/hardhat-ethers";
-import hardhatVerify from "@nomicfoundation/hardhat-verify";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,7 +7,7 @@ export default {
   mocha: {
     timeout: 60000,
   },
-  plugins: [hardhatEthers, hardhatVerify],
+  plugins: [hardhatEthers],
   solidity: {
     version: "0.8.20",
     settings: {
