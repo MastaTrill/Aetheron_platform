@@ -6,7 +6,7 @@ Revolutionary Blockchain & Space Exploration Ecosystem
 
 🚀 Live Demo
 
-🌐 Admin Dashboard: https://mastatrill.github.io/Aetheron_platform
+🌐 Admin Dashboard: https://aetrs.com
 
 📱 Mobile App: Coming soon to App Store & Google Play
 
@@ -140,7 +140,7 @@ GitHub: @Mastatrill
 
 Repository: github.com/Mastatrill/aetheron-platform
 
-Website: https://mastatrill.github.io/Aetheron_platform
+Website: https://aetrs.com
 
 Email: Aetheron.solana@gmail.com
 

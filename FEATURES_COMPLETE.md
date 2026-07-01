@@ -18,7 +18,7 @@ Successfully implemented **ALL requested features** in a single comprehensive up
 
 #### 1. **Roadmap Page** (`roadmap.html`)
 
-- **URL:** [https://mastatrill.github.io/Aetheron_platform/roadmap.html](https://mastatrill.github.io/Aetheron_platform/roadmap.html)
+- **URL:** [https://aetrs.com/roadmap.html](https://aetrs.com/roadmap.html)
 
 - **Features:**
   - Interactive visual timeline from Q1 2026 to 2027+
@@ -37,7 +37,7 @@ Successfully implemented **ALL requested features** in a single comprehensive up
 
 #### 2. **Leaderboard Page** (`leaderboard.html`)
 
-- **URL:** [https://mastatrill.github.io/Aetheron_platform/leaderboard.html](https://mastatrill.github.io/Aetheron_platform/leaderboard.html)
+- **URL:** [https://aetrs.com/leaderboard.html](https://aetrs.com/leaderboard.html)
 
 - **Features:**
   - 4 leaderboard categories with tab navigation
@@ -55,7 +55,7 @@ Successfully implemented **ALL requested features** in a single comprehensive up
 
 #### 3. **Referral Program** (`referral.html`)
 
-- **URL:** [https://mastatrill.github.io/Aetheron_platform/referral.html](https://mastatrill.github.io/Aetheron_platform/referral.html)
+- **URL:** [https://aetrs.com/referral.html](https://aetrs.com/referral.html)
 
 - **Features:**
   - Wallet connection integration
@@ -234,7 +234,7 @@ All pages optimized for:
 
 - **Branch:** gh-pages
 - **Deploy:** Fast-forward merge successful
-- **URL:** [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)
+- **URL:** [https://aetrs.com/](https://aetrs.com/)
 - **Live:** All features accessible
 
 ---
@@ -478,10 +478,10 @@ This update transforms the Aetheron Platform from a functional DeFi dashboard in
 
 ## 🔗 QUICK LINKS
 
-- **Live Site:** https://mastatrill.github.io/Aetheron_platform/
-- **Roadmap:** https://mastatrill.github.io/Aetheron_platform/roadmap.html
-- **Leaderboard:** https://mastatrill.github.io/Aetheron_platform/leaderboard.html
-- **Referral:** https://mastatrill.github.io/Aetheron_platform/referral.html
+- **Live Site:** https://aetrs.com/
+- **Roadmap:** https://aetrs.com/roadmap.html
+- **Leaderboard:** https://aetrs.com/leaderboard.html
+- **Referral:** https://aetrs.com/referral.html
 - **GitHub:** https://github.com/MastaTrill/Aetheron_platform
 - **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 

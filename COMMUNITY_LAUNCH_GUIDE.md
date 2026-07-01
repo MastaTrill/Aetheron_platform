@@ -21,7 +21,7 @@ before launch.
 | Telegram Group | `Aetheron Official` supergroup | t.me/AetheronPlatform *(drops "sg.")* | **ACTION** |
 | Telegram Announcements | `AETH Announcements` channel | t.me/AETHannouncements | **ACTION** |
 | GitHub | `MastaTrill/Aetheron_platform` | — | ✅ live |
-| Website | mastatrill.github.io/Aetheron_platform | — | ✅ live |
+| Website | aetrs.com | — | ✅ live |
 
 **Rules:**
 - Never use `@William_McCoy_` as the project account. Create a dedicated brand account.
@@ -134,7 +134,7 @@ before launch.
    AETH on @0xPolygon | Staking • Governance • Yield
    👇 Join the community
    ```
-5. Website field: `https://mastatrill.github.io/Aetheron_platform`
+5. Website field: `https://aetrs.com`
 6. Location field: `Polygon`
 7. Profile picture: Aetheron logo (400×400 PNG).
 8. Header image: 1500×500 branded banner with tagline + "Live on Polygon".
@@ -161,7 +161,7 @@ before launch.
 ✅ Liquidity on QuickSwap
 
 Trade now 👇
-https://mastatrill.github.io/Aetheron_platform
+https://aetrs.com
 
 #DeFi #Polygon #AETH #Crypto
 ```
@@ -200,7 +200,7 @@ Verified on Polygonscan ✅
 
 Compound automatically. Withdraw anytime after lock.
 
-Stake: https://mastatrill.github.io/Aetheron_platform
+Stake: https://aetrs.com
 ```
 
 **Tweet 5 — Thread: Security (4/6)**
@@ -235,7 +235,7 @@ Be early.
 ```
 6/6 🚀 Get Started
 
-1. Visit https://mastatrill.github.io/Aetheron_platform
+1. Visit https://aetrs.com
 2. Connect MetaMask
 3. Buy AETH on QuickSwap
 4. Stake and earn
@@ -314,7 +314,7 @@ $AETH #DeFi #Polygon
 4. Set description:
    ```
    Official Aetheron ($AETH) Community
-   🌐 Website: https://mastatrill.github.io/Aetheron_platform
+   🌐 Website: https://aetrs.com
    💬 Discord: discord.gg/aetheron
    🐦 Twitter: @AetheronPlatform
    ```
@@ -334,7 +334,7 @@ $AETH #DeFi #Polygon
 3. Set description:
    ```
    Official Aetheron ($AETH) Announcements
-   Website: https://mastatrill.github.io/Aetheron_platform
+   Website: https://aetrs.com
    ```
 4. Add the Aetheron Official group as a **discussion link** (Telegram will auto-link comments).
 
@@ -597,7 +597,7 @@ Complete in order. Do not submit listing applications until all are checked.
 ## 11. Quick Reference — All Official Links
 
 ```
-Website:              https://mastatrill.github.io/Aetheron_platform
+Website:              https://aetrs.com
 GitHub:               https://github.com/MastaTrill/Aetheron_platform
 Twitter / X:          https://x.com/AetheronPlatform
 Discord:              https://discord.gg/aetheron

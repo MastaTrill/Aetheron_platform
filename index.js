@@ -1178,32 +1178,32 @@ function closeShareModal() {
 
 function shareTwitter() {
     const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
     trackShare('twitter');
 }
 
 function shareFacebook() {
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
     trackShare('facebook');
 }
 
 function shareTelegram() {
     const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards!');
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
     trackShare('telegram');
 }
 
 function shareLinkedIn() {
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
     trackShare('linkedin');
 }
 
 function copyShareLink() {
-    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    const url = 'https://aetrs.com/';
     navigator.clipboard.writeText(url).then(() => {
         const btn = event.target.closest('.share-btn');
         const originalText = btn.innerHTML;

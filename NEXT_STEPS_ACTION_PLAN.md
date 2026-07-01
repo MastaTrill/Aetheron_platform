@@ -46,7 +46,7 @@
 #### A. Account Setup (30 minutes)
 1. **Profile Setup:**
    - Bio: "Building the future of DeFi on @0xPolygon 🚀 | AETH Token & Staking Platform | Developer | #DeFi #Polygon"
-   - Website: https://mastatrill.github.io/Aetheron_platform/
+   - Website: https://aetrs.com/
    - Location: (Your choice)
    - Profile Picture: Aetheron logo
    - Banner: Create 1500x500px with key features
@@ -71,7 +71,7 @@ Copy from `social-media-posts.md`:
 ✅ Staking LIVE with up to 25% APY
 
 Trade now: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 
 #DeFi #Polygon #CryptoLaunch #AETH
 ```
@@ -87,7 +87,7 @@ Choose your pool:
 🔸 90 days → 12% APY  
 🔸 180 days → 25% APY
 
-Start earning: https://mastatrill.github.io/Aetheron_platform/
+Start earning: https://aetrs.com/
 
 #PassiveIncome #DeFi #Staking
 ```
@@ -109,7 +109,7 @@ Start earning: https://mastatrill.github.io/Aetheron_platform/
    - **Symbol:** AETH
    - **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
    - **Network:** Polygon
-   - **Website:** https://mastatrill.github.io/Aetheron_platform/
+   - **Website:** https://aetrs.com/
    - **Twitter:** @William_McCoy_
    - **Logo:** Upload Aetheron logo
 3. Submit and wait for approval (typically 7-14 days)
@@ -123,7 +123,7 @@ Start earning: https://mastatrill.github.io/Aetheron_platform/
    - **Contract Address:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
    - **Chain:** Polygon
    - **Launch Date:** January 2026
-   - **Website:** https://mastatrill.github.io/Aetheron_platform/
+   - **Website:** https://aetrs.com/
    - **Social Media:** Twitter @William_McCoy_
    - **Proof of Legal Compliance:** (upload if available)
    - **Proof of Liquidity:** QuickSwap LP address
@@ -190,7 +190,7 @@ Use templates from `community-setup-guide.json`:
    
    📊 Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
    💱 Trade: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-   🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+   🌐 Dashboard: https://aetrs.com/
    🐦 Twitter: @William_McCoy_
    
    Read the rules and say hello in #introductions! 👋
@@ -351,7 +351,7 @@ Everything else can wait. These three will create the foundation for growth.
 ## 📞 QUICK REFERENCE
 
 ### Key Links
-- **Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+- **Dashboard:** https://aetrs.com/
 - **Trade:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - **PolygonScan:** https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e

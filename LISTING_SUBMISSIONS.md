@@ -25,7 +25,7 @@ Professional trading platform with charts, analytics, and alerts. Being listed h
    - **Token Name:** Aetheron
    - **Token Symbol:** AETH
    - **Description:** "Aetheron is a DeFi staking platform on Polygon offering up to 25% APY rewards. Professional dashboard with live price data, three staking pools with varying lock periods, and transparent smart contracts."
-   - **Website:** <https://mastatrill.github.io/Aetheron_platform/>
+   - **Website:** <https://aetrs.com/>
    - **Twitter:** [your Twitter handle once created]
    - **Telegram:** [your Telegram group once created]
    - **Discord:** [optional]
@@ -66,7 +66,7 @@ One of the top crypto data aggregators. Being listed here significantly boosts c
 
 - **Cryptocurrency Name:** Aetheron
 - **Ticker/Symbol:** AETH
-- **Project Website:** <https://mastatrill.github.io/Aetheron_platform/>
+- **Project Website:** <https://aetrs.com/>
 - **Project Description (250 words):**
 
 ```text
@@ -163,7 +163,7 @@ The #1 crypto data site. Getting listed here is HUGE for visibility and trust.
 - **Project Name:** Aetheron
 - **Ticker/Symbol:** AETH
 - **Launch Date:** [Your launch date]
-- **Project Website:** <https://mastatrill.github.io/Aetheron_platform/>
+- **Project Website:** <https://aetrs.com/>
 
 **Blockchain & Contract:**
 
@@ -180,7 +180,7 @@ The #1 crypto data site. Getting listed here is HUGE for visibility and trust.
 
 **Project Links:**
 
-- **Website:** <https://mastatrill.github.io/Aetheron_platform/>
+- **Website:** <https://aetrs.com/>
 - **Whitepaper:** [If you have one, or use website]
 - **Twitter:** <https://twitter.com/[YourHandle]>
 - **Telegram:** <https://t.me/[YourGroup]>
@@ -263,7 +263,7 @@ Platform for discovering new crypto gems. Easy to list, good for initial visibil
    - **Contract:** 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
    - **Launch Date:** [Your date]
    - **Description:** "DeFi staking platform with up to 25% APY on Polygon"
-   - **Website:** <https://mastatrill.github.io/Aetheron_platform/>
+   - **Website:** <https://aetrs.com/>
    - **Logo:** Upload PNG
    - **Socials:** Twitter, Telegram links
 3. Submit (may require small promotion fee for featured placement)
@@ -337,7 +337,7 @@ Automated security scanner. Good to have for building trust.
 Before submitting to any platform, make sure you have:
 
 - [ ] High-quality logo (PNG, 200x200 minimum)
-- [ ] Professional website (<https://mastatrill.github.io/Aetheron_platform/>) ✅
+- [ ] Professional website (<https://aetrs.com/>) ✅
 - [ ] Active Twitter account with multiple posts
 - [ ] Telegram group with pinned info
 - [ ] Verified contract on PolygonScan ✅

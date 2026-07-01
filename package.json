@@ -39,7 +39,7 @@
   "bugs": {
     "url": "https://github.com/MastaTrill/Aetheron_platform/issues"
   },
-  "homepage": "https://mastatrill.github.io/Aetheron_platform",
+  "homepage": "https://aetrs.com",
   "overrides": {
     "undici": "^7.24.0",
     "js-yaml": "^4.2.0",

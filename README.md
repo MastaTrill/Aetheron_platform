@@ -39,7 +39,7 @@
 
 🚀 Live Demo
 
-- 🌐 Admin Dashboard: https://mastatrill.github.io/Aetheron_platform
+- 🌐 Admin Dashboard: https://aetrs.com
 - 📱 Mobile App: Coming soon to App Store & Google Play
 - 📖 Documentation: Complete guides and API reference
 - 🔗 GitHub Repository: github.com/Mastatrill/aetheron-platform
@@ -429,7 +429,7 @@ If you encounter issues not covered in this guide:
 
 - GitHub: @Mastatrill
 - Repository: github.com/Mastatrill/aetheron-platform
-- Website: https://mastatrill.github.io/Aetheron_platform
+- Website: https://aetrs.com
 - Email: <contact@aetheron.space>
 
 ---

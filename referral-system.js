@@ -36,7 +36,7 @@ class ReferralSystem {
 
   createReferralLink(referrerAddress) {
     const code = this.generateReferralCode(referrerAddress);
-    const baseUrl = 'https://mastatrill.github.io/Aetheron_platform/';
+    const baseUrl = 'https://aetrs.com/';
     return `${baseUrl}?ref=${code}`;
   }
 

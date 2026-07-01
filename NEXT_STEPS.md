@@ -32,7 +32,7 @@ That's it! GitHub will automatically deploy your dashboard.
 
 **After enabling GitHub Pages:**
 - ⏳ 2-3 minutes: First deployment runs
-- ✅ Dashboard goes live at: `https://mastatrill.github.io/Aetheron_platform/`
+- ✅ Dashboard goes live at: `https://aetrs.com/`
 
 **Check deployment status:**
 ```
@@ -49,7 +49,7 @@ Once deployed, these will work:
 
 **Main Dashboard:**
 ```
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 ```
 
 **Dashboard with live price data showing:**
@@ -87,7 +87,7 @@ After deployment completes:
 
 1. **Open your live dashboard:**
    ```
-   https://mastatrill.github.io/Aetheron_platform/
+   https://aetrs.com/
    ```
 
 2. **Check the stats section:**

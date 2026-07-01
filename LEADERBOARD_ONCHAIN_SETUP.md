@@ -46,7 +46,7 @@ const TRACKED_ADDRESSES = [
 
 ## Testing
 
-1. Open [token-info.html](https://mastatrill.github.io/Aetheron_platform/token-info.html)
+1. Open [token-info.html](https://aetrs.com/token-info.html)
 2. Check browser console for:
    - ✅ "On-chain leaderboard loaded" (success)
    - ⚠️ "On-chain leaderboard failed, using fallback" (RPC issue)

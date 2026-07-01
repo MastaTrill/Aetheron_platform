@@ -52,7 +52,7 @@ Once deployed, your dashboard will be available at:
 
 ### Default GitHub Pages URL
 ```
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 ```
 
 ### Custom Domain (Optional)
@@ -147,7 +147,7 @@ Once live, share these links:
 
 **Dashboard:**
 ```
-🌐 https://mastatrill.github.io/Aetheron_platform/
+🌐 https://aetrs.com/
 ```
 
 **Direct Buy Link:**

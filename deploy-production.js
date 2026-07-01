@@ -212,7 +212,7 @@ function prepareHostingDeployment() {
     platform: 'GitHub Pages',
     buildCommand: 'npm run build',
     publishDir: 'build',
-    domain: 'https://mastatrill.github.io/Aetheron_platform',
+    domain: 'https://aetrs.com',
     cname: 'aetheron-platform.mastatrill.github.io',
   };
 

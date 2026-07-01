@@ -18,12 +18,12 @@ class MarketingLauncher {
         posts: [
           {
             platform: 'twitter',
-            content: `ðŸš€ Introducing $AETH - Aetheron Platform\n\nRevolutionary DeFi ecosystem on @0xPolygon\n\nâœ… Live Dashboard\nâœ… Staking Rewards (up to 25% APY)\nâœ… Fully Auditable Smart Contracts\nâœ… Community-Driven\n\nðŸ“Š Chart: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D\nðŸ’° Buy: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸŒ Dashboard: https://mastatrill.github.io/Aetheron_platform/\n\n#DeFi #Polygon #Crypto #AETH`,
+            content: `ðŸš€ Introducing $AETH - Aetheron Platform\n\nRevolutionary DeFi ecosystem on @0xPolygon\n\nâœ… Live Dashboard\nâœ… Staking Rewards (up to 25% APY)\nâœ… Fully Auditable Smart Contracts\nâœ… Community-Driven\n\nðŸ“Š Chart: https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D\nðŸ’° Buy: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸŒ Dashboard: https://aetrs.com/\n\n#DeFi #Polygon #Crypto #AETH`,
             scheduled: new Date(Date.now() + 1000 * 60 * 5) // 5 minutes from now
           },
           {
             platform: 'telegram',
-            content: `ðŸŽ‰ AETHERON (AETH) IS NOW LIVE! ðŸŽ‰\n\nWe're thrilled to announce that AETH is now tradeable on QuickSwap!\n\nðŸ“Š Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸ’± Trade: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸ’° Staking: Up to 25% APY\nðŸŒ Dashboard: https://mastatrill.github.io/Aetheron_platform/\n\nJoin us in revolutionizing DeFi on Polygon!`,
+            content: `ðŸŽ‰ AETHERON (AETH) IS NOW LIVE! ðŸŽ‰\n\nWe're thrilled to announce that AETH is now tradeable on QuickSwap!\n\nðŸ“Š Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸ’± Trade: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e\nðŸ’° Staking: Up to 25% APY\nðŸŒ Dashboard: https://aetrs.com/\n\nJoin us in revolutionizing DeFi on Polygon!`,
             scheduled: new Date(Date.now() + 1000 * 60 * 10) // 10 minutes from now
           }
         ]
@@ -55,7 +55,7 @@ class MarketingLauncher {
         posts: [
           {
             platform: 'twitter',
-            content: `ðŸŒŸ Community Spotlight!\n\nWe're growing fast and it's all thanks to our amazing community! ðŸš€\n\nðŸ“ˆ Holders: Growing daily\nðŸ‘¥ Telegram: Active discussions\nðŸ¦ Twitter: Daily updates\n\nJoin us: https://mastatrill.github.io/Aetheron_platform/\n\n#AETH #Community #DeFi`,
+            content: `ðŸŒŸ Community Spotlight!\n\nWe're growing fast and it's all thanks to our amazing community! ðŸš€\n\nðŸ“ˆ Holders: Growing daily\nðŸ‘¥ Telegram: Active discussions\nðŸ¦ Twitter: Daily updates\n\nJoin us: https://aetrs.com/\n\n#AETH #Community #DeFi`,
             scheduled: new Date(Date.now() + 1000 * 60 * 60 * 36) // 36 hours from now
           }
         ]
@@ -158,7 +158,7 @@ class MarketingLauncher {
   }
 
   buildShareUrl(platform, content) {
-    const baseUrl = 'https://mastatrill.github.io/Aetheron_platform/';
+    const baseUrl = 'https://aetrs.com/';
     const encodedContent = encodeURIComponent(content);
     const encodedUrl = encodeURIComponent(baseUrl);
 

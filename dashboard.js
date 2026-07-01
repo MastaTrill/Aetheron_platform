@@ -1171,7 +1171,7 @@ class AetheronDashboard {
   }
 
   generateReferralLink() {
-    const baseUrl = 'https://mastatrill.github.io/Aetheron_platform/';
+    const baseUrl = 'https://aetrs.com/';
     const referralLink = `${baseUrl}?ref=${this.referralCode}`;
 
     // Copy to clipboard
@@ -1183,7 +1183,7 @@ class AetheronDashboard {
   }
 
   shareOnSocial(platform) {
-    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    const url = 'https://aetrs.com/';
     const text = `🚀 Check out $AETH - Aetheron Platform! Staking up to 25% APY on Polygon. #DeFi #AETH`;
 
     let shareUrl = '';
