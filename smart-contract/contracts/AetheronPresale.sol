@@ -13,26 +13,31 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 ///         their MATIC. Tokens are claimed (not auto-sent) only after the
 ///         raise is finalized, so there's no scenario where someone holds
 ///         both a refund AND the tokens.
+///
+/// Deploy this, fund it with the tokens to be sold, then transfer
+/// ownership to the multisig (see transfer-token-ownership-to-multisig.mjs)
+/// before going live - everything in here that touches contributor funds
+/// or sale parameters is onlyOwner.
 contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     IERC20 public immutable token;
-    address public treasury;
 
-    uint256 public rate;
-    uint256 public softCap;
-    uint256 public hardCap;
-    uint256 public minContribution;
-    uint256 public maxContribution;
+    uint256 public rate; // tokens (18 decimals) per 1 MATIC
+    uint256 public softCap; // wei - minimum raise for the sale to succeed
+    uint256 public hardCap; // wei - absolute maximum raise
+    uint256 public minContribution; // wei - per-tx floor, blocks dust spam
+    uint256 public maxContribution; // wei - per-wallet ceiling
+
     uint256 public startTime;
     uint256 public endTime;
 
     uint256 public weiRaised;
-    uint256 public tokensReserved;
+    uint256 public tokensReserved; // sum of tokens owed across all contributors
 
     bool public finalized;
     bool public cancelled;
 
-    mapping(address => uint256) public contributions;
-    mapping(address => uint256) public tokensOwed;
+    mapping(address => uint256) public contributions; // wei contributed
+    mapping(address => uint256) public tokensOwed; // tokens earned, unclaimed
     mapping(address => bool) public refunded;
 
     event TokensPurchased(address indexed buyer, uint256 weiAmount, uint256 tokenAmount);
@@ -59,8 +64,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         uint256 _minContribution,
         uint256 _maxContribution,
         uint256 _startTime,
-        uint256 _endTime,
-        address _treasury
+        uint256 _endTime
     ) {
         require(_token != address(0), "Token address cannot be zero");
         require(_rate > 0, "Rate must be > 0");
@@ -68,7 +72,6 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(_minContribution > 0 && _minContribution <= _maxContribution, "Invalid contribution limits");
         require(_startTime >= block.timestamp, "Start time in the past");
         require(_endTime > _startTime, "End time must be after start time");
-        require(_treasury != address(0), "Treasury address cannot be zero");
 
         token = IERC20(_token);
         rate = _rate;
@@ -78,8 +81,9 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         maxContribution = _maxContribution;
         startTime = _startTime;
         endTime = _endTime;
-        treasury = _treasury;
     }
+
+    // --- Buying ---
 
     receive() external payable {
         buyTokens();
@@ -93,7 +97,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         uint256 tokens = msg.value * rate;
         require(
             token.balanceOf(address(this)) >= tokensReserved + tokens,
-            "Not enough tokens left in contract"
+            "Not enough tokens left in contract for this purchase"
         );
 
         weiRaised += msg.value;
@@ -104,41 +108,51 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit TokensPurchased(msg.sender, msg.value, tokens);
     }
 
+    // --- After the sale: success path ---
+
+    /// @notice Locks in success and unlocks fund withdrawal + token claims.
+    /// Can only be called once softcap is met, and only after the sale window
+    /// closes (or hardcap is hit, in which case there's no reason to wait).
     function finalize() external onlyOwner nonReentrant {
         require(!finalized, "Already finalized");
         require(!cancelled, "Presale was cancelled");
-        require(weiRaised >= softCap, "Softcap not met");
+        require(weiRaised >= softCap, "Softcap not met - cancel and refund instead");
         require(block.timestamp > endTime || weiRaised >= hardCap, "Sale window still open");
 
         finalized = true;
         emit Finalized(weiRaised, tokensReserved);
     }
 
+    /// @notice Contributors pull their purchased tokens after a successful finalize().
     function claimTokens() external nonReentrant {
         require(finalized, "Presale not finalized");
         uint256 amount = tokensOwed[msg.sender];
         require(amount > 0, "No tokens to claim");
 
         tokensOwed[msg.sender] = 0;
-        tokensReserved -= amount;
         require(token.transfer(msg.sender, amount), "Token transfer failed");
 
         emit TokensClaimed(msg.sender, amount);
     }
 
+    /// @notice Owner withdraws raised MATIC - only reachable post-finalize,
+    /// i.e. only after softcap was genuinely met. This is the only path
+    /// that moves contributor funds to the owner, and it requires success.
     function withdrawFunds() external onlyOwner nonReentrant {
         require(finalized, "Presale not finalized");
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
 
-        (bool success, ) = payable(treasury).call{value: balance}("");
+        (bool success, ) = payable(owner()).call{value: balance}("");
         require(success, "Transfer failed");
 
-        emit FundsWithdrawn(treasury, balance);
+        emit FundsWithdrawn(owner(), balance);
     }
 
+    /// @notice Owner reclaims unsold tokens - only the surplus beyond what's
+    /// owed to contributors, and only after finalize() so claims are safe.
     function withdrawUnsoldTokens() external onlyOwner nonReentrant {
-        require(finalized || refundsAvailable(), "Presale not finalized or refundable");
+        require(finalized, "Presale not finalized");
         uint256 balance = token.balanceOf(address(this));
         uint256 unsold = balance - tokensReserved;
         require(unsold > 0, "Nothing unsold to withdraw");
@@ -147,13 +161,21 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit UnsoldTokensWithdrawn(owner(), unsold);
     }
 
+    // --- Failure path ---
+
+    /// @notice Owner can cancel before finalize (e.g. softcap looks unreachable,
+    /// or something's wrong). This only ever opens up refunds - it never gives
+    /// the owner access to contributor funds.
     function cancel() external onlyOwner {
-        require(!finalized, "Already finalized");
+        require(!finalized, "Already finalized, cannot cancel");
         require(!cancelled, "Already cancelled");
         cancelled = true;
         emit Cancelled();
     }
 
+    /// @notice Anyone can trigger refund mode once the sale window has closed
+    /// without hitting softcap - no owner action required, so funds can't be
+    /// held hostage by an inactive or unresponsive owner.
     function refundsAvailable() public view returns (bool) {
         if (finalized) return false;
         if (cancelled) return true;
@@ -168,9 +190,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(amount > 0, "Nothing to refund");
 
         refunded[msg.sender] = true;
-        contributions[msg.sender] = 0;
-        tokensReserved -= tokensOwed[msg.sender];
-        tokensOwed[msg.sender] = 0;
+        tokensOwed[msg.sender] = 0; // forfeit token claim - sale failed
 
         (bool success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Refund transfer failed");
@@ -178,33 +198,39 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit RefundClaimed(msg.sender, amount);
     }
 
+    // --- Admin: parameters can only change before any contribution comes in ---
+    // Changing rate/caps mid-sale is a classic manipulation vector, so these
+    // are locked the moment the first contribution lands.
+
     function updateRate(uint256 _rate) external onlyOwner {
-        require(weiRaised == 0, "Cannot change rate after sale started");
+        require(weiRaised == 0, "Cannot change rate after sale has started receiving funds");
         require(_rate > 0, "Rate must be > 0");
         rate = _rate;
     }
 
     function updateCaps(uint256 _softCap, uint256 _hardCap) external onlyOwner {
-        require(weiRaised == 0, "Cannot change caps after sale started");
+        require(weiRaised == 0, "Cannot change caps after sale has started receiving funds");
         require(_softCap > 0 && _softCap <= _hardCap, "Invalid caps");
         softCap = _softCap;
         hardCap = _hardCap;
     }
 
     function updateContributionLimits(uint256 _min, uint256 _max) external onlyOwner {
-        require(weiRaised == 0, "Cannot change limits after sale started");
-        require(_min > 0 && _min <= _max, "Invalid limits");
+        require(weiRaised == 0, "Cannot change limits after sale has started receiving funds");
+        require(_min > 0 && _min <= _max, "Invalid contribution limits");
         minContribution = _min;
         maxContribution = _max;
     }
 
     function updateSchedule(uint256 _startTime, uint256 _endTime) external onlyOwner {
-        require(weiRaised == 0, "Cannot reschedule after sale started");
+        require(weiRaised == 0, "Cannot reschedule after sale has started receiving funds");
         require(_startTime >= block.timestamp, "Start time in the past");
         require(_endTime > _startTime, "End time must be after start time");
         startTime = _startTime;
         endTime = _endTime;
     }
+
+    // --- View helpers ---
 
     function timeRemaining() external view returns (uint256) {
         if (block.timestamp >= endTime) return 0;
