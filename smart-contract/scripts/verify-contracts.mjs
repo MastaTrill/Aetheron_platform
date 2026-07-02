@@ -89,8 +89,10 @@ function readContractAddresses(selectedNetwork) {
   return {
     Aetheron: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
     AetxToken: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
+    // AetheronStaking address varies per deployment - requires deployment-info.json
+    // Placeholder address below should be updated after actual deployment
     AetheronStaking: {
-      address: '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82',
+      address: process.env.AETHERON_STAKING_ADDRESS || '0x0000000000000000000000000000000000000000',
     },
   };
 }
@@ -144,13 +146,15 @@ async function main() {
 
   for (const contractType of contractTypes) {
     const address = contractAddresses[contractType]?.address;
-    if (!address) {
+    if (!address || address === '0x0000000000000000000000000000000000000000') {
       results.push({
         network,
         contract: contractType,
-        address: '(missing)',
-        status: 'failed',
-        message: 'Contract address not found',
+        address: address || '(missing)',
+        status: 'skipped',
+        message: contractType === 'AetheronStaking' 
+          ? 'Set AETHERON_STAKING_ADDRESS in .env after deployment'
+          : 'Contract address not configured',
       });
       continue;
     }
