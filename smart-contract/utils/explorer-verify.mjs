@@ -3,27 +3,30 @@ import path from 'path';
 import { ethers } from 'ethers';
 
 const BUILD_INFO_DIR = path.resolve('artifacts', 'build-info');
-const ETHERSCAN_API_URL = 'https://api.etherscan.io/v2/api';
 
 export const NETWORK_CONFIG = {
   polygon: {
     chainId: '137',
     explorerBaseUrl: 'https://polygonscan.com',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
     rpcUrlEnv: 'POLYGON_RPC_URL',
   },
   mumbai: {
     chainId: '80002',
     explorerBaseUrl: 'https://amoy.polygonscan.com',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
     rpcUrlEnv: 'MUMBAI_RPC_URL',
   },
   sepolia: {
     chainId: '11155111',
     explorerBaseUrl: 'https://sepolia.etherscan.io',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
     rpcUrlEnv: 'SEPOLIA_RPC_URL',
   },
   mainnet: {
     chainId: '1',
     explorerBaseUrl: 'https://etherscan.io',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
     rpcUrlEnv: 'MAINNET_RPC_URL',
   },
 };
@@ -126,11 +129,18 @@ export function encodeConstructorArguments(abi, constructorArgs = []) {
   return ethers.AbiCoder.defaultAbiCoder().encode(types, constructorArgs).replace(/^0x/, '');
 }
 
-async function explorerRequest(searchParams, method = 'POST') {
-  const url =
-    method === 'GET'
-      ? `${ETHERSCAN_API_URL}?${searchParams.toString()}`
-      : ETHERSCAN_API_URL;
+async function explorerRequest(searchParams, method = 'POST', explorerApiUrl, chainId) {
+  let url = explorerApiUrl;
+  
+  // v2 API requires chainid in query string
+  if (explorerApiUrl.includes('/v2/')) {
+    url = `${explorerApiUrl}?chainid=${chainId}`;
+  }
+  
+  if (method === 'GET') {
+    const separator = url.includes('?') ? '&' : '?';
+    url = `${url}${separator}${searchParams.toString()}`;
+  }
 
   const response = await fetch(url, {
     method,
@@ -156,17 +166,17 @@ async function pollStatus({
   guid,
   statusAction,
   successMessages,
+  explorerApiUrl,
 }) {
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const params = new URLSearchParams({
       apikey: apiKey,
-      chainid: chainId,
       module: 'contract',
       action: statusAction,
       guid,
     });
 
-    const result = await explorerRequest(params, 'GET');
+    const result = await explorerRequest(params, 'GET', explorerApiUrl, chainId);
     const message = `${result.result || result.message || ''}`.toLowerCase();
 
     if (result.status === '1' || successMessages.some((item) => message.includes(item))) {
@@ -199,7 +209,9 @@ export async function submitStandardJsonVerification({
   constructorArgs = [],
 }) {
   const apiKey = getExplorerApiKey(network);
-  const { chainId } = getNetworkConfig(network);
+  const config = getNetworkConfig(network);
+  const { chainId } = config;
+  const explorerApiUrl = config.explorerApiUrl;
   const buildInfo = findContractBuildInfo(sourceName, contractName);
   const constructorArguments = encodeConstructorArguments(
     buildInfo.contractOutput.abi,
@@ -207,7 +219,6 @@ export async function submitStandardJsonVerification({
   );
   const params = new URLSearchParams({
     apikey: apiKey,
-    chainid: chainId,
     module: 'contract',
     action: 'verifysourcecode',
     codeformat: 'solidity-standard-json-input',
@@ -222,7 +233,7 @@ export async function submitStandardJsonVerification({
     licenseType: '3',
   });
 
-  const submitResult = await explorerRequest(params, 'POST');
+  const submitResult = await explorerRequest(params, 'POST', explorerApiUrl, chainId);
   const submitMessage = `${submitResult.result || submitResult.message || ''}`.toLowerCase();
 
   if (
@@ -245,6 +256,7 @@ export async function submitStandardJsonVerification({
     guid: submitResult.result,
     statusAction: 'checkverifystatus',
     successMessages: ['pass - verified'],
+    explorerApiUrl,
   });
 }
 
@@ -254,17 +266,18 @@ export async function submitProxyVerification({
   expectedImplementation,
 }) {
   const apiKey = getExplorerApiKey(network);
-  const { chainId } = getNetworkConfig(network);
+  const config = getNetworkConfig(network);
+  const { chainId } = config;
+  const explorerApiUrl = config.explorerApiUrl;
   const params = new URLSearchParams({
     apikey: apiKey,
-    chainid: chainId,
     module: 'contract',
     action: 'verifyproxycontract',
     address: proxyAddress,
     expectedimplementation: expectedImplementation,
   });
 
-  const submitResult = await explorerRequest(params, 'POST');
+  const submitResult = await explorerRequest(params, 'POST', explorerApiUrl, chainId);
   const submitMessage = `${submitResult.result || submitResult.message || ''}`.toLowerCase();
 
   if (
@@ -287,5 +300,6 @@ export async function submitProxyVerification({
     guid: submitResult.result,
     statusAction: 'checkproxyverification',
     successMessages: ['pass - verified'],
+    explorerApiUrl,
   });
 }
