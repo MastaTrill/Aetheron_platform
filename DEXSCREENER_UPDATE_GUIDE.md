@@ -25,7 +25,7 @@ Key Features:
 
 ### Website & Social Links
 
-- **Website:** <https://mastatrill.github.io/Aetheron_platform/>
+- **Website:** <https://aetrs.com/>
 - **Twitter:** <https://twitter.com/AetheronToken> (create this account)
 - **Telegram:** <https://t.me/AetheronOfficial> (create this group)
 - **GitHub:** <https://github.com/MastaTrill/Aetheron_platform>
@@ -47,7 +47,7 @@ Key Features:
    - Name: `Aetheron`
    - Symbol: `AETH`
    - Description: (use the text above)
-   - Website: `https://mastatrill.github.io/Aetheron_platform/`
+   - Website: `https://aetrs.com/`
    - Logo: Upload the `aetheron-logo.svg` or PNG version
 
 3. **Add Social Links:**

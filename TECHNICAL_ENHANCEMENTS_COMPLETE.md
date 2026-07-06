@@ -218,7 +218,7 @@ git push origin main
 ```
 
 ### Test After Deployment
-1. Visit https://mastatrill.github.io/Aetheron_platform
+1. Visit https://aetrs.com
 2. Click "Analytics" - verify charts load
 3. Click "Calculator" - verify calculations work
 4. Test on mobile device

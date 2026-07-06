@@ -1,81 +1,78 @@
-# 💰 Aetheron Presale Guide
+# Aetheron Presale Guide
 
-## ⚠️ Current Status (Jan 27, 2026)
+## Current Status
 
-- **Deployment Script:** Updated with correct AETH address (`0xAb5...71e`).
-- **Blocker:** Deployer wallet has **0 MATIC**. Needs funding.
+- Presale frontend is live at `https://aetrs.com/presale.html`.
+- The frontend stays disabled until `presale-config.js` contains a real Polygon presale contract address.
+- The deploy script generates `presale-config.js` after a successful deployment.
 
-## 🛑 Immediate Action Required
+## 1. Pre-Deploy Checklist
 
-**Fund the Deployer Wallet:**
+- Fund the deployer wallet on Polygon with enough POL/MATIC for deployment and the `setExcludedFromTax` transaction.
+- Confirm the deployer owns or can administer the AETH token, because the deploy script must exclude the presale contract from token tax.
+- Confirm the treasury address is correct: `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`.
+- Run tests before deploying:
 
-- **Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- **Network:** Polygon Mainnet
-- **Required:** ~2 MATIC
+```bash
+cd smart-contract
+npm run compile
+npm test
+```
 
----
+## 2. Deploy the Presale Contract
 
-## 1. Deploy the Presale Contract
+From `smart-contract/`:
 
-Once funded, deploy the contract that will collect MATIC and give out AETH.
+```bash
+npm run deploy:presale
+```
 
-1. Open a terminal in `smart-contract/` folder.
-2. Run the deployment script:
+Optional environment overrides:
 
-   ```bash
-   npx hardhat run scripts/deploy-presale.js --network polygon
-   ```
+```bash
+PRESALE_SOFT_CAP_MATIC=5000
+PRESALE_HARD_CAP_MATIC=33333.333333333333333333
+PRESALE_MIN_MATIC=0.1
+PRESALE_MAX_MATIC=1000
+PRESALE_RATE=1000
+PRESALE_START_DELAY_SECONDS=3600
+PRESALE_DURATION_SECONDS=1209600
+npm run deploy:presale
+```
 
-3. **COPY** the new contract address output (e.g., `0x123...`).
+The script writes:
 
-## 2. Update Frontend
+- `presale-config.js` for the website.
+- `smart-contract/deployments/presale-polygon.json` for deployment records.
 
-1. Open `presale.js` in the root folder.
-2. Find line 3:
+## 3. Fund the Presale Contract
 
-   ```javascript
-   const PRESALE_CONTRACT_ADDRESS = "REPLACE_WITH_DEPLOYED_ADDRESS"; 
-   ```
+Send the sale allocation of AETH to the deployed presale contract address. The contract will reject purchases if it does not hold enough AETH to cover tokens owed.
 
-3. Replace the text with your new address.
+## 4. Publish the Website
 
-## 3. Fund the Contract
+Deploy the updated static files, including:
 
-The contract needs AETH tokens to give to buyers.
+- `presale.html`
+- `presale.js`
+- `presale-config.js`
 
-1. Open your MetaMask.
-2. Select **AETH** token.
-3. Click **Send**.
-4. Paste the **Presale Contract Address**.
-5. Send a large amount (e.g., **5,000,000 AETH**).
-   - Note: This is the specific supply available for presale.
+After publishing, verify:
 
-## 4. Market the Presale
+- `https://aetrs.com/presale-config.js` contains the deployed contract address.
+- `https://aetrs.com/presale.html` shows that same address.
+- Wallet connection switches to Polygon and reads the live presale data.
 
-1. Direct users to `https://your-site.com/presale.html`.
-2. Tell them: "Use MATIC to buy AETH early before listing!"
-3. **Wait** until you collect enough MATIC (e.g., 500-1000 MATIC).
+## 5. Finalize or Refund
 
-## 5. Withdraw & Add Liquidity (CRITICAL)
+If the soft cap is met after the sale window closes, call:
 
-Once the presale is over, you must take the MATIC raised and put it into QuickSwap.
+- `finalize()`
+- Contributors call `claimTokens()`
+- Owner calls `withdrawFunds()`
+- Owner calls `withdrawUnsoldTokens()`
 
-**To Withdraw MATIC:**
-You can use PolygonScan to interact *or* we can create a quick script.
-- **Via PolygonScan:**
-    1. Go to your Contract Address on PolygonScan.
-    2. Click "**Contract**" -> "**Write Contract**" -> "**Connect to Web3**".
-    3. Click `withdrawFunds`.
-    4. Confirm transaction.
-    5. The MATIC returns to your wallet.
+If the sale is cancelled or misses soft cap:
 
-**To Withdraw Unsold Tokens:**
-- Click `withdrawTokens` on PolygonScan and enter the remaining amount.
-
-## 6. Launch on QuickSwap
-
-Now that you have the MATIC from the presale and your remaining Tokens:
-
-1. Go to QuickSwap.
-2. Add Liquidity (MATIC + AETH).
-3. **Launch Complete!**
+- Contributors call `claimRefund()`
+- Owner calls `withdrawUnsoldTokens()` to recover tokens that are no longer reserved.

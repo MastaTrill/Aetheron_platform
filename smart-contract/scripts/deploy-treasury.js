@@ -31,7 +31,7 @@ async function main() {
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, ethers.provider);
   console.log("Deploying with wallet:", wallet.address);
 
-  const NEW_OWNER = process.env.TREASURY_WALLET || wallet.address;
+  const NEW_OWNER = process.env.TREASURY_WALLET || "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
   const numConfirmationsRequired = parseInt(process.env.CONFIRMATIONS || "1");
 
   console.log(`\nDeploying to ${networkName} (chainId: ${chainId})`);

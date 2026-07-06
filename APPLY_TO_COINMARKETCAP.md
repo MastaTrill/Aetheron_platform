@@ -45,7 +45,7 @@ Total Supply: 1,000,000,000 AETH
 
 ### 3. Website & Social Links
 ```
-Website: https://mastatrill.github.io/Aetheron_platform/
+Website: https://aetrs.com/
 Twitter: https://twitter.com/William_McCoy_
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 Discord: [Your Discord link]
@@ -353,7 +353,7 @@ Track these metrics to measure listing impact:
 **Network:** Polygon Mainnet  
 **DEX:** QuickSwap  
 **Staking:** Live with 5-25% APY  
-**Platform:** https://mastatrill.github.io/Aetheron_platform/
+**Platform:** https://aetrs.com/
 
 ---
 

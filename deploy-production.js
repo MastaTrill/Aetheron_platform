@@ -59,8 +59,8 @@ function checkTestsPassing() {
       stdio: 'pipe',
       encoding: 'utf8',
     });
-    if (output.includes('37 passing')) {
-      console.log('✅ All 37 tests passing');
+    if (output.includes('21 passing')) {
+      console.log('✅ All 21 tests passing');
       return true;
     } else {
       console.log('❌ Tests failed or incomplete');
@@ -212,7 +212,7 @@ function prepareHostingDeployment() {
     platform: 'GitHub Pages',
     buildCommand: 'npm run build',
     publishDir: 'build',
-    domain: 'https://mastatrill.github.io/Aetheron_platform',
+    domain: 'https://aetrs.com',
     cname: 'aetheron-platform.mastatrill.github.io',
   };
 

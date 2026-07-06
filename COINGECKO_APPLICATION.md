@@ -124,7 +124,7 @@ AETH/WMATIC on QuickSwap
 
 **Q: Official Website**
 ```
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 ```
 
 **Q: Twitter**
@@ -164,12 +164,12 @@ https://github.com/mastatrill/Aetheron_platform
 
 **Q: Whitepaper/Documentation**
 ```
-https://mastatrill.github.io/Aetheron_platform/litepaper.html
+https://aetrs.com/litepaper.html
 ```
 
 **Q: Additional Links** (Optional)
 ```
-Dashboard: https://mastatrill.github.io/Aetheron_platform/
+Dashboard: https://aetrs.com/
 PolygonScan: https://polygonscan.com/address/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 ```
 

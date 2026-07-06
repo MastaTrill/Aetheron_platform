@@ -49,7 +49,7 @@
 - ✅ Trading enabled on QuickSwap
 - ✅ Liquidity pool: 9.5M AETH + 5.25 POL (~$10 TVL)
 - ✅ Dashboard fixed with live blockchain data
-- ✅ GitHub Pages live at: https://mastatrill.github.io/Aetheron_platform
+- ✅ GitHub Pages live at: https://aetrs.com
 
 **Prepared but Not Executed:**
 
@@ -87,7 +87,7 @@ git push origin main
 **Actions:**
 
 1. Wait 1-2 minutes for GitHub Pages to rebuild
-2. Visit: https://mastatrill.github.io/Aetheron_platform
+2. Visit: https://aetrs.com
 3. Open browser console (F12)
 4. Look for:
    - ✅ "Dashboard initialized with live data!"

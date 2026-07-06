@@ -18,12 +18,12 @@ https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864
 
 ### Dashboard
 ```
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 ```
 
 ### How to Buy Guide
 ```
-https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+https://aetrs.com/how-to-buy.html
 ```
 
 ### Chart (DexScreener)
@@ -79,7 +79,7 @@ With its professional interface, secure smart contracts, and competitive staking
 ## 🐦 TWITTER BIO (160 characters max)
 
 ```
-Official $AETH token | DeFi Staking Platform on Polygon | Earn up to 25% APY 🚀 | Dashboard: mastatrill.github.io/Aetheron_platform
+Official $AETH token | DeFi Staking Platform on Polygon | Earn up to 25% APY 🚀 | Dashboard: aetrs.com
 ```
 
 ---
@@ -96,7 +96,7 @@ Three staking pools:
 🟡 30-Day: 12% APY  
 🔴 90-Day: 25% APY
 
-📊 Dashboard: mastatrill.github.io/Aetheron_platform
+📊 Dashboard: aetrs.com
 💰 Buy: [QuickSwap link]
 📈 Chart: [DexScreener link]
 
@@ -116,7 +116,7 @@ Let's grow together! 🚀
 Aetheron Team
 $AETH - DeFi Staking on Polygon
 
-🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://aetrs.com/
 🐦 Twitter: [your handle]
 💬 Telegram: [your group]
 ```
@@ -208,7 +208,7 @@ Good luck! 🍀
 5. Swap on QuickSwap: [link]
 6. Start staking!
 
-Full guide: https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+Full guide: https://aetrs.com/how-to-buy.html
 ```
 
 ---
@@ -405,7 +405,7 @@ Easy! Follow these steps:
 3. Buy POL
 4. Swap on QuickSwap
 
-Full guide: https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+Full guide: https://aetrs.com/how-to-buy.html
 
 Need help? Ask here anytime! 💪
 ```
