@@ -946,6 +946,8 @@ body > *:not(#starfield-canvas) {
   padding: 1.2rem;
   border-radius: 24px;
   min-height: 190px;
+  background: rgba(10, 20, 40, 0.75);
+  backdrop-filter: blur(16px);
 }
 
 .stat-card > * {
@@ -961,11 +963,16 @@ body > *:not(#starfield-canvas) {
   margin-bottom: 0.7rem;
 }
 
-.stat-card .value {
+.stat-card .value,
+#priceValue,
+#marketCapValue,
+#stakedValue,
+#holdersValue {
   font-size: clamp(1.8rem, 2vw, 2.4rem);
   font-weight: 800;
   line-height: 1.05;
   margin-bottom: 0.6rem;
+  color: rgba(110, 231, 255, 0.95) !important;
   text-shadow: 0 0 22px rgba(110, 231, 255, 0.16);
 }
 
@@ -2045,4 +2052,15 @@ body.no-scroll {
 
 .portfolio-stat-value.negative {
   color: var(--danger);
+}
+
+/* Force stat card values to be visible with site blue */
+.stat-card .value,
+.stat-card .value *,
+#priceValue,
+#marketCapValue,
+#stakedValue,
+#holdersValue {
+  color: rgba(110, 231, 255, 0.95) !important;
+  text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
 }

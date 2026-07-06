@@ -12,6 +12,7 @@
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
     "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
+    "deploy:presale": "node scripts/deploy-presale.mjs",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
     "deploy:treasury": "hardhat run scripts/deploy-treasury.js --network polygon",
@@ -36,17 +37,18 @@
   "author": "MastaTrill",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^4.0.7",
+    "@nomicfoundation/hardhat-ethers": "^4.0.13",
     "@openzeppelin/contracts-upgradeable": "^4.9.0",
     "ethers": "^6.16.0",
-    "hardhat": "^3.3.0"
+    "hardhat": "^3.9.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.3.1"
   },
   "overrides": {
-    "undici": "^6.24.1"
+    "undici": "^6.24.1",
+    "serialize-javascript": "^7.0.5"
   },
   "directories": {
     "test": "test"

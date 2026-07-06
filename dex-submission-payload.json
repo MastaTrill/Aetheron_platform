@@ -1,0 +1,49 @@
+{
+  "requestType": "New/First Time Token Update",
+  "tokenContractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+  "requesterName": "William McCoy",
+  "requesterEmail": "aetheron.solana@gmail.com",
+  "projectName": "Aetheron Platform",
+  "officialProjectWebsite": "https://aetrs.com",
+  "officialProjectEmail": "aetheron.solana@gmail.com",
+  "logoUrl": "https://aetrs.com/logo-512x512.png",
+  "projectSector": "DeFi - Decentralized Finance / Staking & Analytics",
+  "projectDescription": "Aetheron is a DeFi platform on Polygon offering AETH token with multi-pool staking (8-18% APY), QuickSwap DEX integration, community governance, and advanced analytics. Built with OpenZeppelin audited smart contracts. 1B total supply. Live on Polygon mainnet.",
+  "socialProfiles": {
+    "whitepaper": "https://aetrs.com/",
+    "github": "https://github.com/mastatrill/Aetheron_platform",
+    "telegram": "https://t.me/+eFXv2EAN9zRlN2Fh",
+    "twitter": "https://twitter.com/William_McCoy_",
+    "discord": "https://discord.gg/aetheronplatform",
+    "medium": "",
+    "reddit": "",
+    "slack": "",
+    "wechat": "",
+    "facebook": "",
+    "linkedin": "",
+    "bitcointalk": "",
+    "opensea": ""
+  },
+  "priceData": {
+    "coinMarketCapTicker": "https://coinmarketcap.com/currencies/aetheron",
+    "coinGeckoTicker": "https://www.coingecko.com/en/coins/aetheron",
+    "others": [
+      "https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D",
+      "https://www.dextools.io/app/en/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
+    ]
+  },
+  "tokenSales": {
+    "publicSale": null,
+    "privateSale": null,
+    "seedSale": null,
+    "burnEvents": null
+  },
+  "notes": {
+    "icoIEO": "No public token sale conducted. Token launched directly to liquidity pool on QuickSwap (Polygon).",
+    "distribution": "50% liquidity pool, 20% team treasury, 15% marketing, 15% staking rewards",
+    "contractStatus": "AETH token contract verified on PolygonScan",
+    "stakingContract": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638",
+    "liquidityPair": "0xd57c5E33ebDC1b565F99d06809debbf86142705D",
+    "treasuryWallet": "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa"
+  }
+}

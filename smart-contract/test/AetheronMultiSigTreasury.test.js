@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
 import { before, beforeEach, describe, it } from "node:test";
-import hre from "hardhat";
+import { network } from "hardhat";
 import { deployUupsProxy } from "../utils/uups.mjs";
 
-const { ethers } = hre;
 const MULTISIG_CONTRACT_FQN =
   "contracts/AetheronMultiSigTreasury.sol:AetheronMultiSigTreasury";
 
 describe("AetheronMultiSigTreasury", { concurrency: false }, function () {
-  let MultiSig, multiSig, owner, addr1, addr2, addr3;
+  let ethers, MultiSig, multiSig, owner, addr1, addr2, addr3;
 
   before(async function () {
+    ({ ethers } = await network.connect());
     [owner, addr1, addr2, addr3] = await ethers.getSigners();
   });
 

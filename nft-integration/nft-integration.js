@@ -53,14 +53,12 @@ class NFTIntegration {
   }
 
   setupEventListeners() {
-    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         this.switchTab(e.target.closest('.tab-btn').dataset.tab);
       });
     });
 
-    // Search and filters
     document.getElementById('searchInput').addEventListener('input', (e) => {
       this.filters.search = e.target.value.toLowerCase();
       this.applyFilters();
@@ -81,17 +79,14 @@ class NFTIntegration {
       this.applyFilters();
     });
 
-    // Load more button
     document.getElementById('loadMoreBtn').addEventListener('click', () => {
       this.loadMoreNFTs();
     });
 
-    // Wallet connection
     document.getElementById('connectWallet').addEventListener('click', () => {
       this.connectWallet();
     });
 
-    // Create NFT form
     document.getElementById('nftCollection').addEventListener('change', (e) => {
       this.toggleNewCollectionField(e.target.value === 'custom');
     });
@@ -112,7 +107,6 @@ class NFTIntegration {
       this.mintNFT();
     });
 
-    // Analytics time filters
     document.querySelectorAll('.time-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -121,7 +115,6 @@ class NFTIntegration {
       });
     });
 
-    // Drag and drop for file upload
     const uploadArea = document.getElementById('uploadArea');
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -143,34 +136,28 @@ class NFTIntegration {
   handleFileUpload(file) {
     if (!file) return;
 
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg', 'audio/mp3'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg'];
     if (!allowedTypes.includes(file.type)) {
-      this.showToast('Unsupported file type. Please upload JPG, PNG, GIF, MP4, MP3, or MPEG files.', 'error');
+      this.showToast('Unsupported file type. Please upload JPG, PNG, GIF, MP4, or MP3 files.', 'error');
       return;
     }
 
-    // Validate file size (50MB limit)
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
       this.showToast('File size too large. Maximum size is 50MB.', 'error');
       return;
     }
 
-    // Store the file for minting
     this.selectedFile = file;
-
-    // Show preview
-    this.showFilePreview(file);
+    this.displayFilePreview(file);
   }
 
-  showFilePreview(file) {
+  displayFilePreview(file) {
     const previewContainer = document.getElementById('previewContainer');
     const previewImage = document.getElementById('previewImage');
     const previewVideo = document.getElementById('previewVideo');
     const previewAudio = document.getElementById('previewAudio');
 
-    // Hide all previews first
     previewImage.style.display = 'none';
     previewVideo.style.display = 'none';
     previewAudio.style.display = 'none';
@@ -211,124 +198,88 @@ class NFTIntegration {
   }
 
   async loadNFTData() {
-    // Simulate API call - replace with real API endpoints
-    this.nfts = await this.fetchNFTs();
-    this.collections = await this.fetchCollections();
-    this.userNFTs = await this.loadUserNFTsFromStorage();
+    try {
+      const [listings, minted] = await Promise.all([
+        this.fetchListings(),
+        this.fetchMinted(),
+      ]);
+      this.nfts = [...listings, ...minted];
+      this.collections = await this.fetchCollections();
+      this.userNFTs = await this.loadUserNFTsFromStorage();
+    } catch (error) {
+      console.error('Failed to load NFT data:', error);
+      this.showToast('Failed to load NFT data. Using fallback.', 'warning');
+      this.nfts = [];
+      this.collections = [];
+      this.userNFTs = [];
+    }
   }
 
-  async fetchNFTs() {
-    // Mock NFT data - replace with real API
-    return [
-      {
-        id: 1,
-        name: "Cosmic Explorer #001",
-        collection: "Aetheron",
-        image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+1",
-        price: 2.5,
-        currency: "ETH",
-        rarity: "Legendary",
-        owner: "0x1234...5678",
-        likes: 245,
-        views: 1250,
-        description: "A unique cosmic explorer NFT from the Aetheron collection.",
-        attributes: [
-          { trait_type: "Background", value: "Cosmic" },
-          { trait_type: "Character", value: "Explorer" },
-          { trait_type: "Rarity", value: "Legendary" }
-        ]
-      },
-      {
-        id: 2,
-        name: "Bored Ape #1234",
-        collection: "Bored Ape Yacht Club",
-        image: "https://via.placeholder.com/400x400/10b981/ffffff?text=BAYC",
-        price: 45.8,
-        currency: "ETH",
-        rarity: "Epic",
-        owner: "0xabcd...efgh",
-        likes: 892,
-        views: 3450,
-        description: "A rare Bored Ape Yacht Club NFT.",
-        attributes: [
-          { trait_type: "Fur", value: "Golden" },
-          { trait_type: "Eyes", value: "Laser" },
-          { trait_type: "Hat", value: "Crown" }
-        ]
-      },
-      {
-        id: 3,
-        name: "CryptoPunk #5678",
-        collection: "CryptoPunks",
-        image: "https://via.placeholder.com/400x400/f59e0b/ffffff?text=PUNK",
-        price: 89.2,
-        currency: "ETH",
-        rarity: "Mythic",
-        owner: "0x9876...5432",
-        likes: 1205,
-        views: 5670,
-        description: "An iconic CryptoPunk with unique attributes.",
-        attributes: [
-          { trait_type: "Type", value: "Alien" },
-          { trait_type: "Accessory", value: "Pipe" },
-          { trait_type: "Mouth", value: "Smile" }
-        ]
-      },
-      {
-        id: 4,
-        name: "Azuki #999",
-        collection: "Azuki",
-        image: "https://via.placeholder.com/400x400/ef4444/ffffff?text=AZUKI",
-        price: 12.3,
-        currency: "ETH",
-        rarity: "Rare",
-        owner: "0x1111...2222",
-        likes: 456,
-        views: 2100,
-        description: "A beautiful Azuki NFT from the garden.",
-        attributes: [
-          { trait_type: "Background", value: "Garden" },
-          { trait_type: "Clothing", value: "Kimono" },
-          { trait_type: "Eyes", value: "Determined" }
-        ]
-      },
-      {
-        id: 5,
-        name: "World of Women #777",
-        collection: "World of Women",
-        image: "https://via.placeholder.com/400x400/8b5cf6/ffffff?text=WOW",
-        price: 8.9,
-        currency: "ETH",
-        rarity: "Uncommon",
-        owner: "0x3333...4444",
-        likes: 678,
-        views: 2890,
-        description: "An empowering World of Women NFT.",
-        attributes: [
-          { trait_type: "Background", value: "Urban" },
-          { trait_type: "Hair", value: "Purple" },
-          { trait_type: "Expression", value: "Confident" }
-        ]
-      },
-      {
-        id: 6,
-        name: "Pancake Bunny #456",
-        collection: "PancakeSwap",
-        image: "https://via.placeholder.com/400x400/f97316/ffffff?text=BUNNY",
-        price: 3.2,
-        currency: "ETH",
-        rarity: "Common",
-        owner: "0x5555...6666",
-        likes: 234,
-        views: 1450,
-        description: "A cute PancakeSwap bunny NFT.",
-        attributes: [
-          { trait_type: "Type", value: "Bunny" },
-          { trait_type: "Color", value: "Pink" },
-          { trait_type: "Accessory", value: "Bow" }
-        ]
-      }
-    ];
+  getApiBase() {
+    return window.AETHERON_API_BASE_URL || 'https://vercel-node-app-1.vercel.app';
+  }
+
+  getPlaceholderImage(text, bgColor = '#1a1a2e', textColor = '#6366f1') {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="${bgColor}" width="400" height="400"/><text fill="${textColor}" font-family="sans-serif" font-size="18" x="200" y="200" text-anchor="middle" dy=".3em">${encodeURIComponent(text)}</text></svg>`;
+    return `data:image/svg+xml,${svg}`;
+  }
+
+  async fetchListings() {
+    try {
+      const res = await fetch(`${this.getApiBase()}/api/nft/listings`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      return data.map((listing) => ({
+        id: `listing-${listing.listingId}`,
+        listingId: listing.listingId,
+        tokenId: listing.tokenId,
+        contractAddress: listing.nftContract,
+        name: `NFT #${listing.tokenId}`,
+        collection: 'Aetheron',
+        image: this.getPlaceholderImage(`NFT #${listing.tokenId}`),
+        price: parseFloat(listing.price),
+        currency: 'ETH',
+        rarity: 'Common',
+        owner: listing.seller,
+        likes: 0,
+        views: 0,
+        description: 'Aetheron NFT listed for sale',
+        attributes: [],
+        isListed: true,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch listings:', error);
+      return [];
+    }
+  }
+
+  async fetchMinted() {
+    try {
+      const res = await fetch(`${this.getApiBase()}/api/nft/minted`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      return data.map((nft) => ({
+        id: nft.id,
+        tokenId: nft.id,
+        contractAddress: nft.contractAddress,
+        name: `Aetheron NFT #${nft.id}`,
+        collection: 'Aetheron',
+        image: this.getPlaceholderImage(`Aetheron NFT #${nft.id}`),
+        price: 0,
+        currency: 'ETH',
+        rarity: 'Common',
+        owner: nft.owner,
+        likes: 0,
+        views: 0,
+        description: 'Aetheron NFT',
+        attributes: [],
+        isListed: false,
+        tokenURI: nft.tokenURI,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch minted NFTs:', error);
+      return [];
+    }
   }
 
   async fetchCollections() {
@@ -349,7 +300,7 @@ class NFTIntegration {
         id: 1,
         name: "Cosmic Explorer #001",
         collection: "Aetheron",
-        image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+1",
+        image: this.getPlaceholderImage("Cosmic Explorer #001"),
         floorPrice: 1.2,
         lastPrice: 2.5,
         acquired: "2024-01-15"
@@ -400,15 +351,15 @@ class NFTIntegration {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         data: [25.5, 28.2, 32.1, 29.8, 31.5, 35.2]
       },
-      topCollections: [
-        { name: 'Bored Ape Yacht Club', image: 'https://via.placeholder.com/40x40/10b981/ffffff?text=B', volume: 2500000, change: 12.5 },
-        { name: 'CryptoPunks', image: 'https://via.placeholder.com/40x40/f59e0b/ffffff?text=C', volume: 1800000, change: -3.2 },
-        { name: 'Azuki', image: 'https://via.placeholder.com/40x40/ef4444/ffffff?text=A', volume: 890000, change: 8.7 }
+        topCollections: [
+        { name: 'Bored Ape Yacht Club', image: this.getPlaceholderImage('B', '#10b981', '#ffffff'), volume: 2500000, change: 12.5 },
+        { name: 'CryptoPunks', image: this.getPlaceholderImage('C', '#f59e0b', '#ffffff'), volume: 1800000, change: -3.2 },
+        { name: 'Azuki', image: this.getPlaceholderImage('A', '#ef4444', '#ffffff'), volume: 890000, change: 8.7 }
       ],
       tradingActivity: [
-        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: 'https://via.placeholder.com/40x40/10b981/ffffff?text=B' },
-        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: 'https://via.placeholder.com/40x40/6366f1/ffffff?text=A' },
-        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: 'https://via.placeholder.com/40x40/f59e0b/ffffff?text=C' }
+        { type: 'sale', text: 'Bored Ape #1234 sold for 45.8 ETH', time: '2 hours ago', image: this.getPlaceholderImage('B', '#10b981', '#ffffff') },
+        { type: 'mint', text: 'New Aetheron NFT minted', time: '4 hours ago', image: this.getPlaceholderImage('A', '#6366f1', '#ffffff') },
+        { type: 'transfer', text: 'CryptoPunk #5678 transferred', time: '6 hours ago', image: this.getPlaceholderImage('C', '#f59e0b', '#ffffff') }
       ]
     };
   }
@@ -434,7 +385,7 @@ class NFTIntegration {
 
     card.innerHTML = `
             <div class="nft-image">
-                <img src="${nft.image}" alt="${nft.name}" loading="lazy">
+                <img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
                 <div class="nft-badge">${nft.rarity}</div>
             </div>
             <div class="nft-info">
@@ -492,7 +443,7 @@ class NFTIntegration {
 
     card.innerHTML = `
             <div class="nft-image">
-                <img src="${nft.image}" alt="${nft.name}" loading="lazy">
+                <img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
             </div>
             <div class="nft-info">
                 <div class="nft-name">${nft.name}</div>
@@ -638,7 +589,7 @@ class NFTIntegration {
       const changeIcon = collection.change >= 0 ? '↗️' : '↘️';
 
       item.innerHTML = `
-                <img src="${collection.image}" alt="${collection.name}">
+                <img src="${collection.image}" alt="${collection.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%231a1a2e%22 width=%2240%22 height=%2240%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2214%22 x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(collection.name.charAt(0))}</text></svg>'">
                 <div class="collection-info">
                     <div class="collection-name">${collection.name}</div>
                     <div class="collection-stats">Volume: ${(collection.volume / 1000000).toFixed(1)}M ETH</div>
@@ -664,7 +615,7 @@ class NFTIntegration {
         activity.type === 'mint' ? 'fas fa-magic' : 'fas fa-exchange-alt';
 
       item.innerHTML = `
-                <img src="${activity.image}" alt="Activity">
+                <img src="${activity.image}" alt="Activity" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%231a1a2e%22 width=%2240%22 height=%2240%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2212%22 x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22>A</text></svg>'">
                 <div class="activity-info">
                     <div class="activity-text">${activity.text}</div>
                     <div class="activity-meta">${activity.time}</div>
@@ -750,7 +701,7 @@ class NFTIntegration {
           id: 7,
           name: "Space Explorer #002",
           collection: "Aetheron",
-          image: "https://via.placeholder.com/400x400/6366f1/ffffff?text=NFT+7",
+          image: this.getPlaceholderImage("Space Explorer #002"),
           price: 1.8,
           currency: "ETH",
           rarity: "Rare",
@@ -781,7 +732,7 @@ class NFTIntegration {
     modalBody.innerHTML = `
             <div class="nft-modal-content">
                 <div class="nft-modal-image">
-                    <img src="${nft.image}" alt="${nft.name}">
+                    <img src="${nft.image}" alt="${nft.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1a2e%22 width=%22400%22 height=%22400%22/><text fill=%22%236366f1%22 font-family=%22sans-serif%22 font-size=%2220%22 x=%22200%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22>${encodeURIComponent(nft.name)}</text></svg>'; this.style.objectFit='contain';">
                 </div>
                 <div class="nft-modal-details">
                     <div class="nft-modal-info">
@@ -862,32 +813,34 @@ class NFTIntegration {
       return;
     }
 
-    const nft = this.nfts.find(n => n.id === nftId);
+    const nft = this.nfts.find(n => n.id === nftId || n.listingId === nftId);
     if (!nft) return;
 
     try {
       this.showLoading();
-      // Simulate blockchain transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Add to user's collection
+      const apiBase = this.getApiBase();
+      const res = await fetch(`${apiBase}/api/nft/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId: nft.listingId || nftId }),
+      });
+      const result = await res.json();
+      if (!res.ok || result.error) {
+        throw new Error(result.error || 'Purchase failed');
+      }
+      this.nfts = this.nfts.filter(n => n.id !== nftId && n.listingId !== nftId);
       this.userNFTs.push({
         ...nft,
-        floorPrice: nft.price * 0.8, // Mock floor price
+        floorPrice: nft.price * 0.8,
         lastPrice: nft.price,
-        acquired: new Date().toISOString().split('T')[0]
+        acquired: new Date().toISOString().split('T')[0],
       });
-
-      // Remove from marketplace
-      this.nfts = this.nfts.filter(n => n.id !== nftId);
-
       this.renderMarketplace();
       this.renderGallery();
       this.closeModal();
-
       this.showToast(`Successfully purchased ${nft.name}!`, 'success');
     } catch (error) {
-      this.showToast('Purchase failed. Please try again.', 'error');
+      this.showToast('Purchase failed: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -899,55 +852,7 @@ class NFTIntegration {
   }
 
   loadUserNFTs() {
-    // Reload user NFTs after wallet connection
     this.renderGallery();
-  }
-
-  handleFileUpload(file) {
-    if (!file) return;
-
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg'];
-    if (!validTypes.includes(file.type)) {
-      this.showToast('Invalid file type. Please upload JPG, PNG, GIF, MP4, or MP3 files.', 'error');
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) { // 50MB limit
-      this.showToast('File size too large. Maximum size is 50MB.', 'error');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.displayFilePreview(file, e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  displayFilePreview(file, dataUrl) {
-    const previewContainer = document.getElementById('previewContainer');
-    const previewImage = document.getElementById('previewImage');
-    const previewVideo = document.getElementById('previewVideo');
-    const previewAudio = document.getElementById('previewAudio');
-
-    // Hide all previews first
-    previewImage.style.display = 'none';
-    previewVideo.style.display = 'none';
-    previewAudio.style.display = 'none';
-
-    if (file.type.startsWith('image/')) {
-      previewImage.src = dataUrl;
-      previewImage.style.display = 'block';
-    } else if (file.type.startsWith('video/')) {
-      previewVideo.src = dataUrl;
-      previewVideo.style.display = 'block';
-    } else if (file.type.startsWith('audio/')) {
-      previewAudio.src = dataUrl;
-      previewAudio.style.display = 'block';
-    }
-
-    previewContainer.style.display = 'block';
-    this.showToast('File uploaded successfully!', 'success');
   }
 
   toggleNewCollectionField(show) {
@@ -990,62 +895,109 @@ class NFTIntegration {
       return;
     }
 
-    const name = document.getElementById('nftName').value;
-    const description = document.getElementById('nftDescription').value;
+    const name = document.getElementById('nftName').value.trim();
+    const description = document.getElementById('nftDescription').value.trim();
 
     if (!name || !this.selectedFile) {
-      this.showToast('Please fill in all required fields', 'warning');
+      this.showToast('Please fill in all required fields and upload a file', 'warning');
       return;
     }
 
     try {
       this.showLoading();
-      // Simulate minting process
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const apiBase = this.getApiBase();
 
-      // Create new NFT object
+      const tokenURI = await this.uploadNFTMetadata({
+        name,
+        description,
+        file: this.selectedFile,
+        attributes: this.getNFTAttributes(),
+      });
+
+      const res = await fetch(`${apiBase}/api/nft/mint`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tokenURI }),
+      });
+      const result = await res.json();
+      if (!res.ok || result.error) {
+        throw new Error(result.error || 'Minting failed');
+      }
+
+      const tokenId = result.txHash || `minted-${Date.now()}`;
       const newNFT = {
-        id: Date.now(),
-        name: name,
+        id: tokenId,
+        tokenId,
+        name,
         collection: 'Aetheron',
         image: URL.createObjectURL(this.selectedFile),
-        price: 0.1,
+        price: 0,
         currency: 'ETH',
         rarity: 'Common',
         owner: this.walletAddress,
         likes: 0,
         views: 0,
-        description: description,
-        attributes: [],
-        floorPrice: 0.1,
-        lastPrice: 0.1,
-        acquired: new Date().toISOString().split('T')[0]
+        description,
+        attributes: this.getNFTAttributes(),
+        floorPrice: 0,
+        lastPrice: 0,
+        acquired: new Date().toISOString().split('T')[0],
+        txHash: result.txHash,
       };
 
-      // Add to marketplace
       this.nfts.unshift(newNFT);
-      this.renderMarketplace();
-
-      // Add to user's gallery
       this.userNFTs.unshift(newNFT);
+      this.renderMarketplace();
       this.renderGallery();
-
-      // Save to localStorage for persistence
       this.saveUserNFTsToStorage();
 
-      // Reset form
       document.getElementById('nftName').value = '';
       document.getElementById('nftDescription').value = '';
       document.getElementById('fileInput').value = '';
       document.getElementById('previewContainer').style.display = 'none';
       this.selectedFile = null;
 
-      this.showToast(`Successfully minted ${name}!`, 'success');
+      this.showToast(`Successfully minted ${name}! TX: ${result.txHash.slice(0, 10)}...`, 'success');
     } catch (error) {
-      this.showToast('Minting failed. Please try again.', 'error');
+      this.showToast('Minting failed: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
+  }
+
+  getNFTAttributes() {
+    const properties = document.querySelectorAll('.property-item');
+    const attributes = [];
+    properties.forEach((item) => {
+      const type = item.querySelector('.trait-type')?.value?.trim();
+      const value = item.querySelector('.trait-value')?.value?.trim();
+      if (type && value) {
+        attributes.push({ trait_type: type, value });
+      }
+    });
+    return attributes;
+  }
+
+  async uploadNFTMetadata({ name, description, file, attributes }) {
+    const apiBase = this.getApiBase();
+    const metadata = {
+      name,
+      description,
+      image: `https://aetrs.com/assets/nft/${Date.now()}-${file.name}`,
+      attributes,
+    };
+
+    const res = await fetch(`${apiBase}/api/nft/upload-metadata`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(metadata),
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Failed to upload metadata');
+    }
+    return result.tokenURI;
   }
 
   updateStats() {

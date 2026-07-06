@@ -5,7 +5,7 @@
 **Date**: 2026-02-12  
 **Commit**: c439ceb  
 **Branch**: main → gh-pages  
-**Live URL**: <https://mastatrill.github.io/Aetheron_platform/>
+**Live URL**: <https://aetrs.com/>
 
 ## ✅ Successfully Deployed Features
 
@@ -217,7 +217,7 @@ const GOVERNANCE_CONTRACT = '0xYourDeployedAddress';
 ```html
 <meta
   property="og:image"
-  content="https://mastatrill.github.io/Aetheron_platform/og-image.png"
+  content="https://aetrs.com/og-image.png"
 />
 ```
 
@@ -243,7 +243,7 @@ const GOVERNANCE_CONTRACT = '0xYourDeployedAddress';
 
 ### 2. Voting History
 
-**Test**: Visit <https://mastatrill.github.io/Aetheron_platform/voting-history.html>
+**Test**: Visit <https://aetrs.com/voting-history.html>
 **Expected**: See 5 vote records with filter tabs
 
 ### 3. Newsletter Signup
@@ -253,7 +253,7 @@ const GOVERNANCE_CONTRACT = '0xYourDeployedAddress';
 
 ### 4. Governance Proposals
 
-**Test**: Visit <https://mastatrill.github.io/Aetheron_platform/governance.html>
+**Test**: Visit <https://aetrs.com/governance.html>
 **Expected**: See 15 proposals (not 5)
 
 ### 5. Proposal Creation
@@ -384,5 +384,5 @@ const GOVERNANCE_CONTRACT = '0xYourDeployedAddress';
 **⏰ Deployed**: 2026-02-08
 **✨ Ready to Use**: YES
 
-**Next Action**: Test live features at <https://mastatrill.github.io/Aetheron_platform/>
+**Next Action**: Test live features at <https://aetrs.com/>
 `````

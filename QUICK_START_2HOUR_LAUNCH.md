@@ -64,12 +64,12 @@ DeFi platform on Polygon with:
 - Community governance
 
 💰 **Quick Start:**
-1. Visit: https://mastatrill.github.io/Aetheron_platform
+1. Visit: https://aetrs.com
 2. Connect MetaMask
 3. Start staking!
 
 📌 **Links:**
-• Dashboard: https://mastatrill.github.io/Aetheron_platform
+• Dashboard: https://aetrs.com
 • Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 • Trading: https://quickswap.exchange/
 
@@ -122,7 +122,7 @@ Join the revolution! 💰
 
 #DeFi #Polygon #Aetheron #Crypto
 
-🌐 https://mastatrill.github.io/Aetheron_platform
+🌐 https://aetrs.com
 ```
 
 **Post 2 - 4 hours later:**
@@ -136,7 +136,7 @@ Join the revolution! 💰
 Stake AETH, earn passive income!
 
 #Staking #DeFi
-https://mastatrill.github.io/Aetheron_platform
+https://aetrs.com
 ```
 
 ### Discord Announcement
@@ -146,7 +146,7 @@ https://mastatrill.github.io/Aetheron_platform
 @everyone 🎉 Aetheron is LIVE!
 
 **Quick Start:**
-1. Visit: https://mastatrill.github.io/Aetheron_platform
+1. Visit: https://aetrs.com
 2. Connect MetaMask
 3. Get AETH on QuickSwap
 4. Start staking!
@@ -177,7 +177,7 @@ Quick Facts:
 • QuickSwap integration
 • OpenZeppelin audited contracts
 • Contract: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-• Live: https://mastatrill.github.io/Aetheron_platform
+• Live: https://aetrs.com
 
 Full press release below. Available for interviews!
 
@@ -210,7 +210,7 @@ Roadmap:
 - Advanced DeFi features
 
 Contact: contact@aetheronplatform.com
-Website: https://mastatrill.github.io/Aetheron_platform
+Website: https://aetrs.com
 ```
 
 ### 📧 Send to These Emails:
@@ -242,7 +242,7 @@ Contract Address: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Platform: Polygon
 Decimals: 18
 
-Website: https://mastatrill.github.io/Aetheron_platform
+Website: https://aetrs.com
 Market: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Explorer: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 

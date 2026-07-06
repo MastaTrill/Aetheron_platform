@@ -88,7 +88,7 @@ function getWalletConnectEthereumProvider() {
 
 function getWalletConnectMetadata() {
   const currentHref =
-    window.location?.href || 'https://mastatrill.github.io/Aetheron_platform/dashboard.html';
+    window.location?.href || 'https://aetrs.com/dashboard.html';
   const currentOrigin =
     window.location?.origin || 'https://mastatrill.github.io';
 

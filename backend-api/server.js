@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 
 const app = express();
 app.use(cors());
@@ -42,6 +41,9 @@ app.post("/api/ingest", (req,res)=>{
   res.json({ok:true});
 });
 
-app.listen(PORT, ()=>{
+const server = app.listen(PORT, ()=>{
   console.log("Aetheron backend running on", PORT);
 });
+
+export { app, server };
+export default app;

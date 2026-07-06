@@ -11,7 +11,7 @@
 - [ ] Select "GitHub Actions" as source
 - [ ] Click "Save"
 - [ ] Wait 2-3 minutes
-- [ ] Verify live at: https://mastatrill.github.io/Aetheron_platform/
+- [ ] Verify live at: https://aetrs.com/
 - [ ] Test all features (wallet connect, staking, price updates)
 
 ---
@@ -240,7 +240,7 @@
 
 ## 📞 QUICK LINKS
 
-**Dashboard:** https://mastatrill.github.io/Aetheron_platform/
+**Dashboard:** https://aetrs.com/
 
 **Buy AETH:** https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
@@ -252,7 +252,7 @@
 
 **GitHub Repo:** https://github.com/MastaTrill/Aetheron_platform
 
-**How to Buy Guide:** https://mastatrill.github.io/Aetheron_platform/how-to-buy.html
+**How to Buy Guide:** https://aetrs.com/how-to-buy.html
 
 ---
 
