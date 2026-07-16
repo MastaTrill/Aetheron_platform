@@ -1,0 +1,60 @@
+name: Mobile Dependency Security Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - mobile-app/package.json
+      - mobile-app/package-lock.json
+      - .github/workflows/mobile-security-gate.yml
+  push:
+    branches: [main]
+    paths:
+      - mobile-app/package.json
+      - mobile-app/package-lock.json
+      - .github/workflows/mobile-security-gate.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-dependency-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Install exact dependencies
+        working-directory: mobile-app
+        run: npm ci
+
+      - name: Verify patched websocket-driver
+        working-directory: mobile-app
+        run: |
+          node -e 'const lock=require("./package-lock.json"); const p=lock.packages["node_modules/websocket-driver"]; if(!p) throw new Error("websocket-driver missing"); const [major,minor,patch]=p.version.split(".").map(Number); if(major===0&&minor===7&&patch<5) throw new Error(`vulnerable websocket-driver ${p.version}`); console.log(`websocket-driver ${p.version}`);'
+
+      - name: Audit production dependencies
+        working-directory: mobile-app
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit all dependencies
+        working-directory: mobile-app
+        run: npm audit --audit-level=high
+
+      - name: Run mobile tests
+        working-directory: mobile-app
+        run: npm test -- --runInBand --passWithNoTests
