@@ -1,0 +1,92 @@
+name: Current NPM Security Audit
+
+on:
+  push:
+    branches:
+      - security/npm-audit-current
+    paths:
+      - package.json
+      - package-lock.json
+      - mobile-app/package.json
+      - mobile-app/package-lock.json
+      - smart-contract/package.json
+      - smart-contract/package-lock.json
+      - .github/workflows/npm-security-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - name: root
+            directory: .
+            lockfile: package-lock.json
+          - name: mobile-app
+            directory: mobile-app
+            lockfile: mobile-app/package-lock.json
+          - name: smart-contract
+            directory: smart-contract
+            lockfile: smart-contract/package-lock.json
+
+    name: audit-${{ matrix.package.name }}
+
+    steps:
+      - name: Check out current main-derived branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ matrix.package.lockfile }}
+
+      - name: Install exact dependencies
+        working-directory: ${{ matrix.package.directory }}
+        run: npm ci
+
+      - name: Capture production audit
+        id: audit_production
+        continue-on-error: true
+        working-directory: ${{ matrix.package.directory }}
+        run: npm audit --omit=dev --json > "${{ runner.temp }}/${{ matrix.package.name }}-audit-production.json"
+
+      - name: Capture full audit
+        id: audit_full
+        continue-on-error: true
+        working-directory: ${{ matrix.package.directory }}
+        run: npm audit --json > "${{ runner.temp }}/${{ matrix.package.name }}-audit-full.json"
+
+      - name: Capture dependency tree
+        continue-on-error: true
+        working-directory: ${{ matrix.package.directory }}
+        run: npm ls --all --json > "${{ runner.temp }}/${{ matrix.package.name }}-dependency-tree.json"
+
+      - name: Write audit outcome summary
+        run: |
+          cat > "${{ runner.temp }}/${{ matrix.package.name }}-outcomes.txt" <<EOF
+          package=${{ matrix.package.name }}
+          production_audit_outcome=${{ steps.audit_production.outcome }}
+          full_audit_outcome=${{ steps.audit_full.outcome }}
+          node=$(node --version)
+          npm=$(npm --version)
+          EOF
+
+      - name: Upload audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-${{ matrix.package.name }}
+          path: |
+            ${{ runner.temp }}/${{ matrix.package.name }}-audit-production.json
+            ${{ runner.temp }}/${{ matrix.package.name }}-audit-full.json
+            ${{ runner.temp }}/${{ matrix.package.name }}-dependency-tree.json
+            ${{ runner.temp }}/${{ matrix.package.name }}-outcomes.txt
+          if-no-files-found: error
