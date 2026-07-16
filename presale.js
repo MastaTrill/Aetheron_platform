@@ -66,6 +66,8 @@ let totalRaisedETH = 0;
 let hardCapETH = 0;
 let minContributionETH = 0.001;
 let maxContributionETH = 100;
+let userContributionETH = 0;
+let availablePurchaseTokens = 0;
 let presaleIsLive = false;
 
 function getElement(id) {
@@ -134,6 +136,33 @@ function updateTimeRemaining(startTime, endTime) {
     } else {
         element.innerText = 'Ended';
     }
+}
+
+function validatePurchaseAmount(nativeAmount) {
+    const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
+    if (!Number.isFinite(nativeAmount) || nativeAmount <= 0) {
+        return "Enter a valid contribution amount.";
+    }
+    if (nativeAmount < minContributionETH) {
+        return `Minimum contribution is ${formatNumber(minContributionETH, 6)} ${nativeSymbol}.`;
+    }
+
+    const walletRemaining = Math.max(maxContributionETH - userContributionETH, 0);
+    if (nativeAmount > walletRemaining) {
+        return `Wallet contribution limit remaining: ${formatNumber(walletRemaining, 6)} ${nativeSymbol}.`;
+    }
+
+    const hardCapRemaining = Math.max(hardCapETH - totalRaisedETH, 0);
+    if (nativeAmount > hardCapRemaining) {
+        return `Hard-cap capacity remaining: ${formatNumber(hardCapRemaining, 6)} ${nativeSymbol}.`;
+    }
+
+    const requestedTokens = nativeAmount * currentRate;
+    if (requestedTokens > availablePurchaseTokens) {
+        return `Only ${formatNumber(availablePurchaseTokens, 2)} AETH remain available for purchase.`;
+    }
+
+    return null;
 }
 
 async function ensureNetwork() {
@@ -269,12 +298,18 @@ async function loadPresaleData() {
             throw new Error("Presale token inventory is below its reserved-token liability.");
         }
 
+        let userContribution = ethers.constants.Zero;
+        if (signer) {
+            userContribution = await presaleContract.contributions(await signer.getAddress());
+        }
+
         currentRate = rate.toNumber();
         const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
         setText('rateDisplay', `1 ${nativeSymbol} = ${currentRate} AETH`);
 
         const raisedNative = parseFloat(ethers.utils.formatEther(raised));
         totalRaisedETH = raisedNative;
+        userContributionETH = parseFloat(ethers.utils.formatEther(userContribution));
         setText('raisedDisplay', `${formatNumber(raisedNative, 6)} ${nativeSymbol}`);
 
         const softCapNative = parseFloat(ethers.utils.formatEther(softCap));
@@ -285,11 +320,16 @@ async function loadPresaleData() {
 
         const inventory = parseFloat(ethers.utils.formatUnits(tokenBalance, tokenDecimals));
         const reserved = parseFloat(ethers.utils.formatUnits(tokensReserved, tokenDecimals));
-        const availableInventory = Math.max(inventory - reserved, 0);
+        const unreservedInventory = Math.max(inventory - reserved, 0);
         const remainingByHardCap = Math.max((hardCapNative - raisedNative) * currentRate, 0);
-        const remainingTokens = Math.min(availableInventory, remainingByHardCap, MAX_PRESALE_TOKENS);
+        const remainingByConfiguredTokenCap = Math.max(MAX_PRESALE_TOKENS - reserved, 0);
+        availablePurchaseTokens = Math.min(
+            unreservedInventory,
+            remainingByHardCap,
+            remainingByConfiguredTokenCap
+        );
 
-        setText('maxTokensDisplay', `${formatNumber(remainingTokens, 2)} AETH available`);
+        setText('maxTokensDisplay', `${formatNumber(availablePurchaseTokens, 2)} AETH available`);
         setText('maxRaiseDisplay', `${formatNumber(hardCapNative, 6)} ${nativeSymbol}`);
 
         const progress = hardCapNative > 0
@@ -311,8 +351,12 @@ async function loadPresaleData() {
             if (refundSection) refundSection.style.display = 'block';
             setPurchaseControlsEnabled(false, 'Presale Ended');
         } else if (isLive) {
-            setText('capStatus', `Soft Cap: ${formatNumber(softCapNative, 6)} ${nativeSymbol} | Hard Cap: ${formatNumber(hardCapNative, 6)} ${nativeSymbol}`);
-            setPurchaseControlsEnabled(Boolean(signer), signer ? 'Enter Amount' : 'Connect Wallet');
+            const walletRemaining = Math.max(maxContributionETH - userContributionETH, 0);
+            setText(
+                'capStatus',
+                `Soft Cap: ${formatNumber(softCapNative, 6)} ${nativeSymbol} | Hard Cap: ${formatNumber(hardCapNative, 6)} ${nativeSymbol} | Wallet Remaining: ${formatNumber(walletRemaining, 6)} ${nativeSymbol}`
+            );
+            setPurchaseControlsEnabled(Boolean(signer) && walletRemaining >= minContributionETH && availablePurchaseTokens > 0, signer ? 'Enter Amount' : 'Connect Wallet');
         } else if (finalized) {
             setHtml('capStatus', '<span style="color:#22c55e;">Presale finalized! </span>Tokens can be claimed.');
             const withdrawSection = getElement('withdrawSection');
@@ -334,11 +378,10 @@ function calculateTokens() {
     const tokenAmount = getElement('tokenAmount');
     const warning = getElement('capWarning');
     const buyBtn = getElement('buyBtn');
-    const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
 
     if (!nativeInput || !tokenAmount || !warning || !buyBtn) return;
 
-    const nativeValue = nativeInput.value;
+    const nativeAmount = Number(nativeInput.value);
     warning.style.display = 'none';
     warning.innerText = '';
 
@@ -347,49 +390,23 @@ function calculateTokens() {
         return;
     }
 
-    if (Number(nativeValue) <= 0) {
+    if (!Number.isFinite(nativeAmount) || nativeAmount <= 0) {
         tokenAmount.value = "";
         buyBtn.disabled = true;
         return;
     }
 
-    const remainingNative = Math.max(hardCapETH - totalRaisedETH, 0);
-    const nativeAmount = Number(nativeValue);
-    const tokens = nativeAmount * currentRate;
-    tokenAmount.value = tokens.toLocaleString() + " AETH";
-
-    if (!Number.isFinite(nativeAmount)) {
-        warning.innerText = "Enter a valid contribution amount.";
+    tokenAmount.value = `${(nativeAmount * currentRate).toLocaleString()} AETH`;
+    const validationError = validatePurchaseAmount(nativeAmount);
+    if (validationError) {
+        warning.innerText = validationError;
         warning.style.display = 'block';
         buyBtn.disabled = true;
+        buyBtn.innerText = "Invalid Amount";
         return;
     }
 
-    if (nativeAmount < minContributionETH) {
-        warning.innerText = `Minimum contribution is ${formatNumber(minContributionETH, 6)} ${nativeSymbol}.`;
-        warning.style.display = 'block';
-        buyBtn.disabled = true;
-        buyBtn.innerText = "Below Minimum";
-        return;
-    }
-
-    if (nativeAmount > maxContributionETH) {
-        warning.innerText = `Maximum contribution per wallet is ${formatNumber(maxContributionETH, 6)} ${nativeSymbol}.`;
-        warning.style.display = 'block';
-        buyBtn.disabled = true;
-        buyBtn.innerText = "Above Maximum";
-        return;
-    }
-
-    if (nativeAmount > remainingNative) {
-        warning.innerText = `Cap reached or exceeded. Remaining capacity: ${formatNumber(remainingNative, 6)} ${nativeSymbol}.`;
-        warning.style.display = 'block';
-        buyBtn.disabled = true;
-        buyBtn.innerText = "Cap Reached";
-        return;
-    }
-
-    if (signer) buyBtn.disabled = false;
+    buyBtn.disabled = !signer;
     buyBtn.innerText = "Buy Tokens";
 }
 
@@ -404,26 +421,10 @@ async function buyTokens() {
     if (!amountInput || !buyBtn) return;
 
     const nativeAmount = amountInput.value;
-    if (!nativeAmount) return;
-
     const nativeValue = Number(nativeAmount);
-    const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
-    const remainingNative = Math.max(hardCapETH - totalRaisedETH, 0);
-
-    if (!Number.isFinite(nativeValue) || nativeValue <= 0) {
-        alert("Enter a valid contribution amount.");
-        return;
-    }
-    if (nativeValue < minContributionETH) {
-        alert(`Minimum contribution is ${formatNumber(minContributionETH, 6)} ${nativeSymbol}`);
-        return;
-    }
-    if (nativeValue > maxContributionETH) {
-        alert(`Maximum contribution per wallet is ${formatNumber(maxContributionETH, 6)} ${nativeSymbol}`);
-        return;
-    }
-    if (nativeValue > remainingNative) {
-        alert(`Contribution exceeds remaining hard-cap capacity of ${formatNumber(remainingNative, 6)} ${nativeSymbol}`);
+    const validationError = validatePurchaseAmount(nativeValue);
+    if (validationError) {
+        alert(validationError);
         return;
     }
 
