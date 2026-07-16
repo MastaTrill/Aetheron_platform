@@ -1,0 +1,142 @@
+name: Presale CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  root-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test --if-present
+      - run: npm run build --if-present
+
+  smart-contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: smart-contract
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - run: npm ci
+      - run: npm run compile
+      - run: npm test
+
+  base-read-only:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: smart-contract
+    env:
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+      AETH_ADDRESS: 0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e
+      PRESALE_ADDRESS: 0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - run: npm ci
+      - name: Verify bytecode, state, inventory and simulate purchase
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { Contract, JsonRpcProvider, formatEther } from "ethers";
+
+          const rpc = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+          const provider = new JsonRpcProvider(rpc, 8453);
+          const tokenAddress = process.env.AETH_ADDRESS;
+          const presaleAddress = process.env.PRESALE_ADDRESS;
+
+          const presaleAbi = [
+            "function token() view returns (address)",
+            "function rate() view returns (uint256)",
+            "function weiRaised() view returns (uint256)",
+            "function softCap() view returns (uint256)",
+            "function hardCap() view returns (uint256)",
+            "function minContribution() view returns (uint256)",
+            "function maxContribution() view returns (uint256)",
+            "function startTime() view returns (uint256)",
+            "function endTime() view returns (uint256)",
+            "function finalized() view returns (bool)",
+            "function cancelled() view returns (bool)",
+            "function buyTokens() payable"
+          ];
+          const tokenAbi = ["function balanceOf(address) view returns (uint256)", "function decimals() view returns (uint8)"];
+
+          const [tokenCode, presaleCode] = await Promise.all([
+            provider.getCode(tokenAddress),
+            provider.getCode(presaleAddress)
+          ]);
+          if (tokenCode === "0x") throw new Error("AETH address has no deployed bytecode");
+          if (presaleCode === "0x") throw new Error("Presale address has no deployed bytecode");
+
+          const presale = new Contract(presaleAddress, presaleAbi, provider);
+          const token = new Contract(tokenAddress, tokenAbi, provider);
+          const [configuredToken, rate, raised, softCap, hardCap, min, max, start, end, finalized, cancelled, inventory, ethBalance, decimals] = await Promise.all([
+            presale.token(), presale.rate(), presale.weiRaised(), presale.softCap(), presale.hardCap(),
+            presale.minContribution(), presale.maxContribution(), presale.startTime(), presale.endTime(),
+            presale.finalized(), presale.cancelled(), token.balanceOf(presaleAddress),
+            provider.getBalance(presaleAddress), token.decimals()
+          ]);
+
+          if (configuredToken.toLowerCase() !== tokenAddress.toLowerCase()) throw new Error("Presale token mismatch");
+          if (hardCap <= 0n || hardCap < softCap) throw new Error("Invalid cap configuration");
+          if (min <= 0n || max < min) throw new Error("Invalid contribution limits");
+          if (end <= start) throw new Error("Invalid schedule");
+
+          const tokensAtHardCap = hardCap * rate;
+          if (inventory < tokensAtHardCap && !finalized && !cancelled) {
+            throw new Error(`Insufficient AETH inventory: ${inventory} < ${tokensAtHardCap}`);
+          }
+
+          console.log({
+            tokenCodeBytes: (tokenCode.length - 2) / 2,
+            presaleCodeBytes: (presaleCode.length - 2) / 2,
+            rate: rate.toString(),
+            weiRaised: formatEther(raised),
+            softCap: formatEther(softCap),
+            hardCap: formatEther(hardCap),
+            minContribution: formatEther(min),
+            maxContribution: formatEther(max),
+            startTime: start.toString(),
+            endTime: end.toString(),
+            finalized,
+            cancelled,
+            inventory: inventory.toString(),
+            tokenDecimals: decimals.toString(),
+            presaleEthBalance: formatEther(ethBalance)
+          });
+
+          const now = BigInt(Math.floor(Date.now() / 1000));
+          const canSimulate = now >= start && now < end && !finalized && !cancelled && raised + min <= hardCap;
+          if (canSimulate) {
+            const data = presale.interface.encodeFunctionData("buyTokens");
+            await provider.call({
+              to: presaleAddress,
+              from: "0x000000000000000000000000000000000000dEaD",
+              data,
+              value: min
+            });
+            console.log("Read-only buyTokens eth_call simulation passed");
+          } else {
+            console.log("Purchase simulation skipped because sale is not currently purchasable");
+          }
+          NODE
