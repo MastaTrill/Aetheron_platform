@@ -15,7 +15,10 @@ if (!ethers.isAddress(tokenAddress) || !ethers.isAddress(presaleAddress)) {
 }
 
 const rpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
-const provider = new ethers.JsonRpcProvider(rpcUrl, 8453, { staticNetwork: true });
+const provider = new ethers.JsonRpcProvider(rpcUrl, 8453, {
+  staticNetwork: true,
+  batchMaxCount: 1
+});
 
 const PRESALE_ABI = [
   "function token() view returns (address)",
