@@ -76,13 +76,46 @@ jobs:
         run: npm test
 
       - name: Verify Base mainnet bytecode and state
+        id: base_verify
+        continue-on-error: true
         working-directory: smart-contract
         env:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
-        run: npm run verify:base:readonly
+        run: |
+          set -o pipefail
+          npm run verify:base:readonly 2>&1 | tee ../base-verification.log
+
+      - name: Upload Base verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-verification-diagnostics
+          path: base-verification.log
+          if-no-files-found: error
 
       - name: Run disposable Base fork smoke test
+        id: base_fork
+        continue-on-error: true
         working-directory: smart-contract
         env:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
-        run: npm run test:base-fork
+        run: |
+          set -o pipefail
+          npm run test:base-fork 2>&1 | tee ../base-fork.log
+
+      - name: Upload Base fork diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-fork-diagnostics
+          path: base-fork.log
+          if-no-files-found: error
+
+      - name: Enforce Base gates
+        if: always()
+        run: |
+          echo "Read-only verification: ${{ steps.base_verify.outcome }}"
+          echo "Fork smoke test: ${{ steps.base_fork.outcome }}"
+          if [ "${{ steps.base_verify.outcome }}" != "success" ] || [ "${{ steps.base_fork.outcome }}" != "success" ]; then
+            exit 1
+          fi
