@@ -11,7 +11,8 @@ const deployment = JSON.parse(
 );
 
 const TOKEN_ADDRESS = deployment.contracts.Aetheron.address;
-const PRESALE_ADDRESS = deployment.contracts.Presale.address;
+const ACTIVE_PRESALE_ADDRESS = deployment.contracts.Presale?.address;
+const INVALID_PRESALE_ADDRESS = deployment.contracts.InvalidPresale?.address;
 
 const PRESALE_ABI = [
   "function token() view returns (address)",
@@ -34,20 +35,50 @@ const TOKEN_ABI = [
 ];
 
 describe("Base mainnet fork", { concurrency: false }, function () {
-  it("reads deployed state and simulates a purchase when current state permits", async function () {
+  it("proves the configured deployment state without spending real ETH", async function () {
     const { ethers } = await network.connect("baseFork");
     const [buyer] = await ethers.getSigners();
 
-    const [tokenCode, presaleCode] = await Promise.all([
-      ethers.provider.getCode(TOKEN_ADDRESS),
-      ethers.provider.getCode(PRESALE_ADDRESS)
-    ]);
+    const tokenCode = await ethers.provider.getCode(TOKEN_ADDRESS);
     assert.notEqual(tokenCode, "0x", "AETH token bytecode is missing on the Base fork");
-    assert.notEqual(presaleCode, "0x", "Presale bytecode is missing on the Base fork");
-
-    const presale = new ethers.Contract(PRESALE_ADDRESS, PRESALE_ABI, buyer);
     const token = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, ethers.provider);
 
+    if (!ACTIVE_PRESALE_ADDRESS) {
+      assert.ok(INVALID_PRESALE_ADDRESS, "No active or invalid presale address is recorded");
+      const invalidCode = await ethers.provider.getCode(INVALID_PRESALE_ADDRESS);
+      assert.notEqual(invalidCode, "0x", "Recorded invalid presale bytecode is missing");
+
+      const invalidPresale = new ethers.Contract(INVALID_PRESALE_ADDRESS, PRESALE_ABI, ethers.provider);
+      const [linkedToken, expectedTokenBalance, weiRaised, cancelled, finalized] = await Promise.all([
+        invalidPresale.token(),
+        token.balanceOf(INVALID_PRESALE_ADDRESS),
+        invalidPresale.weiRaised(),
+        invalidPresale.cancelled(),
+        invalidPresale.finalized()
+      ]);
+
+      assert.notEqual(
+        linkedToken.toLowerCase(),
+        TOKEN_ADDRESS.toLowerCase(),
+        "Deployment record says invalid, but token linkage now matches"
+      );
+      assert.equal(deployment.launchable, false, "Mismatched deployment must remain non-launchable");
+      console.log("Invalid Base presale safely detected on fork", {
+        invalidPresale: INVALID_PRESALE_ADDRESS,
+        expectedToken: TOKEN_ADDRESS,
+        linkedToken,
+        expectedTokenBalance: expectedTokenBalance.toString(),
+        weiRaised: weiRaised.toString(),
+        cancelled,
+        finalized
+      });
+      return;
+    }
+
+    const presaleCode = await ethers.provider.getCode(ACTIVE_PRESALE_ADDRESS);
+    assert.notEqual(presaleCode, "0x", "Presale bytecode is missing on the Base fork");
+
+    const presale = new ethers.Contract(ACTIVE_PRESALE_ADDRESS, PRESALE_ABI, buyer);
     const [
       linkedToken,
       rate,
@@ -74,7 +105,7 @@ describe("Base mainnet fork", { concurrency: false }, function () {
       presale.endTime(),
       presale.finalized(),
       presale.cancelled(),
-      token.balanceOf(PRESALE_ADDRESS),
+      token.balanceOf(ACTIVE_PRESALE_ADDRESS),
       ethers.provider.getBlock("latest")
     ]);
 
@@ -97,7 +128,7 @@ describe("Base mainnet fork", { concurrency: false }, function () {
       availableInventory >= tokensForMinimum;
 
     if (!canPurchase) {
-      console.log("Fork purchase skipped because current mainnet state does not permit a minimum contribution", {
+      console.log("Fork purchase skipped because current active state does not permit a minimum contribution", {
         now: now.toString(),
         startTime: startTime.toString(),
         endTime: endTime.toString(),
