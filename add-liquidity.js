@@ -2,7 +2,6 @@
 const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const USDC_ADDRESS = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"; // Polygon USDC (new address)
 const QUICKSWAP_ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
-const WMATIC_ADDRESS = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
 
 let provider, signer, account;
 let aethContract, usdcContract;
@@ -66,11 +65,9 @@ async function connectWallet() {
 
     updateStatus('Connecting to wallet...', 'info');
 
-    // Request account access
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     account = accounts[0];
 
-    // Check if we're on Polygon network
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
     if (chainId !== '0x89') {
       updateStatus('Switching to Polygon network...', 'info');
@@ -97,13 +94,11 @@ async function connectWallet() {
       }
     }
 
-    // Initialize provider and contracts
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     aethContract = new ethers.Contract(AETH_ADDRESS, ERC20_ABI, signer);
     usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
 
-    // Update UI
     document.getElementById('connectBtn').style.display = 'none';
     document.getElementById('addLiquidityBtn').classList.remove('hidden');
     document.getElementById('addLiquidityBtn').style.display = 'inline-block';
@@ -112,10 +107,6 @@ async function connectWallet() {
 
     await updateBalances();
     updateStatus(`Connected: ${account.slice(0, 6)}...${account.slice(-4)}`, 'success');
-
-    // Listen for account/network changes
-    window.ethereum.on('accountsChanged', () => window.location.reload());
-    window.ethereum.on('chainChanged', () => window.location.reload());
 
   } catch (error) {
     console.error('Wallet connection error:', error);
@@ -166,7 +157,6 @@ async function addLiquidity() {
     const aethWei = ethers.utils.parseEther(aethAmountInput);
     const usdcWei = ethers.utils.parseUnits(usdcAmountInput, 6);
 
-    // Check balances first
     const [aethBal, usdcBal] = await Promise.all([
       aethContract.balanceOf(account),
       usdcContract.balanceOf(account)
@@ -179,7 +169,6 @@ async function addLiquidity() {
       throw new Error(`Insufficient USDC balance. Have: ${ethers.utils.formatUnits(usdcBal, 6)}, Need: ${usdcAmountInput}`);
     }
 
-    // Step 1: Approve AETH
     updateStatus('Step 1/3: Approving AETH...', 'info');
     const aethAllowance = await aethContract.allowance(account, QUICKSWAP_ROUTER);
     if (aethAllowance.lt(aethWei)) {
@@ -189,7 +178,6 @@ async function addLiquidity() {
     }
     updateStatus('AETH approved ✓', 'success');
 
-    // Step 2: Approve USDC
     updateStatus('Step 2/3: Approving USDC...', 'info');
     const usdcAllowance = await usdcContract.allowance(account, QUICKSWAP_ROUTER);
     if (usdcAllowance.lt(usdcWei)) {
@@ -199,11 +187,10 @@ async function addLiquidity() {
     }
     updateStatus('USDC approved ✓', 'success');
 
-    // Step 3: Add Liquidity
     updateStatus('Step 3/3: Adding liquidity to QuickSwap...', 'info');
     const router = new ethers.Contract(QUICKSWAP_ROUTER, ROUTER_ABI, signer);
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
-    const slippage = 5; // 5%
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+    const slippage = 5;
     const minAeth = aethWei.mul(100 - slippage).div(100);
     const minUsdc = usdcWei.mul(100 - slippage).div(100);
 
@@ -221,7 +208,6 @@ async function addLiquidity() {
     resultDiv.innerHTML = `<div class="info">Waiting for confirmation... <a href="https://polygonscan.com/tx/${tx.hash}" target="_blank">View</a></div>`;
     const receipt = await tx.wait();
 
-    // Success
     resultDiv.innerHTML = `
       <div class="success">
         <h3>🎉 Liquidity Added Successfully!</h3>
@@ -256,7 +242,6 @@ async function addLiquidity() {
   }
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('aethAmount').addEventListener('input', calculatePrice);
   document.getElementById('usdcAmount').addEventListener('input', calculatePrice);

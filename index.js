@@ -1,17 +1,16 @@
 // index.js - Extracted from index.html inline <script>
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
-// Contract Addresses - UPDATED February 8, 2026
-const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+// Contract Addresses - UPDATED for Base Mainnet
+const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 const _LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 const OWNER_ADDRESS = "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5".toLowerCase();
-const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
-const POLYGON_RPC_URLS = [
-    'https://polygon-bor-rpc.publicnode.com',
-    'https://polygon.llamarpc.com',
-    'https://polygon.drpc.org',
-    'https://1rpc.io/matic'
+const BASE_CHAIN_ID = '0x2105'; // 8453 in hex
+const BASE_RPC_URLS = [
+    'https://mainnet.base.org',
+    'https://base.drpc.org',
+    'https://rpc.ankr.com/base'
 ];
 
 // ABIs
@@ -743,11 +742,11 @@ async function connectWallet(options = {}) {
         signer = provider.getSigner();
         account = await signer.getAddress();
 
-        // Switch to Polygon network
+        // Switch to Base network
         try {
             await wallet.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: POLYGON_CHAIN_ID }],
+                params: [{ chainId: BASE_CHAIN_ID }],
             });
         } catch (switchError) {
             // This error code indicates that the chain has not been added to MetaMask
@@ -756,15 +755,15 @@ async function connectWallet(options = {}) {
                     await wallet.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
-                            chainId: POLYGON_CHAIN_ID,
-                            chainName: 'Polygon Mainnet',
-                            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
-                            rpcUrls: ['https://polygon-bor-rpc.publicnode.com'],
-                            blockExplorerUrls: ['https://polygonscan.com/']
+                            chainId: BASE_CHAIN_ID,
+                            chainName: 'Base Mainnet',
+                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                            rpcUrls: BASE_RPC_URLS,
+                            blockExplorerUrls: ['https://basescan.org/']
                         }],
                     });
                 } catch (addError) {
-                    console.error('Error adding Polygon network:', addError);
+                    console.error('Error adding Base network:', addError);
                 }
             }
         }

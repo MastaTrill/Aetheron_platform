@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import https from "https";
 
-const API_KEY = "QZDGDX7UQAWBPWEK592P5KBBU7UX8ZWENJ";
+const API_KEY = process.env.POLYGONSCAN_API_KEY || process.env.ETHERSCAN_API_KEY;
 
 function post(urlStr, params) {
     return new Promise((resolve, reject) => {

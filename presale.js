@@ -1,20 +1,26 @@
 // Presale Logic
 let provider, signer, presaleContract;
 const PRESALE_CONFIG = window.AETHERON_PRESALE_CONFIG || {};
-const AETH_TOKEN_ADDRESS = PRESALE_CONFIG.aethTokenAddress || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const AETH_TOKEN_ADDRESS = PRESALE_CONFIG.aethTokenAddress || "";
 const PRESALE_CONTRACT_ADDRESS = PRESALE_CONFIG.presaleContractAddress || "";
-const MAX_PRESALE_TOKENS = PRESALE_CONFIG.maxPresaleTokens || 40000000;
-const POLYGON_CHAIN_ID = "0x89";
-const POLYGON_CHAIN_PARAMS = {
-    chainId: POLYGON_CHAIN_ID,
+const MAX_PRESALE_TOKENS = PRESALE_CONFIG.maxPresaleTokens || 33333333;
+const NETWORK_CONFIG = PRESALE_CONFIG.network === "base" ? BASE_NETWORK : POLYGON_NETWORK;
+const CURRENT_CHAIN_ID = NETWORK_CONFIG.chainId;
+
+const POLYGON_NETWORK = {
+    chainId: "0x89",
     chainName: "Polygon Mainnet",
-    nativeCurrency: {
-        name: "POL",
-        symbol: "POL",
-        decimals: 18
-    },
+    nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 },
     rpcUrls: ["https://polygon-rpc.com"],
     blockExplorerUrls: ["https://polygonscan.com"]
+};
+
+const BASE_NETWORK = {
+    chainId: "0x2105",
+    chainName: "Base Mainnet",
+    nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+    rpcUrls: ["https://mainnet.base.org", "https://base.drpc.org"],
+    blockExplorerUrls: ["https://basescan.org"]
 };
 const PRESALE_ABI = [
     "function buyTokens() public payable",
@@ -40,7 +46,6 @@ const PRESALE_ABI = [
     "function updateSchedule(uint256,uint256) external onlyOwner",
     "function timeRemaining() external view returns (uint256)",
     "function withdrawFunds() external",
-    "function treasury() public view returns (address)",
     "event TokensPurchased(address indexed buyer, uint256 weiAmount, uint256 tokenAmount)",
     "event Finalized(uint256 totalWeiRaised, uint256 totalTokensSold)",
     "event Cancelled()",
@@ -49,10 +54,10 @@ const PRESALE_ABI = [
 ];
 
 let currentRate = 1000;
-let totalRaisedMatic = 0;
-let hardCapMatic = 0;
-let minContributionMatic = 0.1;
-let maxContributionMatic = 1000;
+let totalRaisedETH = 0;
+let hardCapETH = 0;
+let minContributionETH = 0.001;
+let maxContributionETH = 100;
 let presaleIsLive = false;
 
 function getElement(id) {
@@ -92,8 +97,8 @@ function setPresaleUnavailable(message) {
     setPurchaseControlsEnabled(false, 'Coming Soon');
 }
 
-function getEffectiveMaticCap() {
-    return hardCapMatic || (MAX_PRESALE_TOKENS / currentRate);
+function getEffectiveNativeCap() {
+    return hardCapETH || (MAX_PRESALE_TOKENS / currentRate);
 }
 
 function formatNumber(value, decimals = 2) {
@@ -118,24 +123,24 @@ function updateTimeRemaining(startTime, endTime) {
     }
 }
 
-async function ensurePolygonNetwork() {
+async function ensureNetwork() {
     if (!window.ethereum) {
         throw new Error("No Ethereum wallet detected.");
     }
 
     const chainId = await window.ethereum.request({ method: "eth_chainId" });
-    if (chainId === POLYGON_CHAIN_ID) return;
+    if (chainId === CURRENT_CHAIN_ID) return;
 
     try {
         await window.ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: POLYGON_CHAIN_ID }]
+            params: [{ chainId: CURRENT_CHAIN_ID }]
         });
     } catch (error) {
         if (error.code !== 4902) throw error;
         await window.ethereum.request({
             method: "wallet_addEthereumChain",
-            params: [POLYGON_CHAIN_PARAMS]
+            params: [NETWORK_CONFIG]
         });
     }
 }
@@ -174,7 +179,7 @@ async function connectWallet() {
                 throw new Error("Ethers library failed to load.");
             }
 
-            await ensurePolygonNetwork();
+            await ensureNetwork();
             provider = new ethers.providers.Web3Provider(window.ethereum, "any");
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
@@ -218,21 +223,22 @@ async function loadPresaleData() {
         ]);
         
         currentRate = rate.toNumber();
-        setText('rateDisplay', `1 MATIC = ${currentRate} AETH`);
+        const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
+        setText('rateDisplay', `1 ${nativeSymbol} = ${currentRate} AETH`);
 
-        const raisedMatic = parseFloat(ethers.utils.formatEther(raised));
-        totalRaisedMatic = raisedMatic;
-        setText('raisedDisplay', `${formatNumber(raisedMatic, 2)} MATIC`);
+        const raisedNative = parseFloat(ethers.utils.formatEther(raised));
+        totalRaisedETH = raisedNative;
+        setText('raisedDisplay', `${formatNumber(raisedNative, 6)} ${nativeSymbol}`);
 
-        const softCapMatic = parseFloat(ethers.utils.formatEther(softCap));
-        hardCapMatic = parseFloat(ethers.utils.formatEther(hardCap));
-        minContributionMatic = parseFloat(ethers.utils.formatEther(minContrib));
-        maxContributionMatic = parseFloat(ethers.utils.formatEther(maxContrib));
+        const softCapNative = parseFloat(ethers.utils.formatEther(softCap));
+        hardCapETH = softCapNative;
+        minContributionETH = parseFloat(ethers.utils.formatEther(minContrib));
+        maxContributionETH = parseFloat(ethers.utils.formatEther(maxContrib));
 
-        setText('maxTokensDisplay', `${Math.min(hardCapMatic * currentRate, MAX_PRESALE_TOKENS).toLocaleString()} AETH`);
-        setText('maxRaiseDisplay', `${formatNumber(hardCapMatic, 2)} MATIC`);
+        setText('maxTokensDisplay', `${Math.min(hardCapETH * currentRate, MAX_PRESALE_TOKENS).toLocaleString()} AETH`);
+        setText('maxRaiseDisplay', `${formatNumber(hardCapETH, 6)} ${nativeSymbol}`);
 
-        const progress = Math.min((raisedMatic / hardCapMatic) * 100, 100);
+        const progress = Math.min((raisedNative / hardCapETH) * 100, 100);
         getElement('progressBar').style.width = `${progress.toFixed(2)}%`;
 
         const now = Date.now() / 1000;
@@ -245,7 +251,7 @@ async function loadPresaleData() {
             getElement('refundSection').style.display = 'block';
             setPurchaseControlsEnabled(false, 'Presale Ended');
         } else if (isLive) {
-            setText('capStatus', `Soft Cap: ${formatNumber(softCapMatic, 2)} MATIC | Hard Cap: ${formatNumber(hardCapMatic, 2)} MATIC`);
+            setText('capStatus', `Soft Cap: ${formatNumber(softCapNative, 6)} ${nativeSymbol} | Hard Cap: ${formatNumber(hardCapETH, 6)} ${nativeSymbol}`);
             setPurchaseControlsEnabled(Boolean(signer), signer ? 'Enter Amount' : 'Connect Wallet');
         } else if (finalized) {
             setHtml('capStatus', '<span style="color:#22c55e;">Presale finalized! </span>Tokens can be claimed.');
@@ -264,9 +270,11 @@ async function loadPresaleData() {
 }
 
 function calculateTokens() {
-    const maticInput = document.getElementById('maticAmount').value;
+    const nativeInput = document.getElementById('maticAmount');
+    const nativeValue = nativeInput.value;
     const warning = document.getElementById('capWarning');
     const buyBtn = document.getElementById('buyBtn');
+    const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
 
     warning.style.display = 'none';
     warning.innerText = '';
@@ -276,31 +284,31 @@ function calculateTokens() {
         return;
     }
 
-    if(Number(maticInput) > 0) {
-        const effectiveMaticCap = getEffectiveMaticCap();
-        const remainingMatic = Math.max(effectiveMaticCap - totalRaisedMatic, 0);
-        const maticAmount = parseFloat(maticInput);
-        const tokens = maticInput * currentRate;
+    if(Number(nativeValue) > 0) {
+        const effectiveNativeCap = hardCapETH || (MAX_PRESALE_TOKENS / currentRate);
+        const remainingNative = Math.max(effectiveNativeCap - totalRaisedETH, 0);
+        const nativeAmount = parseFloat(nativeValue);
+        const tokens = nativeValue * currentRate;
         getElement('tokenAmount').value = tokens.toLocaleString() + " AETH";
 
-        if (maticAmount < minContributionMatic) {
-            warning.innerText = `Minimum contribution is ${formatNumber(minContributionMatic, 2)} MATIC.`;
+        if (nativeAmount < minContributionETH) {
+            warning.innerText = `Minimum contribution is ${formatNumber(minContributionETH, 6)} ${nativeSymbol}.`;
             warning.style.display = 'block';
             buyBtn.disabled = true;
             buyBtn.innerText = "Below Minimum";
             return;
         }
 
-        if (maticAmount > maxContributionMatic) {
-            warning.innerText = `Maximum contribution per wallet is ${formatNumber(maxContributionMatic, 2)} MATIC.`;
+        if (nativeAmount > maxContributionETH) {
+            warning.innerText = `Maximum contribution per wallet is ${formatNumber(maxContributionETH, 6)} ${nativeSymbol}.`;
             warning.style.display = 'block';
             buyBtn.disabled = true;
             buyBtn.innerText = "Above Maximum";
             return;
         }
 
-        if (maticAmount > remainingMatic) {
-            warning.innerText = `Cap reached or exceeded. Remaining capacity: ${formatNumber(remainingMatic, 2)} MATIC.`;
+        if (nativeAmount > remainingNative) {
+            warning.innerText = `Cap reached or exceeded. Remaining capacity: ${formatNumber(remainingNative, 6)} ${nativeSymbol}.`;
             warning.style.display = 'block';
             buyBtn.disabled = true;
             buyBtn.innerText = "Cap Reached";
@@ -329,16 +337,18 @@ async function buyTokens() {
         return;
     }
     
-    const maticAmount = document.getElementById('maticAmount').value;
-    if(!maticAmount) return;
+    const nativeAmount = document.getElementById('maticAmount').value;
+    if(!nativeAmount) return;
 
-    const maticValue = parseFloat(maticAmount);
-    if (maticValue < minContributionMatic) {
-        alert(`Minimum contribution is ${formatNumber(minContributionMatic, 2)} MATIC`);
+    const nativeValue = parseFloat(nativeAmount);
+    const nativeSymbol = NETWORK_CONFIG.nativeCurrency.symbol;
+    
+    if (nativeValue < minContributionETH) {
+        alert(`Minimum contribution is ${formatNumber(minContributionETH, 6)} ${nativeSymbol}`);
         return;
     }
-    if (maticValue > maxContributionMatic) {
-        alert(`Maximum contribution per wallet is ${formatNumber(maxContributionMatic, 2)} MATIC`);
+    if (nativeValue > maxContributionETH) {
+        alert(`Maximum contribution per wallet is ${formatNumber(maxContributionETH, 6)} ${nativeSymbol}`);
         return;
     }
 
@@ -348,7 +358,7 @@ async function buyTokens() {
 
         const presaleWithSigner = presaleContract.connect(signer);
         const tx = await presaleWithSigner.buyTokens({
-            value: ethers.utils.parseEther(maticAmount)
+            value: ethers.utils.parseEther(nativeAmount)
         });
         
         alert("Transaction Sent! Waiting for confirmation...");

@@ -61,8 +61,8 @@ const SENTINEL_ABIS = {
 // ============================================
 let provider;
 let coreLoopContract;
-let quantumGuardContract;
-let isInitialized = false;
+let _quantumGuardContract;
+let _isInitialized = false;
 let pollingIntervalId = null;
 
 // ============================================
@@ -90,14 +90,14 @@ export async function initSentinelIntegration(customConfig = {}) {
     }
 
     if (SENTINEL_CONFIG.QUANTUM_GUARD_ADDRESS && SENTINEL_CONFIG.QUANTUM_GUARD_ADDRESS !== '0xYOUR_SENTINEL_QUANTUM_GUARD_ADDRESS') {
-      quantumGuardContract = new ethers.Contract(
+      _quantumGuardContract = new ethers.Contract(
         SENTINEL_CONFIG.QUANTUM_GUARD_ADDRESS,
         SENTINEL_ABIS.QuantumGuard,
         provider
       );
     }
 
-    isInitialized = true;
+    _isInitialized = true;
     console.log('%c[Sentinel] Integration initialized successfully', 'color: #22c55e');
     return true;
   } catch (error) {

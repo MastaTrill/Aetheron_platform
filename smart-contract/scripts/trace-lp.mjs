@@ -1,10 +1,13 @@
 import { ethers } from "ethers";
 import https from "https";
+import dotenv from "dotenv";
+dotenv.config();
 
 const provider = new ethers.JsonRpcProvider("https://polygon.drpc.org");
-const LP_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
+const _LP_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 
-const url = "https://api.etherscan.io/v2/api?chainid=137&module=account&action=tokentx&contractaddress=0xd57c5E33ebDC1b565F99d06809debbf86142705D&apikey=QZDGDX7UQAWBPWEK592P5KBBU7UX8ZWENJ&sort=asc";
+const API_KEY = process.env.POLYGONSCAN_API_KEY || process.env.ETHERSCAN_API_KEY;
+const url = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=tokentx&contractaddress=0xd57c5E33ebDC1b565F99d06809debbf86142705D&apikey=${API_KEY}&sort=asc`;
 
 https.get(url, async (res) => {
     let data = "";

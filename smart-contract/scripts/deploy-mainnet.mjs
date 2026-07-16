@@ -13,7 +13,6 @@ if (!PRIVATE_KEY || PRIVATE_KEY === "0xyour64hexprivatekey") {
 }
 
 const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-const TREASURY_ADDRESS = process.env.TREASURY_WALLET || "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
 const RATE = 1000n;
 const SOFT_CAP = ethers.parseEther("5000");
 const HARD_CAP = ethers.parseEther("33333");
@@ -47,7 +46,7 @@ async function main() {
 
     console.log("\nDeploying AetheronPresaleV2...");
     console.log("Token:", AETH_TOKEN_ADDRESS);
-    console.log("Treasury:", TREASURY_ADDRESS);
+    console.log("Treasury (owner):", wallet.address);
     console.log("Rate:", RATE.toString());
     console.log("Soft cap:", ethers.formatEther(SOFT_CAP), "MATIC");
     console.log("Hard cap:", ethers.formatEther(HARD_CAP), "MATIC");
@@ -58,7 +57,7 @@ async function main() {
     const presale = await factory.deploy(
         AETH_TOKEN_ADDRESS, RATE, SOFT_CAP, HARD_CAP,
         MIN_CONTRIBUTION, MAX_CONTRIBUTION,
-        startTime, END_TIME, TREASURY_ADDRESS
+        startTime, END_TIME
     );
     await presale.waitForDeployment();
     const presaleAddress = await presale.getAddress();
@@ -83,7 +82,7 @@ async function main() {
         chainId: 137,
         presale: presaleAddress,
         token: AETH_TOKEN_ADDRESS,
-        treasury: TREASURY_ADDRESS,
+        treasury: wallet.address,
         rate: RATE.toString(),
         softCapWei: SOFT_CAP.toString(),
         hardCapWei: HARD_CAP.toString(),
