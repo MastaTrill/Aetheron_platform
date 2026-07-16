@@ -12,6 +12,17 @@ on:
       - smart-contract/package.json
       - smart-contract/package-lock.json
       - .github/workflows/npm-security-audit.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - package.json
+      - package-lock.json
+      - mobile-app/package.json
+      - mobile-app/package-lock.json
+      - smart-contract/package.json
+      - smart-contract/package-lock.json
+      - .github/workflows/npm-security-audit.yml
   workflow_dispatch:
 
 permissions:
