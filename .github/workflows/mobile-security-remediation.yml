@@ -56,9 +56,12 @@ jobs:
         run: npm ci
 
       - name: Confirm patched websocket-driver
+        id: websocket_driver
         working-directory: mobile-app
         run: |
-          node -e 'const lock=require("./package-lock.json"); const p=lock.packages["node_modules/websocket-driver"]; if(!p) throw new Error("websocket-driver missing"); const [a,b,c]=p.version.split(".").map(Number); if(a===0&&b===7&&c<5) throw new Error(`vulnerable websocket-driver ${p.version}`); console.log(`websocket-driver ${p.version}`);'
+          VERSION=$(node -e 'const lock=require("./package-lock.json"); const p=lock.packages["node_modules/websocket-driver"]; if(!p) throw new Error("websocket-driver missing"); const [a,b,c]=p.version.split(".").map(Number); if(a===0&&b===7&&c<5) throw new Error(`vulnerable websocket-driver ${p.version}`); process.stdout.write(p.version);')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "websocket-driver ${VERSION}"
 
       - name: Enforce production audit
         working-directory: mobile-app
@@ -71,3 +74,28 @@ jobs:
       - name: Run mobile tests
         working-directory: mobile-app
         run: npm test -- --runInBand --passWithNoTests
+
+      - name: Persist successful audit evidence
+        run: |
+          mkdir -p security
+          cat > security/mobile-audit-status.json <<EOF
+          {
+            "checkedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "node": "$(node --version)",
+            "npm": "$(npm --version)",
+            "websocketDriver": "${{ steps.websocket_driver.outputs.version }}",
+            "productionAudit": "passed",
+            "fullAudit": "passed",
+            "tests": "passed",
+            "sourceWorkflow": "Mobile Security Remediation"
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add security/mobile-audit-status.json
+          if git diff --cached --quiet; then
+            echo "Audit evidence is unchanged."
+          else
+            git commit -m "docs(security): record clean mobile audit"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
