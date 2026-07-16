@@ -1,0 +1,88 @@
+name: Presale Security Gate
+
+on:
+  push:
+    branches:
+      - fix/presale-readonly-validation
+    paths:
+      - presale.js
+      - smart-contract/**
+      - .github/workflows/presale-security-ci.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - presale.js
+      - smart-contract/**
+      - .github/workflows/presale-security-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: presale-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Validate frontend syntax
+        run: node --check presale.js
+
+      - name: Regenerate smart-contract lockfile
+        working-directory: smart-contract
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Commit regenerated lockfile to remediation branch
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet -- smart-contract/package-lock.json; then
+            echo "Lockfile already synchronized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/package-lock.json
+          git commit -m "chore: regenerate smart-contract lockfile"
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+
+      - name: Run unit and frontend tests
+        working-directory: smart-contract
+        run: npm test
+
+      - name: Verify Base mainnet bytecode and state
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: npm run verify:base:readonly
+
+      - name: Run disposable Base fork smoke test
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: npm run test:base-fork
