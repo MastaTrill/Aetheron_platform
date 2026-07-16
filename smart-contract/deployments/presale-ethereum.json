@@ -1,8 +1,15 @@
 {
-  "network": "ethereum",
+  "status": "archival-invalid-record",
+  "launchable": false,
+  "recordedNetworkLabel": "ethereum",
+  "observedChain": "base",
+  "observedChainId": 8453,
   "presale": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
-  "token": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
-  "treasury": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+  "linkedToken": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+  "linkedTokenHasBytecodeOnObservedChain": false,
+  "expectedBaseToken": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+  "tokenLinkageValid": false,
+  "treasuryRecorded": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
   "rate": "1000",
   "softCapWei": "5000000000000000000000",
   "hardCapWei": "33333333333333333333333",
@@ -10,5 +17,6 @@
   "maxContributionWei": "1000000000000000000000",
   "startTime": 1784225183,
   "endTime": 1785434783,
-  "deployedAt": "2026-07-16T17:06:29.088Z"
+  "deployedAt": "2026-07-16T17:06:29.088Z",
+  "note": "Archival evidence only. This record must not be used for frontend configuration, funding, verification, or launch. The presale was observed on Base with a mismatched immutable token address."
 }
