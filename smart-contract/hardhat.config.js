@@ -77,6 +77,7 @@ export default {
     apiKey: {
       polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
       amoy: process.env.POLYGONSCAN_API_KEY || "",
+      base: process.env.BASESCAN_API_KEY || "",
     },
     customChains: [
       {
@@ -85,6 +86,14 @@ export default {
         urls: {
           apiURL: "https://api-amoy.polygonscan.com/api",
           browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org",
         },
       },
     ],
