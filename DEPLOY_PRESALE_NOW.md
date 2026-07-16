@@ -1,36 +1,33 @@
-# Aetheron Base Mainnet — Post-Deployment Verification
+# Aetheron Base Presale — Recovery and Replacement Runbook
 
-**Status as of July 16, 2026:** The AETH token and presale have deployment records on Base mainnet. This document replaces the obsolete Polygon deployment instructions.
+**Status as of July 16, 2026:** Public purchases are disabled. The previously recorded presale is invalid because its immutable `token()` address does not match the current Base AETH token.
 
-## Active contracts
+## Current addresses
 
-- **AETH token:** `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`
-- **Aetheron presale:** `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C`
-- **Network:** Base mainnet
-- **Chain ID:** `8453`
-- **Native currency:** ETH
+- **Current Base AETH token:** `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`
+- **Invalid presale — do not use:** `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C`
+- **Token returned by invalid presale:** `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
+- **Network:** Base mainnet, chain ID `8453`, native currency ETH
 
-## 1. Read-only verification
+Disposable Base-fork evidence observed:
 
-Before sending funds or opening sales, verify the following through BaseScan or a trusted Base RPC:
+- `weiRaised = 0`
+- expected AETH balance at the invalid presale = `50,000,000 AETH`
+- `cancelled = false`
+- `finalized = false`
+- no real mainnet write was performed during validation
 
-### Token
+## Stop conditions
 
-- Address contains deployed bytecode.
-- Source code is verified.
-- Name, symbol, decimals, total supply, owner, and presale balance match the intended deployment.
-- Presale tax/exclusion permissions match the contract design.
+Do not:
 
-### Presale
+- send ETH or more AETH to the invalid presale;
+- restore its address in either frontend configuration file;
+- use any retired hard-coded deploy/fund script;
+- publish a presale announcement;
+- paste a private key, seed phrase, or RPC secret into chat, an issue, a PR, or a commit.
 
-- Address contains deployed bytecode.
-- Source code and constructor arguments are verified.
-- `token()` returns the active AETH token address.
-- Record `rate()`, `weiRaised()`, `softCap()`, `hardCap()`, `minContribution()`, `maxContribution()`, `startTime()`, and `endTime()`.
-- Record `finalized()`, `cancelled()`, and the presale's AETH balance.
-- Confirm the AETH inventory covers all tokens that can still be sold.
-
-## 2. Local checks
+## 1. Install, compile, and test
 
 From `smart-contract/`:
 
@@ -38,44 +35,96 @@ From `smart-contract/`:
 npm ci
 npm run compile
 npm test
+npm run test:base-fork
 ```
 
-Do not proceed if compilation, tests, or dependency installation fails.
+The fork test must prove the invalid-token mismatch while no active presale exists. After a corrected deployment, it must prove the new linkage and simulate a minimum purchase inside the disposable fork.
 
-## 3. Purchase-flow validation
+## 2. Run read-only Base inspection
 
-The production purchase flow must be tested without risking user funds:
+```bash
+npm run verify:base:readonly
+```
 
-1. Fix the frontend hard-cap calculation so `hardCapETH` is populated from `hardCap()`, not `softCap()`.
-2. Run the complete flow against Base Sepolia or a Base-mainnet fork.
-3. Test below-minimum, above-maximum, before-start, after-end, cap-exceeded, insufficient-inventory, cancelled, and finalized cases.
-4. Confirm a valid purchase emits `TokensPurchased`, increments `weiRaised`, records the contribution, and assigns or transfers the correct AETH amount.
-5. Only after simulation passes, execute a deliberately small controlled Base-mainnet purchase from a test wallet.
+Without `ALLOW_DISABLED_PRESALE=true`, this command intentionally exits nonzero until a valid active replacement is recorded. CI uses `ALLOW_DISABLED_PRESALE=true` only to prove that the current invalid deployment is documented and safely disabled; that does not make the sale launch-ready.
 
-## 4. Security dependencies
+## 3. Review cancellation — no transaction by default
 
-Several Snyk PRs are stale and currently conflict with `main`. Do not force-merge them. Rebase each fix or apply the dependency upgrade manually, regenerate the affected lockfile with `npm install`, then compile and test before merging.
+The guarded cancellation tool reads the invalid contract first and refuses to act unless:
 
-At minimum, review:
+- the connected wallet is the contract owner;
+- the token mismatch still exists;
+- the contract is not finalized or already cancelled;
+- the exact confirmation phrase is provided.
 
-- `smart-contract/`: OpenZeppelin upgrade from `4.8.0` to a compatible patched release.
-- `mobile-app/`: `fast-xml-parser` and `minimatch` fixes.
-- repository root: current transitive dependency findings.
+Read-only review can be performed by running the verifier and inspecting its artifact. To authorize cancellation locally after owner review:
 
-## 5. Launch gate
+```bash
+CONFIRM_CANCEL_INVALID_PRESALE=CANCEL_MISMATCHED_PRESALE \
+  npm run cancel:invalid-base-presale
+```
 
-The presale should not be publicly announced until all of these are complete:
+This is an on-chain Base mainnet transaction. Keep `PRIVATE_KEY` in an ignored local `.env` or secure secret manager. Do not run this command until the enhanced read-only report confirms the owner and supported legacy functions.
 
-- [ ] Bytecode confirmed at both Base addresses
-- [ ] Source and constructor arguments verified
-- [ ] Presale parameters recorded and reviewed
-- [ ] AETH inventory confirmed
-- [ ] Frontend hard-cap bug fixed
-- [ ] Fork/testnet purchase suite passed
-- [ ] Small controlled mainnet purchase passed
-- [ ] Security dependency updates compiled and tested
-- [ ] Website displays Base, ETH, and the correct addresses everywhere
+## 4. Establish recovery for the 50,000,000 AETH
 
-## Secret handling
+The expected AETH was transferred to a contract whose immutable token reference points to a different token. Do not assume the normal unsold-token withdrawal can recover it. Confirm the deployed bytecode/source and every owner-only recovery selector before attempting any transaction.
 
-Never commit private keys, mnemonic phrases, API keys, or funded-wallet credentials. Use an ignored `.env` file or a secure deployment secret manager.
+## 5. Dry-run the corrected replacement
+
+Set explicit values locally; the safe script has no silent sale-parameter defaults for rate, caps, or contribution limits:
+
+```bash
+DRY_RUN=true \
+AETH_TOKEN_ADDRESS=0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e \
+TREASURY_ADDRESS=0xYourTreasury \
+PRESALE_RATE=1000 \
+PRESALE_SOFT_CAP_ETH=5 \
+PRESALE_HARD_CAP_ETH=25 \
+PRESALE_MIN_ETH=0.001 \
+PRESALE_MAX_ETH=1 \
+npm run deploy:base-presale:dry-run
+```
+
+Review the printed deployer, owner, treasury, schedule, required token inventory, and gas-wallet state. Adjust parameters deliberately; the example values are not an approval or recommendation.
+
+## 6. Deploy the corrected presale
+
+Only after the dry run, recovery review, owner approval, and sufficient token/gas balances:
+
+```bash
+CONFIRM_BASE_MAINNET_DEPLOY=DEPLOY_CORRECTED_PRESALE \
+AETH_TOKEN_ADDRESS=0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e \
+TREASURY_ADDRESS=0xYourTreasury \
+PRESALE_RATE=... \
+PRESALE_SOFT_CAP_ETH=... \
+PRESALE_HARD_CAP_ETH=... \
+PRESALE_MIN_ETH=... \
+PRESALE_MAX_ETH=... \
+npm run deploy:presale
+```
+
+The guarded script must:
+
+1. confirm Base chain ID `8453`;
+2. confirm bytecode at the AETH token address;
+3. confirm the deployment wallet owns the token;
+4. deploy a fresh presale with the selected treasury;
+5. verify `presale.token()` and `presale.treasury()` immediately;
+6. exclude the new presale from AETH tax;
+7. fund enough AETH for the selected hard cap;
+8. verify inventory;
+9. write the deployment record and frontend config only after all checks pass.
+
+## 7. Post-deployment gate
+
+Before a public purchase:
+
+```bash
+npm run verify:base:readonly
+npm run test:base-fork
+```
+
+Then verify source and constructor arguments on BaseScan. Source verification matters because it lets users and reviewers compare the published source with deployed bytecode.
+
+A deliberately small real mainnet purchase is the final step and requires explicit wallet-owner approval. Never automate that purchase from CI.
