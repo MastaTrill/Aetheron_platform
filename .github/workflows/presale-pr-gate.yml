@@ -1,0 +1,94 @@
+name: Presale PR Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - presale.js
+      - presale-config.js
+      - smart-contract/**
+      - .github/workflows/presale-pr-gate.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - presale.js
+      - presale-config.js
+      - smart-contract/**
+      - .github/workflows/presale-pr-gate.yml
+      - .github/workflows/presale-security-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: presale-pr-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Validate frontend syntax
+        run: node --check presale.js
+
+      - name: Validate safety scripts when present
+        shell: bash
+        run: |
+          for file in \
+            smart-contract/scripts/verify-base-readonly.mjs \
+            smart-contract/scripts/deploy-base-presale-safe.mjs \
+            smart-contract/scripts/cancel-invalid-base-presale.mjs; do
+            if [ -f "$file" ]; then
+              node --check "$file"
+            fi
+          done
+
+      - name: Install exact smart-contract dependencies
+        working-directory: smart-contract
+        run: npm ci
+
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+
+      - name: Run contract and frontend tests
+        working-directory: smart-contract
+        run: npm test
+
+      - name: Verify Base bytecode and state when supported
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          ALLOW_DISABLED_PRESALE: "true"
+        shell: bash
+        run: |
+          if npm run | grep -q "verify:base:readonly"; then
+            npm run verify:base:readonly
+          else
+            echo "verify:base:readonly is not present on this revision; skipping read-only Base inspection."
+          fi
+
+      - name: Run disposable Base fork test when supported
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        shell: bash
+        run: |
+          if npm run | grep -q "test:base-fork"; then
+            npm run test:base-fork
+          else
+            echo "test:base-fork is not present on this revision; skipping fork test."
+          fi
