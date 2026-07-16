@@ -29,21 +29,33 @@
 
 ## Wallet Addresses
 
-### Team Wallet / Treasury Wallet
+### Contract Owner (On-chain)
+
+- **Address:** `0xDF5A2b892254C42F80000A029dfE8b311f777Bd5`
+- **Role:** Owner of AETH token + Staking contracts; holds marketing allocation + liquidity
+- **Holds:** 81.4M AETH marketing / liquidity, 0 POL
+
+### Team Wallet
+
+- **Address:** `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784`
+- **Role:** Team allocation holder
+- **Holds:** 254.7M AETH (20%), 0 POL
+
+### Treasury Wallet (c1fa)
 
 - **Address:** `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`
-- **Role:** Platform treasury, contract owner, deployer, marketing, and staking pool
-- **Allocation:** 200,000,000 AETH (20%)
+- **Role:** Platform treasury
+- **Holds:** 29.7 POL, 0 AETH
 
-### Deployer Wallet (Historical)
+### Staking Contract
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Coinbase wallet)
-- **Role:** Original deployer account
+- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
+- **Holds:** 150M AETH staking rewards
 
-### Keeper's Lantern Wallet
+### Historical / Obsolete
 
-- **Address:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Type:** Personal wallet
+- `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` — old Coinbase deployer reference, ignore
+- `0xF941B28F3B4188c473a4C8C78845ebab58654BA6` — temporary deployer from `.env` prior to audit, not equal to on-chain owner
 
 ---
 
@@ -88,4 +100,4 @@ All contracts can be interacted with via:
 
 ---
 
-**Last Updated:** December 20, 2025
+**Last Updated:** 2026-07-02

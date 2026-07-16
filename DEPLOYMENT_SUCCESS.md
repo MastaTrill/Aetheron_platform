@@ -17,11 +17,13 @@
 
 ## 💰 Token Distribution
 
-| Wallet | Amount | Percentage | Purpose |
-|--------|--------|------------|---------|
-| Deployer/Liquidity | 650M AETH | 65% | DEX Liquidity Pool |
-| Team | 200M AETH | 20% | Team Allocation |
-| Staking Rewards | 150M AETH | 15% | Staking Rewards |
+| Wallet | Amount | Percentage | On-chain Address |
+|--------|--------|------------|------------------|
+| Team | 254.7M AETH | ~25% | `0x76A8...6784` |
+| Deployer/Marketing/Liquidity | 81.4M AETH | ~8% | `0x8A3a...3452` |
+| Staking Rewards | 150.0M AETH | 15% | `0x896...a638` |
+| **Tracked Total** | **486.1M AETH** | **~48.6%** | |
+| Unaccounted | ~513.9M AETH | ~51% | likely burned / LP |
 | **Total Supply** | **1B AETH** | **100%** | |
 
 ---

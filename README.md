@@ -153,7 +153,7 @@ DevOps
 🔐 Verification
 
 GitHub Owner: @Mastatrill  
-Keeper’s Lantern Wallet: 0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82
+Keeper’s Lantern / Contract Owner: 0xDF5A2b892254C42F80000A029dfE8b311f777Bd5
 
 Proof‑of‑Record Constellation
 

@@ -13,7 +13,7 @@ if (!PRIVATE_KEY || PRIVATE_KEY === "0xyour64hexprivatekey") {
 }
 
 const AETH_TOKEN_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
-const TREASURY_ADDRESS = "0xF941B28F3B4188c473a4C8C78845ebab58654BA6";
+const TREASURY_ADDRESS = process.env.TREASURY_WALLET || "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
 const RATE = 1000n;
 const SOFT_CAP = ethers.parseEther("5000");
 const HARD_CAP = ethers.parseEther("33333");

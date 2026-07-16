@@ -40,9 +40,9 @@ if (contractTypes.length === 0) {
   contractTypes = allContractTypes;
 }
 
-const TEAM_WALLET = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
-const MARKETING_WALLET = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
-const STAKING_POOL = '0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa';
+const TEAM_WALLET = '0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784';
+const MARKETING_WALLET = '0x8A3ad49656Bd07981C9CFc7aD826a808847c3452';
+const STAKING_POOL = '0x8A3ad49656Bd07981C9CFc7aD826a808847c3452';
 
 function fail(message, code = 1) {
   console.error(message);
