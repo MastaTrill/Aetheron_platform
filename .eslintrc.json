@@ -1,11 +1,23 @@
 {
+  "root": true,
   "extends": ["eslint:recommended"],
   "env": {
     "node": true,
+    "browser": true,
     "es2022": true
+  },
+  "globals": {
+    "ethers": "readonly",
+    "showToast": "readonly",
+    "gtag": "readonly",
+    "QRCode": "readonly",
+    "marketCap": "readonly"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
   }
 }
