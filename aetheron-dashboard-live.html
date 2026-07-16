@@ -1,1 +1,103 @@
-<html><head><title>Aetheron Dashboard Live</title></head><body><div id="app">Aetheron Dashboard Live</div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Aetheron Live Dashboard - real-time wallet, balances, staking, and Sentinel L3 protection status." />
+  <title>Aetheron - Live Dashboard</title>
+
+  <link rel="stylesheet" href="critical.css?v=1.3.1" />
+  <link rel="stylesheet" href="shared-styles.css?v=1.3.1" />
+  <link rel="stylesheet" href="dashboard-enhanced.css?v=1.3.1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+  <script src="dashboard-main.js?v=1.4.7" defer></script>
+  <script src="dom-bindings.js?v=1.3.1" defer></script>
+
+  <!-- Sentinel L3 Status Widget -->
+  <script type="module">
+    import { initSentinelIntegration, updateSentinelDashboardUI } from './sentinel-integration.js';
+    window.addEventListener('load', async () => {
+      const success = await initSentinelIntegration();
+      if (success) {
+        await updateSentinelDashboardUI('sentinel-widget-container');
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div id="globalLoading" class="global-loading" hidden>
+    <div class="spinner" role="status" aria-label="Loading"></div>
+  </div>
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <nav class="navbar" aria-label="Primary">
+    <div class="navbar-content">
+      <a href="index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+      <span class="nav-title">Live Dashboard</span>
+      <button class="hamburger" id="hamburger" aria-expanded="false" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" hidden></div>
+
+  <main id="main-content" role="main">
+    <!-- Sentinel L3 Protection Status -->
+    <div id="sentinel-widget-container" class="card mb-2" aria-label="Sentinel L3 Protection Status"></div>
+
+    <!-- Wallet connection -->
+    <div class="card mb-2">
+      <h3><i class="fas fa-wallet" aria-hidden="true"></i> Wallet</h3>
+      <div id="walletInfo" class="wallet-info">
+        <button class="btn btn-primary" id="connectBtn" type="button">Connect Wallet</button>
+      </div>
+      <div class="wallet-details">
+        <div><strong>Account:</strong> <span id="accountAddress">—</span></div>
+        <div><strong>Type:</strong> <span id="walletType">—</span></div>
+        <div><strong>ETH:</strong> <span id="ethBalance">0</span></div>
+        <div><strong>AETH:</strong> <span id="aethBalance">0</span></div>
+      </div>
+      <button class="btn btn-outline" id="refreshBalancesBtn" type="button">Refresh Balances</button>
+    </div>
+
+    <!-- Transfer -->
+    <div class="card mb-2">
+      <h3><i class="fas fa-paper-plane" aria-hidden="true"></i> Transfer AETH</h3>
+      <form id="transferForm" class="stack">
+        <input type="text" id="transferTo" placeholder="Recipient address" class="input-full" />
+        <input type="number" id="transferAmount" placeholder="Amount" min="0" step="any" class="input-full" />
+        <button class="btn btn-block" id="transferBtn" type="button">Transfer</button>
+      </form>
+    </div>
+
+    <!-- Stake -->
+    <div class="card mb-2">
+      <h3><i class="fas fa-layer-group" aria-hidden="true"></i> Stake</h3>
+      <form id="stakeForm" class="stack">
+        <input type="number" id="poolId" placeholder="Pool ID (e.g. 0)" min="0" class="input-full" />
+        <input type="number" id="stakeAmount" placeholder="Amount to stake" min="0" step="any" class="input-full" />
+        <button class="btn btn-block" id="stakeBtn" type="button">Stake</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Wallet chooser modal -->
+  <div class="modal-overlay" id="walletChooserModal" hidden role="dialog" aria-modal="true" aria-label="Choose wallet">
+    <div class="modal-content">
+      <button class="modal-close" id="closeWalletChooserBtn" type="button" aria-label="Close">&times;</button>
+      <h3>Connect a wallet</h3>
+      <div id="walletChooserOptions" class="wallet-options"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <a href="index.html" class="footer-link">Home</a>
+  </footer>
+</body>
+</html>
