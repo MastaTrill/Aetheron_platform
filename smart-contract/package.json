@@ -7,12 +7,16 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "node --test test/*.test.js",
+    "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
+    "verify:base:readonly": "node scripts/verify-base-readonly.mjs",
+    "deploy:presale": "node scripts/deploy-base-presale-safe.mjs",
+    "deploy:base-presale:dry-run": "DRY_RUN=true node scripts/deploy-base-presale-safe.mjs",
+    "cancel:invalid-base-presale": "node scripts/cancel-invalid-base-presale.mjs",
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
     "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
-    "deploy:presale": "node scripts/deploy-presale.mjs",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
     "deploy:treasury": "hardhat run scripts/deploy-treasury.js --network polygon",
@@ -38,12 +42,12 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
-    "@openzeppelin/contracts-upgradeable": "^4.9.0",
+    "@openzeppelin/contracts-upgradeable": "^4.9.6",
     "ethers": "^6.16.0",
     "hardhat": "^3.9.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/contracts": "^4.9.6",
     "dotenv": "^16.3.1"
   },
   "overrides": {
