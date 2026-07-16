@@ -1,54 +1,41 @@
-# 🚀 FINAL STATUS - Aetheron Platform
+# 🚀 FINAL STATUS — Aetheron Platform
 
-**Last Updated:** July 16, 2026
+**Last updated:** July 16, 2026
 
-## ✅ COMPLETED (Technical Side)
+## Current deployment
 
-| Area                    | Status     | Notes |
-|-------------------------|------------|-------|
-| Smart Contracts (Token + Staking) | 100% ✅ | Live on Polygon mainnet |
-| AetheronPresaleV2 source | 100% ✅ | Fixed + hardened with treasury routing (July 16) |
-| Deploy script           | 100% ✅ | `npm run deploy:presale` ready |
-| Website & Dashboard     | 100% ✅ | Live at aetrs.com |
-| Presale frontend        | 100% ✅ | /presale.html live (waiting for real contract) |
-| Code Quality & Security | 100% ✅ | XSS fixed, OpenZeppelin, tests |
-| Documentation           | 100% ✅ | Full launch + presale guides |
-| Mobile App              | 100% ✅ | Ready for stores |
+| Area | Status | Details |
+|---|---:|---|
+| AETH token | ✅ Deployed | Base mainnet: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e` |
+| Aetheron presale | ✅ Deployed | Base mainnet: `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C` |
+| Network | ✅ Configured | Base mainnet, chain ID `8453`, native currency ETH |
+| Frontend configuration | ✅ Updated | `presale-config.js` points to the Base contracts |
+| Presale inventory | ⚠️ Verify on-chain | Confirm the presale's AETH balance covers remaining sales |
+| Source verification | ⚠️ Verify on BaseScan | Both contracts should show verified source and matching constructor arguments |
+| Purchase flow | ⚠️ Fix required | Frontend hard-cap calculation currently uses the soft-cap value |
+| Dependency security | ⚠️ In progress | Open Snyk PRs require rebasing or manual upgrades and test validation |
+| Liquidity | ⏳ Pending | Do not announce liquid trading until liquidity is funded and verified |
 
-## ⚠️ REMAINING (Requires Your Wallet)
+## Deployment record
 
-| Task                        | Status | Action Required |
-|-----------------------------|--------|-----------------|
-| **Deploy real Presale**     | 0%     | Run `npm run deploy:presale` (see DEPLOY_PRESALE_NOW.md) |
-| **Fund Presale Contract**   | 0%     | Send 5M–35M AETH to new contract |
-| **Update presale-config.js**| 0%     | Auto-written by deploy script, then push |
-| **Add Liquidity**           | 0%     | After presale or softcap |
-| Marketing & Listings        | 0%     | After liquidity |
+The committed Base deployment record is:
 
-**Overall: ~97% complete** — only the final on-chain actions left.
+- **AETH token:** `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`
+- **Presale:** `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C`
+- **Owner:** `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`
+- **Team:** `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784`
+- **Marketing / staking:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+- **Deployment timestamp:** `2026-07-16T20:49:40.874Z`
 
----
+## Required launch checks
 
-## Current Live State (aetrs.com)
+1. Confirm both addresses contain contract bytecode on Base mainnet.
+2. Confirm source code and constructor arguments are verified on BaseScan.
+3. Read and record the presale's rate, soft cap, hard cap, contribution limits, start/end times, finalized/cancelled state, ETH raised, and AETH inventory.
+4. Fix the frontend hard-cap assignment and run a simulated purchase against a Base mainnet fork or Base Sepolia deployment.
+5. Rebase or replace stale Snyk PRs, regenerate lockfiles, and run compile/tests before merging.
+6. Complete a small controlled purchase only after the read-only checks and simulation pass.
 
-- Homepage brands “Join the AETH Presale” and shows 1 MATIC = 1000 AETH
-- `/presale.html` exists and is ready but shows “Checking...” because `presale-config.js` still points to old Amoy testnet addresses
-- Liquidity pair exists but has essentially $0 value
-- Token contract live: `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
-- Staking live: `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
-- Treasury: `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`
+## Safety note
 
----
-
-## Immediate Next Step
-
-**Open [DEPLOY_PRESALE_NOW.md](./DEPLOY_PRESALE_NOW.md)** and run the commands.
-
-After you deploy and paste the new address here, I will:
-1. Confirm everything
-2. Calculate exact funding amount
-3. Help push the config
-4. Update CONTRACT_ADDRESSES.md
-5. Draft announcement posts
-
-You are one successful `npm run deploy:presale` + fund away from a real, live, hardened public presale.
+Do **not** redeploy by following older Polygon instructions. The active configuration is Base mainnet. Never commit private keys, RPC secrets, or wallet seed phrases.
