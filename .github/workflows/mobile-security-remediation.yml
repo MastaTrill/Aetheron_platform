@@ -1,0 +1,73 @@
+name: Mobile Security Remediation
+
+on:
+  push:
+    branches:
+      - security/npm-audit-current
+    paths:
+      - mobile-app/package.json
+      - mobile-app/package-lock.json
+      - .github/workflows/mobile-security-remediation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mobile-security-remediation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out remediation branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Regenerate mobile lockfile
+        working-directory: mobile-app
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Commit regenerated lockfile
+        run: |
+          if git diff --quiet -- mobile-app/package-lock.json; then
+            echo "Mobile lockfile already synchronized."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add mobile-app/package-lock.json
+            git commit -m "chore(mobile): regenerate patched lockfile"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
+
+      - name: Install exact mobile dependencies
+        working-directory: mobile-app
+        run: npm ci
+
+      - name: Confirm patched websocket-driver
+        working-directory: mobile-app
+        run: |
+          node -e 'const lock=require("./package-lock.json"); const p=lock.packages["node_modules/websocket-driver"]; if(!p) throw new Error("websocket-driver missing"); const [a,b,c]=p.version.split(".").map(Number); if(a===0&&b===7&&c<5) throw new Error(`vulnerable websocket-driver ${p.version}`); console.log(`websocket-driver ${p.version}`);'
+
+      - name: Enforce production audit
+        working-directory: mobile-app
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Enforce full audit
+        working-directory: mobile-app
+        run: npm audit --audit-level=high
+
+      - name: Run mobile tests
+        working-directory: mobile-app
+        run: npm test -- --runInBand --passWithNoTests
