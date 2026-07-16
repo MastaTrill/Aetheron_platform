@@ -43,5 +43,11 @@ describe("presale frontend safety invariants", function () {
   it("checks deployed token linkage and presale inventory", function () {
     assert.match(source, /tokenAddress\.toLowerCase\(\) !== AETH_TOKEN_ADDRESS\.toLowerCase\(\)/);
     assert.match(source, /tokenBalance\.lt\(tokensReserved\)/);
+    assert.match(source, /requestedTokens > availablePurchaseTokens/);
+  });
+
+  it("enforces the contract's cumulative per-wallet contribution limit", function () {
+    assert.match(source, /presaleContract\.contributions\(await signer\.getAddress\(\)\)/);
+    assert.match(source, /maxContributionETH - userContributionETH/);
   });
 });
