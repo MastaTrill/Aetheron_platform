@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const baseRpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+
 export default {
   mocha: {
     timeout: 60000,
@@ -20,6 +22,13 @@ export default {
   networks: {
     hardhat: {
       type: "edr-simulated",
+    },
+    baseFork: {
+      type: "edr-simulated",
+      chainType: "op",
+      forking: {
+        url: baseRpcUrl,
+      },
     },
     polygon: {
       type: "http",
@@ -47,7 +56,7 @@ export default {
     },
     base: {
       type: "http",
-      url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
+      url: baseRpcUrl,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 8453,
     },
@@ -78,6 +87,7 @@ export default {
       polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
       amoy: process.env.POLYGONSCAN_API_KEY || "",
       base: process.env.BASESCAN_API_KEY || "",
+      baseSepolia: process.env.BASESCAN_API_KEY || "",
     },
     customChains: [
       {
@@ -94,6 +104,14 @@ export default {
         urls: {
           apiURL: "https://api.basescan.org/api",
           browserURL: "https://basescan.org",
+        },
+      },
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org",
         },
       },
     ],

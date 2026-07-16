@@ -1,0 +1,127 @@
+name: Presale Security Gate
+
+on:
+  push:
+    branches:
+      - fix/presale-readonly-validation
+    paths:
+      - presale.js
+      - smart-contract/**
+      - .github/workflows/presale-security-ci.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - presale.js
+      - smart-contract/**
+      - .github/workflows/presale-security-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: presale-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check presale.js
+          node --check smart-contract/scripts/verify-base-readonly.mjs
+          node --check smart-contract/scripts/deploy-base-presale-safe.mjs
+          node --check smart-contract/scripts/cancel-invalid-base-presale.mjs
+
+      - name: Regenerate smart-contract lockfile
+        working-directory: smart-contract
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Commit regenerated lockfile to remediation branch
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet -- smart-contract/package-lock.json; then
+            echo "Lockfile already synchronized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/package-lock.json
+          git commit -m "chore: regenerate smart-contract lockfile"
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+
+      - name: Run unit and frontend tests
+        working-directory: smart-contract
+        run: npm test
+
+      - name: Verify Base mainnet bytecode and state
+        id: base_verify
+        continue-on-error: true
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          ALLOW_DISABLED_PRESALE: "true"
+        run: |
+          set -o pipefail
+          npm run verify:base:readonly 2>&1 | tee ../base-verification.log
+
+      - name: Upload Base verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-verification-diagnostics
+          path: base-verification.log
+          if-no-files-found: error
+
+      - name: Run disposable Base fork smoke test
+        id: base_fork
+        continue-on-error: true
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: |
+          set -o pipefail
+          npm run test:base-fork 2>&1 | tee ../base-fork.log
+
+      - name: Upload Base fork diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-fork-diagnostics
+          path: base-fork.log
+          if-no-files-found: error
+
+      - name: Enforce safety gates
+        if: always()
+        run: |
+          echo "Read-only safety verification: ${{ steps.base_verify.outcome }}"
+          echo "Fork safety test: ${{ steps.base_fork.outcome }}"
+          if [ "${{ steps.base_verify.outcome }}" != "success" ] || [ "${{ steps.base_fork.outcome }}" != "success" ]; then
+            exit 1
+          fi
+          echo "Safety gate passed. This does not mean the presale is launch-ready; launchReady remains false until a corrected active presale is deployed."
