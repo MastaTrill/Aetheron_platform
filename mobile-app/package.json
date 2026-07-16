@@ -59,6 +59,9 @@
     "react-test-renderer": "19.2.3",
     "typescript": "^5.9.3"
   },
+  "overrides": {
+    "websocket-driver": "^0.7.5"
+  },
   "engines": {
     "node": ">=20.19.4",
     "npm": ">=9"
