@@ -83,6 +83,9 @@ const TOKEN_ABI = [
 
 const presale = new ethers.Contract(invalidPresale, PRESALE_ABI, provider);
 const token = new ethers.Contract(expectedToken, TOKEN_ABI, provider);
+const latestBlock = await provider.getBlock("latest");
+if (!latestBlock) throw new Error("Unable to read latest Base block");
+
 const [linkedToken, owner, weiRaised, cancelled, finalized, expectedTokenBalance, decimals, nativeBalance] =
   await Promise.all([
     presale.token(),
@@ -96,13 +99,91 @@ const [linkedToken, owner, weiRaised, cancelled, finalized, expectedTokenBalance
   ]);
 const linkedTokenCode = await provider.getCode(linkedToken);
 
+function probeArgs(signature) {
+  if (signature.includes("(address,address,uint256)")) return [expectedToken, owner, 0n];
+  if (signature.includes("(address,uint256)")) return [expectedToken, 0n];
+  if (signature === "transferOwnership(address)") return [owner];
+  if (signature === "updateRate(uint256)") return [1n];
+  if (signature === "updateCaps(uint256,uint256)") return [1n, 1n];
+  if (signature === "updateContributionLimits(uint256,uint256)") return [1n, 1n];
+  if (signature === "updateSchedule(uint256,uint256)") {
+    return [BigInt(latestBlock.timestamp + 3600), BigInt(latestBlock.timestamp + 7200)];
+  }
+  return [];
+}
+
+function extractError(error) {
+  const revertData =
+    error?.data ||
+    error?.info?.error?.data ||
+    error?.error?.data ||
+    null;
+  return {
+    code: error?.code || null,
+    shortMessage: error?.shortMessage || null,
+    reason: error?.reason || null,
+    message: error?.message || String(error),
+    revertData: typeof revertData === "string" ? revertData : null
+  };
+}
+
+async function probeSignature(signature) {
+  const iface = new ethers.Interface([`function ${signature}`]);
+  const functionName = signature.slice(0, signature.indexOf("("));
+  const data = iface.encodeFunctionData(functionName, probeArgs(signature));
+  const transaction = {
+    to: invalidPresale,
+    from: owner,
+    data
+  };
+  if (signature === "buyTokens()") transaction.value = 0n;
+
+  try {
+    const output = await provider.call(transaction);
+    return {
+      ethCallSucceeded: true,
+      output,
+      error: null
+    };
+  } catch (error) {
+    return {
+      ethCallSucceeded: false,
+      output: null,
+      error: extractError(error)
+    };
+  }
+}
+
+const callProbes = {};
+for (const signature of candidateSignatures) {
+  callProbes[signature] = await probeSignature(signature);
+}
+
+const genericRecoveryCallsSucceeded = genericRecoverySignatures.filter(
+  (signature) => callProbes[signature].ethCallSucceeded
+);
+const genericRecoveryCallsWithRevertData = genericRecoverySignatures.filter(
+  (signature) => Boolean(callProbes[signature].error?.revertData)
+);
+
 const normalUnsoldWithdrawalPresent = selectorScan["withdrawUnsoldTokens()"].presentInRuntimeBytecode;
+const normalUnsoldWithdrawalProbe = callProbes["withdrawUnsoldTokens()"];
 const normalUnsoldWithdrawalCanTargetExpectedToken =
   normalUnsoldWithdrawalPresent && linkedToken.toLowerCase() === expectedToken.toLowerCase();
+
+let conclusion;
+if (genericRecoveryCallsSucceeded.length > 0) {
+  conclusion = "At least one generic recovery call succeeded under eth_call. Verify exact deployed source and authorization before any transaction.";
+} else if (genericRecoverySelectorsPresent.length > 0 || genericRecoveryCallsWithRevertData.length > 0) {
+  conclusion = "At least one generic recovery candidate has bytecode or revert-data evidence, but none succeeded. Exact deployed source must be verified before concluding whether recovery is possible.";
+} else {
+  conclusion = "No scanned generic ERC-20 recovery candidate succeeded or produced supporting selector evidence. The normal unsold-token path cannot target the expected AETH because token() points elsewhere.";
+}
 
 console.log(JSON.stringify({
   checkedAt: new Date().toISOString(),
   chainId: network.chainId.toString(),
+  latestBlock: latestBlock.number,
   expectedToken,
   invalidPresale,
   runtimeBytecodeBytes: (code.length - 2) / 2,
@@ -116,11 +197,12 @@ console.log(JSON.stringify({
   cancelled,
   finalized,
   normalUnsoldWithdrawalPresent,
+  normalUnsoldWithdrawalProbe,
   normalUnsoldWithdrawalCanTargetExpectedToken,
   genericRecoverySelectorsPresent,
+  genericRecoveryCallsSucceeded,
+  genericRecoveryCallsWithRevertData,
   selectorScan,
-  conclusion:
-    genericRecoverySelectorsPresent.length > 0
-      ? "At least one candidate generic recovery selector is present; source/authorization must be verified before any transaction."
-      : "No scanned generic ERC-20 recovery selector is present. The normal unsold-token withdrawal cannot target the expected AETH because token() points elsewhere."
+  callProbes,
+  conclusion
 }, null, 2));
