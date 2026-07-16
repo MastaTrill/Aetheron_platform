@@ -9,6 +9,7 @@
     "test": "node --test test/*.test.js",
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-readonly.mjs",
+    "inspect:invalid-presale": "node scripts/inspect-invalid-presale-recovery.mjs",
     "deploy:presale": "node scripts/deploy-base-presale-safe.mjs",
     "deploy:base-presale:dry-run": "DRY_RUN=true node scripts/deploy-base-presale-safe.mjs",
     "cancel:invalid-base-presale": "node scripts/cancel-invalid-base-presale.mjs",
