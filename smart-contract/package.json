@@ -7,6 +7,8 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "node --test test/*.test.js",
+    "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
+    "verify:base:readonly": "node scripts/verify-base-readonly.mjs",
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
