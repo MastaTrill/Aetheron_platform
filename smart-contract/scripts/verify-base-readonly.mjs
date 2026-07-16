@@ -10,6 +10,7 @@ const deployment = JSON.parse(await fs.readFile(deploymentPath, "utf8"));
 const expectedTokenAddress = deployment?.contracts?.Aetheron?.address;
 const activePresaleAddress = deployment?.contracts?.Presale?.address;
 const invalidPresaleAddress = deployment?.contracts?.InvalidPresale?.address;
+const allowDisabledPresale = process.env.ALLOW_DISABLED_PRESALE === "true";
 
 if (!ethers.isAddress(expectedTokenAddress)) {
   throw new Error("presale-base.json contains an invalid AETH token address");
@@ -35,7 +36,8 @@ const PRESALE_ABI = [
   "function startTime() view returns (uint256)",
   "function endTime() view returns (uint256)",
   "function finalized() view returns (bool)",
-  "function cancelled() view returns (bool)"
+  "function cancelled() view returns (bool)",
+  "function refundsAvailable() view returns (bool)"
 ];
 
 const TOKEN_ABI = [
@@ -54,13 +56,36 @@ function requireCondition(condition, message) {
 }
 
 function isoTimestamp(value) {
+  if (value === null || value === undefined) return null;
   const number = Number(value);
   return Number.isSafeInteger(number) ? new Date(number * 1000).toISOString() : String(value);
+}
+
+function formatUnitsOrNull(value, decimals = 18) {
+  if (value === null || value === undefined) return null;
+  return ethers.formatUnits(value, decimals);
+}
+
+async function safeCall(contract, method, args = []) {
+  try {
+    return {
+      supported: true,
+      value: await contract[method](...args),
+      error: null
+    };
+  } catch (error) {
+    return {
+      supported: false,
+      value: null,
+      error: error.shortMessage || error.reason || error.message
+    };
+  }
 }
 
 async function inspectExpectedToken() {
   const code = await provider.getCode(expectedTokenAddress);
   requireCondition(code !== "0x", "No bytecode exists at the configured AETH token address");
+
   const token = new ethers.Contract(expectedTokenAddress, TOKEN_ABI, provider);
   const [name, symbol, decimals, totalSupply, owner, tradingEnabled] = await Promise.all([
     token.name(),
@@ -70,48 +95,38 @@ async function inspectExpectedToken() {
     token.owner(),
     token.tradingEnabled()
   ]);
+
   return { token, code, name, symbol, decimals, totalSupply, owner, tradingEnabled };
 }
 
 async function inspectPresale(address, expectedToken) {
   requireCondition(ethers.isAddress(address), "Presale address is invalid");
+
   const code = await provider.getCode(address);
   requireCondition(code !== "0x", `No bytecode exists at presale ${address}`);
   const presale = new ethers.Contract(address, PRESALE_ABI, provider);
 
-  const [
-    linkedToken,
-    treasury,
-    owner,
-    rate,
-    weiRaised,
-    tokensReserved,
-    softCap,
-    hardCap,
-    minContribution,
-    maxContribution,
-    startTime,
-    endTime,
-    finalized,
-    cancelled,
-    nativeBalance,
-    expectedTokenBalance,
-    expectedTokenTaxExcluded
-  ] = await Promise.all([
-    presale.token(),
-    presale.treasury(),
-    presale.owner(),
-    presale.rate(),
-    presale.weiRaised(),
-    presale.tokensReserved(),
-    presale.softCap(),
-    presale.hardCap(),
-    presale.minContribution(),
-    presale.maxContribution(),
-    presale.startTime(),
-    presale.endTime(),
-    presale.finalized(),
-    presale.cancelled(),
+  const fields = Object.fromEntries(await Promise.all([
+    "token",
+    "treasury",
+    "owner",
+    "rate",
+    "weiRaised",
+    "tokensReserved",
+    "softCap",
+    "hardCap",
+    "minContribution",
+    "maxContribution",
+    "startTime",
+    "endTime",
+    "finalized",
+    "cancelled",
+    "refundsAvailable"
+  ].map(async (method) => [method, await safeCall(presale, method)])));
+
+  requireCondition(fields.token.supported, "Presale does not expose token()");
+  const linkedToken = fields.token.value;
+  const [nativeBalance, expectedTokenBalance, expectedTokenTaxExcluded] = await Promise.all([
     provider.getBalance(address),
     expectedToken.token.balanceOf(address),
     expectedToken.token.isExcludedFromTax(address)
@@ -121,25 +136,36 @@ async function inspectPresale(address, expectedToken) {
   let linkedTokenMetadata = null;
   if (linkedTokenCode !== "0x") {
     const linkedTokenContract = new ethers.Contract(linkedToken, TOKEN_ABI, provider);
-    try {
-      const [name, symbol, decimals, balance] = await Promise.all([
-        linkedTokenContract.name(),
-        linkedTokenContract.symbol(),
-        linkedTokenContract.decimals(),
-        linkedTokenContract.balanceOf(address)
-      ]);
-      linkedTokenMetadata = {
-        name,
-        symbol,
-        decimals: Number(decimals),
-        presaleBalance: ethers.formatUnits(balance, decimals)
-      };
-    } catch (error) {
-      linkedTokenMetadata = { metadataReadError: error.shortMessage || error.message };
-    }
+    const [name, symbol, decimals, balance] = await Promise.all([
+      safeCall(linkedTokenContract, "name"),
+      safeCall(linkedTokenContract, "symbol"),
+      safeCall(linkedTokenContract, "decimals"),
+      safeCall(linkedTokenContract, "balanceOf", [address])
+    ]);
+
+    linkedTokenMetadata = {
+      name: name.value,
+      symbol: symbol.value,
+      decimals: decimals.value === null ? null : Number(decimals.value),
+      presaleBalance:
+        balance.value === null || decimals.value === null
+          ? null
+          : ethers.formatUnits(balance.value, decimals.value),
+      unsupportedCalls: Object.fromEntries(
+        Object.entries({ name, symbol, decimals, balanceOf: balance })
+          .filter(([, result]) => !result.supported)
+          .map(([key, result]) => [key, result.error])
+      )
+    };
   }
 
-  const now = BigInt((await provider.getBlock("latest")).timestamp);
+  const latestBlock = await provider.getBlock("latest");
+  const now = BigInt(latestBlock.timestamp);
+  const startTime = fields.startTime.value;
+  const endTime = fields.endTime.value;
+  const finalized = fields.finalized.value;
+  const cancelled = fields.cancelled.value;
+
   return {
     address,
     bytecodeBytes: (code.length - 2) / 2,
@@ -147,23 +173,35 @@ async function inspectPresale(address, expectedToken) {
     linkedTokenMatchesExpected: linkedToken.toLowerCase() === expectedTokenAddress.toLowerCase(),
     linkedTokenBytecodeBytes: linkedTokenCode === "0x" ? 0 : (linkedTokenCode.length - 2) / 2,
     linkedTokenMetadata,
-    owner,
-    treasury,
-    rate: rate.toString(),
-    weiRaised: ethers.formatEther(weiRaised),
+    owner: fields.owner.value,
+    treasury: fields.treasury.value,
+    rate: fields.rate.value === null ? null : fields.rate.value.toString(),
+    weiRaised: formatUnitsOrNull(fields.weiRaised.value),
     nativeBalance: ethers.formatEther(nativeBalance),
-    softCap: ethers.formatEther(softCap),
-    hardCap: ethers.formatEther(hardCap),
-    minContribution: ethers.formatEther(minContribution),
-    maxContribution: ethers.formatEther(maxContribution),
+    softCap: formatUnitsOrNull(fields.softCap.value),
+    hardCap: formatUnitsOrNull(fields.hardCap.value),
+    minContribution: formatUnitsOrNull(fields.minContribution.value),
+    maxContribution: formatUnitsOrNull(fields.maxContribution.value),
     startTime: isoTimestamp(startTime),
     endTime: isoTimestamp(endTime),
     finalized,
     cancelled,
-    saleLive: now >= startTime && now <= endTime && !finalized && !cancelled,
-    tokensReserved: ethers.formatUnits(tokensReserved, expectedToken.decimals),
+    refundsAvailable: fields.refundsAvailable.value,
+    saleLive:
+      startTime !== null &&
+      endTime !== null &&
+      finalized !== null &&
+      cancelled !== null
+        ? now >= startTime && now <= endTime && !finalized && !cancelled
+        : null,
+    tokensReserved: formatUnitsOrNull(fields.tokensReserved.value, expectedToken.decimals),
     expectedTokenBalance: ethers.formatUnits(expectedTokenBalance, expectedToken.decimals),
-    expectedTokenTaxExcluded
+    expectedTokenTaxExcluded,
+    unsupportedCalls: Object.fromEntries(
+      Object.entries(fields)
+        .filter(([, result]) => !result.supported)
+        .map(([method, result]) => [method, result.error])
+    )
   };
 }
 
@@ -189,28 +227,45 @@ if (!ethers.isAddress(activePresaleAddress)) {
     ? await inspectPresale(invalidPresaleAddress, expectedToken)
     : null;
 
-  console.log(JSON.stringify({
+  requireCondition(invalidPresale, "No active presale and no invalid presale evidence is recorded");
+  requireCondition(
+    !invalidPresale.linkedTokenMatchesExpected,
+    "Deployment is marked invalid, but the recorded presale now links to the expected token"
+  );
+  requireCondition(deployment.launchable === false, "Disabled deployment record must set launchable=false");
+
+  const report = {
     checkedAt: new Date().toISOString(),
     rpcUrl,
     chainId: network.chainId.toString(),
     latestBlock: latestBlock.number,
     latestBlockTime: isoTimestamp(latestBlock.timestamp),
     deploymentStatus: deployment.status,
-    launchable: false,
+    launchReady: false,
+    safeDisabledState: true,
     token: tokenReport,
     invalidPresale
-  }, null, 2));
+  };
+  console.log(JSON.stringify(report, null, 2));
 
-  throw new Error("No valid active Base presale is configured. The replacement deployment is still required.");
+  if (allowDisabledPresale) {
+    console.log("SAFE_DISABLED_STATE: invalid presale is documented and no active frontend presale is configured.");
+    process.exit(0);
+  }
+
+  throw new Error("No valid active Base presale is configured. Replacement deployment is required.");
 }
 
 const presale = await inspectPresale(activePresaleAddress, expectedToken);
 requireCondition(presale.linkedTokenMatchesExpected, "Presale token() does not match the configured Base AETH token");
-requireCondition(BigInt(presale.rate) > 0n, "Presale rate must be positive");
+requireCondition(presale.rate !== null && BigInt(presale.rate) > 0n, "Presale rate must be positive");
+requireCondition(presale.softCap !== null && presale.hardCap !== null, "Presale cap getters are required");
 requireCondition(Number(presale.softCap) > 0 && Number(presale.softCap) <= Number(presale.hardCap), "Presale cap configuration is invalid");
+requireCondition(presale.minContribution !== null && presale.maxContribution !== null, "Contribution limit getters are required");
 requireCondition(Number(presale.minContribution) > 0 && Number(presale.minContribution) <= Number(presale.maxContribution), "Contribution limits are invalid");
-requireCondition(Number(presale.weiRaised) <= Number(presale.hardCap), "weiRaised exceeds the configured hard cap");
+requireCondition(presale.weiRaised !== null && Number(presale.weiRaised) <= Number(presale.hardCap), "weiRaised exceeds the configured hard cap");
 requireCondition(presale.expectedTokenTaxExcluded, "Presale address is not excluded from AETH transfer tax");
+requireCondition(presale.tokensReserved !== null, "Active presale must expose tokensReserved()");
 
 const inventoryUnits = ethers.parseUnits(presale.expectedTokenBalance, expectedToken.decimals);
 const reservedUnits = ethers.parseUnits(presale.tokensReserved, expectedToken.decimals);
@@ -229,7 +284,8 @@ console.log(JSON.stringify({
   latestBlock: latestBlock.number,
   latestBlockTime: isoTimestamp(latestBlock.timestamp),
   deploymentStatus: deployment.status,
-  launchable: deployment.launchable !== false && fullyFundedForHardCap,
+  launchReady: deployment.launchable !== false && fullyFundedForHardCap,
+  safeDisabledState: false,
   token: tokenReport,
   presale: {
     ...presale,
