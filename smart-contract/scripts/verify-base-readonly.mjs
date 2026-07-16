@@ -7,11 +7,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const deploymentPath = resolve(__dirname, "../deployments/presale-base.json");
 const deployment = JSON.parse(await fs.readFile(deploymentPath, "utf8"));
 
-const tokenAddress = deployment?.contracts?.Aetheron?.address;
-const presaleAddress = deployment?.contracts?.Presale?.address;
+const expectedTokenAddress = deployment?.contracts?.Aetheron?.address;
+const activePresaleAddress = deployment?.contracts?.Presale?.address;
+const invalidPresaleAddress = deployment?.contracts?.InvalidPresale?.address;
 
-if (!ethers.isAddress(tokenAddress) || !ethers.isAddress(presaleAddress)) {
-  throw new Error("presale-base.json contains an invalid token or presale address");
+if (!ethers.isAddress(expectedTokenAddress)) {
+  throw new Error("presale-base.json contains an invalid AETH token address");
 }
 
 const rpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
@@ -57,134 +58,190 @@ function isoTimestamp(value) {
   return Number.isSafeInteger(number) ? new Date(number * 1000).toISOString() : String(value);
 }
 
+async function inspectExpectedToken() {
+  const code = await provider.getCode(expectedTokenAddress);
+  requireCondition(code !== "0x", "No bytecode exists at the configured AETH token address");
+  const token = new ethers.Contract(expectedTokenAddress, TOKEN_ABI, provider);
+  const [name, symbol, decimals, totalSupply, owner, tradingEnabled] = await Promise.all([
+    token.name(),
+    token.symbol(),
+    token.decimals(),
+    token.totalSupply(),
+    token.owner(),
+    token.tradingEnabled()
+  ]);
+  return { token, code, name, symbol, decimals, totalSupply, owner, tradingEnabled };
+}
+
+async function inspectPresale(address, expectedToken) {
+  requireCondition(ethers.isAddress(address), "Presale address is invalid");
+  const code = await provider.getCode(address);
+  requireCondition(code !== "0x", `No bytecode exists at presale ${address}`);
+  const presale = new ethers.Contract(address, PRESALE_ABI, provider);
+
+  const [
+    linkedToken,
+    treasury,
+    owner,
+    rate,
+    weiRaised,
+    tokensReserved,
+    softCap,
+    hardCap,
+    minContribution,
+    maxContribution,
+    startTime,
+    endTime,
+    finalized,
+    cancelled,
+    nativeBalance,
+    expectedTokenBalance,
+    expectedTokenTaxExcluded
+  ] = await Promise.all([
+    presale.token(),
+    presale.treasury(),
+    presale.owner(),
+    presale.rate(),
+    presale.weiRaised(),
+    presale.tokensReserved(),
+    presale.softCap(),
+    presale.hardCap(),
+    presale.minContribution(),
+    presale.maxContribution(),
+    presale.startTime(),
+    presale.endTime(),
+    presale.finalized(),
+    presale.cancelled(),
+    provider.getBalance(address),
+    expectedToken.token.balanceOf(address),
+    expectedToken.token.isExcludedFromTax(address)
+  ]);
+
+  const linkedTokenCode = await provider.getCode(linkedToken);
+  let linkedTokenMetadata = null;
+  if (linkedTokenCode !== "0x") {
+    const linkedTokenContract = new ethers.Contract(linkedToken, TOKEN_ABI, provider);
+    try {
+      const [name, symbol, decimals, balance] = await Promise.all([
+        linkedTokenContract.name(),
+        linkedTokenContract.symbol(),
+        linkedTokenContract.decimals(),
+        linkedTokenContract.balanceOf(address)
+      ]);
+      linkedTokenMetadata = {
+        name,
+        symbol,
+        decimals: Number(decimals),
+        presaleBalance: ethers.formatUnits(balance, decimals)
+      };
+    } catch (error) {
+      linkedTokenMetadata = { metadataReadError: error.shortMessage || error.message };
+    }
+  }
+
+  const now = BigInt((await provider.getBlock("latest")).timestamp);
+  return {
+    address,
+    bytecodeBytes: (code.length - 2) / 2,
+    linkedToken,
+    linkedTokenMatchesExpected: linkedToken.toLowerCase() === expectedTokenAddress.toLowerCase(),
+    linkedTokenBytecodeBytes: linkedTokenCode === "0x" ? 0 : (linkedTokenCode.length - 2) / 2,
+    linkedTokenMetadata,
+    owner,
+    treasury,
+    rate: rate.toString(),
+    weiRaised: ethers.formatEther(weiRaised),
+    nativeBalance: ethers.formatEther(nativeBalance),
+    softCap: ethers.formatEther(softCap),
+    hardCap: ethers.formatEther(hardCap),
+    minContribution: ethers.formatEther(minContribution),
+    maxContribution: ethers.formatEther(maxContribution),
+    startTime: isoTimestamp(startTime),
+    endTime: isoTimestamp(endTime),
+    finalized,
+    cancelled,
+    saleLive: now >= startTime && now <= endTime && !finalized && !cancelled,
+    tokensReserved: ethers.formatUnits(tokensReserved, expectedToken.decimals),
+    expectedTokenBalance: ethers.formatUnits(expectedTokenBalance, expectedToken.decimals),
+    expectedTokenTaxExcluded
+  };
+}
+
 const network = await provider.getNetwork();
 requireCondition(network.chainId === 8453n, `Expected Base chain 8453, received ${network.chainId}`);
+const latestBlock = await provider.getBlock("latest");
+requireCondition(latestBlock, "Unable to read latest Base block");
 
-const [tokenCode, presaleCode, block] = await Promise.all([
-  provider.getCode(tokenAddress),
-  provider.getCode(presaleAddress),
-  provider.getBlock("latest")
-]);
-requireCondition(tokenCode !== "0x", "No bytecode exists at the configured AETH token address");
-requireCondition(presaleCode !== "0x", "No bytecode exists at the configured presale address");
-requireCondition(block, "Unable to read latest Base block");
+const expectedToken = await inspectExpectedToken();
+const tokenReport = {
+  address: expectedTokenAddress,
+  bytecodeBytes: (expectedToken.code.length - 2) / 2,
+  name: expectedToken.name,
+  symbol: expectedToken.symbol,
+  decimals: Number(expectedToken.decimals),
+  totalSupply: ethers.formatUnits(expectedToken.totalSupply, expectedToken.decimals),
+  owner: expectedToken.owner,
+  tradingEnabled: expectedToken.tradingEnabled
+};
 
-const presale = new ethers.Contract(presaleAddress, PRESALE_ABI, provider);
-const token = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
+if (!ethers.isAddress(activePresaleAddress)) {
+  const invalidPresale = ethers.isAddress(invalidPresaleAddress)
+    ? await inspectPresale(invalidPresaleAddress, expectedToken)
+    : null;
 
-const [
-  linkedToken,
-  treasury,
-  presaleOwner,
-  rate,
-  weiRaised,
-  tokensReserved,
-  softCap,
-  hardCap,
-  minContribution,
-  maxContribution,
-  startTime,
-  endTime,
-  finalized,
-  cancelled,
-  presaleEthBalance,
-  tokenName,
-  tokenSymbol,
-  tokenDecimals,
-  totalSupply,
-  tokenOwner,
-  presaleTokenBalance,
-  presaleTaxExcluded,
-  tradingEnabled
-] = await Promise.all([
-  presale.token(),
-  presale.treasury(),
-  presale.owner(),
-  presale.rate(),
-  presale.weiRaised(),
-  presale.tokensReserved(),
-  presale.softCap(),
-  presale.hardCap(),
-  presale.minContribution(),
-  presale.maxContribution(),
-  presale.startTime(),
-  presale.endTime(),
-  presale.finalized(),
-  presale.cancelled(),
-  provider.getBalance(presaleAddress),
-  token.name(),
-  token.symbol(),
-  token.decimals(),
-  token.totalSupply(),
-  token.owner(),
-  token.balanceOf(presaleAddress),
-  token.isExcludedFromTax(presaleAddress),
-  token.tradingEnabled()
-]);
+  console.log(JSON.stringify({
+    checkedAt: new Date().toISOString(),
+    rpcUrl,
+    chainId: network.chainId.toString(),
+    latestBlock: latestBlock.number,
+    latestBlockTime: isoTimestamp(latestBlock.timestamp),
+    deploymentStatus: deployment.status,
+    launchable: false,
+    token: tokenReport,
+    invalidPresale
+  }, null, 2));
 
-requireCondition(linkedToken.toLowerCase() === tokenAddress.toLowerCase(), "Presale token() does not match presale-base.json");
-requireCondition(rate > 0n, "Presale rate must be positive");
-requireCondition(softCap > 0n && softCap <= hardCap, "Presale cap configuration is invalid");
-requireCondition(minContribution > 0n && minContribution <= maxContribution, "Contribution limits are invalid");
-requireCondition(startTime < endTime, "Presale schedule is invalid");
-requireCondition(weiRaised <= hardCap, "weiRaised exceeds the configured hard cap");
-requireCondition(presaleTokenBalance >= tokensReserved, "AETH inventory is below reserved-token liabilities");
-requireCondition(presaleTaxExcluded, "Presale address is not excluded from AETH transfer tax");
+  throw new Error("No valid active Base presale is configured. The replacement deployment is still required.");
+}
 
-const remainingWeiCapacity = hardCap > weiRaised ? hardCap - weiRaised : 0n;
-const tokensNeededForFullHardCap = remainingWeiCapacity * rate;
-const unreservedInventory = presaleTokenBalance - tokensReserved;
+const presale = await inspectPresale(activePresaleAddress, expectedToken);
+requireCondition(presale.linkedTokenMatchesExpected, "Presale token() does not match the configured Base AETH token");
+requireCondition(BigInt(presale.rate) > 0n, "Presale rate must be positive");
+requireCondition(Number(presale.softCap) > 0 && Number(presale.softCap) <= Number(presale.hardCap), "Presale cap configuration is invalid");
+requireCondition(Number(presale.minContribution) > 0 && Number(presale.minContribution) <= Number(presale.maxContribution), "Contribution limits are invalid");
+requireCondition(Number(presale.weiRaised) <= Number(presale.hardCap), "weiRaised exceeds the configured hard cap");
+requireCondition(presale.expectedTokenTaxExcluded, "Presale address is not excluded from AETH transfer tax");
+
+const inventoryUnits = ethers.parseUnits(presale.expectedTokenBalance, expectedToken.decimals);
+const reservedUnits = ethers.parseUnits(presale.tokensReserved, expectedToken.decimals);
+requireCondition(inventoryUnits >= reservedUnits, "AETH inventory is below reserved-token liabilities");
+const hardCapUnits = ethers.parseEther(presale.hardCap);
+const raisedUnits = ethers.parseEther(presale.weiRaised);
+const remainingWeiCapacity = hardCapUnits > raisedUnits ? hardCapUnits - raisedUnits : 0n;
+const tokensNeededForFullHardCap = remainingWeiCapacity * BigInt(presale.rate);
+const unreservedInventory = inventoryUnits - reservedUnits;
 const fullyFundedForHardCap = unreservedInventory >= tokensNeededForFullHardCap;
-const now = BigInt(block.timestamp);
-const saleLive = now >= startTime && now <= endTime && !finalized && !cancelled;
 
-const report = {
+console.log(JSON.stringify({
   checkedAt: new Date().toISOString(),
   rpcUrl,
   chainId: network.chainId.toString(),
-  latestBlock: block.number,
-  latestBlockTime: isoTimestamp(block.timestamp),
-  contracts: {
-    token: {
-      address: tokenAddress,
-      bytecodeBytes: (tokenCode.length - 2) / 2,
-      name: tokenName,
-      symbol: tokenSymbol,
-      decimals: Number(tokenDecimals),
-      totalSupply: ethers.formatUnits(totalSupply, tokenDecimals),
-      owner: tokenOwner,
-      tradingEnabled
-    },
-    presale: {
-      address: presaleAddress,
-      bytecodeBytes: (presaleCode.length - 2) / 2,
-      linkedToken,
-      owner: presaleOwner,
-      treasury,
-      rate: rate.toString(),
-      weiRaised: ethers.formatEther(weiRaised),
-      nativeBalance: ethers.formatEther(presaleEthBalance),
-      softCap: ethers.formatEther(softCap),
-      hardCap: ethers.formatEther(hardCap),
-      minContribution: ethers.formatEther(minContribution),
-      maxContribution: ethers.formatEther(maxContribution),
-      startTime: isoTimestamp(startTime),
-      endTime: isoTimestamp(endTime),
-      finalized,
-      cancelled,
-      saleLive,
-      tokensReserved: ethers.formatUnits(tokensReserved, tokenDecimals),
-      tokenInventory: ethers.formatUnits(presaleTokenBalance, tokenDecimals),
-      unreservedInventory: ethers.formatUnits(unreservedInventory, tokenDecimals),
-      tokensNeededForFullHardCap: ethers.formatUnits(tokensNeededForFullHardCap, tokenDecimals),
-      fullyFundedForHardCap,
-      taxExcluded: presaleTaxExcluded
-    }
+  latestBlock: latestBlock.number,
+  latestBlockTime: isoTimestamp(latestBlock.timestamp),
+  deploymentStatus: deployment.status,
+  launchable: deployment.launchable !== false && fullyFundedForHardCap,
+  token: tokenReport,
+  presale: {
+    ...presale,
+    unreservedInventory: ethers.formatUnits(unreservedInventory, expectedToken.decimals),
+    tokensNeededForFullHardCap: ethers.formatUnits(tokensNeededForFullHardCap, expectedToken.decimals),
+    fullyFundedForHardCap
   }
-};
-
-console.log(JSON.stringify(report, null, 2));
+}, null, 2));
 
 if (!fullyFundedForHardCap) {
-  throw new Error("Presale is solvent for current reservations but does not hold enough unreserved AETH to fill the remaining hard cap");
+  throw new Error("Presale is solvent for current reservations but is not funded for the remaining hard cap");
+}
+if (deployment.launchable === false) {
+  throw new Error("Deployment record is explicitly marked non-launchable");
 }
