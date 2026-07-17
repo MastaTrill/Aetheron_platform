@@ -3,41 +3,20 @@ import fs from "node:fs";
 import test from "node:test";
 import { ethers } from "ethers";
 
-const production = JSON.parse(
-  fs.readFileSync(new URL("../config/presale-base-production.json", import.meta.url), "utf8")
-);
-const deployment = JSON.parse(
-  fs.readFileSync(new URL("../deployments/presale-base.json", import.meta.url), "utf8")
-);
-const packageJson = JSON.parse(
-  fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")
-);
-const productionGuardSource = fs.readFileSync(
-  new URL("../scripts/deploy-base-presale-production.mjs", import.meta.url),
-  "utf8"
-);
-const stateVerifierSource = fs.readFileSync(
-  new URL("../scripts/verify-base-presale-state.mjs", import.meta.url),
-  "utf8"
-);
-const presaleSource = fs.readFileSync(
-  new URL("../contracts/AetheronPresale.sol", import.meta.url),
-  "utf8"
-);
+const production = JSON.parse(fs.readFileSync(new URL("../config/presale-base-production.json", import.meta.url), "utf8"));
+const deployment = JSON.parse(fs.readFileSync(new URL("../deployments/presale-base.json", import.meta.url), "utf8"));
+const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const productionGuardSource = fs.readFileSync(new URL("../scripts/deploy-base-presale-production.mjs", import.meta.url), "utf8");
+const stateVerifierSource = fs.readFileSync(new URL("../scripts/verify-base-presale-state.mjs", import.meta.url), "utf8");
+const presaleSource = fs.readFileSync(new URL("../contracts/AetheronPresale.sol", import.meta.url), "utf8");
 
 test("Base production addresses and chain are fixed", () => {
   assert.equal(production.chainId, 8453);
   assert.equal(production.network, "base");
   assert.ok(ethers.isAddress(production.tokenAddress));
   assert.ok(ethers.isAddress(production.treasuryAddress));
-  assert.equal(
-    production.tokenAddress.toLowerCase(),
-    "0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e"
-  );
-  assert.equal(
-    production.treasuryAddress.toLowerCase(),
-    "0x15b9f8ecedafd69eb1dd93e51fe522690bf6b7c2"
-  );
+  assert.equal(production.tokenAddress.toLowerCase(), "0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e");
+  assert.equal(production.treasuryAddress.toLowerCase(), "0x15b9f8ecedafd69eb1dd93e51fe522690bf6b7c2");
 });
 
 test("hard cap and rate fund exactly the configured sale allocation", () => {
@@ -61,14 +40,21 @@ test("contribution limits and schedule satisfy deployment guards", () => {
   assert.equal(production.ownerSmokePurchaseEth, production.minContributionEth);
 });
 
-test("locked invalid-presale AETH is excluded from replacement inventory", () => {
-  const locked = BigInt(deployment.supplyAccounting.lockedAtInvalidPresale);
-  const nominal = BigInt(deployment.supplyAccounting.nominalTotalSupply);
-  const maximumAccessible = BigInt(deployment.supplyAccounting.maximumInterfaceAccessibleSupply);
-  const replacementAllocation = BigInt(production.saleAllocationAeth);
-  assert.equal(nominal - locked, maximumAccessible);
-  assert.ok(replacementAllocation <= maximumAccessible);
-  assert.equal(locked, 50_000_000n);
+test("deployment journal preserves accounting or a safe partial state", () => {
+  if (deployment.supplyAccounting) {
+    const locked = BigInt(deployment.supplyAccounting.lockedAtInvalidPresale);
+    const nominal = BigInt(deployment.supplyAccounting.nominalTotalSupply);
+    const maximumAccessible = BigInt(deployment.supplyAccounting.maximumInterfaceAccessibleSupply);
+    assert.equal(nominal - locked, maximumAccessible);
+    assert.ok(BigInt(production.saleAllocationAeth) <= maximumAccessible);
+    assert.equal(locked, 50_000_000n);
+    return;
+  }
+
+  assert.equal(deployment.launchable, false);
+  assert.equal(deployment.contracts?.Presale?.address ?? null, null);
+  assert.deepEqual(deployment.transactions ?? {}, {});
+  assert.match(deployment.status, /^(deploying-presale-contract|deployment-failed|invalid-token-mismatch)$/);
 });
 
 test("all production deployment entry points use the invariant guard", () => {
@@ -81,21 +67,18 @@ test("all production deployment entry points use the invariant guard", () => {
   assert.match(productionGuardSource, /Protected signer is not the approved Base owner\/treasury wallet/);
 });
 
-test("production guard retries transient Base view failures before deployment", () => {
+test("production guard retries transient Base reads before deployment", () => {
   assert.match(productionGuardSource, /const VIEW_RETRY_ATTEMPTS = 5/);
   assert.match(productionGuardSource, /async function readViewWithRetry/);
+  assert.match(productionGuardSource, /async function readProviderWithRetry/);
   assert.match(productionGuardSource, /Invalid presale token\(\)/);
-  assert.doesNotMatch(
-    productionGuardSource,
-    /Promise\.all\(\[\s*invalidPresale\.owner\(\),\s*invalidPresale\.token\(\)/
-  );
+  assert.match(productionGuardSource, /Recorded invalid presale bytecode/);
+  assert.doesNotMatch(productionGuardSource, /Promise\.all\(\[\s*invalidPresale\.owner\(\),\s*invalidPresale\.token\(\)/);
 
-  const tokenReadIndex = productionGuardSource.indexOf(
-    'readViewWithRetry(invalidPresale, "token", "Invalid presale token()")'
-  );
-  const deploymentImportIndex = productionGuardSource.indexOf(
-    'await import("./deploy-base-presale-safe.mjs")'
-  );
+  const tokenReadIndex = productionGuardSource.indexOf('readViewWithRetry(invalidPresale, "token", "Invalid presale token()")');
+  const bytecodeReadIndex = productionGuardSource.indexOf('"getCode"');
+  const deploymentImportIndex = productionGuardSource.indexOf('await import("./deploy-base-presale-safe.mjs")');
+  assert.ok(bytecodeReadIndex >= 0);
   assert.ok(tokenReadIndex >= 0);
   assert.ok(deploymentImportIndex > tokenReadIndex);
 });

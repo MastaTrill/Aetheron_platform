@@ -69,6 +69,7 @@ jobs:
     env:
       BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
       BASE_FORK_RPC_URL: ${{ secrets.BASE_FORK_RPC_URL || secrets.BASE_RPC_URL }}
+      NODE_OPTIONS: "--max-old-space-size=5120"
 
     steps:
       - name: Check out main
