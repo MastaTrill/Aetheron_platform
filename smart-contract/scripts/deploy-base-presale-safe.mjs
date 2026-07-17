@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import { ethers } from "ethers";
 import dotenv from "dotenv";
+import {
+  callViewWithRetry,
+  providerReadWithRetry,
+  readWithRetry
+} from "./lib/base-read-retry.mjs";
 
 dotenv.config({ override: true });
 
@@ -62,16 +67,34 @@ const TOKEN_ABI = [
 ];
 
 const token = new ethers.Contract(tokenAddress, TOKEN_ABI, wallet);
-const network = await provider.getNetwork();
+const network = await readWithRetry(
+  () => provider.getNetwork(),
+  "Base network",
+  { validate: (value) => value?.chainId !== undefined }
+);
 requireCondition(network.chainId === EXPECTED_CHAIN_ID, `Expected Base chain 8453, received ${network.chainId}`);
-requireCondition((await provider.getCode(tokenAddress)) !== "0x", "Configured AETH token has no Base bytecode");
+await providerReadWithRetry(
+  provider,
+  "getCode",
+  [tokenAddress],
+  "Configured AETH bytecode",
+  { validate: (value) => typeof value === "string" && value !== "0x" }
+);
 
-const [tokenOwner, tokenDecimals, walletTokenBalance, walletEthBalance] = await Promise.all([
-  token.owner(),
-  token.decimals(),
-  token.balanceOf(wallet.address),
-  provider.getBalance(wallet.address)
-]);
+const tokenOwner = await callViewWithRetry(token, "owner", [], "AETH owner()");
+const tokenDecimals = await callViewWithRetry(token, "decimals", [], "AETH decimals()");
+const walletTokenBalance = await callViewWithRetry(
+  token,
+  "balanceOf",
+  [wallet.address],
+  "Deployment wallet AETH balance"
+);
+const walletEthBalance = await providerReadWithRetry(
+  provider,
+  "getBalance",
+  [wallet.address],
+  "Deployment wallet Base ETH balance"
+);
 
 requireCondition(tokenOwner.toLowerCase() === wallet.address.toLowerCase(), "Deployment wallet is not the AETH token owner");
 requireCondition(walletEthBalance > 0n, "Deployment wallet has no Base ETH for gas");
@@ -170,7 +193,13 @@ const deploymentReceipt = await deploymentTransaction.wait();
 const presaleAddress = await presale.getAddress();
 
 requireCondition(presaleAddress.toLowerCase() !== INVALID_PRESALE.toLowerCase(), "Unexpected reuse of invalid presale address");
-requireCondition((await provider.getCode(presaleAddress)) !== "0x", "Corrected presale deployment has no bytecode");
+await providerReadWithRetry(
+  provider,
+  "getCode",
+  [presaleAddress],
+  "Corrected presale bytecode",
+  { validate: (value) => typeof value === "string" && value !== "0x" }
+);
 
 deployment.contracts.Presale = {
   address: presaleAddress,
@@ -188,7 +217,13 @@ console.log("Excluding corrected presale from AETH tax...");
 const taxTransaction = await token.setExcludedFromTax(presaleAddress, true);
 const taxReceipt = await taxTransaction.wait();
 requireCondition(taxReceipt.status === 1, "AETH tax-exclusion transaction failed");
-requireCondition(await token.isExcludedFromTax(presaleAddress), "Corrected presale was not excluded from tax");
+const taxExcluded = await callViewWithRetry(
+  token,
+  "isExcludedFromTax",
+  [presaleAddress],
+  "Corrected presale tax exclusion"
+);
+requireCondition(taxExcluded, "Corrected presale was not excluded from tax");
 deployment.transactions.excludeFromTax = {
   hash: taxTransaction.hash,
   blockNumber: taxReceipt.blockNumber,
@@ -200,7 +235,12 @@ console.log(`Funding corrected presale with ${ethers.formatUnits(fundingAmount, 
 const fundingTransaction = await token.transfer(presaleAddress, fundingAmount);
 const fundingReceipt = await fundingTransaction.wait();
 requireCondition(fundingReceipt.status === 1, "AETH funding transaction failed");
-const inventory = await token.balanceOf(presaleAddress);
+const inventory = await callViewWithRetry(
+  token,
+  "balanceOf",
+  [presaleAddress],
+  "Corrected presale AETH inventory"
+);
 requireCondition(inventory === fundingAmount, "Corrected presale inventory does not exactly match the required hard-cap funding");
 deployment.transactions.fund = {
   hash: fundingTransaction.hash,
@@ -213,37 +253,35 @@ deployment.inventory = {
 };
 persistDeployment("presale-funded-pending-state-verification");
 
-const [
-  presaleOwner,
-  linkedToken,
-  linkedTreasury,
-  onChainRate,
-  onChainSoftCap,
-  onChainHardCap,
-  onChainMinContribution,
-  onChainMaxContribution,
-  onChainStartTime,
-  onChainEndTime,
-  weiRaised,
-  tokensReserved,
-  cancelled,
-  finalized
-] = await Promise.all([
-  presale.owner(),
-  presale.token(),
-  presale.treasury(),
-  presale.rate(),
-  presale.softCap(),
-  presale.hardCap(),
-  presale.minContribution(),
-  presale.maxContribution(),
-  presale.startTime(),
-  presale.endTime(),
-  presale.weiRaised(),
-  presale.tokensReserved(),
-  presale.cancelled(),
-  presale.finalized()
-]);
+const presaleOwner = await callViewWithRetry(presale, "owner", [], "New presale owner()");
+const linkedToken = await callViewWithRetry(presale, "token", [], "New presale token()");
+const linkedTreasury = await callViewWithRetry(presale, "treasury", [], "New presale treasury()");
+const onChainRate = await callViewWithRetry(presale, "rate", [], "New presale rate()");
+const onChainSoftCap = await callViewWithRetry(presale, "softCap", [], "New presale softCap()");
+const onChainHardCap = await callViewWithRetry(presale, "hardCap", [], "New presale hardCap()");
+const onChainMinContribution = await callViewWithRetry(
+  presale,
+  "minContribution",
+  [],
+  "New presale minContribution()"
+);
+const onChainMaxContribution = await callViewWithRetry(
+  presale,
+  "maxContribution",
+  [],
+  "New presale maxContribution()"
+);
+const onChainStartTime = await callViewWithRetry(presale, "startTime", [], "New presale startTime()");
+const onChainEndTime = await callViewWithRetry(presale, "endTime", [], "New presale endTime()");
+const weiRaised = await callViewWithRetry(presale, "weiRaised", [], "New presale weiRaised()");
+const tokensReserved = await callViewWithRetry(
+  presale,
+  "tokensReserved",
+  [],
+  "New presale tokensReserved()"
+);
+const cancelled = await callViewWithRetry(presale, "cancelled", [], "New presale cancelled()");
+const finalized = await callViewWithRetry(presale, "finalized", [], "New presale finalized()");
 
 requireCondition(presaleOwner.toLowerCase() === wallet.address.toLowerCase(), "New presale owner is incorrect");
 requireCondition(linkedToken.toLowerCase() === tokenAddress.toLowerCase(), "New presale token linkage is incorrect");
