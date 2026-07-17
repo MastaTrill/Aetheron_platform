@@ -2,6 +2,11 @@ import fs from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ethers } from "ethers";
+import {
+  callViewWithRetry,
+  providerReadWithRetry,
+  readWithRetry
+} from "./lib/base-read-retry.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const deployment = JSON.parse(
@@ -21,13 +26,24 @@ const provider = new ethers.JsonRpcProvider(
   { staticNetwork: true, batchMaxCount: 1 }
 );
 
-const network = await provider.getNetwork();
+const network = await readWithRetry(
+  () => provider.getNetwork(),
+  "Base network",
+  { validate: (value) => value?.chainId !== undefined }
+);
 if (network.chainId !== 8453n) {
   throw new Error(`Expected Base chain 8453, received ${network.chainId}`);
 }
 
-const code = (await provider.getCode(invalidPresale)).toLowerCase();
-if (code === "0x") throw new Error("Invalid presale has no deployed bytecode");
+const code = (
+  await providerReadWithRetry(
+    provider,
+    "getCode",
+    [invalidPresale],
+    "Invalid presale bytecode",
+    { validate: (value) => typeof value === "string" && value !== "0x" }
+  )
+).toLowerCase();
 
 const candidateSignatures = [
   "buyTokens()",
@@ -83,21 +99,39 @@ const TOKEN_ABI = [
 
 const presale = new ethers.Contract(invalidPresale, PRESALE_ABI, provider);
 const token = new ethers.Contract(expectedToken, TOKEN_ABI, provider);
-const latestBlock = await provider.getBlock("latest");
-if (!latestBlock) throw new Error("Unable to read latest Base block");
+const latestBlock = await providerReadWithRetry(
+  provider,
+  "getBlock",
+  ["latest"],
+  "Latest Base block",
+  { validate: Boolean }
+);
 
-const [linkedToken, owner, weiRaised, cancelled, finalized, expectedTokenBalance, decimals, nativeBalance] =
-  await Promise.all([
-    presale.token(),
-    presale.owner(),
-    presale.weiRaised(),
-    presale.cancelled(),
-    presale.finalized(),
-    token.balanceOf(invalidPresale),
-    token.decimals(),
-    provider.getBalance(invalidPresale)
-  ]);
-const linkedTokenCode = await provider.getCode(linkedToken);
+const linkedToken = await callViewWithRetry(presale, "token", [], "Invalid presale token()");
+const owner = await callViewWithRetry(presale, "owner", [], "Invalid presale owner()");
+const weiRaised = await callViewWithRetry(presale, "weiRaised", [], "Invalid presale weiRaised()");
+const cancelled = await callViewWithRetry(presale, "cancelled", [], "Invalid presale cancelled()");
+const finalized = await callViewWithRetry(presale, "finalized", [], "Invalid presale finalized()");
+const expectedTokenBalance = await callViewWithRetry(
+  token,
+  "balanceOf",
+  [invalidPresale],
+  "Locked AETH balance"
+);
+const decimals = await callViewWithRetry(token, "decimals", [], "AETH decimals()");
+const nativeBalance = await providerReadWithRetry(
+  provider,
+  "getBalance",
+  [invalidPresale],
+  "Invalid presale native balance"
+);
+const linkedTokenCode = await providerReadWithRetry(
+  provider,
+  "getCode",
+  [linkedToken],
+  "Linked token bytecode",
+  { validate: (value) => typeof value === "string" }
+);
 
 function probeArgs(signature) {
   if (signature.includes("(address,address,uint256)")) return [expectedToken, owner, 0n];
@@ -139,7 +173,11 @@ async function probeSignature(signature) {
   if (signature === "buyTokens()") transaction.value = 0n;
 
   try {
-    const output = await provider.call(transaction);
+    const output = await readWithRetry(
+      () => provider.call(transaction),
+      `${signature} eth_call`,
+      { validate: (value) => typeof value === "string" }
+    );
     return {
       ethCallSucceeded: true,
       output,
