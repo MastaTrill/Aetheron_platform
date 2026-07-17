@@ -51,5 +51,12 @@ export function callViewWithRetry(contract, method, args = [], label = `${method
 }
 
 export function providerReadWithRetry(provider, method, args = [], label = method, options = {}) {
-  return readWithRetry(() => provider[method](...args), label, options);
+  const deployerGasBalanceRead =
+    method === "getBalance" && label === "Deployment wallet Base ETH balance";
+  const effectiveOptions =
+    deployerGasBalanceRead && options.validate === undefined
+      ? { ...options, validate: (value) => typeof value === "bigint" && value > 0n }
+      : options;
+
+  return readWithRetry(() => provider[method](...args), label, effectiveOptions);
 }
