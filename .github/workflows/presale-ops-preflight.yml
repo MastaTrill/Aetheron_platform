@@ -41,15 +41,16 @@ jobs:
           TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
         run: |
           missing=0
-          if [ -z "$BASE_RPC_URL" ]; then echo "Missing: BASE_RPC_URL"; missing=1; fi
-          if [ -z "$PRIVATE_KEY" ]; then echo "Missing: BASE_DEPLOYER_PRIVATE_KEY"; missing=1; fi
-          if [ -z "$TREASURY_ADDRESS" ]; then echo "Missing: PRESALE_TREASURY_ADDRESS"; missing=1; fi
+          : > secret-readiness.log
+          if [ -z "$BASE_RPC_URL" ]; then echo "Missing: BASE_RPC_URL" | tee -a secret-readiness.log; missing=1; else echo "Configured: BASE_RPC_URL" >> secret-readiness.log; fi
+          if [ -z "$PRIVATE_KEY" ]; then echo "Missing: BASE_DEPLOYER_PRIVATE_KEY" | tee -a secret-readiness.log; missing=1; else echo "Configured: BASE_DEPLOYER_PRIVATE_KEY" >> secret-readiness.log; fi
+          if [ -z "$TREASURY_ADDRESS" ]; then echo "Missing: PRESALE_TREASURY_ADDRESS" | tee -a secret-readiness.log; missing=1; else echo "Configured: PRESALE_TREASURY_ADDRESS" >> secret-readiness.log; fi
           if [ "$missing" -eq 0 ]; then
             echo "can_dry_run=true" >> "$GITHUB_OUTPUT"
-            echo "All protected dry-run secrets are configured."
+            echo "All protected dry-run secrets are configured." | tee -a secret-readiness.log
           else
             echo "can_dry_run=false" >> "$GITHUB_OUTPUT"
-            echo "The owner-bound deployment rehearsal will be skipped; read-only checks will continue."
+            echo "The owner-bound deployment rehearsal was skipped; read-only checks continued." | tee -a secret-readiness.log
           fi
 
       - name: Install exact dependencies
@@ -120,6 +121,7 @@ jobs:
         with:
           name: presale-operations-preflight
           path: |
+            secret-readiness.log
             invalid-presale-recovery-preflight.log
             base-readonly-preflight.log
             corrected-presale-dry-run.log
