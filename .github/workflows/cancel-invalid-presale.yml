@@ -1,0 +1,117 @@
+name: Cancel Invalid Base Presale
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type CANCEL_MISMATCHED_PRESALE"
+        required: true
+        type: string
+      locked_aeth_acknowledgement:
+        description: "Type ACKNOWLEDGE_50M_AETH_REMAINS_LOCKED"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cancel-invalid-base-presale
+  cancel-in-progress: false
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: base-mainnet-production
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Validate explicit owner authorization
+        shell: bash
+        run: |
+          test "${{ inputs.confirmation }}" = "CANCEL_MISMATCHED_PRESALE" || {
+            echo "Cancellation confirmation phrase is incorrect."
+            exit 1
+          }
+          test "${{ inputs.locked_aeth_acknowledgement }}" = "ACKNOWLEDGE_50M_AETH_REMAINS_LOCKED" || {
+            echo "Locked-AETH acknowledgement phrase is incorrect."
+            exit 1
+          }
+
+      - name: Validate protected secrets
+        shell: bash
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+        run: |
+          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
+          test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+
+      - name: Capture pre-cancellation recovery evidence
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: |
+          set -o pipefail
+          npm run inspect:invalid-presale 2>&1 | tee ../invalid-presale-before-cancellation.log
+
+      - name: Execute guarded owner-only cancellation
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+          CONFIRM_CANCEL_INVALID_PRESALE: "CANCEL_MISMATCHED_PRESALE"
+        run: |
+          set -o pipefail
+          npm run cancel:invalid-base-presale 2>&1 | tee ../invalid-presale-cancellation.log
+
+      - name: Verify post-cancellation Base state
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          ALLOW_DISABLED_PRESALE: "true"
+        run: |
+          set -o pipefail
+          npm run verify:base:readonly 2>&1 | tee ../invalid-presale-after-cancellation.log
+          grep -q '"cancelled": true' ../invalid-presale-after-cancellation.log || {
+            echo "Post-cancellation verification did not report cancelled=true."
+            exit 1
+          }
+
+      - name: Upload cancellation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: invalid-presale-cancellation-evidence
+          path: |
+            invalid-presale-before-cancellation.log
+            invalid-presale-cancellation.log
+            invalid-presale-after-cancellation.log
+          if-no-files-found: warn
+
+      - name: Summarize accounting boundary
+        if: always()
+        shell: bash
+        run: |
+          echo "Cancelling the invalid presale does not recover the 50,000,000 Base AETH held by it." >> "$GITHUB_STEP_SUMMARY"
+          echo "That balance remains excluded from sale inventory and circulating-supply claims." >> "$GITHUB_STEP_SUMMARY"
