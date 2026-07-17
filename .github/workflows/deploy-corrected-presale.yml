@@ -12,32 +12,37 @@ on:
         description: "AETH tokens per 1 ETH"
         required: true
         type: string
+        default: "1000000"
       soft_cap_eth:
         description: "Soft cap in ETH"
         required: true
         type: string
+        default: "5"
       hard_cap_eth:
         description: "Hard cap in ETH"
         required: true
         type: string
+        default: "33.333333"
       min_eth:
         description: "Minimum contribution in ETH"
         required: true
         type: string
+        default: "0.001"
       max_eth:
         description: "Maximum cumulative contribution per wallet in ETH"
         required: true
         type: string
+        default: "1"
       start_delay_seconds:
         description: "Delay before sale start, minimum 3600"
         required: true
         type: string
-        default: "14400"
+        default: "3600"
       duration_seconds:
         description: "Sale duration, minimum 86400"
         required: true
         type: string
-        default: "864000"
+        default: "1209600"
       confirmation:
         description: "For a live deployment type DEPLOY_CORRECTED_PRESALE; leave DRY_RUN for rehearsal"
         required: true
@@ -47,13 +52,20 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: deploy-corrected-base-presale
+  cancel-in-progress: false
+
 env:
+  BASE_RPC_URL: "https://mainnet.base.org"
   AETH_TOKEN_ADDRESS: "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
+  TREASURY_ADDRESS: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2"
+  INVALID_PRESALE_ADDRESS: "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     environment: ${{ inputs.dry_run && 'presale-dry-run' || 'base-mainnet-production' }}
 
     steps:
@@ -79,16 +91,16 @@ jobs:
             exit 1
           fi
 
-      - name: Validate required repository secrets
+      - name: Validate protected credentials
         shell: bash
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
-          TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: |
-          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
           test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
-          test -n "$TREASURY_ADDRESS" || { echo "Missing PRESALE_TREASURY_ADDRESS secret"; exit 1; }
+          if [ "${{ inputs.dry_run }}" = "false" ]; then
+            test -n "$ETHERSCAN_API_KEY" || { echo "Missing ETHERSCAN_API_KEY secret"; exit 1; }
+          fi
 
       - name: Install exact dependencies
         working-directory: smart-contract
@@ -102,12 +114,31 @@ jobs:
         working-directory: smart-contract
         run: npm test
 
+      - name: Require invalid presale cancellation before live replacement
+        if: ${{ !inputs.dry_run }}
+        working-directory: smart-contract
+        env:
+          PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { ethers } from "ethers";
+          const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL, 8453, { staticNetwork: true, batchMaxCount: 1 });
+          const invalid = new ethers.Contract(process.env.INVALID_PRESALE_ADDRESS, [
+            "function owner() view returns (address)",
+            "function cancelled() view returns (bool)"
+          ], provider);
+          const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+          const [owner, cancelled] = await Promise.all([invalid.owner(), invalid.cancelled()]);
+          if (owner.toLowerCase() !== wallet.address.toLowerCase()) throw new Error("Signer is not invalid presale owner");
+          if (!cancelled) throw new Error("Invalid presale must be cancelled before replacement deployment");
+          console.log("Invalid presale cancellation confirmed.");
+          NODE
+
       - name: Execute guarded deployment script
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
-          TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
           PRESALE_RATE: ${{ inputs.presale_rate }}
           PRESALE_SOFT_CAP_ETH: ${{ inputs.soft_cap_eth }}
           PRESALE_HARD_CAP_ETH: ${{ inputs.hard_cap_eth }}
@@ -122,29 +153,39 @@ jobs:
       - name: Verify corrected Base state
         if: ${{ !inputs.dry_run }}
         working-directory: smart-contract
-        env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
         run: npm run verify:base:readonly
 
       - name: Run disposable Base fork test
         if: ${{ !inputs.dry_run }}
         working-directory: smart-contract
-        env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
         run: npm run test:base-fork
 
-      - name: Commit generated deployment evidence
+      - name: Submit and confirm BaseScan source verification
+        if: ${{ !inputs.dry_run }}
+        working-directory: smart-contract
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run verify:basescan
+
+      - name: Keep public purchase frontend disabled pending owner smoke test
+        if: ${{ !inputs.dry_run }}
+        shell: bash
+        run: |
+          git checkout -- presale-config.js
+          echo "Replacement address is recorded in deployment evidence, but the public frontend remains disabled." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit generated deployment and verification evidence
         if: ${{ !inputs.dry_run }}
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add presale-config.js smart-contract/deployments/presale-base.json
+          git add smart-contract/deployments/presale-base.json
           if git diff --cached --quiet; then
-            echo "No generated deployment files changed."
+            echo "No generated deployment evidence changed."
             exit 1
           fi
-          git commit -m "deploy: record corrected Base presale"
+          git commit -m "deploy: record verified corrected Base presale"
           git push origin HEAD:main
 
       - name: Deployment summary
@@ -153,6 +194,6 @@ jobs:
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             echo "Dry run completed. No transaction was sent." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Corrected Base presale deployment completed and read-only/fork checks passed." >> "$GITHUB_STEP_SUMMARY"
-            echo "A separate deliberately small owner-approved purchase is still required before public launch." >> "$GITHUB_STEP_SUMMARY"
+            echo "Corrected Base presale deployed, funded, state-checked, fork-tested, and BaseScan-verified." >> "$GITHUB_STEP_SUMMARY"
+            echo "Public purchases remain disabled until a separate owner-signed smoke purchase and launch authorization." >> "$GITHUB_STEP_SUMMARY"
           fi
