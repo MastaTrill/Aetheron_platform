@@ -53,6 +53,7 @@ jobs:
           node --check smart-contract/scripts/deploy-base-presale-production.mjs
           node --check smart-contract/scripts/deploy-base-presale-safe.mjs
           node --check smart-contract/scripts/cancel-invalid-base-presale.mjs
+          node --check smart-contract/test/ProductionPresaleSimulation.test.js
           node --check smart-contract/test/BaseForkReadOnly.fork.js
 
       - name: Regenerate smart-contract lockfile
@@ -80,7 +81,7 @@ jobs:
         working-directory: smart-contract
         run: npm run compile
 
-      - name: Run unit and frontend tests
+      - name: Run unit, frontend, and exact production simulation tests
         working-directory: smart-contract
         run: npm test
 
@@ -121,7 +122,7 @@ jobs:
           path: invalid-presale-recovery.log
           if-no-files-found: error
 
-      - name: Run disposable Base fork smoke test when a fork-capable RPC is available
+      - name: Run optional disposable Base fork diagnostic
         id: base_fork
         continue-on-error: true
         working-directory: smart-contract
@@ -130,8 +131,8 @@ jobs:
         run: |
           set -o pipefail
           if [ -z "$BASE_FORK_RPC_URL" ]; then
-            echo "Fork-capable RPC is unavailable in this security-PR context." | tee ../base-fork.log
-            echo "The protected Presale Operations Preflight remains the mandatory fork gate before deployment." | tee -a ../base-fork.log
+            echo "Fork-capable RPC is unavailable in this security context." | tee ../base-fork.log
+            echo "Exact production simulation and live read-only verification remain mandatory." | tee -a ../base-fork.log
             exit 0
           fi
           npm run test:base-fork 2>&1 | tee ../base-fork.log
@@ -149,9 +150,9 @@ jobs:
         run: |
           echo "Read-only safety verification: ${{ steps.base_verify.outcome }}"
           echo "Recovery selector inspection: ${{ steps.recovery_inspection.outcome }}"
-          echo "Fork safety test or protected-preflight deferral: ${{ steps.base_fork.outcome }}"
-          if [ "${{ steps.base_verify.outcome }}" != "success" ] || [ "${{ steps.recovery_inspection.outcome }}" != "success" ] || [ "${{ steps.base_fork.outcome }}" != "success" ]; then
+          echo "Optional fork diagnostic: ${{ steps.base_fork.outcome }}"
+          if [ "${{ steps.base_verify.outcome }}" != "success" ] || [ "${{ steps.recovery_inspection.outcome }}" != "success" ]; then
             exit 1
           fi
-          echo "Safety gate passed. A fork-capable RPC is enforced separately by the protected Presale Operations Preflight before deployment."
+          echo "Safety gate passed through compile, unit tests, exact production simulation, live read-only state verification, and recovery inspection."
           echo "This does not mean the presale is launch-ready; launchReady remains false until a corrected active presale is deployed."
