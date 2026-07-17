@@ -81,6 +81,25 @@ test("all production deployment entry points use the invariant guard", () => {
   assert.match(productionGuardSource, /Protected signer is not the approved Base owner\/treasury wallet/);
 });
 
+test("production guard retries transient Base view failures before deployment", () => {
+  assert.match(productionGuardSource, /const VIEW_RETRY_ATTEMPTS = 5/);
+  assert.match(productionGuardSource, /async function readViewWithRetry/);
+  assert.match(productionGuardSource, /Invalid presale token\(\)/);
+  assert.doesNotMatch(
+    productionGuardSource,
+    /Promise\.all\(\[\s*invalidPresale\.owner\(\),\s*invalidPresale\.token\(\)/
+  );
+
+  const tokenReadIndex = productionGuardSource.indexOf(
+    'readViewWithRetry(invalidPresale, "token", "Invalid presale token()")'
+  );
+  const deploymentImportIndex = productionGuardSource.indexOf(
+    'await import("./deploy-base-presale-safe.mjs")'
+  );
+  assert.ok(tokenReadIndex >= 0);
+  assert.ok(deploymentImportIndex > tokenReadIndex);
+});
+
 test("post-deployment verification accepts a fully funded disabled replacement", () => {
   assert.equal(packageJson.scripts["verify:base:readonly"], "node scripts/verify-base-presale-state.mjs");
   assert.match(stateVerifierSource, /safeDisabledState/);

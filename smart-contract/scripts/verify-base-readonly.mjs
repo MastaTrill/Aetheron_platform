@@ -2,6 +2,11 @@ import fs from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { ethers } from "ethers";
+import {
+  callViewWithRetry,
+  providerReadWithRetry,
+  readWithRetry
+} from "./lib/base-read-retry.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const deploymentPath = resolve(__dirname, "../deployments/presale-base.json");
@@ -70,7 +75,7 @@ async function safeCall(contract, method, args = []) {
   try {
     return {
       supported: true,
-      value: await contract[method](...args),
+      value: await callViewWithRetry(contract, method, args, `${method}()`),
       error: null
     };
   } catch (error) {
@@ -83,18 +88,21 @@ async function safeCall(contract, method, args = []) {
 }
 
 async function inspectExpectedToken() {
-  const code = await provider.getCode(expectedTokenAddress);
-  requireCondition(code !== "0x", "No bytecode exists at the configured AETH token address");
+  const code = await providerReadWithRetry(
+    provider,
+    "getCode",
+    [expectedTokenAddress],
+    "AETH bytecode",
+    { validate: (value) => typeof value === "string" && value !== "0x" }
+  );
 
   const token = new ethers.Contract(expectedTokenAddress, TOKEN_ABI, provider);
-  const [name, symbol, decimals, totalSupply, owner, tradingEnabled] = await Promise.all([
-    token.name(),
-    token.symbol(),
-    token.decimals(),
-    token.totalSupply(),
-    token.owner(),
-    token.tradingEnabled()
-  ]);
+  const name = await callViewWithRetry(token, "name", [], "AETH name()");
+  const symbol = await callViewWithRetry(token, "symbol", [], "AETH symbol()");
+  const decimals = await callViewWithRetry(token, "decimals", [], "AETH decimals()");
+  const totalSupply = await callViewWithRetry(token, "totalSupply", [], "AETH totalSupply()");
+  const owner = await callViewWithRetry(token, "owner", [], "AETH owner()");
+  const tradingEnabled = await callViewWithRetry(token, "tradingEnabled", [], "AETH tradingEnabled()");
 
   return { token, code, name, symbol, decimals, totalSupply, owner, tradingEnabled };
 }
@@ -102,11 +110,16 @@ async function inspectExpectedToken() {
 async function inspectPresale(address, expectedToken) {
   requireCondition(ethers.isAddress(address), "Presale address is invalid");
 
-  const code = await provider.getCode(address);
-  requireCondition(code !== "0x", `No bytecode exists at presale ${address}`);
+  const code = await providerReadWithRetry(
+    provider,
+    "getCode",
+    [address],
+    `Presale ${address} bytecode`,
+    { validate: (value) => typeof value === "string" && value !== "0x" }
+  );
   const presale = new ethers.Contract(address, PRESALE_ABI, provider);
 
-  const fields = Object.fromEntries(await Promise.all([
+  const methods = [
     "token",
     "treasury",
     "owner",
@@ -122,26 +135,47 @@ async function inspectPresale(address, expectedToken) {
     "finalized",
     "cancelled",
     "refundsAvailable"
-  ].map(async (method) => [method, await safeCall(presale, method)])));
+  ];
+  const fields = {};
+  for (const method of methods) {
+    fields[method] = await safeCall(presale, method);
+  }
 
   requireCondition(fields.token.supported, "Presale does not expose token()");
   const linkedToken = fields.token.value;
-  const [nativeBalance, expectedTokenBalance, expectedTokenTaxExcluded] = await Promise.all([
-    provider.getBalance(address),
-    expectedToken.token.balanceOf(address),
-    expectedToken.token.isExcludedFromTax(address)
-  ]);
+  const nativeBalance = await providerReadWithRetry(
+    provider,
+    "getBalance",
+    [address],
+    `Presale ${address} native balance`
+  );
+  const expectedTokenBalance = await callViewWithRetry(
+    expectedToken.token,
+    "balanceOf",
+    [address],
+    `AETH balanceOf(${address})`
+  );
+  const expectedTokenTaxExcluded = await callViewWithRetry(
+    expectedToken.token,
+    "isExcludedFromTax",
+    [address],
+    `AETH isExcludedFromTax(${address})`
+  );
 
-  const linkedTokenCode = await provider.getCode(linkedToken);
+  const linkedTokenCode = await providerReadWithRetry(
+    provider,
+    "getCode",
+    [linkedToken],
+    `Linked token ${linkedToken} bytecode`,
+    { validate: (value) => typeof value === "string" }
+  );
   let linkedTokenMetadata = null;
   if (linkedTokenCode !== "0x") {
     const linkedTokenContract = new ethers.Contract(linkedToken, TOKEN_ABI, provider);
-    const [name, symbol, decimals, balance] = await Promise.all([
-      safeCall(linkedTokenContract, "name"),
-      safeCall(linkedTokenContract, "symbol"),
-      safeCall(linkedTokenContract, "decimals"),
-      safeCall(linkedTokenContract, "balanceOf", [address])
-    ]);
+    const name = await safeCall(linkedTokenContract, "name");
+    const symbol = await safeCall(linkedTokenContract, "symbol");
+    const decimals = await safeCall(linkedTokenContract, "decimals");
+    const balance = await safeCall(linkedTokenContract, "balanceOf", [address]);
 
     linkedTokenMetadata = {
       name: name.value,
@@ -159,7 +193,13 @@ async function inspectPresale(address, expectedToken) {
     };
   }
 
-  const latestBlock = await provider.getBlock("latest");
+  const latestBlock = await providerReadWithRetry(
+    provider,
+    "getBlock",
+    ["latest"],
+    "Latest Base block",
+    { validate: Boolean }
+  );
   const now = BigInt(latestBlock.timestamp);
   const startTime = fields.startTime.value;
   const endTime = fields.endTime.value;
@@ -205,10 +245,19 @@ async function inspectPresale(address, expectedToken) {
   };
 }
 
-const network = await provider.getNetwork();
+const network = await readWithRetry(
+  () => provider.getNetwork(),
+  "Base network",
+  { validate: (value) => value?.chainId !== undefined }
+);
 requireCondition(network.chainId === 8453n, `Expected Base chain 8453, received ${network.chainId}`);
-const latestBlock = await provider.getBlock("latest");
-requireCondition(latestBlock, "Unable to read latest Base block");
+const latestBlock = await providerReadWithRetry(
+  provider,
+  "getBlock",
+  ["latest"],
+  "Latest Base block",
+  { validate: Boolean }
+);
 
 const expectedToken = await inspectExpectedToken();
 const tokenReport = {

@@ -3,7 +3,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const baseRpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+const baseReadRpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+const baseForkRpcUrl =
+  process.env.BASE_FORK_RPC_URL ||
+  process.env.BASE_RPC_URL ||
+  "http://127.0.0.1:8545";
 
 export default {
   mocha: {
@@ -27,7 +31,7 @@ export default {
       type: "edr-simulated",
       chainType: "op",
       forking: {
-        url: baseRpcUrl,
+        url: baseForkRpcUrl,
       },
     },
     polygon: {
@@ -56,7 +60,7 @@ export default {
     },
     base: {
       type: "http",
-      url: baseRpcUrl,
+      url: baseReadRpcUrl,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 8453,
     },

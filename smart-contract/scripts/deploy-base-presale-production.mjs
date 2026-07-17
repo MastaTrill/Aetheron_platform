@@ -10,6 +10,8 @@ const production = JSON.parse(
 
 const INVALID_PRESALE = "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C";
 const EXPECTED_CHAIN_ID = 8453n;
+const VIEW_RETRY_ATTEMPTS = 5;
+const VIEW_RETRY_DELAY_MS = 1500;
 
 function requireCondition(condition, message) {
   if (!condition) throw new Error(message);
@@ -17,6 +19,50 @@ function requireCondition(condition, message) {
 
 function setDefault(name, value) {
   if (!process.env[name]) process.env[name] = String(value);
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function readViewWithRetry(contract, method, label) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= VIEW_RETRY_ATTEMPTS; attempt += 1) {
+    try {
+      const value = await contract[method]();
+      requireCondition(value !== null && value !== undefined, `${label} returned no value`);
+      return value;
+    } catch (error) {
+      lastError = error;
+      const reason = error.shortMessage || error.reason || error.message || String(error);
+      console.warn(`${label} read attempt ${attempt}/${VIEW_RETRY_ATTEMPTS} failed: ${reason}`);
+      if (attempt < VIEW_RETRY_ATTEMPTS) await sleep(VIEW_RETRY_DELAY_MS);
+    }
+  }
+
+  const reason = lastError?.shortMessage || lastError?.reason || lastError?.message || String(lastError);
+  throw new Error(`${label} could not be read after ${VIEW_RETRY_ATTEMPTS} attempts: ${reason}`);
+}
+
+async function readProviderWithRetry(provider, method, args, label, validate) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= VIEW_RETRY_ATTEMPTS; attempt += 1) {
+    try {
+      const value = await provider[method](...args);
+      requireCondition(validate(value), `${label} returned an invalid result`);
+      return value;
+    } catch (error) {
+      lastError = error;
+      const reason = error.shortMessage || error.reason || error.message || String(error);
+      console.warn(`${label} read attempt ${attempt}/${VIEW_RETRY_ATTEMPTS} failed: ${reason}`);
+      if (attempt < VIEW_RETRY_ATTEMPTS) await sleep(VIEW_RETRY_DELAY_MS);
+    }
+  }
+
+  const reason = lastError?.shortMessage || lastError?.reason || lastError?.message || String(lastError);
+  throw new Error(`${label} could not be read after ${VIEW_RETRY_ATTEMPTS} attempts: ${reason}`);
 }
 
 setDefault("BASE_RPC_URL", production.rpcUrl);
@@ -66,15 +112,26 @@ const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL, Number(EXP
   batchMaxCount: 1
 });
 const wallet = new ethers.Wallet(privateKey, provider);
-const network = await provider.getNetwork();
+const network = await readProviderWithRetry(
+  provider,
+  "getNetwork",
+  [],
+  "Base network",
+  (value) => value?.chainId !== undefined
+);
 requireCondition(network.chainId === EXPECTED_CHAIN_ID, `Expected Base chain 8453, received ${network.chainId}`);
 requireCondition(
   wallet.address.toLowerCase() === production.treasuryAddress.toLowerCase(),
   "Protected signer is not the approved Base owner/treasury wallet"
 );
 
-const invalidCode = await provider.getCode(INVALID_PRESALE);
-requireCondition(invalidCode !== "0x", "Recorded invalid presale has no Base bytecode");
+await readProviderWithRetry(
+  provider,
+  "getCode",
+  [INVALID_PRESALE],
+  "Recorded invalid presale bytecode",
+  (value) => typeof value === "string" && value !== "0x"
+);
 
 const invalidPresale = new ethers.Contract(
   INVALID_PRESALE,
@@ -85,11 +142,10 @@ const invalidPresale = new ethers.Contract(
   ],
   provider
 );
-const [invalidOwner, invalidLinkedToken, invalidCancelled] = await Promise.all([
-  invalidPresale.owner(),
-  invalidPresale.token(),
-  invalidPresale.cancelled()
-]);
+
+const invalidOwner = await readViewWithRetry(invalidPresale, "owner", "Invalid presale owner()");
+const invalidLinkedToken = await readViewWithRetry(invalidPresale, "token", "Invalid presale token()");
+const invalidCancelled = await readViewWithRetry(invalidPresale, "cancelled", "Invalid presale cancelled()");
 
 requireCondition(
   invalidOwner.toLowerCase() === wallet.address.toLowerCase(),
@@ -111,6 +167,7 @@ console.log(JSON.stringify({
   treasuryAddress,
   invalidPresale: INVALID_PRESALE,
   invalidPresaleCancelled: invalidCancelled,
+  viewRetryAttempts: VIEW_RETRY_ATTEMPTS,
   dryRun
 }, null, 2));
 
