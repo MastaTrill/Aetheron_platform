@@ -7,6 +7,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "node --test test/*.test.js",
+    "test:production-simulation": "node --test test/ProductionPresaleSimulation.test.js",
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-presale-state.mjs",
     "verify:basescan": "node scripts/verify-basescan-v2.mjs",
