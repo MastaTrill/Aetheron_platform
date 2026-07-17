@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 ///         and cannot be withdrawn by the owner unless the softcap is met.
 ///         If the softcap is missed (or the owner cancels), contributors
 ///         pull their own refunds - no one but the contributor can move
-///         their MATIC. Tokens are claimed (not auto-sent) only after the
+///         their ETH. Tokens are claimed (not auto-sent) only after the
 ///         raise is finalized, so there's no scenario where someone holds
 ///         both a refund AND the tokens.
 ///
@@ -20,7 +20,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     IERC20 public immutable token;
     address public treasury;
 
-    uint256 public rate; // tokens (18 decimals) per 1 MATIC
+    uint256 public rate; // tokens (18 decimals) per 1 ETH
     uint256 public softCap; // wei - minimum raise for the sale to succeed
     uint256 public hardCap; // wei - absolute maximum raise
     uint256 public minContribution; // wei - per-tx floor, blocks dust spam
@@ -52,6 +52,11 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         require(block.timestamp <= endTime, "Presale has ended");
         require(!cancelled, "Presale was cancelled");
         require(!finalized, "Presale already finalized");
+        _;
+    }
+
+    modifier onlyBeforeSaleStart() {
+        require(block.timestamp < startTime, "Sale terms are locked");
         _;
     }
 
@@ -138,7 +143,7 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit TokensClaimed(msg.sender, amount);
     }
 
-    /// @notice Owner withdraws raised MATIC to treasury - only reachable post-finalize.
+    /// @notice Owner withdraws raised ETH to treasury - only reachable post-finalize.
     function withdrawFunds() external onlyOwner nonReentrant {
         require(finalized, "Presale not finalized");
         uint256 balance = address(this).balance;
@@ -198,29 +203,29 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit RefundClaimed(msg.sender, amount);
     }
 
-    // --- Admin: parameters can only change before any contribution comes in ---
+    // --- Admin: parameters can only change before the advertised sale start ---
 
-    function updateRate(uint256 _rate) external onlyOwner {
+    function updateRate(uint256 _rate) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change rate after sale has started receiving funds");
         require(_rate > 0, "Rate must be > 0");
         rate = _rate;
     }
 
-    function updateCaps(uint256 _softCap, uint256 _hardCap) external onlyOwner {
+    function updateCaps(uint256 _softCap, uint256 _hardCap) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change caps after sale has started receiving funds");
         require(_softCap > 0 && _softCap <= _hardCap, "Invalid caps");
         softCap = _softCap;
         hardCap = _hardCap;
     }
 
-    function updateContributionLimits(uint256 _min, uint256 _max) external onlyOwner {
+    function updateContributionLimits(uint256 _min, uint256 _max) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change limits after sale has started receiving funds");
         require(_min > 0 && _min <= _max, "Invalid contribution limits");
         minContribution = _min;
         maxContribution = _max;
     }
 
-    function updateSchedule(uint256 _startTime, uint256 _endTime) external onlyOwner {
+    function updateSchedule(uint256 _startTime, uint256 _endTime) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot reschedule after sale has started receiving funds");
         require(_startTime >= block.timestamp, "Start time in the past");
         require(_endTime > _startTime, "End time must be after start time");
