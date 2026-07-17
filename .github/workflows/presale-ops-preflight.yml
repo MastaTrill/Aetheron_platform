@@ -32,16 +32,25 @@ jobs:
           cache: npm
           cache-dependency-path: smart-contract/package-lock.json
 
-      - name: Validate required dry-run secrets
+      - name: Report dry-run secret readiness
+        id: secrets
         shell: bash
         env:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
           TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
         run: |
-          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
-          test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
-          test -n "$TREASURY_ADDRESS" || { echo "Missing PRESALE_TREASURY_ADDRESS secret"; exit 1; }
+          missing=0
+          if [ -z "$BASE_RPC_URL" ]; then echo "Missing: BASE_RPC_URL"; missing=1; fi
+          if [ -z "$PRIVATE_KEY" ]; then echo "Missing: BASE_DEPLOYER_PRIVATE_KEY"; missing=1; fi
+          if [ -z "$TREASURY_ADDRESS" ]; then echo "Missing: PRESALE_TREASURY_ADDRESS"; missing=1; fi
+          if [ "$missing" -eq 0 ]; then
+            echo "can_dry_run=true" >> "$GITHUB_OUTPUT"
+            echo "All protected dry-run secrets are configured."
+          else
+            echo "can_dry_run=false" >> "$GITHUB_OUTPUT"
+            echo "The owner-bound deployment rehearsal will be skipped; read-only checks will continue."
+          fi
 
       - name: Install exact dependencies
         working-directory: smart-contract
@@ -58,7 +67,7 @@ jobs:
       - name: Inspect invalid presale recovery surface
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
         run: |
           set -o pipefail
           npm run inspect:invalid-presale 2>&1 | tee ../invalid-presale-recovery-preflight.log
@@ -66,13 +75,14 @@ jobs:
       - name: Verify safely disabled Base state
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ALLOW_DISABLED_PRESALE: "true"
         run: |
           set -o pipefail
           npm run verify:base:readonly 2>&1 | tee ../base-readonly-preflight.log
 
       - name: Execute corrected deployment dry run
+        if: ${{ steps.secrets.outputs.can_dry_run == 'true' }}
         working-directory: smart-contract
         env:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
@@ -90,10 +100,16 @@ jobs:
           set -o pipefail
           npm run deploy:base-presale:dry-run 2>&1 | tee ../corrected-presale-dry-run.log
 
+      - name: Record skipped owner-bound dry run
+        if: ${{ steps.secrets.outputs.can_dry_run != 'true' }}
+        shell: bash
+        run: |
+          echo "Corrected deployment dry run skipped because one or more protected secrets are absent." | tee corrected-presale-dry-run.log
+
       - name: Run disposable Base fork simulation
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
         run: |
           set -o pipefail
           npm run test:base-fork 2>&1 | tee ../base-fork-preflight.log
