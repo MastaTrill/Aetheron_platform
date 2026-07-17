@@ -12,7 +12,7 @@ const API_URL = "https://api.etherscan.io/v2/api";
 const API_KEY = process.env.ETHERSCAN_API_KEY || process.env.BASESCAN_API_KEY;
 
 if (!API_KEY) {
-  throw new Error("ETHERSCAN_API_KEY is required for Base mainnet source verification");
+  throw new Error("ETHERSCAN_API_KEY or BASESCAN_API_KEY is required for Base mainnet source verification");
 }
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -75,17 +75,21 @@ const constructorArguments = ethers.AbiCoder.defaultAbiCoder().encode(
   ]
 ).slice(2);
 
-async function etherscanRequest(values) {
-  const body = new URLSearchParams({
+async function etherscanRequest(values, method = "POST") {
+  const params = new URLSearchParams({
     apikey: API_KEY,
     chainid: CHAIN_ID,
     ...values
   });
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body
-  });
+
+  const response = method === "GET"
+    ? await fetch(`${API_URL}?${params.toString()}`, { method: "GET" })
+    : await fetch(API_URL, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: params
+      });
+
   if (!response.ok) throw new Error(`Etherscan HTTP ${response.status}`);
   return response.json();
 }
@@ -138,12 +142,16 @@ const sourceCheck = await etherscanRequest({
   module: "contract",
   action: "getsourcecode",
   address: presaleAddress
-});
+}, "GET");
 const verifiedRecord = sourceCheck.result?.[0];
 if (sourceCheck.status !== "1" || !verifiedRecord?.SourceCode) {
   throw new Error("BaseScan source-code readback did not confirm verification");
 }
-if ((verifiedRecord.ConstructorArguments || "").toLowerCase() !== constructorArguments.toLowerCase()) {
+
+const readbackConstructorArguments = String(verifiedRecord.ConstructorArguments || "")
+  .replace(/^0x/i, "")
+  .toLowerCase();
+if (readbackConstructorArguments !== constructorArguments.toLowerCase()) {
   throw new Error("BaseScan constructor-argument readback does not match the deployment record");
 }
 
@@ -158,6 +166,7 @@ deployment.verification = {
   constructorArguments,
   url: `https://basescan.org/address/${presaleAddress}#code`
 };
+deployment.status = "deployed-verified-awaiting-owner-smoke-purchase";
 fs.writeFileSync(deploymentPath, JSON.stringify(deployment, null, 2) + "\n");
 
 console.log(JSON.stringify({
