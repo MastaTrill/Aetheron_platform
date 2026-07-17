@@ -8,6 +8,7 @@ on:
       - presale-config.js
       - smart-contract/**
       - .github/workflows/presale-pr-gate.yml
+      - .github/workflows/deploy-corrected-presale.yml
   pull_request:
     branches: [main]
     paths:
@@ -16,6 +17,7 @@ on:
       - smart-contract/**
       - .github/workflows/presale-pr-gate.yml
       - .github/workflows/presale-security-ci.yml
+      - .github/workflows/deploy-corrected-presale.yml
   workflow_dispatch:
 
 permissions:
@@ -44,11 +46,12 @@ jobs:
       - name: Validate frontend syntax
         run: node --check presale.js
 
-      - name: Validate safety scripts when present
+      - name: Validate safety and verification scripts
         shell: bash
         run: |
           for file in \
             smart-contract/scripts/verify-base-readonly.mjs \
+            smart-contract/scripts/verify-basescan-v2.mjs \
             smart-contract/scripts/deploy-base-presale-safe.mjs \
             smart-contract/scripts/cancel-invalid-base-presale.mjs; do
             if [ -f "$file" ]; then
@@ -64,7 +67,7 @@ jobs:
         working-directory: smart-contract
         run: npm run compile
 
-      - name: Run contract and frontend tests
+      - name: Run contract frontend and production-config tests
         working-directory: smart-contract
         run: npm test
 
