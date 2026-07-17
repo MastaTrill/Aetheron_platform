@@ -25,8 +25,9 @@ test("hard cap and rate fund exactly the configured sale allocation", () => {
   const hardCapWei = ethers.parseEther(production.hardCapEth);
   const fundingUnits = hardCapWei * BigInt(production.rateAethPerEth);
   const allocationUnits = ethers.parseUnits(production.saleAllocationAeth, 18);
+  const recordedFundingUnits = ethers.parseUnits(production.fundingAeth, 18);
   assert.equal(fundingUnits, allocationUnits);
-  assert.equal(ethers.formatUnits(fundingUnits, 18), production.fundingAeth);
+  assert.equal(fundingUnits, recordedFundingUnits);
 });
 
 test("contribution limits and schedule satisfy deployment guards", () => {
