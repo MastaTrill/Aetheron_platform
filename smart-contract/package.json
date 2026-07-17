@@ -15,7 +15,6 @@
     "deploy:presale:base:safe": "node scripts/deploy-base-presale-safe.mjs",
     "deploy:base-presale:dry-run": "DRY_RUN=true node scripts/deploy-base-presale-safe.mjs",
     "cancel:invalid-base-presale": "node scripts/cancel-invalid-base-presale.mjs",
-    "purchase:owner-smoke:base": "node scripts/owner-smoke-purchase-base.mjs",
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
