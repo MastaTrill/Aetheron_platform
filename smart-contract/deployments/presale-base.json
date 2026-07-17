@@ -4,26 +4,47 @@
   "status": "invalid-token-mismatch",
   "launchable": false,
   "timestamp": "2026-07-16T20:49:40.874Z",
-  "verifiedAt": "2026-07-16T22:07:46Z",
-  "verificationRunId": 29538463137,
+  "verifiedAt": "2026-07-17T02:59:02.838Z",
+  "verificationRunId": 29551165619,
+  "verifiedBlock": 48733867,
   "contracts": {
     "Aetheron": {
-      "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
+      "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+      "totalSupply": "1000000000",
+      "tradingEnabled": false
     },
     "InvalidPresale": {
       "address": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
       "onChainLinkedToken": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+      "linkedTokenHasBytecode": false,
       "expectedAethBalanceWei": "50000000000000000000000000",
       "expectedAethBalance": "50000000",
       "weiRaised": "0",
       "cancelled": false,
       "finalized": false,
-      "reason": "The presale's immutable token() value does not match the configured Base AETH token. Do not accept purchases through this contract."
+      "reason": "The presale's immutable token() value does not match the configured Base AETH token. Do not accept purchases through this contract.",
+      "recoveryAssessment": {
+        "status": "inaccessible-by-deployed-interface",
+        "normalUnsoldWithdrawalPresent": true,
+        "normalUnsoldWithdrawalCanTargetExpectedAeth": false,
+        "genericRecoverySelectorsPresent": [],
+        "genericRecoveryCallsSucceeded": [],
+        "cancelSimulationPassed": true,
+        "cancellationRecoversExpectedAeth": false,
+        "conclusion": "No scanned generic ERC-20 recovery function exists. withdrawUnsoldTokens() is bound to the wrong immutable token and cannot release the Base AETH balance. Treat the 50,000,000 AETH as locked unless new independently verified recovery evidence is produced."
+      }
     },
     "Presale": {
       "address": null,
       "status": "replacement-required"
     }
+  },
+  "supplyAccounting": {
+    "nominalTotalSupply": "1000000000",
+    "lockedAtInvalidPresale": "50000000",
+    "lockedPercentOfSupply": "5",
+    "maximumInterfaceAccessibleSupply": "950000000",
+    "treatment": "Exclude the locked balance from presale inventory, available supply, circulating-supply claims, treasury balances, and liquidity plans. Do not mint replacement tokens; the deployed AETH contract has a fixed constructor-minted supply."
   },
   "wallets": {
     "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
@@ -32,8 +53,10 @@
     "staking": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
   },
   "evidence": {
-    "source": "GitHub Actions disposable Base mainnet fork",
-    "artifactId": 8391464843,
+    "source": "GitHub Actions read-only Base inspection and disposable Base mainnet fork",
+    "workflowRunId": 29551165619,
+    "artifactId": 8395785967,
+    "artifactDigest": "sha256:6c6c3e94df3e833bab76a3b2c0ecf8f17aed0f13c072a1960ab380737ade29bd",
     "realMainnetWritePerformed": false
   }
 }
