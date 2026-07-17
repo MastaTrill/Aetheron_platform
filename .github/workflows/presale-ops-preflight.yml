@@ -21,7 +21,6 @@ permissions:
   contents: read
 
 env:
-  BASE_RPC_URL: "https://mainnet.base.org"
   AETH_TOKEN_ADDRESS: "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
   TREASURY_ADDRESS: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2"
   INVALID_PRESALE_ADDRESS: "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C"
@@ -31,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: presale-dry-run
+    env:
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+      BASE_FORK_RPC_URL: ${{ secrets.BASE_FORK_RPC_URL || secrets.BASE_RPC_URL }}
 
     steps:
       - name: Check out operations branch
@@ -67,7 +69,15 @@ jobs:
             echo "can_verify=false" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "Configured public RPC: $BASE_RPC_URL" >> credential-readiness.log
+          if [ -n "$BASE_FORK_RPC_URL" ]; then
+            echo "Configured: fork-capable Base RPC" >> credential-readiness.log
+            echo "can_fork=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Missing: BASE_FORK_RPC_URL or BASE_RPC_URL environment secret" | tee -a credential-readiness.log
+            echo "can_fork=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "Configured read-only Base RPC: yes" >> credential-readiness.log
           echo "Configured treasury: $TREASURY_ADDRESS" >> credential-readiness.log
 
       - name: Install exact dependencies
@@ -119,7 +129,15 @@ jobs:
         run: |
           echo "Corrected deployment dry run skipped because BASE_DEPLOYER_PRIVATE_KEY is absent." | tee corrected-presale-dry-run.log
 
+      - name: Require protected fork-capable RPC
+        if: ${{ steps.credentials.outputs.can_fork != 'true' }}
+        shell: bash
+        run: |
+          echo "Protected Presale Operations Preflight requires BASE_FORK_RPC_URL or a fork-capable BASE_RPC_URL environment secret."
+          exit 1
+
       - name: Run disposable Base fork simulation
+        if: ${{ steps.credentials.outputs.can_fork == 'true' }}
         working-directory: smart-contract
         run: |
           set -o pipefail
@@ -145,3 +163,4 @@ jobs:
           echo "This job uses the final production values with DRY_RUN=true and cannot send a Base transaction." >> "$GITHUB_STEP_SUMMARY"
           echo "Owner signer ready: ${{ steps.credentials.outputs.can_dry_run }}" >> "$GITHUB_STEP_SUMMARY"
           echo "BaseScan verification credential ready: ${{ steps.credentials.outputs.can_verify }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Fork-capable Base RPC ready: ${{ steps.credentials.outputs.can_fork }}" >> "$GITHUB_STEP_SUMMARY"
