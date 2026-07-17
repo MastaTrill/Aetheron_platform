@@ -45,6 +45,26 @@ async function readViewWithRetry(contract, method, label) {
   throw new Error(`${label} could not be read after ${VIEW_RETRY_ATTEMPTS} attempts: ${reason}`);
 }
 
+async function readProviderWithRetry(provider, method, args, label, validate) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= VIEW_RETRY_ATTEMPTS; attempt += 1) {
+    try {
+      const value = await provider[method](...args);
+      requireCondition(validate(value), `${label} returned an invalid result`);
+      return value;
+    } catch (error) {
+      lastError = error;
+      const reason = error.shortMessage || error.reason || error.message || String(error);
+      console.warn(`${label} read attempt ${attempt}/${VIEW_RETRY_ATTEMPTS} failed: ${reason}`);
+      if (attempt < VIEW_RETRY_ATTEMPTS) await sleep(VIEW_RETRY_DELAY_MS);
+    }
+  }
+
+  const reason = lastError?.shortMessage || lastError?.reason || lastError?.message || String(lastError);
+  throw new Error(`${label} could not be read after ${VIEW_RETRY_ATTEMPTS} attempts: ${reason}`);
+}
+
 setDefault("BASE_RPC_URL", production.rpcUrl);
 setDefault("AETH_TOKEN_ADDRESS", production.tokenAddress);
 setDefault("TREASURY_ADDRESS", production.treasuryAddress);
@@ -92,15 +112,26 @@ const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL, Number(EXP
   batchMaxCount: 1
 });
 const wallet = new ethers.Wallet(privateKey, provider);
-const network = await provider.getNetwork();
+const network = await readProviderWithRetry(
+  provider,
+  "getNetwork",
+  [],
+  "Base network",
+  (value) => value?.chainId !== undefined
+);
 requireCondition(network.chainId === EXPECTED_CHAIN_ID, `Expected Base chain 8453, received ${network.chainId}`);
 requireCondition(
   wallet.address.toLowerCase() === production.treasuryAddress.toLowerCase(),
   "Protected signer is not the approved Base owner/treasury wallet"
 );
 
-const invalidCode = await provider.getCode(INVALID_PRESALE);
-requireCondition(invalidCode !== "0x", "Recorded invalid presale has no Base bytecode");
+await readProviderWithRetry(
+  provider,
+  "getCode",
+  [INVALID_PRESALE],
+  "Recorded invalid presale bytecode",
+  (value) => typeof value === "string" && value !== "0x"
+);
 
 const invalidPresale = new ethers.Contract(
   INVALID_PRESALE,
