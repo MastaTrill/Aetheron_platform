@@ -1,5 +1,10 @@
 import fs from "node:fs/promises";
 import { ethers } from "ethers";
+import {
+  callViewWithRetry,
+  providerReadWithRetry,
+  readWithRetry
+} from "./lib/base-read-retry.mjs";
 
 const deploymentUrl = new URL("../deployments/presale-base.json", import.meta.url);
 const deployment = JSON.parse(await fs.readFile(deploymentUrl, "utf8"));
@@ -33,7 +38,11 @@ const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL || "https:/
   staticNetwork: true,
   batchMaxCount: 1
 });
-const network = await provider.getNetwork();
+const network = await readWithRetry(
+  () => provider.getNetwork(),
+  "Base network",
+  { validate: (value) => value?.chainId !== undefined }
+);
 requireCondition(network.chainId === 8453n, `Expected Base chain 8453, received ${network.chainId}`);
 
 const TOKEN_ABI = [
@@ -60,58 +69,62 @@ const PRESALE_ABI = [
   "function finalized() view returns (bool)"
 ];
 
-const [tokenCode, presaleCode] = await Promise.all([
-  provider.getCode(expectedTokenAddress),
-  provider.getCode(activePresaleAddress)
-]);
+const tokenCode = await providerReadWithRetry(
+  provider,
+  "getCode",
+  [expectedTokenAddress],
+  "Approved AETH bytecode",
+  { validate: (value) => typeof value === "string" && value !== "0x" }
+);
+const presaleCode = await providerReadWithRetry(
+  provider,
+  "getCode",
+  [activePresaleAddress],
+  "Replacement presale bytecode",
+  { validate: (value) => typeof value === "string" && value !== "0x" }
+);
 requireCondition(tokenCode !== "0x", "Approved AETH token has no Base bytecode");
 requireCondition(presaleCode !== "0x", "Replacement presale has no Base bytecode");
 
 const token = new ethers.Contract(expectedTokenAddress, TOKEN_ABI, provider);
 const presale = new ethers.Contract(activePresaleAddress, PRESALE_ABI, provider);
-const [
-  tokenOwner,
-  tokenDecimals,
-  tradingEnabled,
-  inventory,
-  taxExcluded,
-  presaleOwner,
-  linkedToken,
-  linkedTreasury,
-  rate,
-  softCap,
-  hardCap,
-  minimum,
-  maximum,
-  startTime,
-  endTime,
-  weiRaised,
-  tokensReserved,
-  cancelled,
-  finalized,
-  latestBlock
-] = await Promise.all([
-  token.owner(),
-  token.decimals(),
-  token.tradingEnabled(),
-  token.balanceOf(activePresaleAddress),
-  token.isExcludedFromTax(activePresaleAddress),
-  presale.owner(),
-  presale.token(),
-  presale.treasury(),
-  presale.rate(),
-  presale.softCap(),
-  presale.hardCap(),
-  presale.minContribution(),
-  presale.maxContribution(),
-  presale.startTime(),
-  presale.endTime(),
-  presale.weiRaised(),
-  presale.tokensReserved(),
-  presale.cancelled(),
-  presale.finalized(),
-  provider.getBlock("latest")
-]);
+
+const tokenOwner = await callViewWithRetry(token, "owner", [], "AETH owner()");
+const tokenDecimals = await callViewWithRetry(token, "decimals", [], "AETH decimals()");
+const tradingEnabled = await callViewWithRetry(token, "tradingEnabled", [], "AETH tradingEnabled()");
+const inventory = await callViewWithRetry(
+  token,
+  "balanceOf",
+  [activePresaleAddress],
+  "Replacement AETH inventory"
+);
+const taxExcluded = await callViewWithRetry(
+  token,
+  "isExcludedFromTax",
+  [activePresaleAddress],
+  "Replacement tax exclusion"
+);
+const presaleOwner = await callViewWithRetry(presale, "owner", [], "Replacement owner()");
+const linkedToken = await callViewWithRetry(presale, "token", [], "Replacement token()");
+const linkedTreasury = await callViewWithRetry(presale, "treasury", [], "Replacement treasury()");
+const rate = await callViewWithRetry(presale, "rate", [], "Replacement rate()");
+const softCap = await callViewWithRetry(presale, "softCap", [], "Replacement softCap()");
+const hardCap = await callViewWithRetry(presale, "hardCap", [], "Replacement hardCap()");
+const minimum = await callViewWithRetry(presale, "minContribution", [], "Replacement minContribution()");
+const maximum = await callViewWithRetry(presale, "maxContribution", [], "Replacement maxContribution()");
+const startTime = await callViewWithRetry(presale, "startTime", [], "Replacement startTime()");
+const endTime = await callViewWithRetry(presale, "endTime", [], "Replacement endTime()");
+const weiRaised = await callViewWithRetry(presale, "weiRaised", [], "Replacement weiRaised()");
+const tokensReserved = await callViewWithRetry(presale, "tokensReserved", [], "Replacement tokensReserved()");
+const cancelled = await callViewWithRetry(presale, "cancelled", [], "Replacement cancelled()");
+const finalized = await callViewWithRetry(presale, "finalized", [], "Replacement finalized()");
+const latestBlock = await providerReadWithRetry(
+  provider,
+  "getBlock",
+  ["latest"],
+  "Latest Base block",
+  { validate: Boolean }
+);
 
 requireCondition(tokenDecimals === 18n, "AETH token decimals are not 18");
 requireCondition(tokenOwner.toLowerCase() === expectedOwner.toLowerCase(), "AETH owner does not match the deployment record");
