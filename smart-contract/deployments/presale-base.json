@@ -10,6 +10,9 @@
     },
     "Presale": {
       "address": null
+    },
+    "InvalidPresale": {
+      "address": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C"
     }
   },
   "wallets": {
