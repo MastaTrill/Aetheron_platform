@@ -27,8 +27,8 @@ const softCap = ethers.parseEther(required("PRESALE_SOFT_CAP_ETH"));
 const hardCap = ethers.parseEther(required("PRESALE_HARD_CAP_ETH"));
 const minContribution = ethers.parseEther(required("PRESALE_MIN_ETH"));
 const maxContribution = ethers.parseEther(required("PRESALE_MAX_ETH"));
-const startDelay = Number(process.env.PRESALE_START_DELAY_SECONDS || "14400");
-const duration = Number(process.env.PRESALE_DURATION_SECONDS || String(10 * 24 * 60 * 60));
+const startDelay = Number(process.env.PRESALE_START_DELAY_SECONDS || "3600");
+const duration = Number(process.env.PRESALE_DURATION_SECONDS || String(14 * 24 * 60 * 60));
 const dryRun = process.env.DRY_RUN === "true";
 
 requireCondition(ethers.isAddress(tokenAddress), "AETH_TOKEN_ADDRESS is invalid");
@@ -104,6 +104,50 @@ if (dryRun) {
   process.exit(0);
 }
 
+const deploymentUrl = new URL("../deployments/presale-base.json", import.meta.url);
+const deployment = {
+  network: "base",
+  chainId: 8453,
+  status: "deployment-started",
+  launchable: false,
+  timestamp: new Date().toISOString(),
+  contracts: {
+    Aetheron: { address: tokenAddress },
+    Presale: { address: null }
+  },
+  wallets: {
+    owner: wallet.address,
+    treasury: treasuryAddress
+  },
+  parameters: {
+    rate: rate.toString(),
+    softCapWei: softCap.toString(),
+    hardCapWei: hardCap.toString(),
+    minContributionWei: minContribution.toString(),
+    maxContributionWei: maxContribution.toString(),
+    startTime,
+    endTime,
+    fundedTokenUnits: fundingAmount.toString()
+  },
+  transactions: {},
+  replacesInvalidPresale: {
+    address: INVALID_PRESALE,
+    reason: "token() did not match the configured Base AETH token"
+  },
+  safety: {
+    frontendEnabled: false,
+    note: "Deployment, token-tax exclusion, and funding are separate owner transactions. Each completed step is journaled immediately."
+  }
+};
+
+function persistDeployment(status) {
+  deployment.status = status;
+  deployment.updatedAt = new Date().toISOString();
+  fs.writeFileSync(deploymentUrl, JSON.stringify(deployment, null, 2) + "\n");
+}
+
+persistDeployment("deploying-presale-contract");
+
 const artifactUrl = new URL("../artifacts/contracts/AetheronPresale.sol/AetheronPresaleV2.json", import.meta.url);
 const artifact = JSON.parse(fs.readFileSync(artifactUrl, "utf8"));
 const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
@@ -120,60 +164,129 @@ const presale = await factory.deploy(
   endTime,
   treasuryAddress
 );
+const deploymentTransaction = presale.deploymentTransaction();
 await presale.waitForDeployment();
+const deploymentReceipt = await deploymentTransaction.wait();
 const presaleAddress = await presale.getAddress();
+
 requireCondition(presaleAddress.toLowerCase() !== INVALID_PRESALE.toLowerCase(), "Unexpected reuse of invalid presale address");
 requireCondition((await provider.getCode(presaleAddress)) !== "0x", "Corrected presale deployment has no bytecode");
-requireCondition((await presale.token()).toLowerCase() === tokenAddress.toLowerCase(), "New presale token linkage is incorrect");
-requireCondition((await presale.treasury()).toLowerCase() === treasuryAddress.toLowerCase(), "New presale treasury linkage is incorrect");
+
+deployment.contracts.Presale = {
+  address: presaleAddress,
+  deploymentTransactionHash: deploymentTransaction.hash,
+  deploymentBlockNumber: deploymentReceipt.blockNumber
+};
+deployment.transactions.deploy = {
+  hash: deploymentTransaction.hash,
+  blockNumber: deploymentReceipt.blockNumber,
+  status: deploymentReceipt.status
+};
+persistDeployment("presale-deployed-pending-token-setup");
 
 console.log("Excluding corrected presale from AETH tax...");
-await (await token.setExcludedFromTax(presaleAddress, true)).wait();
+const taxTransaction = await token.setExcludedFromTax(presaleAddress, true);
+const taxReceipt = await taxTransaction.wait();
+requireCondition(taxReceipt.status === 1, "AETH tax-exclusion transaction failed");
 requireCondition(await token.isExcludedFromTax(presaleAddress), "Corrected presale was not excluded from tax");
+deployment.transactions.excludeFromTax = {
+  hash: taxTransaction.hash,
+  blockNumber: taxReceipt.blockNumber,
+  status: taxReceipt.status
+};
+persistDeployment("presale-deployed-tax-excluded-pending-funding");
 
 console.log(`Funding corrected presale with ${ethers.formatUnits(fundingAmount, tokenDecimals)} AETH...`);
-await (await token.transfer(presaleAddress, fundingAmount)).wait();
+const fundingTransaction = await token.transfer(presaleAddress, fundingAmount);
+const fundingReceipt = await fundingTransaction.wait();
+requireCondition(fundingReceipt.status === 1, "AETH funding transaction failed");
 const inventory = await token.balanceOf(presaleAddress);
-requireCondition(inventory >= fundingAmount, "Corrected presale funding verification failed");
-
-const deployment = {
-  network: "base",
-  chainId: 8453,
-  status: "deployed-awaiting-final-verification",
-  timestamp: new Date().toISOString(),
-  contracts: {
-    Aetheron: { address: tokenAddress },
-    Presale: { address: presaleAddress }
-  },
-  wallets: {
-    owner: wallet.address,
-    treasury: treasuryAddress
-  },
-  parameters: {
-    rate: rate.toString(),
-    softCapWei: softCap.toString(),
-    hardCapWei: hardCap.toString(),
-    minContributionWei: minContribution.toString(),
-    maxContributionWei: maxContribution.toString(),
-    startTime,
-    endTime,
-    fundedTokenUnits: fundingAmount.toString()
-  },
-  replacesInvalidPresale: {
-    address: INVALID_PRESALE,
-    reason: "token() did not match the configured Base AETH token"
-  }
+requireCondition(inventory === fundingAmount, "Corrected presale inventory does not exactly match the required hard-cap funding");
+deployment.transactions.fund = {
+  hash: fundingTransaction.hash,
+  blockNumber: fundingReceipt.blockNumber,
+  status: fundingReceipt.status
 };
+deployment.inventory = {
+  tokenUnits: inventory.toString(),
+  tokenAmount: ethers.formatUnits(inventory, tokenDecimals)
+};
+persistDeployment("presale-funded-pending-state-verification");
 
-const deploymentUrl = new URL("../deployments/presale-base.json", import.meta.url);
-fs.writeFileSync(deploymentUrl, JSON.stringify(deployment, null, 2) + "\n");
+const [
+  presaleOwner,
+  linkedToken,
+  linkedTreasury,
+  onChainRate,
+  onChainSoftCap,
+  onChainHardCap,
+  onChainMinContribution,
+  onChainMaxContribution,
+  onChainStartTime,
+  onChainEndTime,
+  weiRaised,
+  tokensReserved,
+  cancelled,
+  finalized
+] = await Promise.all([
+  presale.owner(),
+  presale.token(),
+  presale.treasury(),
+  presale.rate(),
+  presale.softCap(),
+  presale.hardCap(),
+  presale.minContribution(),
+  presale.maxContribution(),
+  presale.startTime(),
+  presale.endTime(),
+  presale.weiRaised(),
+  presale.tokensReserved(),
+  presale.cancelled(),
+  presale.finalized()
+]);
 
-const maxPresaleTokens = Number(ethers.formatUnits(fundingAmount, tokenDecimals));
+requireCondition(presaleOwner.toLowerCase() === wallet.address.toLowerCase(), "New presale owner is incorrect");
+requireCondition(linkedToken.toLowerCase() === tokenAddress.toLowerCase(), "New presale token linkage is incorrect");
+requireCondition(linkedTreasury.toLowerCase() === treasuryAddress.toLowerCase(), "New presale treasury linkage is incorrect");
+requireCondition(onChainRate === rate, "New presale rate is incorrect");
+requireCondition(onChainSoftCap === softCap, "New presale soft cap is incorrect");
+requireCondition(onChainHardCap === hardCap, "New presale hard cap is incorrect");
+requireCondition(onChainMinContribution === minContribution, "New presale minimum contribution is incorrect");
+requireCondition(onChainMaxContribution === maxContribution, "New presale maximum contribution is incorrect");
+requireCondition(onChainStartTime === BigInt(startTime), "New presale start time is incorrect");
+requireCondition(onChainEndTime === BigInt(endTime), "New presale end time is incorrect");
+requireCondition(weiRaised === 0n && tokensReserved === 0n, "New presale unexpectedly contains liabilities");
+requireCondition(!cancelled && !finalized, "New presale is unexpectedly cancelled or finalized");
+
+deployment.verifiedState = {
+  owner: presaleOwner,
+  token: linkedToken,
+  treasury: linkedTreasury,
+  rate: onChainRate.toString(),
+  softCapWei: onChainSoftCap.toString(),
+  hardCapWei: onChainHardCap.toString(),
+  minContributionWei: onChainMinContribution.toString(),
+  maxContributionWei: onChainMaxContribution.toString(),
+  startTime: onChainStartTime.toString(),
+  endTime: onChainEndTime.toString(),
+  weiRaised: weiRaised.toString(),
+  tokensReserved: tokensReserved.toString(),
+  cancelled,
+  finalized,
+  taxExcluded: true,
+  bytecodePresent: true,
+  inventoryTokenUnits: inventory.toString()
+};
+persistDeployment("deployed-funded-state-verified-awaiting-basescan");
+
 const frontendConfig = `window.AETHERON_PRESALE_CONFIG = {
   aethTokenAddress: "${tokenAddress}",
-  presaleContractAddress: "${presaleAddress}",
-  status: "deployed-awaiting-final-verification",
-  maxPresaleTokens: ${Math.floor(maxPresaleTokens)},
+  presaleContractAddress: "",
+  replacementPresaleContractAddress: "${presaleAddress}",
+  invalidPresaleContractAddress: "${INVALID_PRESALE}",
+  status: "disabled-awaiting-basescan-and-owner-smoke-test",
+  statusMessage: "Replacement Base presale deployed and funded; public purchases remain disabled pending final verification.",
+  maxPresaleTokens: ${Math.floor(Number(ethers.formatUnits(fundingAmount, tokenDecimals)))},
   network: "base",
   chainId: 8453,
   nativeSymbol: "ETH",
@@ -188,7 +301,8 @@ console.log(JSON.stringify({
   tokenAddress,
   presaleAddress,
   inventory: ethers.formatUnits(inventory, tokenDecimals),
+  transactions: deployment.transactions,
   deploymentFile: "smart-contract/deployments/presale-base.json",
-  frontendConfig: "presale-config.js"
+  frontendStatus: "disabled-awaiting-basescan-and-owner-smoke-test"
 }, null, 2));
-console.log("Commit the generated files, run verify:base:readonly, and do not open the sale until that gate passes.");
+console.log("The replacement is deployed and funded, but the public purchase address remains blank until final verification and owner approval.");
