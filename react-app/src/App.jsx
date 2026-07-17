@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
 // Contract addresses (from README)
@@ -203,25 +204,27 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>🌌 Aetheron Platform</h1>
-        <p>Revolutionary Blockchain & Space Exploration Ecosystem</p>
+    <>
+      <Analytics />
+      <div className="App">
+        <header className="App-header">
+          <h1>🌌 Aetheron Platform</h1>
+          <p>Revolutionary Blockchain & Space Exploration Ecosystem</p>
 
-        {!account ? (
-          <button onClick={connectWallet} className="connect-btn">
-            Connect MetaMask
-          </button>
-        ) : (
-          <div className="wallet-info">
-            <p>
-              Connected: {account.slice(0, 6)}...{account.slice(-4)}
-            </p>
-            <p>AETH Balance: {balance}</p>
-            <p>Staked: {stakingBalance}</p>
-          </div>
-        )}
-      </header>
+          {!account ? (
+            <button onClick={connectWallet} className="connect-btn">
+              Connect MetaMask
+            </button>
+          ) : (
+            <div className="wallet-info">
+              <p>
+                Connected: {account.slice(0, 6)}...{account.slice(-4)}
+              </p>
+              <p>AETH Balance: {balance}</p>
+              <p>Staked: {stakingBalance}</p>
+            </div>
+          )}
+        </header>
 
       {account && (
         <main>
@@ -276,7 +279,8 @@ function App() {
           </section>
         </main>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

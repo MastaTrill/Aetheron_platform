@@ -7,7 +7,8 @@
   "scripts": {
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
-    "build": "npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build": "npm run build:analytics && npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build:analytics": "node build-vercel-analytics.cjs",
     "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
     "test": "npm run test:smoke",
     "test:dashboard": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
@@ -47,6 +48,7 @@
   },
   "dependencies": {
     "@metamask/connect-multichain": "^0.11.0",
+    "@vercel/analytics": "^2.0.1",
     "dotenv": "^17.3.1",
     "ethers": "^6.15.0",
     "express": "^5.2.1",
