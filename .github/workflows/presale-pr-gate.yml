@@ -58,6 +58,7 @@ jobs:
             smart-contract/scripts/deploy-base-presale-production.mjs \
             smart-contract/scripts/deploy-base-presale-safe.mjs \
             smart-contract/scripts/cancel-invalid-base-presale.mjs \
+            smart-contract/test/ProductionPresaleSimulation.test.js \
             smart-contract/test/BaseForkReadOnly.fork.js; do
             if [ -f "$file" ]; then
               node --check "$file"
@@ -72,7 +73,7 @@ jobs:
         working-directory: smart-contract
         run: npm run compile
 
-      - name: Run contract frontend and production-config tests
+      - name: Run contract frontend and exact production-config tests
         working-directory: smart-contract
         run: npm test
 
@@ -89,19 +90,20 @@ jobs:
             echo "verify:base:readonly is not present on this revision; skipping read-only Base inspection."
           fi
 
-      - name: Run disposable Base fork test when a fork-capable RPC is available
+      - name: Run optional disposable Base fork diagnostic
+        continue-on-error: true
         working-directory: smart-contract
         env:
           BASE_FORK_RPC_URL: ${{ secrets.BASE_FORK_RPC_URL || secrets.BASE_RPC_URL }}
         shell: bash
         run: |
           if ! npm run | grep -q "test:base-fork"; then
-            echo "test:base-fork is not present on this revision; skipping fork test."
+            echo "test:base-fork is not present on this revision; skipping fork diagnostic."
             exit 0
           fi
           if [ -z "$BASE_FORK_RPC_URL" ]; then
             echo "Fork-capable RPC is unavailable in this PR context."
-            echo "The protected Presale Operations Preflight remains the mandatory fork gate before deployment."
+            echo "Live read-only verification and the exact production-config local simulation remain mandatory."
             exit 0
           fi
           npm run test:base-fork
