@@ -19,6 +19,9 @@ concurrency:
   group: cancel-invalid-base-presale
   cancel-in-progress: false
 
+env:
+  BASE_RPC_URL: "https://mainnet.base.org"
+
 jobs:
   cancel:
     runs-on: ubuntu-latest
@@ -43,13 +46,11 @@ jobs:
             exit 1
           }
 
-      - name: Validate protected secrets
+      - name: Validate protected owner signer
         shell: bash
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
         run: |
-          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
           test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
 
       - name: Set up Node.js
@@ -69,8 +70,6 @@ jobs:
 
       - name: Capture pre-cancellation recovery evidence
         working-directory: smart-contract
-        env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
         run: |
           set -o pipefail
           npm run inspect:invalid-presale 2>&1 | tee ../invalid-presale-before-cancellation.log
@@ -78,7 +77,6 @@ jobs:
       - name: Execute guarded owner-only cancellation
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
           CONFIRM_CANCEL_INVALID_PRESALE: "CANCEL_MISMATCHED_PRESALE"
         run: |
@@ -88,7 +86,6 @@ jobs:
       - name: Verify post-cancellation Base state
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
           ALLOW_DISABLED_PRESALE: "true"
         run: |
           set -o pipefail
