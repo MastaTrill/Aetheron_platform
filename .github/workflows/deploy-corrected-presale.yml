@@ -95,11 +95,11 @@ jobs:
         shell: bash
         env:
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          EXPLORER_API_KEY: ${{ secrets.ETHERSCAN_API_KEY || secrets.BASESCAN_API_KEY }}
         run: |
           test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
           if [ "${{ inputs.dry_run }}" = "false" ]; then
-            test -n "$ETHERSCAN_API_KEY" || { echo "Missing ETHERSCAN_API_KEY secret"; exit 1; }
+            test -n "$EXPLORER_API_KEY" || { echo "Missing ETHERSCAN_API_KEY or BASESCAN_API_KEY secret"; exit 1; }
           fi
 
       - name: Install exact dependencies
@@ -110,7 +110,7 @@ jobs:
         working-directory: smart-contract
         run: npm run compile
 
-      - name: Run contract and frontend tests
+      - name: Run contract frontend and production-config tests
         working-directory: smart-contract
         run: npm test
 
@@ -135,7 +135,7 @@ jobs:
           console.log("Invalid presale cancellation confirmed.");
           NODE
 
-      - name: Execute guarded deployment script
+      - name: Execute guarded deployment and funding sequence
         working-directory: smart-contract
         env:
           PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
@@ -148,52 +148,94 @@ jobs:
           PRESALE_DURATION_SECONDS: ${{ inputs.duration_seconds }}
           DRY_RUN: ${{ inputs.dry_run }}
           CONFIRM_BASE_MAINNET_DEPLOY: ${{ inputs.confirmation }}
-        run: npm run deploy:presale:base:safe
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run deploy:presale:base:safe 2>&1 | tee ../corrected-presale-deployment.log
 
       - name: Verify corrected Base state
         if: ${{ !inputs.dry_run }}
         working-directory: smart-contract
-        run: npm run verify:base:readonly
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run verify:base:readonly 2>&1 | tee ../corrected-presale-state-verification.log
 
       - name: Run disposable Base fork test
         if: ${{ !inputs.dry_run }}
         working-directory: smart-contract
-        run: npm run test:base-fork
-
-      - name: Submit and confirm BaseScan source verification
-        if: ${{ !inputs.dry_run }}
-        working-directory: smart-contract
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-        run: npm run verify:basescan
-
-      - name: Keep public purchase frontend disabled pending owner smoke test
-        if: ${{ !inputs.dry_run }}
         shell: bash
         run: |
-          git checkout -- presale-config.js
-          echo "Replacement address is recorded in deployment evidence, but the public frontend remains disabled." >> "$GITHUB_STEP_SUMMARY"
+          set -o pipefail
+          npm run test:base-fork 2>&1 | tee ../corrected-presale-fork-test.log
 
-      - name: Commit generated deployment and verification evidence
-        if: ${{ !inputs.dry_run }}
+      - name: Persist deployment journal and disabled frontend
+        if: ${{ !inputs.dry_run && always() }}
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add smart-contract/deployments/presale-base.json
+          git add smart-contract/deployments/presale-base.json presale-config.js
           if git diff --cached --quiet; then
-            echo "No generated deployment evidence changed."
+            echo "No deployment journal changes to commit."
+          else
+            git commit -m "deploy: journal corrected Base presale state"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Submit and confirm BaseScan source verification
+        if: ${{ !inputs.dry_run && success() }}
+        working-directory: smart-contract
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY || secrets.BASESCAN_API_KEY }}
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run verify:basescan 2>&1 | tee ../corrected-presale-basescan-verification.log
+
+      - name: Publish verified replacement address while purchases stay disabled
+        if: ${{ !inputs.dry_run && success() }}
+        working-directory: smart-contract
+        run: npm run record:verified-frontend
+
+      - name: Persist BaseScan and disabled-frontend evidence
+        if: ${{ !inputs.dry_run && success() }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/deployments/presale-base.json presale-config.js
+          if git diff --cached --quiet; then
+            echo "No verification evidence changed."
             exit 1
           fi
-          git commit -m "deploy: record verified corrected Base presale"
+          git commit -m "verify: record BaseScan-verified replacement presale"
+          git pull --rebase origin main
           git push origin HEAD:main
 
+      - name: Upload deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: corrected-base-presale-deployment-evidence
+          path: |
+            smart-contract/deployments/presale-base.json
+            presale-config.js
+            corrected-presale-deployment.log
+            corrected-presale-state-verification.log
+            corrected-presale-fork-test.log
+            corrected-presale-basescan-verification.log
+          if-no-files-found: warn
+
       - name: Deployment summary
+        if: always()
         shell: bash
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "Dry run completed. No transaction was sent." >> "$GITHUB_STEP_SUMMARY"
+            echo "Dry run requested. No transaction was authorized by this workflow." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Corrected Base presale deployed, funded, state-checked, fork-tested, and BaseScan-verified." >> "$GITHUB_STEP_SUMMARY"
-            echo "Public purchases remain disabled until a separate owner-signed smoke purchase and launch authorization." >> "$GITHUB_STEP_SUMMARY"
+            echo "Any completed Base transactions and partial state are preserved in the deployment journal and artifact." >> "$GITHUB_STEP_SUMMARY"
+            echo "The replacement address may be published for transparency, but public purchase controls remain disabled." >> "$GITHUB_STEP_SUMMARY"
+            echo "A separate owner-wallet smoke purchase and launch authorization are still required." >> "$GITHUB_STEP_SUMMARY"
           fi
