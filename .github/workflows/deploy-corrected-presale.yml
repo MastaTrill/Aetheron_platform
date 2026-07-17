@@ -3,7 +3,7 @@ name: Deploy Corrected Base Presale
 on:
   workflow_dispatch:
     inputs:
-      dry_run: true
+      dry_run:
         description: "Run all preflight checks without sending transactions"
         required: true
         type: boolean
@@ -43,7 +43,7 @@ on:
         required: true
         type: string
         default: "1209600"
-      confirmation: DRY_RUN
+      confirmation:
         description: "For a live deployment type DEPLOY_CORRECTED_PRESALE; leave DRY_RUN for rehearsal"
         required: true
         type: string
