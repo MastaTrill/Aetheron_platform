@@ -3,7 +3,7 @@
 ## 📊 **CURRENT STATUS: SYSTEM LAUNCHED & OPERATIONAL** ✅
 
 **Last Updated:** March 1, 2026
-**Dashboard URL:** <https://mastatrill.github.io/Aetheron_platform/dashboard-enhanced.html>
+**Dashboard URL:** <https://aetrs.com/dashboard-enhanced.html>
 **Status:** All systems operational, contracts deployed and verified, trading competition ready to launch
 
 **Token Contract:** [PolygonScan](https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
@@ -64,7 +64,7 @@ This guide covers the comprehensive system we've implemented to boost trading vo
 http://localhost:8081/dashboard-enhanced.html
 
 # Alternative: GitHub Pages (when deployed)
-https://mastatrill.github.io/Aetheron_platform/dashboard-enhanced.html
+https://aetrs.com/dashboard-enhanced.html
 ```
 
 ### Step 2: Launch the Trading Competition System

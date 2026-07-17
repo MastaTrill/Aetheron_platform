@@ -2,42 +2,42 @@
 
 ## 🎯 Quick Test URLs
 
-**Your GitHub Pages Base:** https://mastatrill.github.io/Aetheron_platform/
+**Your GitHub Pages Base:** https://aetrs.com/
 
 ### Core Pages to Test:
 ```
 ✅ Main Dashboard
-https://mastatrill.github.io/Aetheron_platform/index.html
+https://aetrs.com/index.html
 
 ✅ Enhanced Dashboard
-https://mastatrill.github.io/Aetheron_platform/dashboard-enhanced.html
+https://aetrs.com/dashboard-enhanced.html
 
 ✅ Token Info
-https://mastatrill.github.io/Aetheron_platform/token-info.html
+https://aetrs.com/token-info.html
 
 ✅ Staking Calculator
-https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+https://aetrs.com/staking-calculator.html
 
 ✅ Analytics Dashboard
-https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+https://aetrs.com/analytics-dashboard.html
 
 ✅ Governance
-https://mastatrill.github.io/Aetheron_platform/governance.html
+https://aetrs.com/governance.html
 
 ✅ Leaderboard
-https://mastatrill.github.io/Aetheron_platform/leaderboard.html
+https://aetrs.com/leaderboard.html
 
 ✅ Referral Program
-https://mastatrill.github.io/Aetheron_platform/referral.html
+https://aetrs.com/referral.html
 
 ✅ Social Trading
-https://mastatrill.github.io/Aetheron_platform/social-trading/index.html
+https://aetrs.com/social-trading/index.html
 
 ✅ Yield Aggregator
-https://mastatrill.github.io/Aetheron_platform/yield-aggregator/index.html
+https://aetrs.com/yield-aggregator/index.html
 
 ✅ NFT Integration
-https://mastatrill.github.io/Aetheron_platform/nft-integration/index.html
+https://aetrs.com/nft-integration/index.html
 ```
 
 ---
@@ -124,7 +124,7 @@ https://mastatrill.github.io/Aetheron_platform/nft-integration/index.html
 ### Chrome DevTools Method:
 
 1. **Open Any Page**
-   - Go to: https://mastatrill.github.io/Aetheron_platform/
+   - Go to: https://aetrs.com/
 
 2. **Open DevTools**
    - Press `F12` or `Ctrl+Shift+I`
@@ -253,7 +253,7 @@ https://mastatrill.github.io/Aetheron_platform/nft-integration/index.html
 
 1. **Open Safari/Chrome on mobile**
 
-2. **Visit:** https://mastatrill.github.io/Aetheron_platform/
+2. **Visit:** https://aetrs.com/
 
 3. **Test Core Flow:**
    - [ ] Home page loads
@@ -355,7 +355,7 @@ RECOMMENDATION:
 
 **Don't have time? Do this quick test:**
 
-1. Open on mobile: https://mastatrill.github.io/Aetheron_platform/
+1. Open on mobile: https://aetrs.com/
 2. Check home page loads ✅
 3. Tap 3-5 navigation links ✅
 4. Try wallet connect button ✅
@@ -419,4 +419,4 @@ With all the polish applied, you should see:
 
 **Your platform is polished and ready! 🚀**
 
-**Test now:** https://mastatrill.github.io/Aetheron_platform/
+**Test now:** https://aetrs.com/

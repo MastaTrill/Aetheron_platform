@@ -23,8 +23,8 @@ These still require wallet access, third-party accounts, or live market state an
 - QuickSwap Trade URL: `https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - DexScreener Pair URL: `https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D`
 - DexTools Pair URL: `https://www.dextools.io/app/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D`
-- Website: `https://mastatrill.github.io/Aetheron_platform/`
-- Analytics Dashboard: `https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html`
+- Website: `https://aetrs.com/`
+- Analytics Dashboard: `https://aetrs.com/analytics-dashboard.html`
 - GitHub Repo: `https://github.com/MastaTrill/Aetheron_platform`
 - PolygonScan Token: `https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e`
 - PolygonScan Staking: `https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
@@ -77,7 +77,7 @@ These still require wallet access, third-party accounts, or live market state an
 Token Name: Aetheron
 Symbol: AETH
 Description: Next-generation DeFi staking platform on Polygon offering 8-18% APY with transparent analytics, low fees, and flexible staking pools.
-Website: https://mastatrill.github.io/Aetheron_platform/
+Website: https://aetrs.com/
 Twitter: https://x.com/William_McCoy_
 Email: williammccoy2012@gmail.com
 Logo: 200x200 PNG
@@ -100,7 +100,7 @@ Token Name: Aetheron
 Ticker: AETH
 Contract Address: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Blockchain: Polygon
-Website: https://mastatrill.github.io/Aetheron_platform/
+Website: https://aetrs.com/
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 Exchange: QuickSwap V2
 Trading Pair: AETH/WMATIC
@@ -131,8 +131,8 @@ Ticker: AETH
 Platform: Polygon (MATIC)
 Contract Address: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 Project Launch Date: January 2026
-Website: https://mastatrill.github.io/Aetheron_platform/
-Analytics: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+Website: https://aetrs.com/
+Analytics: https://aetrs.com/analytics-dashboard.html
 GitHub: https://github.com/MastaTrill/Aetheron_platform
 Pair Exchange: QuickSwap
 Pair URL: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e

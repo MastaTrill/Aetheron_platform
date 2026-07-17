@@ -150,8 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      setResult(launchResult, 'info', 'Launching token...');
-
       const payload = {
         name: document.getElementById('launch-token-name').value.trim(),
         symbol: document.getElementById('launch-token-symbol').value.trim(),
@@ -163,11 +161,40 @@ document.addEventListener('DOMContentLoaded', function () {
         description: document.getElementById('launch-description').value.trim(),
       };
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentStatus = urlParams.get('payment');
+
+      if (paymentStatus === 'success') {
+        setResult(launchResult, 'info', 'Payment confirmed. Launching token...');
+        try {
+          const data = await postJson(apiBase + '/api/launch-token', payload);
+          setResult(launchResult, 'success', buildLaunchSuccessMessage(data));
+          launchForm.reset();
+          window.history.replaceState({}, '', window.location.pathname);
+        } catch (error) {
+          setResult(launchResult, 'error', 'Error launching token: ' + String(error.message));
+        }
+        return;
+      }
+
+      if (paymentStatus === 'cancelled') {
+        setResult(launchResult, 'error', 'Payment was cancelled. Please complete payment to launch your token.');
+        window.history.replaceState({}, '', window.location.pathname);
+        return;
+      }
+
+      setResult(launchResult, 'info', 'Creating payment charge...');
+
       try {
-        const data = await postJson(apiBase + '/api/launch-token', payload);
-        setResult(launchResult, 'success', buildLaunchSuccessMessage(data));
+        const chargeData = await postJson(apiBase + '/api/create-launchpad-charge', payload);
+        const hostedUrl = chargeData?.hosted_url || chargeData?.data?.hosted_url;
+        if (!hostedUrl) {
+          throw new Error('Payment charge created but no hosted URL returned.');
+        }
+        setResult(launchResult, 'info', 'Redirecting to payment...');
+        window.location.href = hostedUrl;
       } catch (error) {
-        setResult(launchResult, 'error', 'Error launching token: ' + String(error.message));
+        setResult(launchResult, 'error', 'Error creating payment: ' + String(error.message));
       }
     });
   }

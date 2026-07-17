@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const baseRpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+
 export default {
   mocha: {
     timeout: 60000,
@@ -19,7 +21,14 @@ export default {
   },
   networks: {
     hardhat: {
-      chainId: 1337,
+      type: "edr-simulated",
+    },
+    baseFork: {
+      type: "edr-simulated",
+      chainType: "op",
+      forking: {
+        url: baseRpcUrl,
+      },
     },
     polygon: {
       type: "http",
@@ -32,7 +41,12 @@ export default {
       url: process.env.MUMBAI_RPC_URL || "https://rpc-amoy.polygon.technology",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 80002,
-      gasPrice: 30000000000,
+    },
+    amoy: {
+      type: "http",
+      url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 80002,
     },
     sepolia: {
       type: "http",
@@ -42,7 +56,7 @@ export default {
     },
     base: {
       type: "http",
-      url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
+      url: baseRpcUrl,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 8453,
     },
@@ -67,5 +81,39 @@ export default {
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts",
+  },
+  etherscan: {
+    apiKey: {
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
+      amoy: process.env.POLYGONSCAN_API_KEY || "",
+      base: process.env.BASESCAN_API_KEY || "",
+      baseSepolia: process.env.BASESCAN_API_KEY || "",
+    },
+    customChains: [
+      {
+        network: "amoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org",
+        },
+      },
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org",
+        },
+      },
+    ],
   },
 };

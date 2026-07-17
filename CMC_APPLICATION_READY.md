@@ -85,7 +85,7 @@ Exchange Type: DEX
 Trading Link: [https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e](https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e)
 
 Step 5: Project Links
-Website: [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)
+Website: [https://aetrs.com/](https://aetrs.com/)
 Whitepaper: [https://github.com/MastaTrill/Aetheron_platform/blob/main/WHITEPAPER.md](https://github.com/MastaTrill/Aetheron_platform/blob/main/WHITEPAPER.md)
 Twitter: [https://twitter.com/William_McCoy_](https://twitter.com/William_McCoy_)
 GitHub: [https://github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)

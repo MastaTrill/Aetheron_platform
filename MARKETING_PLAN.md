@@ -4,7 +4,7 @@
 - Token: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 - Market Cap: $276
 - Network: Polygon Mainnet
-- Dashboard: https://mastatrill.github.io/Aetheron_platform/
+- Dashboard: https://aetrs.com/
 - Liquidity: QuickSwap
 
 ---
@@ -12,7 +12,7 @@
 ## 🎯 IMMEDIATE ACTIONS (Today - 1 Hour)
 
 ### 1. Verify GitHub Pages is Live ✅
-**Check now:** https://mastatrill.github.io/Aetheron_platform/
+**Check now:** https://aetrs.com/
 
 If not live yet:
 - Go to: https://github.com/MastaTrill/Aetheron_platform/settings/pages
@@ -36,7 +36,7 @@ Revolutionary DeFi ecosystem on @0xPolygon
 
 📊 Chart: [DexTools Link]
 💰 Buy: quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
-🌐 Dashboard: mastatrill.github.io/Aetheron_platform
+🌐 Dashboard: aetrs.com
 
 #DeFi #Polygon #Crypto $AETH
 ```
@@ -163,7 +163,7 @@ Revolutionary DeFi ecosystem on @0xPolygon
 
 💰 Buy on QuickSwap: [link]
 📈 Chart: [DexTools/DexScreener link]
-🌐 Dashboard: https://mastatrill.github.io/Aetheron_platform/
+🌐 Dashboard: https://aetrs.com/
 
 [Add more details, roadmap, team info, etc.]
 

@@ -7,10 +7,11 @@
   "scripts": {
     "start": "npx http-server . -p 3000",
     "dev": "npx http-server . -p 3000 -o",
-    "build": "npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build": "npm run build:analytics && npm run build:metamask-connect && node build-cloudflare-dist.cjs",
+    "build:analytics": "node build-vercel-analytics.cjs",
     "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
     "test": "npm run test:smoke",
-    "test:dashboard": "jest --config jest.config.cjs dashboard.test.js",
+    "test:dashboard": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:smoke": "node dashboard.test.simple.js",
@@ -39,25 +40,28 @@
   "bugs": {
     "url": "https://github.com/MastaTrill/Aetheron_platform/issues"
   },
-  "homepage": "https://mastatrill.github.io/Aetheron_platform",
+  "homepage": "https://aetrs.com",
   "overrides": {
-    "undici": "^7.24.0"
+    "undici": "^7.24.0",
+    "js-yaml": "^4.2.0",
+    "uuid": "^11.1.1"
   },
   "dependencies": {
     "@metamask/connect-multichain": "^0.11.0",
+    "@vercel/analytics": "^2.0.1",
     "dotenv": "^17.3.1",
     "ethers": "^6.15.0",
     "express": "^5.2.1",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^9.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "stripe": "^20.3.1"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "esbuild": "^0.27.5",
+    "@jest/globals": "^30.0.0",
+    "esbuild": "^0.28.1",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^29.7.0",
+    "jest": "^30.0.0",
     "linkedom": "^0.18.12",
     "prettier": "^3.8.1"
   }

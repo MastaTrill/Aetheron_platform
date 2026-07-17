@@ -1,4 +1,11 @@
 // Bridge Modal Logic
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function setElementText(id, text) {
   const element = document.getElementById(id);
   if (!element) {
@@ -308,7 +315,7 @@ class AetheronDashboard {
     let txs = this.getTxHistory();
     if (type !== 'all') txs = txs.filter(tx => tx.type === type);
     if (date) txs = txs.filter(tx => tx.date.startsWith(date));
-    tableBody.innerHTML = txs.length ? txs.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.amount}</td><td>${tx.token}</td><td>${tx.status}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
+    tableBody.innerHTML = txs.length ? txs.map(tx => `<tr><td>${escapeHtml(tx.date)}</td><td>${escapeHtml(tx.type)}</td><td>${escapeHtml(tx.amount)}</td><td>${escapeHtml(tx.token)}</td><td>${escapeHtml(tx.status)}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
   }
 
   exportTxCsv() {
@@ -1164,7 +1171,7 @@ class AetheronDashboard {
   }
 
   generateReferralLink() {
-    const baseUrl = 'https://mastatrill.github.io/Aetheron_platform/';
+    const baseUrl = 'https://aetrs.com/';
     const referralLink = `${baseUrl}?ref=${this.referralCode}`;
 
     // Copy to clipboard
@@ -1176,7 +1183,7 @@ class AetheronDashboard {
   }
 
   shareOnSocial(platform) {
-    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    const url = 'https://aetrs.com/';
     const text = `🚀 Check out $AETH - Aetheron Platform! Staking up to 25% APY on Polygon. #DeFi #AETH`;
 
     let shareUrl = '';

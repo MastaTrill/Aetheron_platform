@@ -1,17 +1,16 @@
 // index.js - Extracted from index.html inline <script>
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
-// Contract Addresses - UPDATED February 8, 2026
-const AETH_ADDRESS = "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+// Contract Addresses - UPDATED for Base Mainnet
+const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
-const LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
-const OWNER_ADDRESS = "0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82".toLowerCase();
-const POLYGON_CHAIN_ID = '0x89'; // 137 in hex
-const POLYGON_RPC_URLS = [
-    'https://polygon-bor-rpc.publicnode.com',
-    'https://polygon.llamarpc.com',
-    'https://polygon.drpc.org',
-    'https://1rpc.io/matic'
+const _LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
+const OWNER_ADDRESS = "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5".toLowerCase();
+const BASE_CHAIN_ID = '0x2105'; // 8453 in hex
+const BASE_RPC_URLS = [
+    'https://mainnet.base.org',
+    'https://base.drpc.org',
+    'https://rpc.ankr.com/base'
 ];
 
 // ABIs
@@ -48,14 +47,14 @@ let provider, signer, account;
 let aethContract, stakingContract;
 let readOnlyProvider; // For reading data without wallet connection
 let injectedProvider;
-let transactions = [];
+let _transactions = [];
 let priceWebSocket; // WebSocket for real-time price updates
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
-const APP_VERSION = '1.4.3';
+let _reconnectAttempts = 0;
+const _MAX_RECONNECT_ATTEMPTS = 5;
+const _APP_VERSION = '1.4.3';
 
-let detectionAttempts = 0;
-const maxAttempts = 5;
+let _detectionAttempts = 0;
+const _maxAttempts = 5;
 
 // Initialize read-only provider for live data
 function initReadOnlyProvider() {
@@ -421,6 +420,7 @@ async function recheckWallet() {
 }
 
 // Staking function
+/* eslint-disable-next-line no-unused-vars */
 async function stakeTokens(poolId) {
     if (!account) {
         showAlert('Please connect your wallet first', 'error', 'stakingAlert');
@@ -742,11 +742,11 @@ async function connectWallet(options = {}) {
         signer = provider.getSigner();
         account = await signer.getAddress();
 
-        // Switch to Polygon network
+        // Switch to Base network
         try {
             await wallet.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: POLYGON_CHAIN_ID }],
+                params: [{ chainId: BASE_CHAIN_ID }],
             });
         } catch (switchError) {
             // This error code indicates that the chain has not been added to MetaMask
@@ -755,15 +755,15 @@ async function connectWallet(options = {}) {
                     await wallet.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
-                            chainId: POLYGON_CHAIN_ID,
-                            chainName: 'Polygon Mainnet',
-                            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
-                            rpcUrls: ['https://polygon-bor-rpc.publicnode.com'],
-                            blockExplorerUrls: ['https://polygonscan.com/']
+                            chainId: BASE_CHAIN_ID,
+                            chainName: 'Base Mainnet',
+                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                            rpcUrls: BASE_RPC_URLS,
+                            blockExplorerUrls: ['https://basescan.org/']
                         }],
                     });
                 } catch (addError) {
-                    console.error('Error adding Polygon network:', addError);
+                    console.error('Error adding Base network:', addError);
                 }
             }
         }
@@ -829,6 +829,7 @@ window.disconnectWallet = disconnectWallet;
 window.recheckWallet = recheckWallet;
 
 // Add token to wallet function
+/* eslint-disable-next-line no-unused-vars */
 async function addTokenToWallet() {
     if (!window.ethereum) {
         alert('No Ethereum wallet detected!');
@@ -856,6 +857,7 @@ async function addTokenToWallet() {
 }
 
 // Calculate rewards function
+/* eslint-disable-next-line no-unused-vars */
 async function calculateRewards() {
     if (!account) {
         showAlert('Please connect your wallet first', 'error', 'stakingAlert');
@@ -879,12 +881,14 @@ async function calculateRewards() {
 }
 
 // Refresh transactions function
+/* eslint-disable-next-line no-unused-vars */
 async function refreshTransactions() {
     await updateStats();
     showAlert('Transactions refreshed!', 'success', 'stakingSuccess');
 }
 
 // Owner functions (only work if connected wallet is owner)
+/* eslint-disable-next-line no-unused-vars */
 async function updateTaxes() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can update taxes', 'error', 'stakingAlert');
@@ -904,6 +908,7 @@ async function updateTaxes() {
     }
 }
 
+/* eslint-disable-next-line no-unused-vars */
 async function pauseTrading() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can pause trading', 'error', 'stakingAlert');
@@ -920,6 +925,7 @@ async function pauseTrading() {
     }
 }
 
+/* eslint-disable-next-line no-unused-vars */
 async function unpauseTrading() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can unpause trading', 'error', 'stakingAlert');
@@ -936,6 +942,7 @@ async function unpauseTrading() {
     }
 }
 
+/* eslint-disable-next-line no-unused-vars */
 async function withdrawTreasury() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can withdraw treasury', 'error', 'stakingAlert');
@@ -952,6 +959,7 @@ async function withdrawTreasury() {
     }
 }
 
+/* eslint-disable-next-line no-unused-vars */
 async function emergencyWithdraw() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can perform emergency withdraw', 'error', 'stakingAlert');
@@ -968,6 +976,7 @@ async function emergencyWithdraw() {
     }
 }
 
+/* eslint-disable-next-line no-unused-vars */
 async function rescueTokens() {
     if (!account || account.toLowerCase() !== OWNER_ADDRESS) {
         showAlert('Only contract owner can rescue tokens', 'error', 'stakingAlert');
@@ -1069,6 +1078,7 @@ async function updateHolderCount() {
 }
 
 // Toggle FAQ accordion
+/* eslint-disable-next-line no-unused-vars */
 function toggleFAQ(index) {
     const answer = document.getElementById(`faq-answer-${index}`);
     const toggle = document.getElementById(`faq-toggle-${index}`);
@@ -1078,7 +1088,7 @@ function toggleFAQ(index) {
 }
 
 // Enhanced price update with change indicator
-let lastPrice = null;
+let _lastPrice = null;
 
 async function updatePriceWithChange() {
     const priceValueEl = document.getElementById('priceValue');
@@ -1112,7 +1122,7 @@ async function updatePriceWithChange() {
                 changePercent.textContent = `${priceChange.toFixed(2)}%`;
             }
             
-            lastPrice = currentPrice;
+            _lastPrice = currentPrice;
         } else {
             priceValueEl.textContent = '$0.00000001';
             changeDiv.className = 'change positive';
@@ -1176,34 +1186,39 @@ function closeShareModal() {
     document.getElementById('shareModal').style.display = 'none';
 }
 
+/* eslint-disable-next-line no-unused-vars */
 function shareTwitter() {
     const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
     trackShare('twitter');
 }
 
+/* eslint-disable-next-line no-unused-vars */
 function shareFacebook() {
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
     trackShare('facebook');
 }
 
+/* eslint-disable-next-line no-unused-vars */
 function shareTelegram() {
     const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards!');
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
     trackShare('telegram');
 }
 
+/* eslint-disable-next-line no-unused-vars */
 function shareLinkedIn() {
-    const url = encodeURIComponent('https://mastatrill.github.io/Aetheron_platform/');
+    const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
     trackShare('linkedin');
 }
 
+/* eslint-disable-next-line no-unused-vars */
 function copyShareLink() {
-    const url = 'https://mastatrill.github.io/Aetheron_platform/';
+    const url = 'https://aetrs.com/';
     navigator.clipboard.writeText(url).then(() => {
         const btn = event.target.closest('.share-btn');
         const originalText = btn.innerHTML;
@@ -1415,19 +1430,16 @@ if (typeof window !== 'undefined') {
             newsletterForm.addEventListener('submit', handleNewsletterSignup);
         }
     });
-    
+}
+
 // ============================================================================
 // WebSocket Real-Time Updates
 // ============================================================================
 
 function initializeWebSocket() {
     console.log('Real-time updates running in polling mode');
-    reconnectAttempts = 0;
+    _reconnectAttempts = 0;
     initializePriceStream();
-}
-
-function reconnectWebSocket() {
-    console.log('Polling mode active - websocket reconnect skipped');
 }
 
 function initializePriceStream() {
@@ -1497,7 +1509,7 @@ function initProgressBar() {
     
     // Show progress on page navigation
     document.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', (_e) => {
             if (link.href && !link.href.startsWith('javascript:') && !link.target) {
                 progressBar.classList.add('active');
             }
@@ -1696,6 +1708,7 @@ function displayUserStakes(stakes) {
 }
 
 // Claim rewards from specific stake
+/* eslint-disable-next-line no-unused-vars */
 async function claimStakeRewards(stakeId) {
     if (!stakingContract || !account) {
         showToast('Error', 'Please connect your wallet first', 'error');
@@ -1756,6 +1769,7 @@ async function unstakeTokens(stakeId) {
 }
 
 // Emergency unstake (forfeit rewards)
+/* eslint-disable-next-line no-unused-vars */
 async function emergencyUnstake(stakeId) {
     const confirmed = confirm('Emergency withdraw will forfeit all rewards. Continue?');
     if (!confirmed) return;
@@ -1855,6 +1869,5 @@ function displayTransactions(transactions) {
             </div>
         </div>
     `).join('');
-}
 }
 

@@ -658,6 +658,8 @@ html {
 
   .stat-card .value {
     font-size: 1.55rem !important;
+    color: rgba(110, 231, 255, 0.95);
+    text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
   }
 
   .stat-card .change {

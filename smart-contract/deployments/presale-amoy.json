@@ -1,0 +1,17 @@
+{
+  "network": "polygon-amoy",
+  "chainId": 80002,
+  "presale": "0x8eB1171E720f5ae30086D154277777Aa65340cf7",
+  "token": "0x74203C9B1fC36e08114Bc57fc473df1798409428",
+  "treasury": "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa",
+  "rate": "1000",
+  "softCapWei": "5000000000000000000000",
+  "hardCapWei": "33333000000000000000000",
+  "minContributionWei": "100000000000000000",
+  "maxContributionWei": "1000000000000000000000",
+  "startTime": 1782081932,
+  "endTime": 1785542399,
+  "deployedAt": "2026-06-21T22:32:59.825Z",
+  "startTimeISO": "2026-06-21T22:45:32.000Z",
+  "endTimeISO": "2026-07-31T23:59:59.000Z"
+}

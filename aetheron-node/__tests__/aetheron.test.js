@@ -160,7 +160,7 @@ describe("Aetheron Node API Tests", () => {
 
 describe("Aetheron Blockchain Logic Tests", () => {
   it("should create genesis block correctly", () => {
-    const { Blockchain, Block } = require("./aetheron-blockchain");
+    const { Blockchain, Block } = require("../../aetheron-blockchain");
     const chain = new Blockchain();
 
     expect(chain.chain.length).toBe(1);
@@ -169,7 +169,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should validate valid transaction", async () => {
-    const { Transaction, Block } = require("./aetheron-blockchain");
+    const { Transaction, Block } = require("../../aetheron-blockchain");
 
     const tx = new Transaction("sender", "receiver", 100, "valid_sig");
     const result = await tx.verify();
@@ -177,14 +177,14 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should reject invalid transaction", async () => {
-    const { Transaction } = require("./aetheron-blockchain");
+    const { Transaction } = require("../../aetheron-blockchain");
 
     const tx = new Transaction("", "receiver", 100);
     expect(tx.sender).toBe("");
   });
 
   it("should calculate balance correctly", () => {
-    const { Blockchain } = require("./aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain");
     const chain = new Blockchain();
 
     // Genesis block has no transactions, balance should be 0
@@ -192,7 +192,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should register validator with sufficient stake", () => {
-    const { Blockchain } = require("./aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain");
     const chain = new Blockchain();
 
     chain.registerValidator("validator1", 100);
@@ -201,7 +201,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should reject validator with insufficient stake", () => {
-    const { Blockchain } = require("./aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain");
     const chain = new Blockchain();
 
     expect(() => {
@@ -210,7 +210,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should track validator history", () => {
-    const { Blockchain } = require("./aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain");
     const chain = new Blockchain();
 
     chain.registerValidator("validator1", 200);

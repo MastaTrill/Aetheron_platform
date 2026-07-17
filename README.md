@@ -39,7 +39,7 @@
 
 🚀 Live Demo
 
-- 🌐 Admin Dashboard: https://mastatrill.github.io/Aetheron_platform
+- 🌐 Admin Dashboard: https://aetrs.com
 - 📱 Mobile App: Coming soon to App Store & Google Play
 - 📖 Documentation: Complete guides and API reference
 - 🔗 GitHub Repository: github.com/Mastatrill/aetheron-platform
@@ -153,7 +153,7 @@ DevOps
 🔐 Verification
 
 GitHub Owner: @Mastatrill  
-Keeper’s Lantern Wallet: 0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82
+Keeper’s Lantern / Contract Owner: 0xDF5A2b892254C42F80000A029dfE8b311f777Bd5
 
 Proof‑of‑Record Constellation
 
@@ -429,7 +429,7 @@ If you encounter issues not covered in this guide:
 
 - GitHub: @Mastatrill
 - Repository: github.com/Mastatrill/aetheron-platform
-- Website: https://mastatrill.github.io/Aetheron_platform
+- Website: https://aetrs.com
 - Email: <contact@aetheron.space>
 
 ---

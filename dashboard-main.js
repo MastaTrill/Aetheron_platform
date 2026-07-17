@@ -1,28 +1,42 @@
-const AETH_ADDRESS = '0x072091F554df794852E0A9d1c809F2B2bBda171E';
+const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e';
 const STAKING_ADDRESS = '0x896D9d37A67B0bBf81dde0005975DA7850FFa638';
 
-const POLYGON_CHAIN_ID = '0x89';
+const BASE_CHAIN_ID = '0x2105';
 
-const POLYGON_PARAMS = {
-  chainId: '0x89',
-  chainName: 'Polygon Mainnet',
+const BASE_PARAMS = {
+  chainId: '0x2105',
+  chainName: 'Base Mainnet',
   nativeCurrency: {
-    name: 'MATIC',
-    symbol: 'MATIC',
+    name: 'ETH',
+    symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://polygon-rpc.com/'],
-  blockExplorerUrls: ['https://polygonscan.com/'],
+  rpcUrls: ['https://mainnet.base.org/', 'https://base.drpc.org'],
+  blockExplorerUrls: ['https://basescan.org/'],
 };
 
 const AETH_ABI = [
   'function balanceOf(address) view returns (uint256)',
   'function transfer(address to,uint256 amount) returns(bool)',
+  'function approve(address spender,uint256 amount) returns(bool)',
+  'function allowance(address owner,address spender) view returns (uint256)',
+  'function name() view returns (string)',
+  'function symbol() view returns (string)',
+  'function decimals() view returns (uint8)',
+  'function totalSupply() view returns (uint256)',
+  'function tradingEnabled() view returns (bool)',
+  'function owner() view returns (address)',
+  'function teamWallet() view returns (address)',
+  'function marketingWallet() view returns (address)',
 ];
 
 const STAKING_ABI = [
   'function stake(uint256 poolId,uint256 amount)',
   'function pools(uint256) view returns(uint256,uint256,uint256,bool)',
+  'function claim() returns (bool)',
+  'function aetheronToken() view returns (address)',
+  'function owner() view returns (address)',
+  'function poolCount() view returns (uint256)',
 ];
 
 let provider;
@@ -49,8 +63,9 @@ function showToast(message, options = {}) {
   } else {
     try {
       console.log('Toast:', message, options);
-    } catch {}
-    alert(message);
+} catch {
+      alert(message);
+    }
   }
 }
 
@@ -443,17 +458,17 @@ function openWalletChooser() {
   }
 }
 
-async function switchToPolygon(injectedProvider) {
+async function switchToBase(injectedProvider) {
   try {
     await injectedProvider.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: POLYGON_CHAIN_ID }],
+      params: [{ chainId: BASE_CHAIN_ID }],
     });
   } catch (err) {
     if (err.code === 4902) {
       await injectedProvider.request({
         method: 'wallet_addEthereumChain',
-        params: [POLYGON_PARAMS],
+        params: [BASE_PARAMS],
       });
     }
   }
@@ -501,7 +516,7 @@ async function connectWallet(request = false) {
       if (!auto && !hasWalletConnectSession) {
         await injectedProvider.request({ method: 'eth_requestAccounts' });
       }
-      await switchToPolygon(injectedProvider);
+      await switchToBase(window.ethereum);
       activeInjectedProvider = injectedProvider;
       activeWalletType = walletType || getWalletStorageKey(walletType, injectedProvider);
       bindWalletEvents(injectedProvider);
@@ -668,9 +683,20 @@ function bindWalletEvents(injectedProvider = activeInjectedProvider || window.et
 }
 
 async function transferTokens() {
-  const to = document.getElementById('transferTo').value;
-  const amount = document.getElementById('transferAmount').value;
-  if (!to || !amount) return;
+  const to = document.getElementById('transferTo').value.trim();
+  const amount = document.getElementById('transferAmount').value.trim();
+  if (!to || !amount) {
+    showToast('Please enter recipient address and amount', { type: 'error' });
+    return;
+  }
+  if (!ethers.utils.isAddress(to)) {
+    showToast('Invalid Ethereum address', { type: 'error' });
+    return;
+  }
+  if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    showToast('Please enter a valid amount', { type: 'error' });
+    return;
+  }
 
   try {
     showGlobalLoading(true);
@@ -680,28 +706,63 @@ async function transferTokens() {
     updateBalances();
   } catch (err) {
     console.error(err);
-    showToast('Transfer failed', { type: 'error' });
+    showToast('Transfer failed: ' + (err.message || 'Unknown error'), { type: 'error' });
   }
 
   showGlobalLoading(false);
 }
 
 async function stakeTokens() {
-  const poolId = document.getElementById('poolId').value;
-  const amount = document.getElementById('stakeAmount').value;
+  const poolId = document.getElementById('poolId').value.trim();
+  const amount = document.getElementById('stakeAmount').value.trim();
+  if (!amount || poolId === '') {
+    showToast('Please enter pool ID and amount', { type: 'error' });
+    return;
+  }
+  const poolIdNum = parseInt(poolId, 10);
+  if (isNaN(poolIdNum) || poolIdNum < 0) {
+    showToast('Invalid pool ID', { type: 'error' });
+    return;
+  }
+  if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    showToast('Please enter a valid amount', { type: 'error' });
+    return;
+  }
 
   try {
     showGlobalLoading(true);
-    const tx = await stakingContract.stake(poolId, ethers.utils.parseEther(amount));
+    const tx = await stakingContract.stake(poolIdNum, ethers.utils.parseEther(amount));
     await tx.wait();
     showToast('Stake successful', { type: 'success' });
     updateBalances();
   } catch (err) {
     console.error(err);
-    showToast('Stake failed', { type: 'error' });
+    showToast('Stake failed: ' + (err.message || 'Unknown error'), { type: 'error' });
   }
 
   showGlobalLoading(false);
+}
+
+function toggleMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const body = document.body;
+  if (!hamburger || !overlay) return;
+  const isActive = hamburger.classList.toggle('active');
+  overlay.classList.toggle('active');
+  hamburger.setAttribute('aria-expanded', isActive);
+  body.style.overflow = isActive ? 'hidden' : '';
+}
+
+function closeMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const body = document.body;
+  if (!hamburger || !overlay) return;
+  hamburger.classList.remove('active');
+  overlay.classList.remove('active');
+  hamburger.setAttribute('aria-expanded', 'false');
+  body.style.overflow = '';
 }
 
 function initDashboardMain() {
@@ -739,20 +800,7 @@ function initDashboardMain() {
 
   const hamburger = document.getElementById('hamburger');
   const overlay = document.getElementById('mobileMenuOverlay');
-  const body = document.body;
   if (hamburger && overlay) {
-    function toggleMenu() {
-      const isActive = hamburger.classList.toggle('active');
-      overlay.classList.toggle('active');
-      hamburger.setAttribute('aria-expanded', isActive);
-      body.style.overflow = isActive ? 'hidden' : '';
-    }
-    function closeMenu() {
-      hamburger.classList.remove('active');
-      overlay.classList.remove('active');
-      hamburger.setAttribute('aria-expanded', 'false');
-      body.style.overflow = '';
-    }
     hamburger.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', closeMenu);
   }

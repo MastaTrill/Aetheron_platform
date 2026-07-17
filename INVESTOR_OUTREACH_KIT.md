@@ -44,9 +44,9 @@ I'm reaching out to share an exciting DeFi opportunity that aligns with your inv
 
 **Next Steps**:
 1. Review our whitepaper: [Link to WHITEPAPER.md]
-2. Explore live platform: https://mastatrill.github.io/Aetheron_platform/
-3. View analytics dashboard: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
-4. Try staking calculator: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+2. Explore live platform: https://aetrs.com/
+3. View analytics dashboard: https://aetrs.com/analytics-dashboard.html
+4. Try staking calculator: https://aetrs.com/staking-calculator.html
 
 I'd love to schedule a 20-minute call to walk through our roadmap and traction metrics.
 
@@ -190,15 +190,15 @@ P.S. Our analytics dashboard updates every 30 seconds with live on-chain data - 
 **Terms**: SAFE note or token allocation, flexible
 
 **Contact**:
-Website: [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)
+Website: [https://aetrs.com/](https://aetrs.com/)
 X/Twitter: @William*McCoy*
 Email: [your-email]
 GitHub: [https://github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)
 
 **Links**:
 📄 Whitepaper: [Link]
-📊 Analytics: [https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html](https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html)
-🧮 Calculator: [https://mastatrill.github.io/Aetheron_platform/staking-calculator.html](https://mastatrill.github.io/Aetheron_platform/staking-calculator.html)
+📊 Analytics: [https://aetrs.com/analytics-dashboard.html](https://aetrs.com/analytics-dashboard.html)
+🧮 Calculator: [https://aetrs.com/staking-calculator.html](https://aetrs.com/staking-calculator.html)
 💻 Contracts: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
 
 ---
@@ -250,7 +250,7 @@ We're proud to release our comprehensive technical whitepaper covering:
 
 📖 Read: [Link to WHITEPAPER.md]
 🔍 Verify Contracts: polygonscan.com/address/0xAb5a...
-💻 Live Platform: https://mastatrill.github.io/Aetheron_platform
+💻 Live Platform: https://aetrs.com
 
 Built on #Polygon for low fees & fast transactions.
 
@@ -289,7 +289,7 @@ A: Smart contract bugs (mitigated by testing + audit), market volatility, compet
 A: Long-term: DAO governance transition. Short-term: Token liquidity on major CEXs. Potential: Strategic acquisition by larger DeFi protocol.
 
 **Q: Can I try the platform now?**
-A: Yes! Visit [https://mastatrill.github.io/Aetheron_platform](https://mastatrill.github.io/Aetheron_platform), connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
+A: Yes! Visit [https://aetrs.com](https://aetrs.com), connect MetaMask, switch to Polygon, and buy AETH on QuickSwap.
 
 ---
 
@@ -342,9 +342,9 @@ Before sending, attach:
 
 ## 🔗 Quick Links for Copy/Paste
 
-**Platform**: [https://mastatrill.github.io/Aetheron_platform/](https://mastatrill.github.io/Aetheron_platform/)  
-**Analytics**: [https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html](https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html)  
-**Calculator**: [https://mastatrill.github.io/Aetheron_platform/staking-calculator.html](https://mastatrill.github.io/Aetheron_platform/staking-calculator.html)  
+**Platform**: [https://aetrs.com/](https://aetrs.com/)  
+**Analytics**: [https://aetrs.com/analytics-dashboard.html](https://aetrs.com/analytics-dashboard.html)  
+**Calculator**: [https://aetrs.com/staking-calculator.html](https://aetrs.com/staking-calculator.html)  
 **Whitepaper**: [Your hosting link]  
 **GitHub**: [https://github.com/MastaTrill/Aetheron_platform](https://github.com/MastaTrill/Aetheron_platform)  
 **AETH Contract**: 0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e  

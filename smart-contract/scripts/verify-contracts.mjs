@@ -12,15 +12,15 @@ const allNetworks = ['polygon', 'mumbai', 'mainnet', 'sepolia'];
 const allContractTypes = ['Aetheron', 'AetxToken', 'AetheronStaking'];
 const contractDefinitions = {
   Aetheron: {
-    sourceName: 'contracts/Aetheron.sol',
+    sourceName: 'project/contracts/Aetheron.sol',
     contractName: 'Aetheron',
   },
   AetxToken: {
-    sourceName: 'contracts/AetxToken.sol',
+    sourceName: 'project/contracts/AetxToken.sol',
     contractName: 'AetxToken',
   },
   AetheronStaking: {
-    sourceName: 'contracts/AetheronStaking.sol',
+    sourceName: 'project/contracts/AetheronStaking.sol',
     contractName: 'AetheronStaking',
   },
 };
@@ -40,9 +40,9 @@ if (contractTypes.length === 0) {
   contractTypes = allContractTypes;
 }
 
-const TEAM_WALLET = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
-const MARKETING_WALLET = '0x8D3442424F8F6BEEd97496C7E54e056166f96746';
-const STAKING_POOL = '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82';
+const TEAM_WALLET = '0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784';
+const MARKETING_WALLET = '0x8A3ad49656Bd07981C9CFc7aD826a808847c3452';
+const STAKING_POOL = '0x8A3ad49656Bd07981C9CFc7aD826a808847c3452';
 
 function fail(message, code = 1) {
   console.error(message);
@@ -88,9 +88,11 @@ function readContractAddresses(selectedNetwork) {
 
   return {
     Aetheron: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
-    AetxToken: { address: '0x072091F554df794852E0A9d1c809F2B2bBda171E' },
+    AetxToken: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
+    // AetheronStaking address varies per deployment - requires deployment-info.json
+    // Placeholder address below should be updated after actual deployment
     AetheronStaking: {
-      address: '0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82',
+      address: process.env.AETHERON_STAKING_ADDRESS || '0x0000000000000000000000000000000000000000',
     },
   };
 }
@@ -144,13 +146,15 @@ async function main() {
 
   for (const contractType of contractTypes) {
     const address = contractAddresses[contractType]?.address;
-    if (!address) {
+    if (!address || address === '0x0000000000000000000000000000000000000000') {
       results.push({
         network,
         contract: contractType,
-        address: '(missing)',
-        status: 'failed',
-        message: 'Contract address not found',
+        address: address || '(missing)',
+        status: 'skipped',
+        message: contractType === 'AetheronStaking' 
+          ? 'Set AETHERON_STAKING_ADDRESS in .env after deployment'
+          : 'Contract address not configured',
       });
       continue;
     }

@@ -82,7 +82,8 @@ header h1 {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--primary);
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
 }
 
 .stat-label {

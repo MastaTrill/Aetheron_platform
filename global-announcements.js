@@ -3,7 +3,7 @@ function initGlobalAnnouncements() {
   const OFFLINE_TOAST_KEY = 'aethOfflineReadyShown';
 
   const scriptElement = document.currentScript || document.querySelector('script[src*="global-announcements.js"]');
-  const scriptSrc = scriptElement ? scriptElement.getAttribute('src') : 'global-announcements.js';
+  const scriptSrc = scriptElement ? (scriptElement.getAttribute('src') || 'global-announcements.js') : 'global-announcements.js';
   const basePath = scriptSrc.replace('global-announcements.js', '');
   const announcementsUrl = `${basePath}announcements.json`;
   const dashboardUrl = `${basePath}dashboard.html`;

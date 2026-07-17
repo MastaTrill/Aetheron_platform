@@ -147,6 +147,8 @@ body {
 .stat-card .value {
   font-size: 1.5rem;
   font-weight: 700;
+  color: rgba(110, 231, 255, 0.95) !important;
+  text-shadow: 0 0 18px rgba(110, 231, 255, 0.12);
 }
 
 .advanced-features {

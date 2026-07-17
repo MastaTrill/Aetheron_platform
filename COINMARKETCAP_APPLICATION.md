@@ -202,7 +202,7 @@ We can provide an API endpoint that returns real-time circulating supply based o
 
 **Q: Official Project Website**
 ```
-https://mastatrill.github.io/Aetheron_platform/
+https://aetrs.com/
 ```
 
 **Q: Twitter (REQUIRED)**
@@ -271,7 +271,7 @@ QuickSwap subgraph: https://api.thegraph.com/subgraphs/name/sameepsi/quickswap06
 
 **Q: Self-Reported Circulating Supply API** (Optional)
 ```
-[Can create endpoint: https://mastatrill.github.io/Aetheron_platform/api/circulating-supply]
+[Can create endpoint: https://aetrs.com/api/circulating-supply]
 
 Returns JSON:
 {
@@ -357,12 +357,12 @@ Decentralized project - No central legal entity (typical for DeFi)
 
 **Q: Terms of Service**
 ```
-https://mastatrill.github.io/Aetheron_platform/terms-of-service.html
+https://aetrs.com/terms-of-service.html
 ```
 
 **Q: Privacy Policy**
 ```
-https://mastatrill.github.io/Aetheron_platform/privacy-policy.html
+https://aetrs.com/privacy-policy.html
 ```
 
 ---
@@ -371,13 +371,13 @@ https://mastatrill.github.io/Aetheron_platform/privacy-policy.html
 
 **Q: Whitepaper/Litepaper URL**
 ```
-https://mastatrill.github.io/Aetheron_platform/litepaper.html
+https://aetrs.com/litepaper.html
 ```
 
 **Q: Technical Documentation**
 ```
 https://github.com/mastatrill/Aetheron_platform
-https://mastatrill.github.io/Aetheron_platform/roadmap.html
+https://aetrs.com/roadmap.html
 ```
 
 ---

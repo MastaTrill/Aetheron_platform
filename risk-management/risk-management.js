@@ -402,5 +402,4 @@ function optimizePortfolio() {
 
 function runScenario(scenario) {
   window.riskManager?.runScenario(scenario);
-}</content >
-  <parameter name="filePath">c:\Users\willi\.vscode\Aetheron_platform\risk-management\risk-management.js
+}

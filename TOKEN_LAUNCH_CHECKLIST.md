@@ -7,7 +7,7 @@
 - [x] Deploy AETH token contract to Polygon mainnet
 - [x] Deploy AetheronStaking contract to Polygon mainnet
 - [x] Verify contracts on Polygonscan
-- [x] Transfer ownership to Coinbase wallet (0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82)
+- [x] Confirm ownership is on 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
 - [x] Update deployment records and documentation
 
 ### 2. Treasury Setup

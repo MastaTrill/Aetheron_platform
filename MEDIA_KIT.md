@@ -158,7 +158,7 @@ DEX: QuickSwap (Polygon)
 
 ### Essential Links (Always Include)
 ```
-Website: https://mastatrill.github.io/Aetheron_platform/
+Website: https://aetrs.com/
 Twitter: https://twitter.com/William_McCoy_
 GitHub: https://github.com/mastatrill/Aetheron_platform
 PolygonScan: https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e
@@ -167,11 +167,11 @@ QuickSwap: https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B2
 
 ### Additional Resources
 ```
-Litepaper: https://mastatrill.github.io/Aetheron_platform/litepaper.html
-FAQ: https://mastatrill.github.io/Aetheron_platform/faq.html
-Roadmap: https://mastatrill.github.io/Aetheron_platform/roadmap.html
-Terms of Service: https://mastatrill.github.io/Aetheron_platform/terms-of-service.html
-Privacy Policy: https://mastatrill.github.io/Aetheron_platform/privacy-policy.html
+Litepaper: https://aetrs.com/litepaper.html
+FAQ: https://aetrs.com/faq.html
+Roadmap: https://aetrs.com/roadmap.html
+Terms of Service: https://aetrs.com/terms-of-service.html
+Privacy Policy: https://aetrs.com/privacy-policy.html
 ```
 
 ---
@@ -238,7 +238,7 @@ Aetheron (AETH) is a decentralized finance platform built on Polygon, offering s
 Media Contact:
 Twitter: @William_McCoy_
 Email: [if available]
-Website: https://mastatrill.github.io/Aetheron_platform/
+Website: https://aetrs.com/
 ```
 
 ---
@@ -362,7 +362,7 @@ A: Connect wallet to dashboard, choose pool (30/90/180 days), and approve transa
 **Contact:** William McCoy (Founder)  
 **Twitter:** [@William_McCoy_](https://twitter.com/William_McCoy_)  
 **GitHub:** [github.com/mastatrill](https://github.com/mastatrill)  
-**Website:** [Aetheron Dashboard](https://mastatrill.github.io/Aetheron_platform/)
+**Website:** [Aetheron Dashboard](https://aetrs.com/)
 
 **Response Time:** Within 24-48 hours  
 **Available for:** Interviews, podcasts, written features, partnership discussions

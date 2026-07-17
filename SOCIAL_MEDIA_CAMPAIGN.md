@@ -38,7 +38,7 @@ The next-generation #DeFi staking platform on @0xPolygon
 ✅ Real-time analytics dashboard
 ✅ Mobile-optimized experience
 
-Try it now: https://mastatrill.github.io/Aetheron_platform
+Try it now: https://aetrs.com
 
 $AETH #Polygon #Staking #Web3
 ```
@@ -58,7 +58,7 @@ Unlike other platforms, we show you EVERYTHING in real-time:
 • Staking metrics & APY
 • On-chain verification
 
-See for yourself: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+See for yourself: https://aetrs.com/analytics-dashboard.html
 
 #DeFi #OpenSource
 ```
@@ -76,7 +76,7 @@ Our FREE calculator shows you:
 • Live AETH price integration
 • USD value projections
 
-Plan your strategy: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+Plan your strategy: https://aetrs.com/staking-calculator.html
 
 Smart staking = More profits 💰
 
@@ -147,7 +147,7 @@ POOL 3: Aggressive
 • 90-day lock | 18% APY
 • Perfect for: Maximum returns
 
-Start staking: https://mastatrill.github.io/Aetheron_platform
+Start staking: https://aetrs.com
 
 $AETH #Staking
 ```
@@ -169,7 +169,7 @@ That's why Aetheron is mobile-optimized:
 
 Stake from anywhere, anytime 🌍
 
-Try on mobile: https://mastatrill.github.io/Aetheron_platform
+Try on mobile: https://aetrs.com
 
 #MobileFirst #DeFi
 ```
@@ -191,7 +191,7 @@ Try on mobile: https://mastatrill.github.io/Aetheron_platform
 
 It's that simple! 
 
-Start earning 8-18% APY: https://mastatrill.github.io/Aetheron_platform
+Start earning 8-18% APY: https://aetrs.com
 
 #CryptoEducation #DeFiForBeginners
 ```
@@ -250,7 +250,7 @@ Let's build the future of DeFi together! 🚀
 
 - @[Username]
 
-Your turn to start earning: https://mastatrill.github.io/Aetheron_platform
+Your turn to start earning: https://aetrs.com
 
 #Testimonial #DeFi
 ```
@@ -271,7 +271,7 @@ Thank you to our amazing community! 💙
 
 This is just the beginning. Next stop: $250K TVL 🚀
 
-Track our growth: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
+Track our growth: https://aetrs.com/analytics-dashboard.html
 
 $AETH #DeFi
 ```
@@ -294,7 +294,7 @@ AETHERON PLATFORM:
 
 The choice is obvious 😎
 
-Calculate your earnings: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+Calculate your earnings: https://aetrs.com/staking-calculator.html
 
 #DeFi #APY
 ```
@@ -315,7 +315,7 @@ Make your crypto work for you 💪
 🔒 Your keys, your tokens
 📈 Transparent, real-time tracking
 
-Start today: https://mastatrill.github.io/Aetheron_platform
+Start today: https://aetrs.com
 
 #CryptoTips #PassiveIncome
 ```
@@ -406,9 +406,9 @@ I wanted to share a DeFi staking platform I've been working on called **Aetheron
 After paying $100+ in Ethereum gas fees to stake $500, I realized DeFi needs to be more accessible. So I built Aetheron on Polygon where fees are $0.01.
 
 **Links:**
-• Platform: https://mastatrill.github.io/Aetheron_platform
-• Analytics: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
-• Calculator: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+• Platform: https://aetrs.com
+• Analytics: https://aetrs.com/analytics-dashboard.html
+• Calculator: https://aetrs.com/staking-calculator.html
 • Whitepaper: [Link]
 • Verified Contracts: https://polygonscan.com/address/0xAb5a...
 
@@ -446,15 +446,15 @@ A next-generation DeFi staking platform offering 8-18% APY with rock-bottom fees
 ✅ Verified smart contracts
 
 **Get Started:**
-1. Visit: https://mastatrill.github.io/Aetheron_platform
+1. Visit: https://aetrs.com
 2. Connect MetaMask
 3. Switch to Polygon network
 4. Buy AETH on QuickSwap
 5. Start staking & earning!
 
 **Resources:**
-📊 Analytics: https://mastatrill.github.io/Aetheron_platform/analytics-dashboard.html
-🧮 Calculator: https://mastatrill.github.io/Aetheron_platform/staking-calculator.html
+📊 Analytics: https://aetrs.com/analytics-dashboard.html
+🧮 Calculator: https://aetrs.com/staking-calculator.html
 📄 Whitepaper: [Link]
 💻 GitHub: https://github.com/MastaTrill/Aetheron_platform
 

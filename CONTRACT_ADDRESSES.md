@@ -15,62 +15,47 @@
 
 #### Staking Contract
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
+- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
 - **Type:** Staking Contract
 - **Manages:** AETH token staking rewards
 - **Pools:** 3 (30/90/180 days)
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82)
+- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638)
 
 ---
 
 ### Additional Contracts
 
-#### Contract 1 (Test/Previous Token)
-
-- **Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 142 days ago (Jul 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 20 transactions
-- **Functions:** Approve, Mint, Batch Airdrop, Transfer Ownership, Unpause
-- **Status:** Previous deployment with failed mint/airdrop attempts
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x072091F554df794852E0A9d1c809F2B2bBda171E)
-
-#### Contract 2 (Oldest Test Token)
-
-- **Address:** `0xb687083F85c59f3dE192ab001d2D52c8D87181d5`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 162 days ago (Jun 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 2 transactions (Approve only)
-- **Status:** Minimal activity, likely abandoned test deployment
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0xb687083F85c59f3dE192ab001d2D52c8D87181d5)
-
-#### Contract 3 (Another Test Token)
-
-- **Address:** `0x25ed26BD8A6Cd2551AA3CCA8D4022A7efc276D54`
-- **Type:** ERC-20 Token Contract
-- **Deployed:** 158 days ago (Jun 2025)
-- **Creator:** `0x8a3ad49656bd07981c9cfc7ad826a808847c3452`
-- **Activity:** 13 transactions
-- **Functions:** Approve, Batch Airdrop, Unpause, Renounce Ownership
-- **Status:** Previous deployment with failed unpause/airdrop attempts
-- **View on PolygonScan:** [Link](https://polygonscan.com/address/0x25ed26BD8A6Cd2551AA3CCA8D4022A7efc276D54)
-
 ---
 
 ## Wallet Addresses
 
-### Team Wallet / Owner Wallet
+### Contract Owner (On-chain)
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Coinbase wallet)
-- **Role:** Contract owner, deployer, marketing, and staking pool
-- **Allocation:** 200,000,000 AETH (20%)
+- **Address:** `0xDF5A2b892254C42F80000A029dfE8b311f777Bd5`
+- **Role:** Owner of AETH token + Staking contracts; holds marketing allocation + liquidity
+- **Holds:** 81.4M AETH marketing / liquidity, 0 POL
 
-### Keeper's Lantern Wallet
+### Team Wallet
 
-- **Address:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`
-- **Type:** Personal wallet
+- **Address:** `0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784`
+- **Role:** Team allocation holder
+- **Holds:** 254.7M AETH (20%), 0 POL
+
+### Treasury Wallet (c1fa)
+
+- **Address:** `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`
+- **Role:** Platform treasury
+- **Holds:** 29.7 POL, 0 AETH
+
+### Staking Contract
+
+- **Address:** `0x896D9d37A67B0bBf81dde0005975DA7850FFa638`
+- **Holds:** 150M AETH staking rewards
+
+### Historical / Obsolete
+
+- `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` — old Coinbase deployer reference, ignore
+- `0xF941B28F3B4188c473a4C8C78845ebab58654BA6` — temporary deployer from `.env` prior to audit, not equal to on-chain owner
 
 ---
 
@@ -115,4 +100,4 @@ All contracts can be interacted with via:
 
 ---
 
-**Last Updated:** December 20, 2025
+**Last Updated:** 2026-07-02

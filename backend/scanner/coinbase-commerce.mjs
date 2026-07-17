@@ -68,6 +68,52 @@ router.post('/create-coinbase-charge', async (req, res) => {
   }
 });
 
+// POST /api/create-launchpad-charge
+router.post('/create-launchpad-charge', async (req, res) => {
+  try {
+    const {
+      name,
+      symbol,
+      supply,
+      teamWallet,
+      allocationPercent,
+      logoUrl,
+      website,
+      description,
+    } = req.body || {};
+    if (!name || !symbol || !supply)
+      return res.status(400).json({ error: 'Missing token details' });
+
+    const charge = await createCoinbaseCharge({
+      name: `Aetheron Token Launch: ${name} (${symbol})`,
+      description: `Polygon ERC20 token launch via Aetheron Platform.\nSymbol: ${symbol}\nSupply: ${supply}\nTeam Wallet: ${teamWallet || 'default'}`,
+      amount: '30',
+      currency: 'USDC',
+      metadata: {
+        service: 'aetheron-launchpad',
+        tokenName: name,
+        symbol,
+        supply: String(supply),
+        teamWallet: teamWallet || '',
+        allocationPercent: allocationPercent || '1',
+        logoUrl: logoUrl || '',
+        website: website || '',
+        description: description || '',
+      },
+      redirect_url:
+        process.env.LAUNCHPAD_REDIRECT_URL ||
+        'https://aetrs.com/dashboard-enhanced.html?payment=success',
+      cancel_url:
+        process.env.LAUNCHPAD_CANCEL_URL ||
+        'https://aetrs.com/dashboard-enhanced.html?payment=cancelled',
+    });
+
+    res.json(charge);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Webhook endpoint for Coinbase Commerce (to be set in Coinbase dashboard)
 router.post(
   '/coinbase-webhook',

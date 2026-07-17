@@ -109,7 +109,7 @@ function syncReferralLink() {
     window.localStorage?.getItem('aetheron_connected') ||
     'YOURADDRESS';
 
-  referralInput.value = `https://mastatrill.github.io/Aetheron_platform/?ref=${encodeURIComponent(account)}`;
+  referralInput.value = `https://aetrs.com/?ref=${encodeURIComponent(account)}`;
 }
 
 function bindCopyResolverButton(id, resolveText, successMessage) {

@@ -97,7 +97,11 @@
   margin-right: 0.7em;
   text-decoration: none;
 }
-/* Responsive/mobile polish */
+/* Stat cards */
+.stat-card .value {
+  color: rgba(110, 231, 255, 0.95);
+  text-shadow: 0 0 22px rgba(110, 231, 255, 0.16);
+}
 @media (max-width: 600px) {
   body {
     font-size: 1em;

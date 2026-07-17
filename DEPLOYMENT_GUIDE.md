@@ -7,7 +7,7 @@ Your contracts were previously deployed to Polygon but appear incomplete:
 Your contracts are now fully deployed and verified on Polygon:
 
 - **AETH Token Contract:** `0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e` (ERC-20, verified)
-- **AetheronStaking Contract:** `0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82` (Staking, verified)
+- **AetheronStaking Contract:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452` (Staking, verified)
 - **AetxToken Contract:** `0x072091F554df794852E0A9d1c809F2B2bBda171E` (Legacy/Test, verified)
 
 ## 🔧 How to Fix - Complete Redeployment

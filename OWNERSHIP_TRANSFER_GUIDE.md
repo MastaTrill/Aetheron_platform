@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-This guide will help you transfer ownership of your Aetheron smart contracts from the old deployer wallet to your Coinbase wallet (`0x127C3a5A0922A0A952aDE71412E2DC651Aa7AF82`).
+This archive documents the ownership transfer that was completed during deployment on Polygon mainnet. Contract owner is now `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`.
 
 ## ⚠️ Prerequisites
 

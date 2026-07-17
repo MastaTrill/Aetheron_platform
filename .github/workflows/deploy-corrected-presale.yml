@@ -1,0 +1,158 @@
+name: Deploy Corrected Base Presale
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run all preflight checks without sending transactions"
+        required: true
+        type: boolean
+        default: true
+      presale_rate:
+        description: "AETH tokens per 1 ETH"
+        required: true
+        type: string
+      soft_cap_eth:
+        description: "Soft cap in ETH"
+        required: true
+        type: string
+      hard_cap_eth:
+        description: "Hard cap in ETH"
+        required: true
+        type: string
+      min_eth:
+        description: "Minimum contribution in ETH"
+        required: true
+        type: string
+      max_eth:
+        description: "Maximum cumulative contribution per wallet in ETH"
+        required: true
+        type: string
+      start_delay_seconds:
+        description: "Delay before sale start, minimum 3600"
+        required: true
+        type: string
+        default: "14400"
+      duration_seconds:
+        description: "Sale duration, minimum 86400"
+        required: true
+        type: string
+        default: "864000"
+      confirmation:
+        description: "For a live deployment type DEPLOY_CORRECTED_PRESALE; leave DRY_RUN for rehearsal"
+        required: true
+        type: string
+        default: "DRY_RUN"
+
+permissions:
+  contents: write
+
+env:
+  AETH_TOKEN_ADDRESS: "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.dry_run && 'presale-dry-run' || 'base-mainnet-production' }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Reject unauthorized live deployment
+        if: ${{ !inputs.dry_run }}
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirmation }}" != "DEPLOY_CORRECTED_PRESALE" ]; then
+            echo "Live deployment confirmation phrase is missing."
+            exit 1
+          fi
+
+      - name: Validate required repository secrets
+        shell: bash
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+          TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
+        run: |
+          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
+          test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY secret"; exit 1; }
+          test -n "$TREASURY_ADDRESS" || { echo "Missing PRESALE_TREASURY_ADDRESS secret"; exit 1; }
+
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+
+      - name: Run contract and frontend tests
+        working-directory: smart-contract
+        run: npm test
+
+      - name: Execute guarded deployment script
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+          TREASURY_ADDRESS: ${{ secrets.PRESALE_TREASURY_ADDRESS }}
+          PRESALE_RATE: ${{ inputs.presale_rate }}
+          PRESALE_SOFT_CAP_ETH: ${{ inputs.soft_cap_eth }}
+          PRESALE_HARD_CAP_ETH: ${{ inputs.hard_cap_eth }}
+          PRESALE_MIN_ETH: ${{ inputs.min_eth }}
+          PRESALE_MAX_ETH: ${{ inputs.max_eth }}
+          PRESALE_START_DELAY_SECONDS: ${{ inputs.start_delay_seconds }}
+          PRESALE_DURATION_SECONDS: ${{ inputs.duration_seconds }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          CONFIRM_BASE_MAINNET_DEPLOY: ${{ inputs.confirmation }}
+        run: npm run deploy:presale:base:safe
+
+      - name: Verify corrected Base state
+        if: ${{ !inputs.dry_run }}
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: npm run verify:base:readonly
+
+      - name: Run disposable Base fork test
+        if: ${{ !inputs.dry_run }}
+        working-directory: smart-contract
+        env:
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: npm run test:base-fork
+
+      - name: Commit generated deployment evidence
+        if: ${{ !inputs.dry_run }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add presale-config.js smart-contract/deployments/presale-base.json
+          if git diff --cached --quiet; then
+            echo "No generated deployment files changed."
+            exit 1
+          fi
+          git commit -m "deploy: record corrected Base presale"
+          git push origin HEAD:main
+
+      - name: Deployment summary
+        shell: bash
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "Dry run completed. No transaction was sent." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Corrected Base presale deployment completed and read-only/fork checks passed." >> "$GITHUB_STEP_SUMMARY"
+            echo "A separate deliberately small owner-approved purchase is still required before public launch." >> "$GITHUB_STEP_SUMMARY"
+          fi
