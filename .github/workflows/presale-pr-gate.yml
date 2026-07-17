@@ -50,10 +50,15 @@ jobs:
         shell: bash
         run: |
           for file in \
+            smart-contract/scripts/lib/base-read-retry.mjs \
             smart-contract/scripts/verify-base-readonly.mjs \
+            smart-contract/scripts/verify-base-presale-state.mjs \
             smart-contract/scripts/verify-basescan-v2.mjs \
+            smart-contract/scripts/inspect-invalid-presale-recovery.mjs \
+            smart-contract/scripts/deploy-base-presale-production.mjs \
             smart-contract/scripts/deploy-base-presale-safe.mjs \
-            smart-contract/scripts/cancel-invalid-base-presale.mjs; do
+            smart-contract/scripts/cancel-invalid-base-presale.mjs \
+            smart-contract/test/BaseForkReadOnly.fork.js; do
             if [ -f "$file" ]; then
               node --check "$file"
             fi
@@ -84,14 +89,19 @@ jobs:
             echo "verify:base:readonly is not present on this revision; skipping read-only Base inspection."
           fi
 
-      - name: Run disposable Base fork test when supported
+      - name: Run disposable Base fork test when a fork-capable RPC is available
         working-directory: smart-contract
         env:
-          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+          BASE_FORK_RPC_URL: ${{ secrets.BASE_FORK_RPC_URL || secrets.BASE_RPC_URL }}
         shell: bash
         run: |
-          if npm run | grep -q "test:base-fork"; then
-            npm run test:base-fork
-          else
+          if ! npm run | grep -q "test:base-fork"; then
             echo "test:base-fork is not present on this revision; skipping fork test."
+            exit 0
           fi
+          if [ -z "$BASE_FORK_RPC_URL" ]; then
+            echo "Fork-capable RPC is unavailable in this PR context."
+            echo "The protected Presale Operations Preflight remains the mandatory fork gate before deployment."
+            exit 0
+          fi
+          npm run test:base-fork
