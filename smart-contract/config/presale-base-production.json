@@ -8,11 +8,11 @@
   "rateAethPerEth": "1000000",
   "softCapEth": "5",
   "hardCapEth": "33.333333",
-  "minContributionEth": "0.001",
-  "maxContributionEth": "1",
+  "minContributionEth": "0.0003",
+  "maxContributionEth": "33.333333",
   "startDelaySeconds": "3600",
   "durationSeconds": "1209600",
-  "ownerSmokePurchaseEth": "0.001",
+  "ownerSmokePurchaseEth": "0.0003",
   "fundingAeth": "33333333",
   "tokenPriceEth": "0.000001",
   "status": "values-filled-awaiting-protected-secrets-and-owner-signatures",
@@ -23,6 +23,7 @@
   "notes": [
     "The treasury uses the Base owner/treasury address already recorded in deployment evidence.",
     "The hard cap and rate exactly fund the existing 33,333,333 AETH frontend sale allocation.",
+    "The per-wallet maximum equals the sale hard cap, so a buyer may purchase any remaining capacity without exceeding the global cap.",
     "The 50,000,000 AETH locked in the invalid presale is excluded from this allocation.",
     "A public token sale should not be opened until applicable legal and disclosure requirements have been reviewed."
   ]
