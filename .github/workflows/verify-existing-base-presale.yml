@@ -18,10 +18,11 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 20
     env:
-      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
-      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY || secrets.BASESCAN_API_KEY }}
       NODE_OPTIONS: --max-old-space-size=5120
     steps:
       - name: Require explicit verification authorization
