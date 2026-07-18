@@ -1,32 +1,16 @@
-(function () {
-  if (!('serviceWorker' in navigator)) return;
-
-  navigator.serviceWorker
-    .getRegistrations()
-    .then(async (registrations) => {
+(function retireLegacyAetheronCache() {
+  async function cleanup() {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
       await Promise.all(registrations.map((registration) => registration.unregister()));
-
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(
-          cacheNames
-            .filter((name) => name.startsWith('aetheron-'))
-            .map((name) => caches.delete(name)),
-        );
-      }
-
-      console.log('Aetheron service workers unregistered for fresh wallet assets');
-    })
-    .catch((error) => {
-      console.warn('Unable to clear old service workers:', error);
-    });
-
-  console.log(
-    '%cAetheron Platform v1.4.7',
-    'color: #00D4FF; font-size: 16px; font-weight: bold;',
-  );
-  console.log(
-    '%cHomepage cache reset enabled',
-    'color: #10b981; font-size: 12px;',
-  );
+    }
+    if ('caches' in window) {
+      const names = await caches.keys();
+      await Promise.all(names.map((name) => caches.delete(name)));
+    }
+  }
+  cleanup().catch((error) => console.warn('Legacy cache cleanup was not completed:', error));
+  navigator.serviceWorker?.addEventListener('message', (event) => {
+    if (event.data?.type === 'AETHERON_CACHE_RETIRED') window.location.reload();
+  });
 })();
