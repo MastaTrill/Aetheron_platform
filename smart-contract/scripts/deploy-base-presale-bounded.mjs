@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { ethers } from "ethers";
 
+const INVALID_PRESALE = "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C";
 const DEFAULT_DEPLOY_GAS_LIMIT = 12_000_000n;
 const MIN_DEPLOY_GAS_LIMIT = 1_000_000n;
 const MAX_DEPLOY_GAS_LIMIT = 25_000_000n;
@@ -29,6 +30,31 @@ function describeError(error) {
   return error?.shortMessage || error?.reason || error?.message || String(error);
 }
 
+function preserveRecoveryEvidence(deployment) {
+  deployment.contracts ||= {};
+  deployment.contracts.InvalidPresale ||= { address: INVALID_PRESALE };
+  deployment.replacesInvalidPresale ||= {
+    address: INVALID_PRESALE,
+    reason: "token() did not match the configured Base AETH token"
+  };
+  deployment.launchable = false;
+  deployment.safety ||= {};
+  deployment.safety.frontendEnabled = false;
+  return deployment;
+}
+
+// The underlying deployment module writes the journal after each confirmed stage.
+// Intercept only that one file so every partial write retains the invalid-presale
+// recovery evidence and the public-launch safety flags.
+const originalWriteFileSync = fs.writeFileSync.bind(fs);
+fs.writeFileSync = function writeFileSyncPreservingEvidence(path, data, ...args) {
+  if (String(path) === String(deploymentUrl) && typeof data === "string") {
+    const deployment = preserveRecoveryEvidence(JSON.parse(data));
+    data = JSON.stringify(deployment, null, 2) + "\n";
+  }
+  return originalWriteFileSync(path, data, ...args);
+};
+
 function persistBroadcast(kind, response, details = {}) {
   const evidence = {
     kind,
@@ -45,7 +71,9 @@ function persistBroadcast(kind, response, details = {}) {
   console.log(JSON.stringify({ transactionBroadcast: evidence }, null, 2));
 
   try {
-    const deployment = JSON.parse(fs.readFileSync(deploymentUrl, "utf8"));
+    const deployment = preserveRecoveryEvidence(
+      JSON.parse(fs.readFileSync(deploymentUrl, "utf8"))
+    );
     deployment.transactions ||= {};
     deployment.transactions[kind] = {
       ...(deployment.transactions[kind] || {}),
@@ -58,7 +86,6 @@ function persistBroadcast(kind, response, details = {}) {
 
     if (kind === "deploy") {
       deployment.status = "presale-deployment-broadcast-awaiting-confirmation";
-      deployment.contracts ||= {};
       deployment.contracts.Presale = {
         ...(deployment.contracts.Presale || {}),
         address: details.predictedAddress,
