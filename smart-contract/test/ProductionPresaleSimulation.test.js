@@ -7,6 +7,8 @@ const production = JSON.parse(
   fs.readFileSync(new URL("../config/presale-base-production.json", import.meta.url), "utf8")
 );
 const BOUNDED_DEPLOY_GAS_LIMIT = 12_000_000n;
+const BOUNDED_TOKEN_SETUP_GAS_LIMIT = 1_000_000n;
+const BOUNDED_FUNDING_GAS_LIMIT = 1_000_000n;
 
 describe("Exact production presale simulation", { concurrency: false }, function () {
   it("deploys, funds, purchases, escrows, cancels, and refunds with production values", async function () {
@@ -55,8 +57,21 @@ describe("Exact production presale simulation", { concurrency: false }, function
     );
 
     const presaleAddress = await presale.getAddress();
-    await (await token.setExcludedFromTax(presaleAddress, true)).wait();
-    await (await token.transfer(presaleAddress, fundingAmount)).wait();
+    const taxTransaction = await token.setExcludedFromTax(presaleAddress, true);
+    const taxReceipt = await taxTransaction.wait();
+    assert.equal(taxReceipt.status, 1);
+    assert.ok(
+      taxReceipt.gasUsed < BOUNDED_TOKEN_SETUP_GAS_LIMIT,
+      `Measured tax-exclusion gas ${taxReceipt.gasUsed} must remain below the bounded live limit ${BOUNDED_TOKEN_SETUP_GAS_LIMIT}`
+    );
+
+    const fundingTransaction = await token.transfer(presaleAddress, fundingAmount);
+    const fundingReceipt = await fundingTransaction.wait();
+    assert.equal(fundingReceipt.status, 1);
+    assert.ok(
+      fundingReceipt.gasUsed < BOUNDED_FUNDING_GAS_LIMIT,
+      `Measured funding gas ${fundingReceipt.gasUsed} must remain below the bounded live limit ${BOUNDED_FUNDING_GAS_LIMIT}`
+    );
 
     assert.equal(await token.balanceOf(presaleAddress), fundingAmount);
     assert.equal(await token.isExcludedFromTax(presaleAddress), true);
