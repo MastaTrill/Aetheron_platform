@@ -1,60 +1,38 @@
-// Contract addresses - Update after deployment
+// Contract addresses by network
 export const CONTRACTS = {
-  // Local/Development
   local: {
     AETH_TOKEN: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
     STAKING: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+    PRESALE: '',
   },
-  // Mumbai Testnet
-  mumbai: {
-    AETH_TOKEN: '',
+  base: {
+    AETH_TOKEN: '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
+    PRESALE: '0xe0A3B6368312dFd3E7E76202e673f895f8235A3d',
+    // Public staking is not active until a verified Base staking address is published.
     STAKING: '',
-  },
-  // Polygon Mainnet - DEPLOYED Dec 20, 2025
-  polygon: {
-    AETH_TOKEN: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
-    STAKING: '0x896D9d37A67B0bBf81dde0005975DA7850FFa638',
-
   },
 };
 
-// Network configurations
 export const NETWORKS = {
   hardhat: {
     chainId: 1337,
     name: 'Hardhat',
     rpcUrl: 'http://127.0.0.1:8545',
   },
-  mumbai: {
-    chainId: 80001,
-    name: 'Mumbai Testnet',
-    rpcUrl: 'https://rpc-mumbai.maticvigil.com',
-    blockExplorer: 'https://mumbai.polygonscan.com',
-  },
-  polygon: {
-    chainId: 137,
-    name: 'Polygon Mainnet',
-    rpcUrl: 'https://polygon-rpc.com',
-    blockExplorer: 'https://polygonscan.com',
+  base: {
+    chainId: 8453,
+    name: 'Base Mainnet',
+    rpcUrl: 'https://mainnet.base.org',
+    blockExplorer: 'https://basescan.org',
   },
 };
 
-// Get current network config
 export const getCurrentNetwork = () => {
-  const chainId = process.env.NEXT_PUBLIC_CHAIN_ID || '137';
-  
-  switch (chainId) {
-    case '1337':
-      return { ...NETWORKS.hardhat, contracts: CONTRACTS.local };
-    case '80001':
-      return { ...NETWORKS.mumbai, contracts: CONTRACTS.mumbai };
-    case '137':
-    default:
-      return { ...NETWORKS.polygon, contracts: CONTRACTS.polygon };
-  }
+  const chainId = process.env.NEXT_PUBLIC_CHAIN_ID || '8453';
+  if (chainId === '1337') return { ...NETWORKS.hardhat, contracts: CONTRACTS.local };
+  return { ...NETWORKS.base, contracts: CONTRACTS.base };
 };
 
-// Contract ABIs (abbreviated - full ABIs generated after compilation)
 export const AETH_ABI = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
@@ -71,6 +49,7 @@ export const AETH_ABI = [
   'event Approval(address indexed owner, address indexed spender, uint256 value)',
 ];
 
+// Retained for future use. Do not enable staking UI until a verified Base address is configured.
 export const STAKING_ABI = [
   'function stake(uint256 poolId, uint256 amount)',
   'function unstake(uint256 stakeId)',
