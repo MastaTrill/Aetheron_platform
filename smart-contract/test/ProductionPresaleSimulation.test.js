@@ -6,6 +6,7 @@ import { network } from "hardhat";
 const production = JSON.parse(
   fs.readFileSync(new URL("../config/presale-base-production.json", import.meta.url), "utf8")
 );
+const BOUNDED_DEPLOY_GAS_LIMIT = 12_000_000n;
 
 describe("Exact production presale simulation", { concurrency: false }, function () {
   it("deploys, funds, purchases, escrows, cancels, and refunds with production values", async function () {
@@ -44,7 +45,14 @@ describe("Exact production presale simulation", { concurrency: false }, function
       endTime,
       treasury.address
     );
+    const presaleDeploymentTransaction = presale.deploymentTransaction();
     await presale.waitForDeployment();
+    const presaleDeploymentReceipt = await presaleDeploymentTransaction.wait();
+    assert.equal(presaleDeploymentReceipt.status, 1);
+    assert.ok(
+      presaleDeploymentReceipt.gasUsed < BOUNDED_DEPLOY_GAS_LIMIT,
+      `Measured presale deployment gas ${presaleDeploymentReceipt.gasUsed} must remain below the bounded live limit ${BOUNDED_DEPLOY_GAS_LIMIT}`
+    );
 
     const presaleAddress = await presale.getAddress();
     await (await token.setExcludedFromTax(presaleAddress, true)).wait();
