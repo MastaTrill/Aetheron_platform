@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 const CHAIN_ID = "8453";
-const CONTRACT_NAME = "contracts/AetheronPresale.sol:AetheronPresaleV2";
+const CONTRACT_BASENAME = "AetheronPresaleV2";
 const API_URL = "https://api.etherscan.io/v2/api";
 const API_KEY = process.env.ETHERSCAN_API_KEY || process.env.BASESCAN_API_KEY;
 
@@ -50,14 +50,21 @@ for (const name of requiredParameterNames) {
 
 const buildInfoFiles = fs.readdirSync(buildInfoDir).filter((name) => name.endsWith(".json"));
 let buildInfo;
+let contractName;
 for (const file of buildInfoFiles) {
   const candidate = JSON.parse(fs.readFileSync(path.join(buildInfoDir, file), "utf8"));
-  if (candidate.output?.contracts?.["contracts/AetheronPresale.sol"]?.AetheronPresaleV2) {
+  const sourceName = Object.keys(candidate.output?.contracts || {}).find(
+    (name) => candidate.output.contracts[name]?.[CONTRACT_BASENAME]
+  );
+  if (sourceName) {
     buildInfo = candidate;
+    contractName = `${sourceName}:${CONTRACT_BASENAME}`;
     break;
   }
 }
-if (!buildInfo) throw new Error("Unable to locate AetheronPresaleV2 in Hardhat build-info");
+if (!buildInfo || !contractName) {
+  throw new Error(`Unable to locate ${CONTRACT_BASENAME} in Hardhat build-info`);
+}
 
 const compilerVersion = `v${buildInfo.solcLongVersion || buildInfo.solcVersion}`;
 const constructorArguments = ethers.AbiCoder.defaultAbiCoder().encode(
@@ -100,7 +107,7 @@ const submission = await etherscanRequest({
   contractaddress: presaleAddress,
   sourceCode: JSON.stringify(buildInfo.input),
   codeformat: "solidity-standard-json-input",
-  contractname: CONTRACT_NAME,
+  contractname: contractName,
   compilerversion: compilerVersion,
   optimizationUsed: buildInfo.input.settings?.optimizer?.enabled ? "1" : "0",
   runs: String(buildInfo.input.settings?.optimizer?.runs || 200),
@@ -161,7 +168,7 @@ deployment.verification = {
   chainId: 8453,
   verified: true,
   verifiedAt: new Date().toISOString(),
-  contractName: CONTRACT_NAME,
+  contractName,
   compilerVersion,
   constructorArguments,
   url: `https://basescan.org/address/${presaleAddress}#code`
