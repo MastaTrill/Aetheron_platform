@@ -101,7 +101,7 @@ async function etherscanRequest(values, method = "POST") {
 
   const response = method === "GET"
     ? await fetch(`${API_URL}?${params.toString()}`, { method: "GET" })
-    : await fetch(API_URL, {
+    : await fetch(`${API_URL}?chainid=${CHAIN_ID}`, {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded" },
         body: params
