@@ -27,12 +27,12 @@ on:
         description: "Minimum contribution in ETH"
         required: true
         type: string
-        default: "0.001"
+        default: "0.0003"
       max_eth:
         description: "Maximum cumulative contribution per wallet in ETH"
         required: true
         type: string
-        default: "1"
+        default: "33.333333"
       start_delay_seconds:
         description: "Delay before sale start, minimum 3600"
         required: true
