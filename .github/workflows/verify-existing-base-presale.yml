@@ -1,0 +1,74 @@
+name: Verify Existing Base Presale
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type VERIFY_EXISTING_PRESALE
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-existing-base-presale
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      NODE_OPTIONS: --max-old-space-size=5120
+    steps:
+      - name: Require explicit verification authorization
+        if: ${{ inputs.confirmation != 'VERIFY_EXISTING_PRESALE' }}
+        run: exit 1
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Validate verification credentials
+        run: |
+          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL secret"; exit 1; }
+          test -n "$ETHERSCAN_API_KEY" || { echo "Missing ETHERSCAN_API_KEY secret"; exit 1; }
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+      - name: Run production tests
+        working-directory: smart-contract
+        run: npm test
+      - name: Verify existing Base state
+        working-directory: smart-contract
+        run: npm run verify:base:readonly
+      - name: Verify existing source on BaseScan
+        working-directory: smart-contract
+        run: npm run verify:basescan
+      - name: Publish verified replacement while purchases remain disabled
+        working-directory: smart-contract
+        run: npm run record:verified-frontend
+      - name: Persist verification journal and disabled frontend
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/deployments/presale-base.json presale-config.js
+          if git diff --cached --quiet; then
+            echo "No verification changes to commit."
+          else
+            git commit -m "verify: record BaseScan-verified presale"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
