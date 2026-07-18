@@ -51,13 +51,18 @@ test("contribution limits and schedule satisfy deployment guards", () => {
   assert.equal(production.ownerSmokePurchaseEth, production.minContributionEth);
 });
 
-test("disabled frontend config matches the approved Base terms", () => {
+test("frontend config matches the approved Base terms and recorded launch state", () => {
   assert.match(rootFrontendSource, new RegExp(`aethTokenAddress: ["']${production.tokenAddress}["']`));
-  assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
-  assert.match(
-    rootFrontendSource,
-    /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/
-  );
+  if (deployment.launchable) {
+    assert.match(rootFrontendSource, new RegExp(`presaleContractAddress: ["']${deployment.contracts.Presale.address}["']`));
+    assert.match(rootFrontendSource, /status:\s*["']live["']/);
+  } else {
+    assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
+    assert.match(
+      rootFrontendSource,
+      /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/
+    );
+  }
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
   assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
@@ -74,6 +79,21 @@ test("deployment journal preserves accounting or a recoverable non-launchable st
     assert.equal(nominal - locked, maximumAccessible);
     assert.ok(BigInt(production.saleAllocationAeth) <= maximumAccessible);
     assert.equal(locked, 50_000_000n);
+    return;
+  }
+
+  if (deployment.launchable) {
+    assert.equal(deployment.safety?.frontendEnabled, true);
+    assert.equal(deployment.frontend?.publicPurchaseAddressEnabled, true);
+    assert.equal(deployment.frontend?.status, "live");
+    assert.ok(ethers.isAddress(deployment.contracts?.Presale?.address));
+    assert.ok(isTransactionHash(deployment.transactions?.smokePurchase?.hash));
+    assert.equal(BigInt(deployment.transactions.smokePurchase.amountWei), ethers.parseEther(production.ownerSmokePurchaseEth));
+    assert.equal(BigInt(deployment.verifiedState?.weiRaised), ethers.parseEther(production.ownerSmokePurchaseEth));
+    assert.equal(
+      BigInt(deployment.verifiedState?.tokensReserved),
+      ethers.parseEther(production.ownerSmokePurchaseEth) * BigInt(production.rateAethPerEth)
+    );
     return;
   }
 

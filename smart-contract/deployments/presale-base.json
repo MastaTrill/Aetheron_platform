@@ -59,10 +59,10 @@
     "reason": "token() did not match the configured Base AETH token"
   },
   "safety": {
-    "frontendEnabled": false,
-    "note": "Deployment, token-tax exclusion, and funding are separate owner transactions. Each completed step is journaled immediately."
+    "frontendEnabled": true,
+    "note": "The verified Base presale passed the owner smoke purchase and the public purchase address is enabled."
   },
-  "updatedAt": "2026-07-18T19:07:11.633Z",
+  "updatedAt": "2026-07-18T21:33:42.406Z",
   "inventory": {
     "tokenUnits": "33333333000000000000000000",
     "tokenAmount": "33333333.0"
@@ -78,8 +78,8 @@
     "maxContributionWei": "33333333000000000000",
     "startTime": "1784405200",
     "endTime": "1785614800",
-    "weiRaised": "0",
-    "tokensReserved": "0",
+    "weiRaised": "300000000000000",
+    "tokensReserved": "300000000000000000000",
     "cancelled": false,
     "finalized": false,
     "taxExcluded": true,
