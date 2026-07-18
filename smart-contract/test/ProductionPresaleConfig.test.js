@@ -54,7 +54,10 @@ test("contribution limits and schedule satisfy deployment guards", () => {
 test("disabled frontend config matches the approved Base terms", () => {
   assert.match(rootFrontendSource, new RegExp(`aethTokenAddress: ["']${production.tokenAddress}["']`));
   assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
-  assert.match(`n    rootFrontendSource,`n    /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/`n  );
+  assert.match(
+    rootFrontendSource,
+    /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/
+  );
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
   assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
