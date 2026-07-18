@@ -10,8 +10,8 @@ const PRIVATE_KEY =
 const RATE = 1_000_000n;
 const SOFT_CAP = ethers.parseEther("5");
 const HARD_CAP = ethers.parseEther("33.333333");
-const MIN_CONTRIBUTION = ethers.parseEther("0.0003");
-const MAX_CONTRIBUTION = HARD_CAP;
+const MIN_CONTRIBUTION = ethers.parseEther("0.001");
+const MAX_CONTRIBUTION = ethers.parseEther("1");
 const START_DELAY = 60;
 const DURATION = 14 * 24 * 60 * 60;
 
