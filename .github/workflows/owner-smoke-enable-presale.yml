@@ -1,0 +1,67 @@
+name: Owner Smoke Purchase and Enable Presale
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: base-presale-launch
+  cancel-in-progress: false
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    environment: base-mainnet-production
+    timeout-minutes: 20
+    env:
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+      PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
+      CONFIRM_PUBLIC_PRESALE_LAUNCH: ${{ inputs.confirmation }}
+      NODE_OPTIONS: --max-old-space-size=5120
+    steps:
+      - name: Reject unauthorized launch
+        if: ${{ inputs.confirmation != 'SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE' }}
+        run: exit 1
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Validate protected signer credential
+        run: test -n "$PRIVATE_KEY" || { echo "Missing BASE_DEPLOYER_PRIVATE_KEY"; exit 1; }
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Compile contracts
+        working-directory: smart-contract
+        run: npm run compile
+      - name: Run production tests
+        working-directory: smart-contract
+        run: npm test
+      - name: Re-verify safely disabled Base state
+        working-directory: smart-contract
+        run: npm run verify:base:readonly
+      - name: Execute owner smoke purchase and enable only after confirmation
+        working-directory: smart-contract
+        run: node scripts/smoke-test-and-enable-presale.mjs
+      - name: Persist smoke receipt and enabled frontend
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/deployments/presale-base.json presale-config.js
+          git commit -m "launch: record owner smoke purchase and enable presale"
+          git pull --rebase origin main
+          git push origin HEAD:main
