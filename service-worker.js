@@ -1,222 +1,23 @@
-const CACHE_VERSION = 'v1.4.2';
-const CACHE_NAME = `aetheron-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `aetheron-runtime-${CACHE_VERSION}`;
-
-const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './index.js',
-  './charts.min.js',
-  './monitor.js',
-  './performance-monitor.js',
-  './marketing-launch.js',
-  './shared-utils.js',
-  './critical.css',
-  './index.css',
-  './shared-styles.css',
-  './mobile-optimization.css',
-  './shared-mobile-polish.css',
-  './sw-init.js',
-  './dom-bindings.js',
-  './dashboard-starfield.js',
-  './global-announcements.js',
-  './announcements.json',
-  './referral-leaderboard.json',
-  './manifest.json',
-  './manifest.webmanifest',
-  './offline.html',
-];
-
+// One-time retirement worker: remove every legacy Aetheron cache and release all clients.
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.clients.matchAll({ type: 'window' }))
-      .then((clients) => {
-        clients.forEach((client) =>
-          client.postMessage({ type: 'CACHE_READY' }),
-        );
-      }),
-  );
   self.skipWaiting();
+  event.waitUntil(caches.keys().then((names) => Promise.all(names.map((name) => caches.delete(name)))));
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) =>
-        Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-              return caches.delete(cacheName);
-            }
-            return null;
-          }),
-        ),
-      )
-      .then(() => self.clients.claim())
-      .then(() => self.clients.matchAll({ type: 'window' }))
-      .then((clients) => {
-        clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED' }));
-      }),
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  if (!event.request.url.startsWith('http')) {
-    return;
-  }
-
-  const requestUrl = new URL(event.request.url);
-  const isHtmlRequest =
-    event.request.mode === 'navigate' ||
-    event.request.headers.get('accept')?.includes('text/html');
-  const isSameOrigin = requestUrl.origin === self.location.origin;
-
-  // Let third-party CDN assets load directly and only manage selected APIs.
-  if (!isSameOrigin) {
-    if (
-      requestUrl.hostname.includes('polygon-rpc.com') ||
-      requestUrl.hostname.includes('polygonscan.com') ||
-      requestUrl.hostname.includes('quickswap.exchange')
-    ) {
-      event.respondWith(
-        caches.open('api-cache').then((cache) => {
-          return cache.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              // Check if cache is still fresh (5 minutes)
-              const cacheTime = new Date(
-                cachedResponse.headers.get('sw-cache-time'),
-              );
-              const now = new Date();
-              if (now - cacheTime < 5 * 60 * 1000) {
-                return cachedResponse;
-              }
-            }
-
-            return fetch(event.request).then((response) => {
-              if (response.status === 200) {
-                try {
-                  const headers = new Headers(response.headers);
-                  headers.set('sw-cache-time', new Date().toISOString());
-                  const responseClone = response.clone();
-                  responseClone.blob().then((blob) => {
-                    const cachedResponse = new Response(blob, {
-                      status: responseClone.status,
-                      statusText: responseClone.statusText,
-                      headers: headers,
-                    });
-                    cache.put(event.request, cachedResponse);
-                  });
-                } catch (e) {
-                  console.warn('Failed to clone response for caching', e);
-                }
-              }
-              return response;
-            });
-          });
-        }),
-      );
-      return;
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.map((name) => caches.delete(name)));
+    await self.clients.claim();
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of clients) {
+      client.postMessage({ type: 'AETHERON_CACHE_RETIRED' });
+      if ('navigate' in client) await client.navigate(`${client.url.split('?')[0]}?site=base-live-v2`);
     }
-    return;
-  }
-
-  // Handle HTML requests with network-first strategy
-  if (isHtmlRequest) {
-    event.respondWith(
-      fetch(event.request)
-        .then(async (response) => {
-          if (response.status === 200) {
-            const responseClone = response.clone();
-            try {
-              const cache = await caches.open(RUNTIME_CACHE);
-              await cache.put(event.request, responseClone);
-            } catch (e) {
-              console.warn('Failed to cache HTML response', e);
-            }
-          }
-          return response;
-        })
-        .catch(() => {
-          // Show offline notification if available
-          self.registration.showNotification &&
-            self.registration.showNotification('You are offline', {
-              body: 'Some features may be unavailable.',
-              icon: './apple-touch-icon.png',
-            });
-          return caches.match('./offline.html');
-        }),
-    );
-    return;
-  }
-
-  // Handle static assets with cache-first strategy
-  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|woff|woff2|webp)$/i.test(
-    requestUrl.pathname,
-  );
-
-  if (isStaticAsset) {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        // Serve from cache if available
-        if (cachedResponse) {
-          // Update cache in background
-          fetch(event.request)
-            .then((response) => {
-              if (response && response.status === 200) {
-                const responseClone = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, responseClone);
-                });
-              }
-            })
-            .catch(() => {});
-          return cachedResponse;
-        }
-        // If not cached, fetch from network and cache
-        return fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200) {
-              const responseClone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseClone);
-              });
-            }
-            return response;
-          })
-          .catch(() => cachedResponse || Response.error());
-      }),
-    );
-    return;
-  }
-
-  // Default cache-first strategy with background update
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      });
-
-      return cachedResponse || fetchPromise;
-    }),
-  );
+    await self.registration.unregister();
+  })());
 });
 
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+self.addEventListener('fetch', () => {
+  // Deliberately do not intercept. Every request goes to the current production deployment.
 });
