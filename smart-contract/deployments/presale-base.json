@@ -1,15 +1,17 @@
 {
   "network": "base",
   "chainId": 8453,
-  "status": "deployment-failed-before-broadcast",
+  "status": "deployed-funded-state-verified-awaiting-basescan",
   "launchable": false,
-  "timestamp": "2026-07-17T22:18:12.386Z",
+  "timestamp": "2026-07-18T19:06:40.802Z",
   "contracts": {
     "Aetheron": {
       "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
     },
     "Presale": {
-      "address": null
+      "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
+      "deploymentTransactionHash": "0x7ac118e87c317b8c8cad669fac7fd04788529181fac8b577ee182d01a4270326",
+      "deploymentBlockNumber": 48806128
     },
     "InvalidPresale": {
       "address": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C"
@@ -23,19 +25,28 @@
     "rate": "1000000",
     "softCapWei": "5000000000000000000",
     "hardCapWei": "33333333000000000000",
-    "minContributionWei": "1000000000000000",
-    "maxContributionWei": "1000000000000000000",
-    "startTime": 1784330292,
-    "endTime": 1785539892,
+    "minContributionWei": "300000000000000",
+    "maxContributionWei": "33333333000000000000",
+    "startTime": 1784405200,
+    "endTime": 1785614800,
     "fundedTokenUnits": "33333333000000000000000000"
   },
-  "transactions": {},
-  "lastFailure": {
-    "workflowRun": 14,
-    "exitCode": 134,
-    "stage": "contract-creation-before-broadcast",
-    "transactionRecorded": false,
-    "note": "Node heap exhausted during the remote contract-creation estimation path before any transaction hash was returned."
+  "transactions": {
+    "deploy": {
+      "hash": "0x7ac118e87c317b8c8cad669fac7fd04788529181fac8b577ee182d01a4270326",
+      "blockNumber": 48806128,
+      "status": 1
+    },
+    "excludeFromTax": {
+      "hash": "0x523f336058dfe4ef6f31f797e7d361bd43b2268b0fd0dd87c4a04bb17d34eede",
+      "blockNumber": 48806130,
+      "status": 1
+    },
+    "fund": {
+      "hash": "0x6364b30ffaeeea627dec15dd17dd3e33321e9b1b4f66d8d303eee582ed6f9d12",
+      "blockNumber": 48806132,
+      "status": 1
+    }
   },
   "replacesInvalidPresale": {
     "address": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
@@ -43,7 +54,30 @@
   },
   "safety": {
     "frontendEnabled": false,
-    "note": "Deployment, token-tax exclusion, and funding are separate owner transactions. Each completed or broadcast step is journaled immediately."
+    "note": "Deployment, token-tax exclusion, and funding are separate owner transactions. Each completed step is journaled immediately."
   },
-  "updatedAt": "2026-07-18T00:20:00.000Z"
+  "updatedAt": "2026-07-18T19:07:11.633Z",
+  "inventory": {
+    "tokenUnits": "33333333000000000000000000",
+    "tokenAmount": "33333333.0"
+  },
+  "verifiedState": {
+    "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "token": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "treasury": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "rate": "1000000",
+    "softCapWei": "5000000000000000000",
+    "hardCapWei": "33333333000000000000",
+    "minContributionWei": "300000000000000",
+    "maxContributionWei": "33333333000000000000",
+    "startTime": "1784405200",
+    "endTime": "1785614800",
+    "weiRaised": "0",
+    "tokensReserved": "0",
+    "cancelled": false,
+    "finalized": false,
+    "taxExcluded": true,
+    "bytecodePresent": true,
+    "inventoryTokenUnits": "33333333000000000000000000"
+  }
 }
