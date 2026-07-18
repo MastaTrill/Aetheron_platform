@@ -8,6 +8,6 @@ window.AETHERON_PRESALE_CONFIG = {
   network: "base",
   chainId: 8453,
   nativeSymbol: "ETH",
-  minContribution: 0.001,
-  maxContribution: 1
+  minContribution: 0.0003,
+  maxContribution: 33.333333
 };
