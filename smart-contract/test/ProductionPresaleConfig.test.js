@@ -10,6 +10,12 @@ const boundedEntrypointSource = fs.readFileSync(new URL("../scripts/deploy-base-
 const productionGuardSource = fs.readFileSync(new URL("../scripts/deploy-base-presale-production.mjs", import.meta.url), "utf8");
 const stateVerifierSource = fs.readFileSync(new URL("../scripts/verify-base-presale-state.mjs", import.meta.url), "utf8");
 const presaleSource = fs.readFileSync(new URL("../contracts/AetheronPresale.sol", import.meta.url), "utf8");
+const rootFrontendSource = fs.readFileSync(new URL("../../presale-config.js", import.meta.url), "utf8");
+const legacyMainnetSource = fs.readFileSync(new URL("../scripts/deploy-mainnet.mjs", import.meta.url), "utf8");
+const localDeployerSource = fs.readFileSync(new URL("../scripts/start-presale-local.mjs", import.meta.url), "utf8");
+const operationsGuideSource = fs.readFileSync(new URL("../../PRESALE_GUIDE.md", import.meta.url), "utf8");
+const duplicateFrontendUrl = new URL("../presale-config.js", import.meta.url);
+const staleVerificationInputUrl = new URL("../../presale-verification-input.json", import.meta.url);
 
 function isTransactionHash(value) {
   return /^0x[0-9a-fA-F]{64}$/.test(value || "");
@@ -43,6 +49,18 @@ test("contribution limits and schedule satisfy deployment guards", () => {
   assert.ok(Number(production.startDelaySeconds) >= 3600);
   assert.ok(Number(production.durationSeconds) >= 86400);
   assert.equal(production.ownerSmokePurchaseEth, production.minContributionEth);
+});
+
+test("disabled frontend config matches the approved Base terms", () => {
+  assert.match(rootFrontendSource, new RegExp(`aethTokenAddress: ["']${production.tokenAddress}["']`));
+  assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
+  assert.match(rootFrontendSource, /status:\s*["']disabled-awaiting-replacement-deployment["']/);
+  assert.match(rootFrontendSource, /network:\s*["']base["']/);
+  assert.match(rootFrontendSource, /chainId:\s*8453/);
+  assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
+  assert.match(rootFrontendSource, new RegExp(`maxContribution:\\s*${production.maxContributionEth}`));
+  assert.doesNotMatch(rootFrontendSource, /maxContribution:\s*100(?:\D|$)/);
+  assert.equal(fs.existsSync(duplicateFrontendUrl), false, "Only the root presale-config.js may be canonical");
 });
 
 test("deployment journal preserves accounting or a recoverable non-launchable state", () => {
@@ -96,6 +114,26 @@ test("all production deployment entry points use the bounded wrapper around the 
   assert.match(productionGuardSource, /Invalid presale must be cancelled before replacement deployment/);
   assert.match(productionGuardSource, /Production presale rate was modified/);
   assert.match(productionGuardSource, /Protected signer is not the approved Base owner\/treasury wallet/);
+});
+
+test("obsolete deployment and verification paths are disabled", () => {
+  assert.match(legacyMainnetSource, /legacy Polygon mainnet presale deployer is disabled/);
+  assert.match(legacyMainnetSource, /Deploy Corrected Base Presale/);
+  assert.doesNotMatch(legacyMainnetSource, /0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e/i);
+  assert.doesNotMatch(legacyMainnetSource, /ContractFactory|factory\.deploy/);
+  assert.equal(fs.existsSync(staleVerificationInputUrl), false);
+  assert.match(operationsGuideSource, /Aetheron Base Presale Operations Guide/);
+  assert.match(operationsGuideSource, /Deploy Corrected Base Presale/);
+  assert.doesNotMatch(operationsGuideSource, /PRESALE_MAX_MATIC|presale-polygon\.json/);
+});
+
+test("local presale deployment uses the current constructor and cannot enable the public frontend", () => {
+  assert.match(localDeployerSource, /const RATE = 1_000_000n/);
+  assert.match(localDeployerSource, /const MAX_CONTRIBUTION = ethers\.parseEther\("1"\)/);
+  assert.match(localDeployerSource, /const fundingAmount = HARD_CAP \* RATE/);
+  assert.match(localDeployerSource, /endTime,\s*wallet\.address\s*\)/s);
+  assert.doesNotMatch(localDeployerSource, /writeFileSync\(["']\.\.\/\.\.\/presale-config\.js/);
+  assert.match(localDeployerSource, /public presale-config\.js was not modified/);
 });
 
 test("production guard retries transient Base reads before deployment", () => {

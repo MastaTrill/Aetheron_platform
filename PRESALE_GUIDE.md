@@ -1,78 +1,83 @@
-# Aetheron Presale Guide
+# Aetheron Base Presale Operations Guide
 
-## Current Status
+## Current status
 
-- Presale frontend is live at `https://aetrs.com/presale.html`.
-- The frontend stays disabled until `presale-config.js` contains a real Polygon presale contract address.
-- The deploy script generates `presale-config.js` after a successful deployment.
+- Network: Base mainnet (`chainId` 8453).
+- Approved AETH token: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`.
+- Owner and treasury: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`.
+- Invalid cancelled presale: `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C`.
+- Public purchases remain disabled because `presaleContractAddress` is blank.
+- The obsolete Polygon deployment path must not be used.
 
-## 1. Pre-Deploy Checklist
+## Approved production terms
 
-- Fund the deployer wallet on Polygon with enough POL/MATIC for deployment and the `setExcludedFromTax` transaction.
-- Confirm the deployer owns or can administer the AETH token, because the deploy script must exclude the presale contract from token tax.
-- Confirm the treasury address is correct: `0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa`.
-- Run tests before deploying:
+- Rate: 1,000,000 AETH per ETH.
+- Sale allocation: 33,333,333 AETH.
+- Soft cap: 5 ETH.
+- Hard cap: 33.333333 ETH.
+- Minimum contribution: 0.001 ETH.
+- Maximum cumulative contribution per wallet: 1 ETH.
+- Start delay: 3,600 seconds.
+- Duration: 1,209,600 seconds (14 days).
 
-```bash
-cd smart-contract
-npm run compile
-npm test
+The 50,000,000 AETH locked in the invalid presale is not part of the replacement inventory.
+
+## Required protected secrets
+
+Configure the appropriate GitHub environments with:
+
+- `BASE_DEPLOYER_PRIVATE_KEY`
+- `ETHERSCAN_API_KEY` or `BASESCAN_API_KEY`
+- `BASE_RPC_URL` is recommended; the workflow has a rate-limited public fallback.
+- `BASE_FORK_RPC_URL` is optional and is used only for the diagnostic fork check.
+
+Never place private keys or seed phrases in repository files, workflow inputs, issues, or logs.
+
+## Deployment procedure
+
+Use **Actions → Deploy Corrected Base Presale**. Do not run legacy deployment scripts directly.
+
+### 1. Dry run
+
+Select branch `main`, leave **Run all preflight checks without sending transactions** enabled, keep all approved values unchanged, and use:
+
+```text
+DRY_RUN
 ```
 
-## 2. Deploy the Presale Contract
+The run must pass compilation, unit tests, exact production simulation, live read-only checks, owner/token/inventory checks, and the protected signer check. A dry run sends no transaction.
 
-From `smart-contract/`:
+### 2. Live deployment
 
-```bash
-npm run deploy:presale
+Start a brand-new workflow run; do not rerun an old failed job. Disable dry run, keep every approved value unchanged, and enter:
+
+```text
+DEPLOY_CORRECTED_PRESALE
 ```
 
-Optional environment overrides:
+The owner-authorized workflow performs three bounded Base transactions:
 
-```bash
-PRESALE_SOFT_CAP_MATIC=5000
-PRESALE_HARD_CAP_MATIC=33333.333333333333333333
-PRESALE_MIN_MATIC=0.1
-PRESALE_MAX_MATIC=1000
-PRESALE_RATE=1000
-PRESALE_START_DELAY_SECONDS=3600
-PRESALE_DURATION_SECONDS=1209600
-npm run deploy:presale
+1. Deploy `AetheronPresaleV2`.
+2. Exclude the replacement from AETH transfer tax.
+3. Fund it with exactly 33,333,333 AETH.
+
+Each transaction hash is journaled immediately after broadcast and then updated after confirmation. The workflow verifies bytecode, constructor state, inventory, tax exclusion, liabilities, and BaseScan source verification.
+
+## After deployment
+
+A successful deployment publishes the replacement address for transparency while keeping:
+
+```text
+presaleContractAddress: ""
 ```
 
-The script writes:
+Public purchase controls stay disabled until all of the following are complete:
 
-- `presale-config.js` for the website.
-- `smart-contract/deployments/presale-polygon.json` for deployment records.
+1. Review the deployment journal and transaction receipts.
+2. Confirm BaseScan source and constructor-argument verification.
+3. Confirm exact AETH inventory and tax exclusion.
+4. Perform the separate owner-wallet 0.001 ETH smoke purchase.
+5. Review applicable legal and disclosure requirements.
+6. Record explicit launch authorization.
 
-## 3. Fund the Presale Contract
-
-Send the sale allocation of AETH to the deployed presale contract address. The contract will reject purchases if it does not hold enough AETH to cover tokens owed.
-
-## 4. Publish the Website
-
-Deploy the updated static files, including:
-
-- `presale.html`
-- `presale.js`
-- `presale-config.js`
-
-After publishing, verify:
-
-- `https://aetrs.com/presale-config.js` contains the deployed contract address.
-- `https://aetrs.com/presale.html` shows that same address.
-- Wallet connection switches to Polygon and reads the live presale data.
-
-## 5. Finalize or Refund
-
-If the soft cap is met after the sale window closes, call:
-
-- `finalize()`
-- Contributors call `claimTokens()`
-- Owner calls `withdrawFunds()`
-- Owner calls `withdrawUnsoldTokens()`
-
-If the sale is cancelled or misses soft cap:
-
-- Contributors call `claimRefund()`
-- Owner calls `withdrawUnsoldTokens()` to recover tokens that are no longer reserved.
+Do not activate public purchases automatically as part of deployment.
