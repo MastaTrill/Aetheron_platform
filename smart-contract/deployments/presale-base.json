@@ -1,8 +1,8 @@
 {
   "network": "base",
   "chainId": 8453,
-  "status": "deployed-verified-awaiting-owner-smoke-purchase",
-  "launchable": false,
+  "status": "live-owner-smoke-purchase-confirmed",
+  "launchable": true,
   "timestamp": "2026-07-18T19:06:40.802Z",
   "contracts": {
     "Aetheron": {
@@ -46,6 +46,12 @@
       "hash": "0x6364b30ffaeeea627dec15dd17dd3e33321e9b1b4f66d8d303eee582ed6f9d12",
       "blockNumber": 48806132,
       "status": 1
+    },
+    "smokePurchase": {
+      "hash": "0xd16ffbfe89c9a72d9fec77bf72642092f1e2593868bb01ad872dc83bf2fa5728",
+      "blockNumber": 48810536,
+      "status": 1,
+      "amountWei": "300000000000000"
     }
   },
   "replacesInvalidPresale": {
@@ -93,8 +99,14 @@
   },
   "frontend": {
     "replacementAddressPublished": true,
-    "publicPurchaseAddressEnabled": false,
-    "status": "verified-disabled-awaiting-owner-smoke-test",
-    "updatedAt": "2026-07-18T21:19:19.298Z"
+    "publicPurchaseAddressEnabled": true,
+    "status": "live",
+    "updatedAt": "2026-07-18T21:33:42.406Z"
+  },
+  "smokePurchase": {
+    "buyer": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "amountEth": "0.0003",
+    "tokenAmount": "300.0",
+    "confirmedAt": "2026-07-18T21:33:42.406Z"
   }
 }
