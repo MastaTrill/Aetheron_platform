@@ -54,7 +54,10 @@ test("contribution limits and schedule satisfy deployment guards", () => {
 test("disabled frontend config matches the approved Base terms", () => {
   assert.match(rootFrontendSource, new RegExp(`aethTokenAddress: ["']${production.tokenAddress}["']`));
   assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
-  assert.match(rootFrontendSource, /status:\s*["']disabled-awaiting-replacement-deployment["']/);
+  assert.match(
+    rootFrontendSource,
+    /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/
+  );
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
   assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
@@ -99,7 +102,7 @@ test("deployment journal preserves accounting or a recoverable non-launchable st
   }
   assert.match(
     deployment.status,
-    /^(presale-deployment-broadcast-awaiting-confirmation|presale-deployed-pending-token-setup|presale-deployed-tax-exclusion-broadcast-awaiting-confirmation|presale-deployed-tax-excluded-pending-funding|presale-funding-broadcast-awaiting-confirmation|presale-funded-pending-state-verification|deployed-funded-state-verified-awaiting-basescan)$/
+    /^(presale-deployment-broadcast-awaiting-confirmation|presale-deployed-pending-token-setup|presale-deployed-tax-exclusion-broadcast-awaiting-confirmation|presale-deployed-tax-excluded-pending-funding|presale-funding-broadcast-awaiting-confirmation|presale-funded-pending-state-verification|deployed-funded-state-verified-awaiting-basescan|deployed-verified-awaiting-owner-smoke-purchase)$/
   );
 });
 
