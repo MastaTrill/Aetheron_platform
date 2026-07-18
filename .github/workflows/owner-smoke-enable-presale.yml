@@ -7,6 +7,10 @@ on:
         description: Type SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE
         required: true
         type: string
+  push:
+    branches: [main]
+    paths:
+      - .presale-launch/authorize-owner-smoke-20260718.json
 
 permissions:
   contents: write
@@ -23,11 +27,11 @@ jobs:
     env:
       BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
       PRIVATE_KEY: ${{ secrets.BASE_DEPLOYER_PRIVATE_KEY }}
-      CONFIRM_PUBLIC_PRESALE_LAUNCH: ${{ inputs.confirmation }}
+      CONFIRM_PUBLIC_PRESALE_LAUNCH: ${{ github.event_name == 'push' && 'SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE' || inputs.confirmation }}
       NODE_OPTIONS: --max-old-space-size=5120
     steps:
       - name: Reject unauthorized launch
-        if: ${{ inputs.confirmation != 'SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE' }}
+        if: ${{ github.event_name != 'push' && inputs.confirmation != 'SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE' }}
         run: exit 1
       - name: Check out main
         uses: actions/checkout@v4
