@@ -18,7 +18,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    environment: production
+    environment: base-mainnet-production
     timeout-minutes: 20
     env:
       BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
