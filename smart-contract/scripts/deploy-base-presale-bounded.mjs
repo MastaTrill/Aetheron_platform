@@ -3,16 +3,29 @@ import { ethers } from "ethers";
 
 const INVALID_PRESALE = "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C";
 const DEFAULT_DEPLOY_GAS_LIMIT = 12_000_000n;
+const DEFAULT_TOKEN_SETUP_GAS_LIMIT = 1_000_000n;
+const DEFAULT_FUNDING_GAS_LIMIT = 1_000_000n;
 const MIN_DEPLOY_GAS_LIMIT = 1_000_000n;
 const MAX_DEPLOY_GAS_LIMIT = 25_000_000n;
 const deployGasLimit = BigInt(
   process.env.PRESALE_DEPLOY_GAS_LIMIT || DEFAULT_DEPLOY_GAS_LIMIT.toString()
+);
+const tokenSetupGasLimit = BigInt(
+  process.env.PRESALE_TOKEN_SETUP_GAS_LIMIT || DEFAULT_TOKEN_SETUP_GAS_LIMIT.toString()
+);
+const fundingGasLimit = BigInt(
+  process.env.PRESALE_FUNDING_GAS_LIMIT || DEFAULT_FUNDING_GAS_LIMIT.toString()
 );
 
 if (deployGasLimit < MIN_DEPLOY_GAS_LIMIT || deployGasLimit > MAX_DEPLOY_GAS_LIMIT) {
   throw new Error(
     `PRESALE_DEPLOY_GAS_LIMIT must be between ${MIN_DEPLOY_GAS_LIMIT} and ${MAX_DEPLOY_GAS_LIMIT}`
   );
+}
+for (const [name, value] of Object.entries({ tokenSetupGasLimit, fundingGasLimit })) {
+  if (value < 100_000n || value > 5_000_000n) {
+    throw new Error(`${name} must be between 100000 and 5000000`);
+  }
 }
 
 const deploymentUrl = new URL("../deployments/presale-base.json", import.meta.url);
@@ -124,28 +137,47 @@ const originalSendTransaction = ethers.Wallet.prototype.sendTransaction;
 ethers.Wallet.prototype.sendTransaction = async function sendTransactionJournaled(transaction) {
   const resolved = await ethers.resolveProperties(transaction || {});
   const isCreation = resolved.to === null || resolved.to === undefined;
+  const destination = typeof resolved.to === "string" ? resolved.to.toLowerCase() : "";
+  const selector = typeof resolved.data === "string" ? resolved.data.slice(0, 10).toLowerCase() : "";
+
+  let kind = null;
+  let boundedGasLimit = null;
+  if (isCreation) {
+    kind = "deploy";
+    boundedGasLimit = deployGasLimit;
+  } else if (destination === tokenAddress && selector === excludeSelector) {
+    kind = "excludeFromTax";
+    boundedGasLimit = tokenSetupGasLimit;
+  } else if (destination === tokenAddress && selector === transferSelector) {
+    kind = "fund";
+    boundedGasLimit = fundingGasLimit;
+  }
+
   const request =
-    isCreation && resolved.gasLimit === undefined
-      ? { ...transaction, gasLimit: deployGasLimit }
+    boundedGasLimit !== null && resolved.gasLimit === undefined
+      ? { ...transaction, gasLimit: boundedGasLimit }
       : transaction;
+
+  if (kind) {
+    console.log(
+      JSON.stringify({
+        boundedTransaction: kind,
+        gasLimit: boundedGasLimit.toString(),
+        remoteEstimateBypassed: true
+      })
+    );
+  }
 
   const response = await originalSendTransaction.call(this, request);
 
-  if (isCreation) {
+  if (kind === "deploy") {
     const predictedAddress = ethers.getCreateAddress({
       from: response.from,
       nonce: response.nonce
     });
     persistBroadcast("deploy", response, { predictedAddress });
-    return response;
-  }
-
-  const destination = typeof resolved.to === "string" ? resolved.to.toLowerCase() : "";
-  const selector = typeof resolved.data === "string" ? resolved.data.slice(0, 10).toLowerCase() : "";
-  if (destination === tokenAddress && selector === excludeSelector) {
-    persistBroadcast("excludeFromTax", response);
-  } else if (destination === tokenAddress && selector === transferSelector) {
-    persistBroadcast("fund", response);
+  } else if (kind) {
+    persistBroadcast(kind, response);
   }
 
   return response;
