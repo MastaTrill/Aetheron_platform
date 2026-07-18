@@ -44,6 +44,7 @@ const abi = [
   "function cancelled() view returns (bool)",
   "function finalized() view returns (bool)",
   "function weiRaised() view returns (uint256)",
+  "function tokensReserved() view returns (uint256)",
   "function contributions(address) view returns (uint256)",
   "function tokensOwed(address) view returns (uint256)",
   "function buyTokens() payable"
@@ -68,8 +69,8 @@ console.log(JSON.stringify({ smokePurchaseBroadcast: tx.hash, amountEth: "0.0003
 const receipt = await tx.wait(2);
 if (!receipt || receipt.status !== 1) throw new Error("Smoke purchase transaction failed");
 
-const [afterRaised, afterContribution, afterOwed] = await Promise.all([
-  presale.weiRaised(), presale.contributions(wallet.address), presale.tokensOwed(wallet.address)
+const [afterRaised, afterReserved, afterContribution, afterOwed] = await Promise.all([
+  presale.weiRaised(), presale.tokensReserved(), presale.contributions(wallet.address), presale.tokensOwed(wallet.address)
 ]);
 const expectedTokens = SMOKE_AMOUNT * EXPECTED_RATE;
 if (afterRaised !== beforeRaised + SMOKE_AMOUNT) throw new Error("weiRaised did not increase by the smoke amount");
@@ -79,8 +80,11 @@ if (afterOwed !== beforeOwed + expectedTokens) throw new Error("Owner token rese
 const now = new Date().toISOString();
 journal.status = "live-owner-smoke-purchase-confirmed";
 journal.launchable = true;
+journal.updatedAt = now;
 journal.transactions.smokePurchase = { hash: tx.hash, blockNumber: receipt.blockNumber, status: receipt.status, amountWei: SMOKE_AMOUNT.toString() };
 journal.smokePurchase = { buyer: wallet.address, amountEth: "0.0003", tokenAmount: ethers.formatUnits(expectedTokens, 18), confirmedAt: now };
+journal.safety = { ...journal.safety, frontendEnabled: true, note: "The verified Base presale passed the owner smoke purchase and the public purchase address is enabled." };
+journal.verifiedState = { ...journal.verifiedState, weiRaised: afterRaised.toString(), tokensReserved: afterReserved.toString() };
 journal.frontend = { replacementAddressPublished: true, publicPurchaseAddressEnabled: true, status: "live", updatedAt: now };
 fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2) + "\n");
 
