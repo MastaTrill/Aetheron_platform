@@ -1,7 +1,7 @@
 {
   "network": "base",
   "chainId": 8453,
-  "status": "deployed-funded-state-verified-awaiting-basescan",
+  "status": "deployed-verified-awaiting-owner-smoke-purchase",
   "launchable": false,
   "timestamp": "2026-07-18T19:06:40.802Z",
   "contracts": {
@@ -79,5 +79,22 @@
     "taxExcluded": true,
     "bytecodePresent": true,
     "inventoryTokenUnits": "33333333000000000000000000"
+  },
+  "verification": {
+    "explorer": "BaseScan",
+    "api": "Etherscan V2",
+    "chainId": 8453,
+    "verified": true,
+    "verifiedAt": "2026-07-18T21:19:18.927Z",
+    "contractName": "project/contracts/AetheronPresale.sol:AetheronPresaleV2",
+    "compilerVersion": "v0.8.20+commit.a1b79de6",
+    "constructorArguments": "000000000000000000000000ecf7e17fae148c01e1b5008a31dfd2d1b6608e4e00000000000000000000000000000000000000000000000000000000000f42400000000000000000000000000000000000000000000000004563918244f40000000000000000000000000000000000000000000000000001ce97c9c184ce5000000000000000000000000000000000000000000000000000000110d9316ec000000000000000000000000000000000000000000000000001ce97c9c184ce5000000000000000000000000000000000000000000000000000000000006a5bdcd0000000000000000000000000000000000000000000000000000000006a6e51d000000000000000000000000015b9f8ecedafd69eb1dd93e51fe522690bf6b7c2",
+    "url": "https://basescan.org/address/0xe0A3B6368312dFd3E7E76202e673f895f8235A3d#code"
+  },
+  "frontend": {
+    "replacementAddressPublished": true,
+    "publicPurchaseAddressEnabled": false,
+    "status": "verified-disabled-awaiting-owner-smoke-test",
+    "updatedAt": "2026-07-18T21:19:19.298Z"
   }
 }
