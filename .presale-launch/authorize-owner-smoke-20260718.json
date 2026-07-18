@@ -1,0 +1,11 @@
+{
+  "authorization": "SMOKE_TEST_AND_ENABLE_PUBLIC_PRESALE",
+  "network": "base",
+  "chainId": 8453,
+  "presale": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
+  "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+  "smokePurchaseEth": "0.0003",
+  "authorizedBy": "MastaTrill",
+  "authorizedDate": "2026-07-18",
+  "singleUse": true
+}
