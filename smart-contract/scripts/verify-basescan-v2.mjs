@@ -53,14 +53,24 @@ let buildInfo;
 let contractName;
 for (const file of buildInfoFiles) {
   const candidate = JSON.parse(fs.readFileSync(path.join(buildInfoDir, file), "utf8"));
-  const sourceName = Object.keys(candidate.output?.contracts || {}).find(
-    (name) => candidate.output.contracts[name]?.[CONTRACT_BASENAME]
+  const output = candidate.output || (file.endsWith(".output.json") ? candidate : undefined);
+  const sourceName = Object.keys(output?.contracts || {}).find(
+    (name) => output.contracts[name]?.[CONTRACT_BASENAME]
   );
-  if (sourceName) {
-    buildInfo = candidate;
-    contractName = `${sourceName}:${CONTRACT_BASENAME}`;
-    break;
+  if (!sourceName) continue;
+
+  let metadata = candidate;
+  if (!candidate.input && file.endsWith(".output.json")) {
+    const metadataPath = path.join(buildInfoDir, file.replace(/\.output\.json$/, ".json"));
+    if (fs.existsSync(metadataPath)) {
+      metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+    }
   }
+  if (!metadata.input) continue;
+
+  buildInfo = { ...metadata, output };
+  contractName = `${sourceName}:${CONTRACT_BASENAME}`;
+  break;
 }
 if (!buildInfo || !contractName) {
   throw new Error(`Unable to locate ${CONTRACT_BASENAME} in Hardhat build-info`);
