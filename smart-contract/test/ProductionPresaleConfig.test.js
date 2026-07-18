@@ -6,9 +6,14 @@ import { ethers } from "ethers";
 const production = JSON.parse(fs.readFileSync(new URL("../config/presale-base-production.json", import.meta.url), "utf8"));
 const deployment = JSON.parse(fs.readFileSync(new URL("../deployments/presale-base.json", import.meta.url), "utf8"));
 const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const boundedEntrypointSource = fs.readFileSync(new URL("../scripts/deploy-base-presale-bounded.mjs", import.meta.url), "utf8");
 const productionGuardSource = fs.readFileSync(new URL("../scripts/deploy-base-presale-production.mjs", import.meta.url), "utf8");
 const stateVerifierSource = fs.readFileSync(new URL("../scripts/verify-base-presale-state.mjs", import.meta.url), "utf8");
 const presaleSource = fs.readFileSync(new URL("../contracts/AetheronPresale.sol", import.meta.url), "utf8");
+
+function isTransactionHash(value) {
+  return /^0x[0-9a-fA-F]{64}$/.test(value || "");
+}
 
 test("Base production addresses and chain are fixed", () => {
   assert.equal(production.chainId, 8453);
@@ -40,7 +45,7 @@ test("contribution limits and schedule satisfy deployment guards", () => {
   assert.equal(production.ownerSmokePurchaseEth, production.minContributionEth);
 });
 
-test("deployment journal preserves accounting or a safe partial state", () => {
+test("deployment journal preserves accounting or a recoverable non-launchable state", () => {
   if (deployment.supplyAccounting) {
     const locked = BigInt(deployment.supplyAccounting.lockedAtInvalidPresale);
     const nominal = BigInt(deployment.supplyAccounting.nominalTotalSupply);
@@ -52,16 +57,42 @@ test("deployment journal preserves accounting or a safe partial state", () => {
   }
 
   assert.equal(deployment.launchable, false);
-  assert.equal(deployment.contracts?.Presale?.address ?? null, null);
-  assert.deepEqual(deployment.transactions ?? {}, {});
-  assert.match(deployment.status, /^(deploying-presale-contract|deployment-failed|invalid-token-mismatch)$/);
+  assert.equal(deployment.safety?.frontendEnabled, false);
+  assert.equal(
+    deployment.contracts?.InvalidPresale?.address?.toLowerCase(),
+    "0xa7aa360d2f00cf4130b3244d0a13ae32a49ab07c"
+  );
+
+  const presaleAddress = deployment.contracts?.Presale?.address ?? null;
+  const transactions = deployment.transactions ?? {};
+  if (presaleAddress === null) {
+    assert.deepEqual(transactions, {});
+    assert.match(
+      deployment.status,
+      /^(deploying-presale-contract|deployment-failed|deployment-failed-before-broadcast|invalid-token-mismatch)$/
+    );
+    return;
+  }
+
+  assert.ok(ethers.isAddress(presaleAddress));
+  assert.ok(isTransactionHash(transactions.deploy?.hash));
+  for (const name of ["excludeFromTax", "fund"]) {
+    if (transactions[name]) assert.ok(isTransactionHash(transactions[name].hash));
+  }
+  assert.match(
+    deployment.status,
+    /^(presale-deployment-broadcast-awaiting-confirmation|presale-deployed-pending-token-setup|presale-deployed-tax-exclusion-broadcast-awaiting-confirmation|presale-deployed-tax-excluded-pending-funding|presale-funding-broadcast-awaiting-confirmation|presale-funded-pending-state-verification|deployed-funded-state-verified-awaiting-basescan)$/
+  );
 });
 
-test("all production deployment entry points use the invariant guard", () => {
-  const guardedCommand = "node scripts/deploy-base-presale-production.mjs";
-  assert.equal(packageJson.scripts["deploy:presale"], guardedCommand);
-  assert.equal(packageJson.scripts["deploy:presale:base:safe"], guardedCommand);
-  assert.match(packageJson.scripts["deploy:base-presale:dry-run"], /deploy-base-presale-production\.mjs/);
+test("all production deployment entry points use the bounded wrapper around the invariant guard", () => {
+  const boundedCommand = "node scripts/deploy-base-presale-bounded.mjs";
+  assert.equal(packageJson.scripts["deploy:presale"], boundedCommand);
+  assert.equal(packageJson.scripts["deploy:presale:base:safe"], boundedCommand);
+  assert.match(packageJson.scripts["deploy:base-presale:dry-run"], /deploy-base-presale-bounded\.mjs/);
+  assert.match(boundedEntrypointSource, /await import\("\.\/deploy-base-presale-production\.mjs"\)/);
+  assert.match(boundedEntrypointSource, /DEFAULT_DEPLOY_GAS_LIMIT = 12_000_000n/);
+  assert.match(boundedEntrypointSource, /presale-deployment-broadcast-awaiting-confirmation/);
   assert.match(productionGuardSource, /Invalid presale must be cancelled before replacement deployment/);
   assert.match(productionGuardSource, /Production presale rate was modified/);
   assert.match(productionGuardSource, /Protected signer is not the approved Base owner\/treasury wallet/);
