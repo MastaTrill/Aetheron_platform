@@ -8,7 +8,7 @@ const EXPECTED = Object.freeze({
   minContributionWei: 300000000000000n,
   maxContributionWei: 33333333000000000000n,
 });
-const RPC_URLS = ['https://mainnet.base.org', 'https://base.drpc.org', 'https://rpc.ankr.com/base'];
+const RPC_URLS = ['https://mainnet.base.org', 'https://base.drpc.org'];
 const PRESALE_ABI = [
   'function token() view returns (address)',
   'function rate() view returns (uint256)',
@@ -29,25 +29,31 @@ const TOKEN_ABI = [
 ];
 
 async function readHealth(rpcUrl) {
-  const provider = new JsonRpcProvider(rpcUrl, EXPECTED.chainId, { staticNetwork: true });
+  const provider = new JsonRpcProvider(rpcUrl, EXPECTED.chainId, {
+    staticNetwork: true,
+    batchMaxCount: 1,
+  });
   const network = await provider.getNetwork();
   if (Number(network.chainId) !== EXPECTED.chainId) throw new Error('RPC returned the wrong chain');
 
   const presale = new Contract(PRESALE, PRESALE_ABI, provider);
-  const [
-    tokenAddress, rate, weiRaised, tokensReserved, softCap, hardCap,
-    minContribution, maxContribution, startTime, endTime, finalized, cancelled,
-  ] = await Promise.all([
-    presale.token(), presale.rate(), presale.weiRaised(), presale.tokensReserved(),
-    presale.softCap(), presale.hardCap(), presale.minContribution(),
-    presale.maxContribution(), presale.startTime(), presale.endTime(),
-    presale.finalized(), presale.cancelled(),
-  ]);
+  const tokenAddress = await presale.token();
+  const rate = await presale.rate();
+  const weiRaised = await presale.weiRaised();
+  const tokensReserved = await presale.tokensReserved();
+  const softCap = await presale.softCap();
+  const hardCap = await presale.hardCap();
+  const minContribution = await presale.minContribution();
+  const maxContribution = await presale.maxContribution();
+  const startTime = await presale.startTime();
+  const endTime = await presale.endTime();
+  const finalized = await presale.finalized();
+  const cancelled = await presale.cancelled();
 
   const token = new Contract(TOKEN, TOKEN_ABI, provider);
-  const [inventory, decimals, blockNumber] = await Promise.all([
-    token.balanceOf(PRESALE), token.decimals(), provider.getBlockNumber(),
-  ]);
+  const inventory = await token.balanceOf(PRESALE);
+  const decimals = await token.decimals();
+  const blockNumber = await provider.getBlockNumber();
   const now = BigInt(Math.floor(Date.now() / 1000));
   const checks = {
     chainIsBase: Number(network.chainId) === EXPECTED.chainId,
