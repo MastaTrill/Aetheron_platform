@@ -1,0 +1,81 @@
+name: Verify AETH Token on BaseScan
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type VERIFY_AETH_BASE
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-aeth-base
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: base-mainnet-production
+    timeout-minutes: 20
+    env:
+      AETH_TOKEN_ADDRESS: "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY || secrets.BASESCAN_API_KEY }}
+      NODE_OPTIONS: --max-old-space-size=5120
+    steps:
+      - name: Require explicit authorization
+        if: ${{ inputs.confirmation != 'VERIFY_AETH_BASE' }}
+        run: exit 1
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Validate verification credentials
+        run: |
+          test -n "$BASE_RPC_URL" || { echo "Missing BASE_RPC_URL"; exit 1; }
+          test -n "$ETHERSCAN_API_KEY" || { echo "Missing ETHERSCAN_API_KEY or BASESCAN_API_KEY"; exit 1; }
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Compile exact source
+        working-directory: smart-contract
+        run: npm run compile
+      - name: Run contract checks
+        working-directory: smart-contract
+        run: npm test
+      - name: Verify AETH and capture readback evidence
+        working-directory: smart-contract
+        run: node scripts/verify-aeth-basescan-v2.mjs
+      - name: Persist verified deployment record
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add smart-contract/deployments/aeth-base.json
+          if git diff --cached --quiet; then
+            echo "AETH verification record is already current."
+          else
+            git commit -m "verify: record BaseScan-verified AETH token"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Verification summary
+        run: |
+          echo "AETH source verification and constructor readback completed." >> "$GITHUB_STEP_SUMMARY"
+          echo "Token-profile metadata is staged in token-metadata/aeth-base.json." >> "$GITHUB_STEP_SUMMARY"
+          echo "BaseScan profile submission still requires owner account authentication and wallet ownership verification." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: aeth-base-verification
+          path: smart-contract/deployments/aeth-base.json
+          if-no-files-found: error
