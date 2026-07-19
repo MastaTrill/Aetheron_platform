@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "network": "Base Mainnet",
+  "chainId": 8453,
+  "token": {
+    "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "name": "Aetheron",
+    "symbol": "AETH",
+    "decimals": 18,
+    "totalSupplyWei": "1000000000000000000000000000",
+    "totalSupplyTokens": "1000000000.0",
+    "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "tradingEnabled": false
+  },
+  "deployment": {
+    "creationTransaction": "0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829",
+    "creator": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "constructorWallets": {
+      "team": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
+      "marketing": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+      "stakingPool": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+    }
+  },
+  "verification": {
+    "explorer": "BaseScan",
+    "api": "Etherscan V2",
+    "verified": true,
+    "verifiedAt": "2026-07-19T04:04:44.408Z",
+    "contractName": "project/contracts/Aetheron.sol:Aetheron",
+    "compilerVersion": "v0.8.20+commit.a1b79de6",
+    "constructorArguments": "00000000000000000000000076a83f91dc64fc4f29cef6635f9a36477eca67840000000000000000000000008a3ad49656bd07981c9cfc7ad826a808847c34520000000000000000000000008a3ad49656bd07981c9cfc7ad826a808847c3452",
+    "url": "https://basescan.org/address/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e#code"
+  }
+}
