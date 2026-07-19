@@ -20,6 +20,11 @@ contract AetheronMultiSigTreasury is
     PausableUpgradeable,
     UUPSUpgradeable
 {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
         address[] memory _owners,
         uint256 _numConfirmationsRequired
@@ -71,52 +76,42 @@ contract AetheronMultiSigTreasury is
         uint256 numConfirmations;
     }
 
-    // State variables
     address[] public owners;
     mapping(address => bool) public isOwner;
     uint256 public numConfirmationsRequired;
     Transaction[] public transactions;
     mapping(uint256 => mapping(address => bool)) public isConfirmed;
 
-    // Modifiers
+    modifier onlyTreasuryOwner() {
+        require(isOwner[msg.sender], "Not owner");
+        _;
+    }
+
     modifier txExists(uint256 _txIndex) {
         require(_txIndex < transactions.length, "Transaction does not exist");
         _;
     }
 
     modifier notExecuted(uint256 _txIndex) {
-        require(
-            !transactions[_txIndex].executed,
-            "Transaction already executed"
-        );
+        require(!transactions[_txIndex].executed, "Transaction already executed");
         _;
     }
 
     modifier notConfirmed(uint256 _txIndex) {
-        require(
-            !isConfirmed[_txIndex][msg.sender],
-            "Transaction already confirmed"
-        );
+        require(!isConfirmed[_txIndex][msg.sender], "Transaction already confirmed");
         _;
     }
 
-    receive() external payable whenNotPaused {
+    receive() external payable {
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
 
-    /**
-     * @dev Submit a transaction for approval
-     * @param _to Destination address
-     * @param _value ETH value to send
-     * @param _data Transaction data
-     * @return txIndex Transaction index
-     */
     function submitTransaction(
         address _to,
         uint256 _value,
         bytes memory _data
-    ) public onlyOwner whenNotPaused returns (uint256 txIndex) {
-        txIndex = transactions.length;
+    ) public onlyTreasuryOwner whenNotPaused {
+        uint256 txIndex = transactions.length;
         transactions.push(
             Transaction({
                 to: _to,
@@ -129,16 +124,11 @@ contract AetheronMultiSigTreasury is
         emit SubmitTransaction(msg.sender, txIndex, _to, _value, _data);
     }
 
-    /**
-     * @dev Confirm a transaction
-     * @param _txIndex Transaction index
-     */
     function confirmTransaction(
         uint256 _txIndex
     )
         public
-        onlyOwner
-        whenNotPaused
+        onlyTreasuryOwner
         txExists(_txIndex)
         notExecuted(_txIndex)
         notConfirmed(_txIndex)
@@ -149,13 +139,15 @@ contract AetheronMultiSigTreasury is
         emit ConfirmTransaction(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Execute a confirmed transaction
-     * @param _txIndex Transaction index
-     */
     function executeTransaction(
         uint256 _txIndex
-    ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
+    )
+        public
+        nonReentrant
+        onlyTreasuryOwner
+        txExists(_txIndex)
+        notExecuted(_txIndex)
+    {
         Transaction storage transaction = transactions[_txIndex];
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
@@ -169,45 +161,37 @@ contract AetheronMultiSigTreasury is
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Revoke confirmation for a transaction
-     * @param _txIndex Transaction index
-     */
     function revokeConfirmation(
         uint256 _txIndex
-    ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
-        Transaction storage transaction = transactions[_txIndex];
+    )
+        public
+        onlyTreasuryOwner
+        txExists(_txIndex)
+        notExecuted(_txIndex)
+    {
         require(isConfirmed[_txIndex][msg.sender], "Transaction not confirmed");
+        Transaction storage transaction = transactions[_txIndex];
         transaction.numConfirmations -= 1;
         isConfirmed[_txIndex][msg.sender] = false;
         emit RevokeConfirmation(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Get list of owners
-     * @return Array of owner addresses
-     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
     function getOwners() public view returns (address[] memory) {
         return owners;
     }
 
-    /**
-     * @dev Get transaction count
-     * @return Number of transactions
-     */
     function getTransactionCount() public view returns (uint256) {
         return transactions.length;
     }
 
-    /**
-     * @dev Get transaction details
-     * @param _txIndex Transaction index
-     * @return to Destination address
-     * @return value ETH value
-     * @return data Transaction data
-     * @return executed Whether transaction is executed
-     * @return numConfirmations Number of confirmations
-     */
     function getTransaction(
         uint256 _txIndex
     )
@@ -231,67 +215,35 @@ contract AetheronMultiSigTreasury is
         );
     }
 
-    /**
-     * @dev Emergency pause (only owner can call)
-     * @notice Allows owner to pause all operations in case of emergency
-     */
-    function emergencyPause() public onlyOwner {
-        _pause();
-    }
-
-    function emergencyUnpause() public onlyOwner {
-        _unpause();
-    }
-
-    /**
-     * @dev Add new owner (requires multi-sig approval)
-     * @param owner Address of new owner
-     */
-    function addOwner(address owner) public onlyOwner whenNotPaused {
+    function addOwner(address owner) public onlyOwner {
         require(owner != address(0), "Invalid owner");
-        require(!isOwner[owner], "Owner already exists");
-
+        require(!isOwner[owner], "Owner exists");
         isOwner[owner] = true;
         owners.push(owner);
-
         emit OwnerAddition(owner);
     }
 
-    /**
-     * @notice Remove an owner from the wallet (requires multi-sig approval)
-     * @param owner The address of the owner to remove
-     */
-    function removeOwner(address owner) public onlyOwner whenNotPaused {
+    function removeOwner(address owner) public onlyOwner {
         require(isOwner[owner], "Not owner");
-        require(owners.length > 1, "Cannot remove last owner");
-        for (uint256 i = 0; i < owners.length; i++) {
+        require(owners.length - 1 >= numConfirmationsRequired, "Below threshold");
+        isOwner[owner] = false;
+        for (uint256 i = 0; i < owners.length - 1; i++) {
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
-                owners.pop();
                 break;
             }
         }
-        isOwner[owner] = false;
-        if (numConfirmationsRequired > owners.length) {
-            numConfirmationsRequired = owners.length;
-        }
+        owners.pop();
         emit OwnerRemoval(owner);
     }
 
-    /**
-     * @notice Change the number of required confirmations for transactions
-     * @param _required The new number of required confirmations
-     */
-    function changeRequirement(
-        uint256 _required
-    ) public onlyOwner whenNotPaused {
-        require(_required > 0, "Invalid requirement");
-        require(_required <= owners.length, "Requirement too high");
+    function changeRequirement(uint256 _required) public onlyOwner {
+        require(_required > 0 && _required <= owners.length, "Invalid requirement");
         numConfirmationsRequired = _required;
         emit RequirementChange(_required);
     }
 
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyOwner {}
+    function _authorizeUpgrade(address) internal override onlyOwner {}
+
+    uint256[50] private __gap;
 }
