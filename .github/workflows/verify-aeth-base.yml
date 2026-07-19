@@ -55,7 +55,7 @@ jobs:
         run: npm test
       - name: Verify AETH and capture readback evidence
         working-directory: smart-contract
-        run: node scripts/verify-aeth-basescan-v2.mjs
+        run: node scripts/verify-aeth-basescan-v2-doc-aligned.mjs
       - name: Persist verified deployment record
         run: |
           git config user.name "github-actions[bot]"
