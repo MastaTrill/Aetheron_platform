@@ -12,7 +12,6 @@ on:
 permissions:
   contents: read
 
-# Verification branch: exercises the Slither + Foundry compatibility path.
 jobs:
   hardhat-validation:
     runs-on: ubuntu-latest
@@ -50,20 +49,14 @@ jobs:
           version: stable
       - name: Install Slither
         run: pipx install slither-analyzer
-      - name: Capture Slither findings using Foundry
+      - name: Run Slither using Foundry
         working-directory: smart-contract
-        shell: bash
-        run: |
-          set +e
-          slither . --compile-force-framework foundry --exclude-dependencies --json slither-report.json
-          echo "Slither exit status: $?"
-          exit 0
-      - name: Upload Slither report
-        uses: actions/upload-artifact@v4
-        with:
-          name: slither-report
-          path: smart-contract/slither-report.json
-          if-no-files-found: error
+        run: >-
+          slither .
+          --compile-force-framework foundry
+          --exclude-dependencies
+          --filter-paths 'contracts/Aetheron_flat.sol'
+          --fail-high
 
   forge-build:
     runs-on: ubuntu-latest
