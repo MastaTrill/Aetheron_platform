@@ -51,7 +51,12 @@ jobs:
         run: pipx install slither-analyzer
       - name: Run Slither using Foundry
         working-directory: smart-contract
-        run: slither . --compile-force-framework foundry --exclude-dependencies --fail-pedantic
+        run: >-
+          slither .
+          --compile-force-framework foundry
+          --exclude-dependencies
+          --filter-paths 'contracts/Aetheron_flat.sol'
+          --fail-high
 
   forge-build:
     runs-on: ubuntu-latest

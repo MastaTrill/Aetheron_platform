@@ -20,6 +20,11 @@ contract AetheronMultiSigTreasury is
     PausableUpgradeable,
     UUPSUpgradeable
 {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
         address[] memory _owners,
         uint256 _numConfirmationsRequired
@@ -104,13 +109,6 @@ contract AetheronMultiSigTreasury is
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
 
-    /**
-     * @dev Submit a transaction for approval
-     * @param _to Destination address
-     * @param _value ETH value to send
-     * @param _data Transaction data
-     * @return txIndex Transaction index
-     */
     function submitTransaction(
         address _to,
         uint256 _value,
@@ -129,10 +127,6 @@ contract AetheronMultiSigTreasury is
         emit SubmitTransaction(msg.sender, txIndex, _to, _value, _data);
     }
 
-    /**
-     * @dev Confirm a transaction
-     * @param _txIndex Transaction index
-     */
     function confirmTransaction(
         uint256 _txIndex
     )
@@ -149,10 +143,6 @@ contract AetheronMultiSigTreasury is
         emit ConfirmTransaction(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Execute a confirmed transaction
-     * @param _txIndex Transaction index
-     */
     function executeTransaction(
         uint256 _txIndex
     ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
@@ -169,10 +159,6 @@ contract AetheronMultiSigTreasury is
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Revoke confirmation for a transaction
-     * @param _txIndex Transaction index
-     */
     function revokeConfirmation(
         uint256 _txIndex
     ) public onlyOwner whenNotPaused txExists(_txIndex) notExecuted(_txIndex) {
@@ -183,31 +169,14 @@ contract AetheronMultiSigTreasury is
         emit RevokeConfirmation(msg.sender, _txIndex);
     }
 
-    /**
-     * @dev Get list of owners
-     * @return Array of owner addresses
-     */
     function getOwners() public view returns (address[] memory) {
         return owners;
     }
 
-    /**
-     * @dev Get transaction count
-     * @return Number of transactions
-     */
     function getTransactionCount() public view returns (uint256) {
         return transactions.length;
     }
 
-    /**
-     * @dev Get transaction details
-     * @param _txIndex Transaction index
-     * @return to Destination address
-     * @return value ETH value
-     * @return data Transaction data
-     * @return executed Whether transaction is executed
-     * @return numConfirmations Number of confirmations
-     */
     function getTransaction(
         uint256 _txIndex
     )
@@ -231,10 +200,6 @@ contract AetheronMultiSigTreasury is
         );
     }
 
-    /**
-     * @dev Emergency pause (only owner can call)
-     * @notice Allows owner to pause all operations in case of emergency
-     */
     function emergencyPause() public onlyOwner {
         _pause();
     }
@@ -243,10 +208,6 @@ contract AetheronMultiSigTreasury is
         _unpause();
     }
 
-    /**
-     * @dev Add new owner (requires multi-sig approval)
-     * @param owner Address of new owner
-     */
     function addOwner(address owner) public onlyOwner whenNotPaused {
         require(owner != address(0), "Invalid owner");
         require(!isOwner[owner], "Owner already exists");
@@ -257,10 +218,6 @@ contract AetheronMultiSigTreasury is
         emit OwnerAddition(owner);
     }
 
-    /**
-     * @notice Remove an owner from the wallet (requires multi-sig approval)
-     * @param owner The address of the owner to remove
-     */
     function removeOwner(address owner) public onlyOwner whenNotPaused {
         require(isOwner[owner], "Not owner");
         require(owners.length > 1, "Cannot remove last owner");
@@ -278,10 +235,6 @@ contract AetheronMultiSigTreasury is
         emit OwnerRemoval(owner);
     }
 
-    /**
-     * @notice Change the number of required confirmations for transactions
-     * @param _required The new number of required confirmations
-     */
     function changeRequirement(
         uint256 _required
     ) public onlyOwner whenNotPaused {
