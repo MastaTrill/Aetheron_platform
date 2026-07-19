@@ -12,3 +12,11 @@ window.AETHERON_PRESALE_CONFIG = {
   minContribution: 0.0003,
   maxContribution: 33.333333
 };
+
+window.addEventListener('load', () => {
+  if (document.querySelector('script[data-presale-wallet-provider]')) return;
+  const script = document.createElement('script');
+  script.src = 'presale-wallet-provider.js?v=1.0.0';
+  script.dataset.presaleWalletProvider = 'true';
+  document.body.appendChild(script);
+});
