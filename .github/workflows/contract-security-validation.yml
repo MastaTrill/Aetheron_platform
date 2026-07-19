@@ -51,15 +51,21 @@ jobs:
         run: pipx install slither-analyzer
       - name: Run Slither using Foundry
         working-directory: smart-contract
-        # ETH transfers are limited to reviewed owner/user payout paths in
-        # AetheronNFT and AetheronVendor. Every other high detector remains fatal.
         run: >-
           slither .
           --compile-force-framework foundry
           --exclude-dependencies
           --filter-paths 'contracts/Aetheron_flat.sol'
-          --exclude arbitrary-send-eth
+          --json slither-report.json
           --fail-high
+      - name: Upload complete Slither report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report
+          path: smart-contract/slither-report.json
+          if-no-files-found: warn
+          retention-days: 14
 
   forge-build:
     runs-on: ubuntu-latest
