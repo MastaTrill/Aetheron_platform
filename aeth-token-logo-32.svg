@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title desc">
+  <title id="title">Aetheron AETH token</title>
+  <desc id="desc">A cyan and violet Aetheron token mark on a dark background.</desc>
+  <defs>
+    <linearGradient id="bg" x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071A2B"/>
+      <stop offset="1" stop-color="#171033"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="9" y1="7" x2="24" y2="25" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#56E7FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  <path d="M16 5.5 25 23h-4.6l-1.55-3.25h-5.7L11.6 23H7L16 5.5Zm0 7.15-1.55 3.55h3.1L16 12.65Z" fill="url(#mark)"/>
+  <circle cx="25.5" cy="7" r="1.5" fill="#56E7FF"/>
+</svg>
