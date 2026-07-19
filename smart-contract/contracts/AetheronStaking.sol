@@ -21,6 +21,7 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     uint256 public rewardBalance;
 
     event PoolCreated(uint256 indexed poolId, uint256 lockDuration, uint256 rewardRate);
+    event PoolStatusUpdated(uint256 indexed poolId, bool isActive);
     event Staked(address indexed user, uint256 indexed poolId, uint256 amount);
     event Unstaked(address indexed user, uint256 indexed stakeId, uint256 amount);
     event RewardClaimed(address indexed user, uint256 indexed stakeId, uint256 reward);
@@ -68,16 +69,13 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     function updatePoolStatus(uint256 poolId, bool isActive) external onlyOwner {
         require(poolId < poolCount, "Invalid pool");
         pools[poolId].isActive = isActive;
+        emit PoolStatusUpdated(poolId, isActive);
     }
 
     function stake(uint256 poolId, uint256 amount) external nonReentrant {
         require(poolId < poolCount, "Invalid pool");
         require(pools[poolId].isActive, "Pool not active");
         require(amount > 0, "Cannot stake 0");
-
-        // AETH is the immutable staking asset. Transfer it before recording the
-        // stake so no accounting state exists if the token transfer reverts.
-        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
 
         Pool storage pool = pools[poolId];
         userStakes[msg.sender].push(
@@ -90,6 +88,10 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         );
         pool.totalStaked += amount;
         totalStaked += amount;
+
+        // Effects are committed before the token interaction. A failed transfer
+        // reverts the entire transaction, including the accounting changes.
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
 
         emit Staked(msg.sender, poolId, amount);
     }
@@ -168,9 +170,8 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     function depositRewards(uint256 amount) external onlyOwner nonReentrant {
         require(amount > 0, "Cannot deposit 0");
 
-        // Record rewards only after the immutable AETH transfer succeeds.
-        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
         rewardBalance += amount;
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
         emit RewardDeposited(amount);
     }
 
