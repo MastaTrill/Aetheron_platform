@@ -84,7 +84,8 @@ globalThis.fetch = async (input, init = {}) => {
 
   if (action === "checkverifystatus" && !init.method) {
     const params = new URLSearchParams(url.searchParams);
-    url.search = "";
+    const chainId = params.get("chainid") || "8453";
+    url.search = `?chainid=${encodeURIComponent(chainId)}`;
     return nativeFetch(url, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
