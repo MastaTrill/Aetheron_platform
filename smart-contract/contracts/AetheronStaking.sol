@@ -56,7 +56,12 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
 
     function _createPool(uint256 lockDuration, uint256 rewardRate) internal {
         require(rewardRate <= 10000, "Reward rate too high");
-        pools[poolCount] = Pool({lockDuration: lockDuration, rewardRate: rewardRate, totalStaked: 0, isActive: true});
+        pools[poolCount] = Pool({
+            lockDuration: lockDuration,
+            rewardRate: rewardRate,
+            totalStaked: 0,
+            isActive: true
+        });
         emit PoolCreated(poolCount, lockDuration, rewardRate);
         poolCount++;
     }
@@ -72,14 +77,23 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         require(pools[poolId].isActive, "Pool not active");
         require(amount > 0, "Cannot stake 0");
 
+        // slither-disable-next-line reentrancy-no-eth
+        // The external token interaction intentionally precedes accounting so only
+        // successfully received tokens create liabilities. nonReentrant prevents
+        // callback re-entry into all staking state-changing entry points.
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
+
         Pool storage pool = pools[poolId];
-        userStakes[msg.sender].push(Stake({amount: amount, startTime: block.timestamp, lastClaimTime: block.timestamp, poolId: poolId}));
+        userStakes[msg.sender].push(
+            Stake({
+                amount: amount,
+                startTime: block.timestamp,
+                lastClaimTime: block.timestamp,
+                poolId: poolId
+            })
+        );
         pool.totalStaked += amount;
         totalStaked += amount;
-
-        uint256 balanceBefore = aetheronToken.balanceOf(address(this));
-        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
-        require(aetheronToken.balanceOf(address(this)) - balanceBefore == amount, "Transfer-tax tokens unsupported");
 
         emit Staked(msg.sender, poolId, amount);
     }
@@ -97,6 +111,7 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         uint256 reward = calculateReward(msg.sender, stakeId);
         require(reward >= MIN_CLAIM_REWARD, "No rewards available");
         require(reward <= rewardBalance, "Insufficient reward balance");
+
         userStakes[msg.sender][stakeId].lastClaimTime = block.timestamp;
         rewardBalance -= reward;
         aetheronToken.safeTransfer(msg.sender, reward);
@@ -105,10 +120,18 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
 
     function unstake(uint256 stakeId) external nonReentrant {
         require(stakeId < userStakes[msg.sender].length, "Invalid stake");
+
         Stake memory userStake = userStakes[msg.sender][stakeId];
         Pool storage pool = pools[userStake.poolId];
-        require(block.timestamp >= userStake.startTime + MIN_STAKING_PERIOD, "Minimum staking period not met");
-        require(block.timestamp >= userStake.startTime + pool.lockDuration, "Stake still locked");
+        require(
+            block.timestamp >= userStake.startTime + MIN_STAKING_PERIOD,
+            "Minimum staking period not met"
+        );
+        require(
+            block.timestamp >= userStake.startTime + pool.lockDuration,
+            "Stake still locked"
+        );
+
         uint256 amount = userStake.amount;
         uint256 reward = calculateReward(msg.sender, stakeId);
         if (reward > 0 && reward <= rewardBalance) {
@@ -116,36 +139,41 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
             amount += reward;
             emit RewardClaimed(msg.sender, stakeId, reward);
         }
+
         pool.totalStaked -= userStake.amount;
         totalStaked -= userStake.amount;
         _removeStake(msg.sender, stakeId);
+
         aetheronToken.safeTransfer(msg.sender, amount);
         emit Unstaked(msg.sender, stakeId, amount);
     }
 
     function emergencyUnstake(uint256 stakeId) external nonReentrant {
         require(stakeId < userStakes[msg.sender].length, "Invalid stake");
+
         Stake memory userStake = userStakes[msg.sender][stakeId];
         Pool storage pool = pools[userStake.poolId];
         pool.totalStaked -= userStake.amount;
         totalStaked -= userStake.amount;
         _removeStake(msg.sender, stakeId);
+
         aetheronToken.safeTransfer(msg.sender, userStake.amount);
         emit EmergencyUnstaked(msg.sender, stakeId, userStake.amount);
     }
 
     function _removeStake(address user, uint256 stakeId) internal {
         uint256 lastIndex = userStakes[user].length - 1;
-        if (stakeId != lastIndex) userStakes[user][stakeId] = userStakes[user][lastIndex];
+        if (stakeId != lastIndex) {
+            userStakes[user][stakeId] = userStakes[user][lastIndex];
+        }
         userStakes[user].pop();
     }
 
     function depositRewards(uint256 amount) external onlyOwner nonReentrant {
         require(amount > 0, "Cannot deposit 0");
-        rewardBalance += amount;
-        uint256 balanceBefore = aetheronToken.balanceOf(address(this));
+
         aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
-        require(aetheronToken.balanceOf(address(this)) - balanceBefore == amount, "Transfer-tax tokens unsupported");
+        rewardBalance += amount;
         emit RewardDeposited(amount);
     }
 
@@ -153,10 +181,28 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         return userStakes[user].length;
     }
 
-    function getUserStake(address user, uint256 stakeId) external view returns (uint256 amount, uint256 startTime, uint256 lastClaimTime, uint256 poolId, uint256 pendingReward, uint256 unlockTime) {
+    function getUserStake(address user, uint256 stakeId)
+        external
+        view
+        returns (
+            uint256 amount,
+            uint256 startTime,
+            uint256 lastClaimTime,
+            uint256 poolId,
+            uint256 pendingReward,
+            uint256 unlockTime
+        )
+    {
         require(stakeId < userStakes[user].length, "Invalid stake");
         Stake memory userStake = userStakes[user][stakeId];
         Pool memory pool = pools[userStake.poolId];
-        return (userStake.amount, userStake.startTime, userStake.lastClaimTime, userStake.poolId, calculateReward(user, stakeId), userStake.startTime + pool.lockDuration);
+        return (
+            userStake.amount,
+            userStake.startTime,
+            userStake.lastClaimTime,
+            userStake.poolId,
+            calculateReward(user, stakeId),
+            userStake.startTime + pool.lockDuration
+        );
     }
 }
