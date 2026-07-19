@@ -77,6 +77,8 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         require(pools[poolId].isActive, "Pool not active");
         require(amount > 0, "Cannot stake 0");
 
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
+
         Pool storage pool = pools[poolId];
         userStakes[msg.sender].push(
             Stake({
@@ -88,10 +90,6 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         );
         pool.totalStaked += amount;
         totalStaked += amount;
-
-        // Effects are committed before the token interaction. A failed transfer
-        // reverts the entire transaction, including the accounting changes.
-        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
 
         emit Staked(msg.sender, poolId, amount);
     }
@@ -170,8 +168,8 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     function depositRewards(uint256 amount) external onlyOwner nonReentrant {
         require(amount > 0, "Cannot deposit 0");
 
-        rewardBalance += amount;
         aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
+        rewardBalance += amount;
         emit RewardDeposited(amount);
     }
 
