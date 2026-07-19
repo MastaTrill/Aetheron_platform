@@ -27,10 +27,7 @@
     }
 
     try {
-      const readProvider = new ethers.providers.JsonRpcProvider(PUBLIC_RPC, {
-        name: 'base',
-        chainId: 8453
-      });
+      const readProvider = new ethers.providers.JsonRpcProvider(PUBLIC_RPC, { name: 'base', chainId: 8453 });
       const network = await readProvider.getNetwork();
       if (network.chainId !== 8453) throw new Error('RPC returned the wrong network.');
 
@@ -46,26 +43,18 @@
         readProvider
       );
       const [owner, treasury, linkedToken] = await Promise.all([
-        readContract.owner(),
-        readContract.treasury(),
-        readContract.token()
+        readContract.owner(), readContract.treasury(), readContract.token()
       ]);
-
-      if (linkedToken.toLowerCase() !== AETH_TOKEN_ADDRESS.toLowerCase()) {
-        throw new Error('Presale token linkage does not match the published AETH token.');
-      }
-      if (EXPECTED_OWNER && owner.toLowerCase() !== EXPECTED_OWNER) {
-        throw new Error('Presale ownership differs from the approved launch owner.');
-      }
-      if (EXPECTED_TREASURY && treasury.toLowerCase() !== EXPECTED_TREASURY) {
-        throw new Error('Presale treasury differs from the approved launch treasury.');
-      }
+      if (linkedToken.toLowerCase() !== AETH_TOKEN_ADDRESS.toLowerCase()) throw new Error('Presale token linkage does not match the published AETH token.');
+      if (EXPECTED_OWNER && owner.toLowerCase() !== EXPECTED_OWNER) throw new Error('Presale ownership differs from the approved launch owner.');
+      if (EXPECTED_TREASURY && treasury.toLowerCase() !== EXPECTED_TREASURY) throw new Error('Presale treasury differs from the approved launch treasury.');
 
       provider = readProvider;
       presaleContract = readContract;
       await loadPresaleData();
+      if (!presaleContract) throw new Error('Unable to validate live presale parameters and inventory.');
       if (presaleIsLive) showStatus('ON-CHAIN PRESALE LIVE', 'live');
-      else if (statusText?.textContent.includes('Checking')) showStatus('Presale is not currently accepting purchases', 'blocked');
+      else showStatus('Presale is not currently accepting purchases', 'blocked');
     } catch (error) {
       console.error('Presale readiness verification failed', error);
       failClosed(error?.message || 'Unable to verify the presale on Base.');
