@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -18,25 +18,25 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /// ownership to the multisig before going live if desired.
 contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     IERC20 public immutable token;
-    address public immutable treasury;
+    address public treasury;
 
-    uint256 public rate;
-    uint256 public softCap;
-    uint256 public hardCap;
-    uint256 public minContribution;
-    uint256 public maxContribution;
+    uint256 public rate; // tokens (18 decimals) per 1 ETH
+    uint256 public softCap; // wei - minimum raise for the sale to succeed
+    uint256 public hardCap; // wei - absolute maximum raise
+    uint256 public minContribution; // wei - per-tx floor, blocks dust spam
+    uint256 public maxContribution; // wei - per-wallet ceiling
 
     uint256 public startTime;
     uint256 public endTime;
 
     uint256 public weiRaised;
-    uint256 public tokensReserved;
+    uint256 public tokensReserved; // sum of tokens owed across all contributors
 
     bool public finalized;
     bool public cancelled;
 
-    mapping(address => uint256) public contributions;
-    mapping(address => uint256) public tokensOwed;
+    mapping(address => uint256) public contributions; // wei contributed
+    mapping(address => uint256) public tokensOwed; // tokens earned, unclaimed
     mapping(address => bool) public refunded;
 
     event TokensPurchased(address indexed buyer, uint256 weiAmount, uint256 tokenAmount);
@@ -46,10 +46,6 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     event TokensClaimed(address indexed contributor, uint256 tokenAmount);
     event FundsWithdrawn(address indexed to, uint256 weiAmount);
     event UnsoldTokensWithdrawn(address indexed to, uint256 tokenAmount);
-    event RateUpdated(uint256 previousRate, uint256 newRate);
-    event CapsUpdated(uint256 previousSoftCap, uint256 newSoftCap, uint256 previousHardCap, uint256 newHardCap);
-    event ContributionLimitsUpdated(uint256 previousMin, uint256 newMin, uint256 previousMax, uint256 newMax);
-    event ScheduleUpdated(uint256 previousStartTime, uint256 newStartTime, uint256 previousEndTime, uint256 newEndTime);
 
     modifier onlyWhileOpen() {
         require(block.timestamp >= startTime, "Presale has not started");
@@ -65,36 +61,33 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
     }
 
     constructor(
-        address tokenAddress,
-        uint256 initialRate,
-        uint256 initialSoftCap,
-        uint256 initialHardCap,
-        uint256 initialMinContribution,
-        uint256 initialMaxContribution,
-        uint256 initialStartTime,
-        uint256 initialEndTime,
-        address treasuryAddress
+        address _token,
+        uint256 _rate,
+        uint256 _softCap,
+        uint256 _hardCap,
+        uint256 _minContribution,
+        uint256 _maxContribution,
+        uint256 _startTime,
+        uint256 _endTime,
+        address _treasury
     ) {
-        require(tokenAddress != address(0), "Token address cannot be zero");
-        require(initialRate > 0, "Rate must be > 0");
-        require(initialSoftCap > 0 && initialSoftCap <= initialHardCap, "Invalid caps");
-        require(
-            initialMinContribution > 0 && initialMinContribution <= initialMaxContribution,
-            "Invalid contribution limits"
-        );
-        require(initialStartTime >= block.timestamp, "Start time in the past");
-        require(initialEndTime > initialStartTime, "End time must be after start time");
-        require(treasuryAddress != address(0), "Treasury address cannot be zero");
+        require(_token != address(0), "Token address cannot be zero");
+        require(_rate > 0, "Rate must be > 0");
+        require(_softCap > 0 && _softCap <= _hardCap, "Invalid caps");
+        require(_minContribution > 0 && _minContribution <= _maxContribution, "Invalid contribution limits");
+        require(_startTime >= block.timestamp, "Start time in the past");
+        require(_endTime > _startTime, "End time must be after start time");
+        require(_treasury != address(0), "Treasury address cannot be zero");
 
-        token = IERC20(tokenAddress);
-        rate = initialRate;
-        softCap = initialSoftCap;
-        hardCap = initialHardCap;
-        minContribution = initialMinContribution;
-        maxContribution = initialMaxContribution;
-        startTime = initialStartTime;
-        endTime = initialEndTime;
-        treasury = treasuryAddress;
+        token = IERC20(_token);
+        rate = _rate;
+        softCap = _softCap;
+        hardCap = _hardCap;
+        minContribution = _minContribution;
+        maxContribution = _maxContribution;
+        startTime = _startTime;
+        endTime = _endTime;
+        treasury = _treasury;
     }
 
     receive() external payable {
@@ -194,43 +187,32 @@ contract AetheronPresaleV2 is Ownable, ReentrancyGuard {
         emit RefundClaimed(msg.sender, amount);
     }
 
-    function updateRate(uint256 newRate) external onlyOwner onlyBeforeSaleStart {
+    function updateRate(uint256 _rate) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change rate after sale has started receiving funds");
-        require(newRate > 0, "Rate must be > 0");
-        uint256 previousRate = rate;
-        rate = newRate;
-        emit RateUpdated(previousRate, newRate);
+        require(_rate > 0, "Rate must be > 0");
+        rate = _rate;
     }
 
-    function updateCaps(uint256 newSoftCap, uint256 newHardCap) external onlyOwner onlyBeforeSaleStart {
+    function updateCaps(uint256 _softCap, uint256 _hardCap) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change caps after sale has started receiving funds");
-        require(newSoftCap > 0 && newSoftCap <= newHardCap, "Invalid caps");
-        uint256 previousSoftCap = softCap;
-        uint256 previousHardCap = hardCap;
-        softCap = newSoftCap;
-        hardCap = newHardCap;
-        emit CapsUpdated(previousSoftCap, newSoftCap, previousHardCap, newHardCap);
+        require(_softCap > 0 && _softCap <= _hardCap, "Invalid caps");
+        softCap = _softCap;
+        hardCap = _hardCap;
     }
 
-    function updateContributionLimits(uint256 newMin, uint256 newMax) external onlyOwner onlyBeforeSaleStart {
+    function updateContributionLimits(uint256 _min, uint256 _max) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot change limits after sale has started receiving funds");
-        require(newMin > 0 && newMin <= newMax, "Invalid contribution limits");
-        uint256 previousMin = minContribution;
-        uint256 previousMax = maxContribution;
-        minContribution = newMin;
-        maxContribution = newMax;
-        emit ContributionLimitsUpdated(previousMin, newMin, previousMax, newMax);
+        require(_min > 0 && _min <= _max, "Invalid contribution limits");
+        minContribution = _min;
+        maxContribution = _max;
     }
 
-    function updateSchedule(uint256 newStartTime, uint256 newEndTime) external onlyOwner onlyBeforeSaleStart {
+    function updateSchedule(uint256 _startTime, uint256 _endTime) external onlyOwner onlyBeforeSaleStart {
         require(weiRaised == 0, "Cannot reschedule after sale has started receiving funds");
-        require(newStartTime >= block.timestamp, "Start time in the past");
-        require(newEndTime > newStartTime, "End time must be after start time");
-        uint256 previousStartTime = startTime;
-        uint256 previousEndTime = endTime;
-        startTime = newStartTime;
-        endTime = newEndTime;
-        emit ScheduleUpdated(previousStartTime, newStartTime, previousEndTime, newEndTime);
+        require(_startTime >= block.timestamp, "Start time in the past");
+        require(_endTime > _startTime, "End time must be after start time");
+        startTime = _startTime;
+        endTime = _endTime;
     }
 
     function timeRemaining() external view returns (uint256) {
