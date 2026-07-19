@@ -68,4 +68,4 @@ jobs:
         with:
           version: stable
       - name: Compile Solidity with Forge
-        run: forge build --root . --contracts contracts --lib-paths node_modules
+        run: forge build
