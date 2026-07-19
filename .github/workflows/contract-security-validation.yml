@@ -1,0 +1,71 @@
+name: Contract Security Validation
+
+on:
+  pull_request:
+    paths:
+      - 'smart-contract/**'
+      - '.github/workflows/contract-security-validation.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  hardhat-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: smart-contract
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - run: npm ci
+      - run: npm run compile
+      - run: npm test
+      - run: npm run test:production-simulation
+
+  slither:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Install contract dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Install Slither
+        run: pipx install slither-analyzer
+      - name: Run Slither against Hardhat project
+        working-directory: smart-contract
+        run: slither . --compile-force-framework hardhat --exclude-dependencies --fail-pedantic
+
+  forge-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: smart-contract
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - run: npm ci
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - name: Compile Solidity with Forge
+        run: forge build --root . --contracts contracts --lib-paths node_modules
