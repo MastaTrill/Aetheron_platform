@@ -41,9 +41,9 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         uint256 poolId;
     }
 
-    constructor(address _aetheronToken) {
-        require(_aetheronToken != address(0), "Invalid token address");
-        aetheronToken = IERC20(_aetheronToken);
+    constructor(address tokenAddress) {
+        require(tokenAddress != address(0), "Invalid token address");
+        aetheronToken = IERC20(tokenAddress);
         _createPool(30 days, 500);
         _createPool(90 days, 1200);
         _createPool(180 days, 2500);
@@ -75,9 +75,11 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         require(pools[poolId].isActive, "Pool not active");
         require(amount > 0, "Cannot stake 0");
 
-        Pool storage pool = pools[poolId];
-        uint256 balanceBefore = aetheronToken.balanceOf(address(this));
+        // AETH is the immutable staking asset. Transfer it before recording the
+        // stake so no accounting state exists if the token transfer reverts.
+        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
 
+        Pool storage pool = pools[poolId];
         userStakes[msg.sender].push(
             Stake({
                 amount: amount,
@@ -88,12 +90,6 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         );
         pool.totalStaked += amount;
         totalStaked += amount;
-
-        aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
-        require(
-            aetheronToken.balanceOf(address(this)) - balanceBefore == amount,
-            "Unsupported fee-on-transfer token"
-        );
 
         emit Staked(msg.sender, poolId, amount);
     }
@@ -171,12 +167,11 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
 
     function depositRewards(uint256 amount) external onlyOwner nonReentrant {
         require(amount > 0, "Cannot deposit 0");
-        uint256 balanceBefore = aetheronToken.balanceOf(address(this));
+
+        // Record rewards only after the immutable AETH transfer succeeds.
         aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
-        uint256 received = aetheronToken.balanceOf(address(this)) - balanceBefore;
-        require(received == amount, "Unsupported fee-on-transfer token");
-        rewardBalance += received;
-        emit RewardDeposited(received);
+        rewardBalance += amount;
+        emit RewardDeposited(amount);
     }
 
     function getUserStakesCount(address user) external view returns (uint256) {
