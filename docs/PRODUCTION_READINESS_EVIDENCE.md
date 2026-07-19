@@ -7,19 +7,20 @@ This record is the release gate for the Base presale. A green CI run alone is no
 - Network: Base Mainnet (`8453`)
 - AETH token: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`
 - Presale: `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`
-- Approved owner: `0xa0Bd76BDA539cF45e2963e84757516B50FfefFf7`
-- Approved treasury: `0xa0Bd76BDA539cF45e2963e84757516B50FfefFf7`
+- Verified owner: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`
+- Verified treasury: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`
+- Deployment record: `smart-contract/deployments/presale-base.json`
 
-The frontend fails closed if deployed bytecode is missing, token linkage is wrong, or owner/treasury do not match these approved values.
+The frontend fails closed if deployed bytecode is missing, token linkage is wrong, or owner/treasury do not match the verified deployment record.
 
 ## Required evidence before public onboarding
 
 - [ ] `https://aetrs.com/` and `/presale.html` return HTTP 200.
 - [ ] Production Readiness Monitor passes from the deployed commit.
 - [ ] BaseScan source verification links resolve for both contracts.
-- [ ] Record current `owner()`, `treasury()`, `token()`, rate, caps, schedule, `finalized`, and `cancelled` values.
+- [ ] Reconfirm current `owner()`, `treasury()`, `token()`, rate, caps, schedule, `finalized`, and `cancelled` values.
 - [ ] Record token inventory and `tokensReserved`; inventory must cover reserved liabilities.
-- [ ] Confirm whether the approved owner is an EOA, multisig, or timelock.
+- [ ] Confirm whether the verified owner is an EOA, multisig, or timelock.
 - [ ] If it is an EOA, obtain explicit risk acceptance or transfer control through a separately approved transaction.
 - [ ] Test MetaMask desktop, Coinbase Wallet desktop, MetaMask mobile deep link, and Coinbase Wallet mobile deep link.
 - [ ] Confirm rejected connection, rejected network switch, and rejected transaction leave the UI usable.
