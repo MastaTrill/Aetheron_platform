@@ -9,11 +9,11 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 contract AetheronVendor is Ownable, ReentrancyGuard {
   using SafeERC20 for IERC20;
 
-  IERC20 public aethToken;
+  IERC20 public immutable aethToken;
   uint256 public tokensPerPol = 10000; // 1 POL = 10,000 AETH
 
-  event BuyTokens(address buyer, uint256 amountOfPol, uint256 amountOfTokens);
-  event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfPol);
+  event BuyTokens(address indexed buyer, uint256 amountOfPol, uint256 amountOfTokens);
+  event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfPol);
   event TokensPerPolUpdated(uint256 newRate);
 
   constructor(address _aethTokenAddress) {
@@ -51,6 +51,7 @@ contract AetheronVendor is Ownable, ReentrancyGuard {
 
     aethToken.safeTransferFrom(msg.sender, address(this), tokenAmountToSell);
 
+    // slither-disable-next-line arbitrary-send-eth
     (bool polSent, ) = msg.sender.call{ value: polToReturn }('');
     require(polSent, 'Failed to send POL back to user');
 
@@ -60,9 +61,9 @@ contract AetheronVendor is Ownable, ReentrancyGuard {
   /**
    * @dev Owner can withdraw POL collected from sales
    */
-  function withdrawPol() public onlyOwner {
+  function withdrawPol() public onlyOwner nonReentrant {
     uint256 ownerAmount = address(this).balance;
-    (bool sent, ) = msg.sender.call{ value: ownerAmount }('');
+    (bool sent, ) = owner().call{ value: ownerAmount }('');
     require(sent, 'Failed to send POL');
   }
 
@@ -71,7 +72,7 @@ contract AetheronVendor is Ownable, ReentrancyGuard {
    */
   function withdrawTokens() public onlyOwner {
     uint256 tokenAmount = aethToken.balanceOf(address(this));
-    aethToken.safeTransfer(msg.sender, tokenAmount);
+    aethToken.safeTransfer(owner(), tokenAmount);
   }
 
   function setTokensPerPol(uint256 newRate) external onlyOwner {
