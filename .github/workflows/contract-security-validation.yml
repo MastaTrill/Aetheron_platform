@@ -44,11 +44,14 @@ jobs:
       - name: Install contract dependencies
         working-directory: smart-contract
         run: npm ci
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
       - name: Install Slither
         run: pipx install slither-analyzer
-      - name: Run Slither against Hardhat project
+      - name: Run Slither using Foundry
         working-directory: smart-contract
-        run: slither . --compile-force-framework hardhat --exclude-dependencies --fail-pedantic
+        run: slither . --compile-force-framework foundry --exclude-dependencies --fail-pedantic
 
   forge-build:
     runs-on: ubuntu-latest
