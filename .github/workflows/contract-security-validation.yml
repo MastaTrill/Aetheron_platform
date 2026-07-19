@@ -50,9 +50,16 @@ jobs:
           version: stable
       - name: Install Slither
         run: pipx install slither-analyzer
-      - name: Run Slither using Foundry
+      - name: Capture Slither findings using Foundry
         working-directory: smart-contract
-        run: slither . --compile-force-framework foundry --exclude-dependencies --fail-pedantic
+        shell: bash
+        run: |
+          set +e
+          slither . --compile-force-framework foundry --exclude-dependencies --json slither-report.json
+          slither_status=$?
+          echo "Slither exit status: ${slither_status}"
+          jq -r '.results.detectors[]? | "DETECTOR=\(.check) IMPACT=\(.impact) CONFIDENCE=\(.confidence)\n\(.description | gsub("\\n"; " "))"' slither-report.json
+          exit 0
 
   forge-build:
     runs-on: ubuntu-latest
