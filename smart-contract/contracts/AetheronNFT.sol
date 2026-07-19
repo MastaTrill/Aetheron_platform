@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
+contract AetheronNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
@@ -22,6 +23,7 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
 
     event NFTMinted(address indexed to, uint256 indexed tokenId, string tokenURI);
     event BaseURIUpdated(string newBaseURI);
+    event RevenueWithdrawn(address indexed recipient, uint256 amount);
 
     constructor(
         string memory name,
@@ -36,7 +38,7 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         super._burn(tokenId);
     }
 
-    function mint(string memory metadataURI) public payable returns (uint256) {
+    function mint(string memory metadataURI) public payable nonReentrant returns (uint256) {
         require(msg.value >= MINT_PRICE, "Insufficient payment");
         require(_tokenIdCounter.current() < MAX_SUPPLY, "Max supply reached");
         require(mintCount[msg.sender] < MAX_PER_MINT, "Max per mint reached");
@@ -53,7 +55,7 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         return tokenId;
     }
 
-    function mintBatch(string[] memory tokenURIs) public payable returns (uint256[] memory) {
+    function mintBatch(string[] memory tokenURIs) public payable nonReentrant returns (uint256[] memory) {
         uint256 count = tokenURIs.length;
         require(count > 0 && count <= MAX_PER_MINT, "Invalid batch size");
         require(mintCount[msg.sender] + count <= MAX_PER_MINT, "Exceeds max per mint");
@@ -61,6 +63,9 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         require(_tokenIdCounter.current() + count <= MAX_SUPPLY, "Exceeds max supply");
 
         uint256[] memory tokenIds = new uint256[](count);
+
+        // Reserve quota before any ERC721 receiver callback.
+        mintCount[msg.sender] += count;
 
         for (uint256 i = 0; i < count; i++) {
             uint256 tokenId = _tokenIdCounter.current();
@@ -70,7 +75,6 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
             _setTokenURI(tokenId, tokenURIs[i]);
 
             tokenIds[i] = tokenId;
-            mintCount[msg.sender]++;
 
             emit NFTMinted(msg.sender, tokenId, tokenURIs[i]);
         }
@@ -91,7 +95,17 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable {
         emit BaseURIUpdated(newBaseURI);
     }
 
-    function withdraw() public onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+    /**
+     * @notice Withdraw accumulated primary-sale revenue to the current owner.
+     * @dev The payout destination is deliberately restricted by onlyOwner and
+     *      OpenZeppelin Ownable. No caller-supplied recipient is accepted.
+     */
+    function withdraw() public onlyOwner nonReentrant {
+        uint256 amount = address(this).balance;
+        address recipient = owner();
+        // slither-disable-next-line arbitrary-send-eth
+        (bool sent, ) = payable(recipient).call{value: amount}("");
+        require(sent, "Withdrawal failed");
+        emit RevenueWithdrawn(recipient, amount);
     }
 }

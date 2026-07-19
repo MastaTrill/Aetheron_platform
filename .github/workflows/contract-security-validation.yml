@@ -56,7 +56,16 @@ jobs:
           --compile-force-framework foundry
           --exclude-dependencies
           --filter-paths 'contracts/Aetheron_flat.sol'
+          --json slither-report.json
           --fail-high
+      - name: Upload complete Slither report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report
+          path: smart-contract/slither-report.json
+          if-no-files-found: warn
+          retention-days: 14
 
   forge-build:
     runs-on: ubuntu-latest
