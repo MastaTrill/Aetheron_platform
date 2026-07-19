@@ -184,6 +184,12 @@ test("post-deployment verification accepts a fully funded disabled replacement",
 
 test("owner-controlled terms lock when the advertised sale starts", () => {
   assert.match(presaleSource, /modifier onlyBeforeSaleStart\(\)/);
-  assert.match(presaleSource, /function updateRate\(uint256 _rate\) external onlyOwner onlyBeforeSaleStart/);
-  assert.match(presaleSource, /function updateSchedule\(uint256 _startTime, uint256 _endTime\) external onlyOwner onlyBeforeSaleStart/);
+  assert.match(
+    presaleSource,
+    /function updateRate\(uint256\s+[A-Za-z_][A-Za-z0-9_]*\)\s+external\s+onlyOwner\s+onlyBeforeSaleStart/
+  );
+  assert.match(
+    presaleSource,
+    /function updateSchedule\(uint256\s+[A-Za-z_][A-Za-z0-9_]*,\s*uint256\s+[A-Za-z_][A-Za-z0-9_]*\)\s+external\s+onlyOwner\s+onlyBeforeSaleStart/
+  );
 });

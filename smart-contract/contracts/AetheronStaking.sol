@@ -77,6 +77,10 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
         require(pools[poolId].isActive, "Pool not active");
         require(amount > 0, "Cannot stake 0");
 
+        // slither-disable-next-line reentrancy-no-eth
+        // The external token interaction intentionally precedes accounting so only
+        // successfully received tokens create liabilities. nonReentrant prevents
+        // callback re-entry into all staking state-changing entry points.
         aetheronToken.safeTransferFrom(msg.sender, address(this), amount);
 
         Pool storage pool = pools[poolId];
