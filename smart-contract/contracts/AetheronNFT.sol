@@ -23,6 +23,7 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
 
     event NFTMinted(address indexed to, uint256 indexed tokenId, string tokenURI);
     event BaseURIUpdated(string newBaseURI);
+    event RevenueWithdrawn(address indexed recipient, uint256 amount);
 
     constructor(
         string memory name,
@@ -94,8 +95,17 @@ contract AetheronNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         emit BaseURIUpdated(newBaseURI);
     }
 
+    /**
+     * @notice Withdraw accumulated primary-sale revenue to the current owner.
+     * @dev The payout destination is deliberately restricted by onlyOwner and
+     *      OpenZeppelin Ownable. No caller-supplied recipient is accepted.
+     */
     function withdraw() public onlyOwner nonReentrant {
-        (bool sent, ) = payable(owner()).call{value: address(this).balance}("");
+        uint256 amount = address(this).balance;
+        address recipient = owner();
+        // slither-disable-next-line arbitrary-send-eth
+        (bool sent, ) = payable(recipient).call{value: amount}("");
         require(sent, "Withdrawal failed");
+        emit RevenueWithdrawn(recipient, amount);
     }
 }
