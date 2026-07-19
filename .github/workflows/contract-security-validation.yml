@@ -56,10 +56,14 @@ jobs:
         run: |
           set +e
           slither . --compile-force-framework foundry --exclude-dependencies --json slither-report.json
-          slither_status=$?
-          echo "Slither exit status: ${slither_status}"
-          jq -r '.results.detectors[]? | "DETECTOR=\(.check) IMPACT=\(.impact) CONFIDENCE=\(.confidence)\n\(.description | gsub("\\n"; " "))"' slither-report.json
+          echo "Slither exit status: $?"
           exit 0
+      - name: Upload Slither report
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report
+          path: smart-contract/slither-report.json
+          if-no-files-found: error
 
   forge-build:
     runs-on: ubuntu-latest
