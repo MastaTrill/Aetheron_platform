@@ -26,7 +26,6 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
     event RewardClaimed(address indexed user, uint256 indexed stakeId, uint256 reward);
     event RewardDeposited(uint256 amount);
     event EmergencyUnstaked(address indexed user, uint256 indexed stakeId, uint256 amount);
-    event TokenRecovered(address indexed token, uint256 amount);
 
     struct Pool {
         uint256 lockDuration;
@@ -207,18 +206,5 @@ contract AetheronStaking is Ownable, ReentrancyGuard {
             calculateReward(user, stakeId),
             userStake.startTime + pool.lockDuration
         );
-    }
-
-    function recoverToken(address token, uint256 amount) external onlyOwner nonReentrant {
-        require(token != address(0), "Invalid token address");
-
-        if (token == address(aetheronToken)) {
-            uint256 requiredBalance = totalStaked + rewardBalance;
-            uint256 currentBalance = aetheronToken.balanceOf(address(this));
-            require(currentBalance >= requiredBalance + amount, "Recovery exceeds excess balance");
-        }
-
-        IERC20(token).safeTransfer(owner(), amount);
-        emit TokenRecovered(token, amount);
     }
 }
