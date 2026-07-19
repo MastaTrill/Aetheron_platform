@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "network": "Base Mainnet",
+  "chainId": 8453,
+  "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+  "name": "Aetheron",
+  "symbol": "AETH",
+  "decimals": 18,
+  "totalSupply": "1000000000",
+  "tokenType": "ERC-20",
+  "website": "https://aetrs.com/",
+  "email": "",
+  "description": "Aetheron (AETH) is the fixed-supply utility token for the Aetheron platform on Base. AETH supports the platform's presale and planned DeFi ecosystem. Verify every interaction against the official Base contract address.",
+  "logo": {
+    "repositoryAsset": "logo.png",
+    "publicUrl": "https://aetrs.com/logo.png",
+    "requirements": "Square PNG, transparent background preferred, at least 200x200 pixels"
+  },
+  "links": {
+    "github": "https://github.com/MastaTrill/Aetheron_platform",
+    "twitter": "https://twitter.com/William_McCoy_",
+    "litepaper": "https://aetrs.com/litepaper.html",
+    "presale": "https://aetrs.com/presale.html",
+    "basescanToken": "https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e"
+  },
+  "ownership": {
+    "expectedOwner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "note": "BaseScan token-profile updates require the owner to sign in, verify address ownership, and submit the profile form. Never store a private key in this file or GitHub Actions."
+  },
+  "reviewBeforeSubmission": [
+    "Confirm https://aetrs.com/logo.png is the final square token logo",
+    "Add only social accounts that are already live and controlled by Aetheron",
+    "Confirm all claims remain accurate at submission time",
+    "Complete BaseScan address-ownership verification with the owner wallet"
+  ]
+}
