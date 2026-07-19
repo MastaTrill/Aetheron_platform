@@ -12,6 +12,7 @@ on:
 permissions:
   contents: read
 
+# Verification branch: exercises the Slither + Foundry compatibility path.
 jobs:
   hardhat-validation:
     runs-on: ubuntu-latest
