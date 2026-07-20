@@ -7,10 +7,14 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const source = await fs.readFile(path.resolve(__dirname, "../../presale.js"), "utf8");
+const readinessSource = await fs.readFile(path.resolve(__dirname, "../../presale-readiness.js"), "utf8");
+const configSource = await fs.readFile(path.resolve(__dirname, "../../presale-config.js"), "utf8");
 
 describe("presale frontend safety invariants", function () {
   it("is valid JavaScript", function () {
     assert.doesNotThrow(() => new vm.Script(source, { filename: "presale.js" }));
+    assert.doesNotThrow(() => new vm.Script(readinessSource, { filename: "presale-readiness.js" }));
+    assert.doesNotThrow(() => new vm.Script(configSource, { filename: "presale-config.js" }));
   });
 
   it("defines network constants before selecting the configured network", function () {
@@ -49,5 +53,23 @@ describe("presale frontend safety invariants", function () {
   it("enforces the contract's cumulative per-wallet contribution limit", function () {
     assert.match(source, /presaleContract\.contributions\(await signer\.getAddress\(\)\)/);
     assert.match(source, /maxContributionETH - userContributionETH/);
+  });
+
+  it("bounds Base readiness calls and fails over across published RPCs", function () {
+    assert.match(readinessSource, /const RPC_TIMEOUT_MS/);
+    assert.match(readinessSource, /Promise\.race\(\[promise, timeout\]\)/);
+    assert.match(readinessSource, /async function createVerifiedProvider\(\)/);
+    assert.match(readinessSource, /for \(const rpcUrl of RPC_CANDIDATES\)/);
+    assert.match(readinessSource, /withTimeout\(loadPresaleData\(\), 'Presale state and inventory check'\)/);
+    assert.match(configSource, /publicRpcUrls:\s*\[/);
+    assert.match(configSource, /https:\/\/base-rpc\.publicnode\.com/);
+    assert.match(configSource, /rpcTimeoutMs:\s*8000/);
+  });
+
+  it("fails closed with a user-visible retry instead of hanging", function () {
+    assert.match(readinessSource, /presaleIsLive = false/);
+    assert.match(readinessSource, /setPurchaseControlsEnabled\(false, 'Unavailable'\)/);
+    assert.match(readinessSource, /retry\.textContent = 'Retry Base verification'/);
+    assert.match(readinessSource, /retry\.addEventListener\('click', verifyReadOnlyState/);
   });
 });
