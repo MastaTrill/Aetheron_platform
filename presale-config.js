@@ -9,6 +9,11 @@ window.AETHERON_PRESALE_CONFIG = {
   expectedOwner: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
   expectedTreasury: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
   publicRpcUrl: "https://mainnet.base.org",
+  publicRpcUrls: [
+    "https://base-rpc.publicnode.com",
+    "https://mainnet.base.org"
+  ],
+  rpcTimeoutMs: 8000,
   maxPresaleTokens: 33333333,
   network: "base",
   chainId: 8453,
