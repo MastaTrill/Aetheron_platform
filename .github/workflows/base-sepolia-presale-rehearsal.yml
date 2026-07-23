@@ -1,0 +1,157 @@
+name: Base Sepolia Presale Rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      broadcast:
+        description: "Deploy and exercise the Base Sepolia rehearsal contracts"
+        required: true
+        default: false
+        type: boolean
+      confirmation:
+        description: "Type DEPLOY_BASE_SEPOLIA_REHEARSAL to authorize testnet transactions"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: base-sepolia-presale-rehearsal
+  cancel-in-progress: false
+
+env:
+  RELEASE_COMMIT: ${{ github.sha }}
+  BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+  PRIVATE_KEY: ${{ secrets.BASE_SEPOLIA_DEPLOYER_PRIVATE_KEY }}
+  REHEARSAL_TREASURY_ADDRESS: ${{ vars.REHEARSAL_TREASURY_ADDRESS }}
+  MIN_REHEARSAL_BALANCE_ETH: "0.01"
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: base-sepolia-presale
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Require protected deployment environment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DEPLOY_ENVIRONMENT: base-sepolia-presale
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const repository = process.env.GITHUB_REPOSITORY;
+          const environmentName = process.env.DEPLOY_ENVIRONMENT;
+          const response = await fetch(
+            `https://api.github.com/repos/${repository}/environments/${encodeURIComponent(environmentName)}`,
+            {
+              headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            }
+          );
+          if (!response.ok) throw new Error(`Cannot validate ${environmentName}: HTTP ${response.status}`);
+          const environment = await response.json();
+          const rules = Array.isArray(environment.protection_rules) ? environment.protection_rules : [];
+          const reviewerRule = rules.find((rule) => rule.type === "required_reviewers");
+          if (!reviewerRule?.reviewers?.length) throw new Error(`${environmentName} needs a deployment reviewer`);
+          const branchPolicy = environment.deployment_branch_policy;
+          if (!branchPolicy?.protected_branches && !branchPolicy?.custom_branch_policies) {
+            throw new Error(`${environmentName} needs deployment branch restrictions`);
+          }
+          console.log(`Protected environment ${environmentName}: PASS`);
+          NODE
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Compile exact artifacts
+        working-directory: smart-contract
+        run: npm run compile
+      - name: Run presale and staking tests
+        working-directory: smart-contract
+        run: npm test
+      - name: Validate Base Sepolia signer, RPC, balance, and artifacts
+        working-directory: smart-contract
+        env:
+          DRY_RUN: "true"
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run rehearsal:base-sepolia:presale 2>&1 | tee ../base-sepolia-presale-readiness.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: base-sepolia-presale-readiness-${{ github.run_id }}
+          path: base-sepolia-presale-readiness.log
+          if-no-files-found: error
+
+  deploy-and-exercise:
+    needs: readiness
+    if: ${{ inputs.broadcast && inputs.confirmation == 'DEPLOY_BASE_SEPOLIA_REHEARSAL' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: base-sepolia-presale
+    env:
+      CONFIRM_BASE_SEPOLIA_REHEARSAL: ${{ inputs.confirmation }}
+      BASESCAN_API_KEY: ${{ secrets.BASESCAN_API_KEY || secrets.ETHERSCAN_API_KEY }}
+      ALLOW_REHEARSAL_OVERWRITE: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+      - name: Install exact dependencies
+        working-directory: smart-contract
+        run: npm ci
+      - name: Compile exact artifacts
+        working-directory: smart-contract
+        run: npm run compile
+      - name: Deploy and exercise presale and staking paths
+        working-directory: smart-contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run rehearsal:base-sepolia:presale 2>&1 | tee ../base-sepolia-presale-deployment.log
+      - name: Verify all rehearsal sources on BaseScan Sepolia
+        working-directory: smart-contract
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run verify:base-sepolia:rehearsal 2>&1 | tee ../base-sepolia-presale-source-verification.log
+      - name: Record immutable manifest digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum smart-contract/deployments/base-sepolia-presale-rehearsal.json \
+            | tee base-sepolia-presale-manifest.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: base-sepolia-presale-rehearsal-${{ github.run_id }}
+          path: |
+            smart-contract/deployments/base-sepolia-presale-rehearsal.json
+            base-sepolia-presale-deployment.log
+            base-sepolia-presale-source-verification.log
+            base-sepolia-presale-manifest.sha256
+          if-no-files-found: error
+      - name: Rehearsal summary
+        if: always()
+        shell: bash
+        run: |
+          echo "Release commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "The artifact binds contract addresses, transaction hashes, runtime bytecode hashes, functional assertions, explorer verification, and a SHA-256 manifest digest." >> "$GITHUB_STEP_SUMMARY"
+          echo "No Base mainnet transaction is authorized by this workflow." >> "$GITHUB_STEP_SUMMARY"
