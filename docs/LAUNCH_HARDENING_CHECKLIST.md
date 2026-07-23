@@ -16,19 +16,23 @@
 - [ ] Confirm token decimals and all price conversion formulas.
 - [ ] Confirm per-wallet minimum and maximum purchase limits.
 - [ ] Confirm global hard cap and sold-out behavior.
-- [ ] Confirm pause/unpause and emergency withdrawal permissions.
+- [ ] Confirm cancellation/refund and emergency withdrawal permissions.
 - [ ] Confirm claim schedule, repeated-claim protection, and refund behavior.
 - [ ] Test zero-value, boundary, stale-price, malicious-token, and reentrancy cases.
 
 ## Base Sepolia rehearsal
 
-- [ ] Deploy all production contracts to Base Sepolia.
-- [ ] Verify every contract on the explorer.
-- [ ] Record implementation and proxy addresses separately.
-- [ ] Configure treasury, multisig, token allocation, caps, and sale windows.
-- [ ] Fund the sale and reward pools.
-- [ ] Execute buy, claim, stake, unstake, pause, unpause, and withdrawal flows.
-- [ ] Save transaction hashes and screenshots in deployment evidence.
+Automation and the evidence contract are defined in `docs/BASE_SEPOLIA_REHEARSAL_RUNBOOK.md`. Keep every item below unchecked until a reviewed workflow artifact proves it.
+
+- [ ] Protected `base-sepolia-presale` environment requires a reviewer and restricted deployment branch.
+- [ ] Readiness run passes from the exact reviewed commit.
+- [ ] Deploy fresh test token, success presale, refund presale, and staking contracts to Base Sepolia.
+- [ ] Verify every rehearsal contract on BaseScan Sepolia.
+- [ ] Execute buy, finalize, claim, treasury withdrawal, cancellation, and contributor refund flows.
+- [ ] Execute stake, locked-unstake rejection, and emergency-unstake flows.
+- [ ] Confirm non-owner presale and staking administration calls are rejected.
+- [ ] Archive addresses, transaction hashes, runtime bytecode hashes, constructor arguments, logs, and the manifest SHA-256 digest.
+- [ ] Record the exact workflow run URL and artifact retention location.
 
 ## Mainnet readiness
 
@@ -44,7 +48,7 @@
 
 - [ ] `MAINNET_EVIDENCE_CHECKLIST.md` completed.
 - [ ] Release notes include commit SHA and deployed bytecode hashes.
-- [ ] CI run links and Slither/Forge results archived.
+- [ ] CI run links and Slither/contract-test results archived.
 - [ ] Deployment transaction hashes recorded.
 - [ ] Ownership-transfer and timelock transactions recorded.
-- [ ] Incident response contacts and pause procedure documented.
+- [ ] Incident response contacts and cancellation/refund procedure documented.
