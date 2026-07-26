@@ -1,0 +1,30 @@
+name: Operational Safety Gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safety-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate canonical Base deployment truth
+        run: node scripts/validate-canonical-deployment.mjs
+      - name: Validate operational launch gates in no-action mode
+        env:
+          LIVE_ACTION: none
+        run: node scripts/check-operational-launch-gates.mjs
+      - name: Scan tracked files for potential secrets
+        run: node scripts/scan-tracked-secrets.mjs
