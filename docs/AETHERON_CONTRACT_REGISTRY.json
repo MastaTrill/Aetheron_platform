@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-25",
+  "authority": "MastaTrill/Aetheron_platform",
+  "statusDefinitions": {
+    "production": "Live production deployment with recorded transaction and verification evidence",
+    "testnet": "Live testnet deployment",
+    "pending": "Planned but not yet deployed",
+    "legacy": "Historical deployment not used as current production configuration",
+    "unverified": "Claimed address without sufficient repository evidence"
+  },
+  "contracts": [
+    {
+      "project": "Aetheron Platform",
+      "contract": "Aetheron",
+      "symbol": "AETH",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+      "creationTransaction": "0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829",
+      "deployer": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+      "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+      "verification": "verified",
+      "status": "production",
+      "source": "smart-contract/deployments/aeth-base.json"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "SentinelToken",
+      "symbol": "SENT",
+      "network": "Ethereum Sepolia",
+      "chainId": 11155111,
+      "address": "0xFf21fF20B61469075A2b2280724E9D99dA7e06Ed",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron-Sentinel-L3:docs/DEPLOYMENT_ADDRESSES.md"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "SentinelInterceptor",
+      "network": "Ethereum Sepolia",
+      "chainId": 11155111,
+      "address": "0x057c15fA83A008ba65A20b6e0dE91949Ab987954",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron-Sentinel-L3:docs/DEPLOYMENT_ADDRESSES.md"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "CircuitBreaker",
+      "network": "Ethereum Sepolia",
+      "chainId": 11155111,
+      "address": "0x1FC97c1C54914E9053EDF97C390bF9b3b77eA885",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron-Sentinel-L3:docs/DEPLOYMENT_ADDRESSES.md"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "RateLimiter",
+      "network": "Ethereum Sepolia",
+      "chainId": 11155111,
+      "address": "0xA084B67baDC91Dd6d8cEec65af73c4F21337A888",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron-Sentinel-L3:docs/DEPLOYMENT_ADDRESSES.md"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "Release Core",
+      "network": "Base Sepolia",
+      "chainId": 84532,
+      "address": null,
+      "status": "pending"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "Release Core",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "address": null,
+      "status": "pending"
+    },
+    {
+      "project": "Sentinel",
+      "contract": "Unknown claimed token",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "address": "0x8c1eb8db47d52a8b5e2b1eb4e5ec9491ce030ba3",
+      "status": "unverified",
+      "notes": "Not linked to an official deployment manifest or source record in the reviewed repositories."
+    }
+  ]
+}
