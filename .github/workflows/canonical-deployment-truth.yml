@@ -1,0 +1,38 @@
+name: Canonical Deployment Truth
+
+on:
+  pull_request:
+    paths:
+      - 'docs/AETHERON_CONTRACT_REGISTRY.json'
+      - 'smart-contract/deployments/aeth-base.json'
+      - 'src/**'
+      - 'smart-contract/config/**'
+      - 'smart-contract/scripts/**'
+      - 'scripts/validate-canonical-deployments.mjs'
+      - '.github/workflows/canonical-deployment-truth.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/AETHERON_CONTRACT_REGISTRY.json'
+      - 'smart-contract/deployments/aeth-base.json'
+      - 'src/**'
+      - 'smart-contract/config/**'
+      - 'smart-contract/scripts/**'
+      - 'scripts/validate-canonical-deployments.mjs'
+      - '.github/workflows/canonical-deployment-truth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate canonical Base deployment truth
+        run: node scripts/validate-canonical-deployments.mjs
