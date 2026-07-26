@@ -1,147 +1,54 @@
-# Aetheron Platform - Project Status & Next Steps
+# Aetheron Platform — Canonical Project Status
 
-## ✅ **COMPLETED TASKS**
+**Status:** Active flagship  
+**Canonical role:** Commercial Aetheron product: AETH token, presale, staking, public frontend, wallet onboarding, and treasury-facing operations.
 
-### 🔒 **Security & Code Quality**
+## Production truth
 
-- ✅ Fixed 21 Slither security issues (naming conventions, timestamp security)
-- ✅ Updated Solidity version to ^0.8.19 for better stability
-- ✅ Added minimum staking period (1 hour) to prevent timestamp manipulation
-- ✅ All 37 smart contract tests passing
-- ✅ Security documentation added
+- Canonical production network: **Base Mainnet** (chain ID `8453`).
+- Canonical AETH token: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`.
+- Creation transaction: `0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829`.
+- Contract source verification is recorded in `smart-contract/deployments/aeth-base.json`.
+- Token trading is currently recorded as disabled.
+- Polygon Mumbai, Polygon mainnet, Solana, and any earlier AETH addresses are **legacy deployments** unless separately revalidated and entered into the canonical registry.
 
-### 🚀 **Smart Contracts**
+## In scope
 
-- ✅ Aetheron ERC20 token deployed on Mumbai testnet
-- ✅ AetheronStaking contract deployed on Mumbai testnet
-- ✅ Contracts verified on PolygonScan
-- ✅ Comprehensive test suite (37/37 passing)
-- ✅ Gas optimization completed
+- AETH token integration and verified contract registry
+- Presale success, cancellation, refund, claim, and treasury-withdrawal paths
+- Staking and emergency exits
+- Public website and wallet experience
+- Treasury, multisig, timelock, and operational controls
+- Base Sepolia rehearsal and immutable launch evidence
 
-### 🌐 **Frontend Integration**
+## Out of scope
 
-- ✅ React application with MetaMask integration
-- ✅ Wallet connection and network switching
-- ✅ Staking interface with pool display
-- ✅ Balance display and transaction handling
-- ✅ Modern UI with responsive design
-- ✅ Running successfully on localhost:3000
+- Sentinel L3 security-suite development
+- Experimental quantum, ZK, AI-security, bridge, or oracle contracts
+- General-purpose AI agents
+- Mobile or multichain experiments not required by the public platform
 
-### 📊 **Deployment & Infrastructure**
+## Current launch gates
 
-- ✅ Contracts deployed on Polygon Mumbai testnet
-- ✅ Contract addresses documented in README
-- ✅ CI/CD pipeline configured
-- ✅ Package configurations optimized
+- [ ] Complete the protected Base Sepolia presale rehearsal.
+- [ ] Preserve contract addresses, transaction hashes, block numbers, bytecode hashes, verification URLs, and manifest digest.
+- [ ] Review owner, treasury, multisig, and timelock separation.
+- [ ] Complete an independent smart-contract review.
+- [ ] Authorize any Base mainnet presale action separately; testnet rehearsal does not authorize mainnet.
+- [ ] Decide and document the trading-enablement and liquidity plan.
+- [ ] Remove stale Polygon-first instructions from the public README.
 
----
+## Repository rules
 
-## 🚀 **NEXT STEPS**
+1. Production contract records belong in `smart-contract/deployments/`.
+2. Frontend configuration must consume canonical deployment records rather than manually duplicated addresses.
+3. Every address must be labeled by network and status: `production`, `testnet`, `legacy`, `simulation`, or `deprecated`.
+4. Files must not claim “mainnet complete” unless transaction hashes, deployed bytecode, ownership, and explorer verification are retained.
+5. Sentinel security contracts belong in `MastaTrill/Aetheron-Sentinel-L3`.
 
-### **Phase 1: Testing & Validation** (Priority: HIGH)
+## Next cleanup pass
 
-1. **Manual Testing**
-   - Test MetaMask wallet connection in browser
-   - Test staking transactions on Mumbai testnet
-   - Test reward claiming functionality
-   - Verify contract interactions work end-to-end
-
-2. **Integration Testing**
-   - Create test wallet with Mumbai MATIC
-   - Execute full user flow: connect → stake → claim rewards
-   - Test error handling and edge cases
-
-### **Phase 2: Production Preparation** (Priority: HIGH)
-
-1. **Mainnet Deployment**
-   - Deploy contracts to Polygon mainnet
-   - Update frontend with mainnet addresses
-   - Verify contracts on PolygonScan mainnet
-
-2. **Frontend Optimization**
-   - Build production version of React app
-   - Optimize bundle size and loading
-   - Add error boundaries and loading states
-
-### **Phase 3: Launch Preparation** (Priority: MEDIUM)
-
-1. **Documentation**
-   - Complete user guides and tutorials
-   - API documentation for developers
-   - Tokenomics and staking documentation
-
-2. **Marketing & Community**
-   - Social media setup and content
-   - Community engagement plan
-   - Launch announcement preparation
-
-### **Phase 4: Advanced Features** (Priority: LOW)
-
-1. **Mobile App**
-   - React Native implementation
-   - WalletConnect integration
-   - Push notifications
-
-2. **Additional Features**
-   - NFT marketplace integration
-   - Governance features
-   - Advanced analytics dashboard
-
----
-
-## 🎯 **IMMEDIATE ACTION ITEMS**
-
-### **Right Now (Today)**
-
-1. **Test the React App**
-   - Open <http://localhost:3000> in browser
-   - Test MetaMask connection
-   - Verify UI responsiveness
-
-2. **Get Test MATIC**
-   - Visit <https://faucet.polygon.technology/>
-   - Get Mumbai testnet MATIC for testing
-
-3. **Manual Contract Testing**
-   - Use PolygonScan to verify contract functions
-   - Test basic read operations manually
-
-### **This Week**
-
-1. **Full Integration Testing**
-   - Complete end-to-end testing
-   - Fix any discovered issues
-   - Optimize user experience
-
-2. **Production Build**
-   - Create production React build
-   - Test on different browsers/devices
-
----
-
-## 📋 **CURRENT STATUS**
-
-- **Smart Contracts**: ✅ Production-ready, tested, deployed
-- **Frontend**: ✅ Functional, needs testing
-- **Integration**: 🔄 Needs manual testing
-- **Documentation**: ✅ Core docs complete
-- **Security**: ✅ Audited and fixed
-
-### Overall Progress: ~85% Complete
-
-The Aetheron Platform is ready for final testing and production deployment!
-
----
-
-## 🔗 **Quick Access Links**
-
-- **React App**: <http://localhost:3000>
-- **Mumbai Contracts**:
-  - AETH: <https://mumbai.polygonscan.com/token/0x44F9c15816bCe5d6691448F60DAD50355ABa40b5>
-  - Staking: <https://mumbai.polygonscan.com/address/0x896D9d37A67B0bBf81dde0005975DA7850FFa638>
-- **Testnet Faucet**: <https://faucet.polygon.technology/>
-- **MetaMask**: Install from metamask.io
-
----
-
-#### Generated on: April 14, 2026
+- Rewrite the root README around Base Mainnet.
+- Move historical Polygon instructions into `docs/legacy/`.
+- Remove generated build output and duplicate deployment records from version control where safe.
+- Add one machine-readable portfolio contract registry.
