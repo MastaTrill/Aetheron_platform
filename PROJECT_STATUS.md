@@ -36,12 +36,15 @@
 - [ ] Review owner, treasury, multisig, and timelock separation
 - [ ] Complete an independent smart-contract review
 - [ ] Authorize any Base mainnet presale action separately (issue #219) — testnet rehearsal does **not** authorize mainnet
-- [ ] Decide and document the trading-enablement and liquidity plan
+- [x] Decide and document the trading-enablement and liquidity plan — **draft published** at `docs/TRADING_AND_LIQUIDITY_PLAN.md` (execution still blocked until #219)
 - [ ] Remove remaining stale Polygon-first instructions where still present
 
 **Evidence templates (fill after rehearsal):**
 - `docs/evidence/BASE_SEPOLIA_REHEARSAL_TEMPLATE.md`
 - `docs/evidence/base-sepolia-rehearsal.template.json`
+
+**Trading plan:**
+- `docs/TRADING_AND_LIQUIDITY_PLAN.md` (draft only; not authorized for execution)
 
 ## Repository rules
 
