@@ -1,6 +1,7 @@
 # Aetheron Platform — Canonical Project Status
 
 **Status:** Active flagship  
+**Last updated:** 2026-08-09  
 **Canonical role:** Commercial Aetheron product: AETH token, presale, staking, public frontend, wallet onboarding, and treasury-facing operations.
 
 ## Production truth
@@ -9,7 +10,7 @@
 - Canonical AETH token: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`.
 - Creation transaction: `0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829`.
 - Contract source verification is recorded in `smart-contract/deployments/aeth-base.json`.
-- Token trading is currently recorded as disabled.
+- Token trading is currently recorded as **disabled**.
 - Polygon Mumbai, Polygon mainnet, Solana, and any earlier AETH addresses are **legacy deployments** unless separately revalidated and entered into the canonical registry.
 
 ## In scope
@@ -23,20 +24,24 @@
 
 ## Out of scope
 
-- Sentinel L3 security-suite development
+- Sentinel L3 security-suite development (see `MastaTrill/Aetheron-Sentinel-L3`)
 - Experimental quantum, ZK, AI-security, bridge, or oracle contracts
 - General-purpose AI agents
 - Mobile or multichain experiments not required by the public platform
 
 ## Current launch gates
 
-- [ ] Complete the protected Base Sepolia presale rehearsal.
-- [ ] Preserve contract addresses, transaction hashes, block numbers, bytecode hashes, verification URLs, and manifest digest.
-- [ ] Review owner, treasury, multisig, and timelock separation.
-- [ ] Complete an independent smart-contract review.
-- [ ] Authorize any Base mainnet presale action separately; testnet rehearsal does not authorize mainnet.
-- [ ] Decide and document the trading-enablement and liquidity plan.
-- [ ] Remove stale Polygon-first instructions from the public README.
+- [ ] Complete the protected Base Sepolia presale + staking rehearsal (issue #217)
+- [ ] Preserve contract addresses, transaction hashes, block numbers, bytecode hashes, verification URLs, and manifest digest
+- [ ] Review owner, treasury, multisig, and timelock separation
+- [ ] Complete an independent smart-contract review
+- [ ] Authorize any Base mainnet presale action separately (issue #219) — testnet rehearsal does **not** authorize mainnet
+- [ ] Decide and document the trading-enablement and liquidity plan
+- [ ] Remove remaining stale Polygon-first instructions where still present
+
+**Evidence templates (fill after rehearsal):**
+- `docs/evidence/BASE_SEPOLIA_REHEARSAL_TEMPLATE.md`
+- `docs/evidence/base-sepolia-rehearsal.template.json`
 
 ## Repository rules
 
@@ -48,7 +53,7 @@
 
 ## Next cleanup pass
 
-- Rewrite the root README around Base Mainnet.
-- Move historical Polygon instructions into `docs/legacy/`.
+- Keep root README Base-first (already aligned).
+- Move any remaining historical Polygon instructions into `docs/legacy/`.
 - Remove generated build output and duplicate deployment records from version control where safe.
-- Add one machine-readable portfolio contract registry.
+- Maintain one machine-readable portfolio contract registry.
