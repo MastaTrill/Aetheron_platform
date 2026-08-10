@@ -1,0 +1,54 @@
+{
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "rehearsalDate": "YYYY-MM-DD",
+  "operator": "",
+  "status": "template",
+  "contracts": {
+    "aethToken": {
+      "address": "",
+      "deployTx": "",
+      "blockNumber": null,
+      "bytecodeHash": "",
+      "verifiedUrl": ""
+    },
+    "presale": {
+      "address": "",
+      "deployTx": "",
+      "blockNumber": null,
+      "bytecodeHash": "",
+      "verifiedUrl": ""
+    },
+    "staking": {
+      "address": "",
+      "deployTx": "",
+      "blockNumber": null,
+      "bytecodeHash": "",
+      "verifiedUrl": ""
+    },
+    "treasury": {
+      "address": "",
+      "notes": ""
+    },
+    "multisig": {
+      "address": "",
+      "notes": ""
+    },
+    "timelock": {
+      "address": "",
+      "notes": ""
+    }
+  },
+  "pathsExercised": {
+    "presaleSuccess": false,
+    "presaleCancel": false,
+    "refund": false,
+    "claim": false,
+    "treasuryWithdrawal": false,
+    "stakingDeposit": false,
+    "stakingEmergencyExit": false
+  },
+  "manifestDigest": "",
+  "notes": "",
+  "linkedIssues": [217, 219]
+}
