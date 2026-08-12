@@ -1,7 +1,7 @@
 # Aetheron Platform — Canonical Project Status
 
 **Status:** Active flagship  
-**Last updated:** 2026-08-09  
+**Last updated:** 2026-08-11  
 **Canonical role:** Commercial Aetheron product: AETH token, presale, staking, public frontend, wallet onboarding, and treasury-facing operations.
 
 ## Production truth
@@ -10,7 +10,7 @@
 - Canonical AETH token: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`.
 - Creation transaction: `0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829`.
 - Contract source verification is recorded in `smart-contract/deployments/aeth-base.json`.
-- Token trading is currently recorded as **disabled**.
+- Token trading is currently recorded as **disabled** in the canonical release model (any on-chain enablement does not by itself constitute production launch approval).
 - Polygon Mumbai, Polygon mainnet, Solana, and any earlier AETH addresses are **legacy deployments** unless separately revalidated and entered into the canonical registry.
 
 ## In scope
@@ -37,11 +37,13 @@
 - [ ] Complete an independent smart-contract review
 - [ ] Authorize any Base mainnet presale action separately (issue #219) — testnet rehearsal does **not** authorize mainnet
 - [x] Decide and document the trading-enablement and liquidity plan — **draft published** at `docs/TRADING_AND_LIQUIDITY_PLAN.md` (execution still blocked until #219)
-- [ ] Remove remaining stale Polygon-first instructions where still present
+- [ ] Remove remaining stale Polygon-first instructions where still present (#214)
 
 **Evidence templates (fill after rehearsal):**
 - `docs/evidence/BASE_SEPOLIA_REHEARSAL_TEMPLATE.md`
 - `docs/evidence/base-sepolia-rehearsal.template.json`
+
+**Status snapshot:** `docs/STATUS_2026-08-11.md`
 
 **Trading plan:**
 - `docs/TRADING_AND_LIQUIDITY_PLAN.md` (draft only; not authorized for execution)
