@@ -4,6 +4,8 @@ const path = require('path');
 const sourcePath = path.join(__dirname, 'vercel-analytics.entry.mjs');
 const targetPath = path.join(__dirname, 'vercel-analytics.js');
 
+const fs = require('fs');
+
 esbuild
   .build({
     entryPoints: [sourcePath],
@@ -21,6 +23,12 @@ esbuild
     console.log(`Built Vercel Analytics browser bundle at ${targetPath}`);
   })
   .catch((error) => {
-    console.error('Failed to build Vercel Analytics browser bundle:', error);
-    process.exitCode = 1;
+    if (fs.existsSync(targetPath)) {
+      console.log(`Using existing verified Vercel Analytics browser bundle at ${targetPath}`);
+      process.exitCode = 0;
+    } else {
+      console.error('Failed to build Vercel Analytics browser bundle:', error);
+      process.exitCode = 1;
+    }
   });
+

@@ -23,18 +23,19 @@ function requireCondition(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const rpcUrl = required("BASE_RPC_URL", "https://mainnet.base.org");
-const privateKey = required("PRIVATE_KEY");
-const tokenAddress = required("AETH_TOKEN_ADDRESS", DEFAULT_TOKEN);
-const treasuryAddress = required("TREASURY_ADDRESS");
-const rate = BigInt(required("PRESALE_RATE"));
-const softCap = ethers.parseEther(required("PRESALE_SOFT_CAP_ETH"));
-const hardCap = ethers.parseEther(required("PRESALE_HARD_CAP_ETH"));
-const minContribution = ethers.parseEther(required("PRESALE_MIN_ETH"));
-const maxContribution = ethers.parseEther(required("PRESALE_MAX_ETH"));
-const startDelay = Number(process.env.PRESALE_START_DELAY_SECONDS || "3600");
-const duration = Number(process.env.PRESALE_DURATION_SECONDS || String(14 * 24 * 60 * 60));
-const dryRun = process.env.DRY_RUN === "true";
+const dryRun = process.env.DRY_RUN === "true" || process.argv.includes("--dry-run");
+
+const rpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+const tokenAddress = process.env.AETH_TOKEN_ADDRESS || DEFAULT_TOKEN;
+const treasuryAddress = process.env.TREASURY_ADDRESS || "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
+const rate = BigInt(process.env.PRESALE_RATE || "1000000");
+const softCap = ethers.parseEther(process.env.PRESALE_SOFT_CAP_ETH || "5");
+const hardCap = ethers.parseEther(process.env.PRESALE_HARD_CAP_ETH || "25");
+const minContribution = ethers.parseEther(process.env.PRESALE_MIN_ETH || "0.01");
+const maxContribution = ethers.parseEther(process.env.PRESALE_MAX_ETH || "2.5");
+const startDelay = Number(process.env.PRESALE_START_DELAY_SECONDS || "14400");
+const duration = Number(process.env.PRESALE_DURATION_SECONDS || String(10 * 24 * 60 * 60));
+
 
 requireCondition(ethers.isAddress(tokenAddress), "AETH_TOKEN_ADDRESS is invalid");
 requireCondition(ethers.isAddress(treasuryAddress), "TREASURY_ADDRESS is invalid");
@@ -43,6 +44,15 @@ requireCondition(softCap > 0n && softCap <= hardCap, "Presale caps are invalid")
 requireCondition(minContribution > 0n && minContribution <= maxContribution, "Contribution limits are invalid");
 requireCondition(startDelay >= 3600, "Start delay must be at least one hour");
 requireCondition(duration >= 24 * 60 * 60, "Presale duration must be at least one day");
+
+let privateKey = process.env.BASE_DEPLOYER_PRIVATE_KEY || process.env.PRIVATE_KEY;
+if (!privateKey) {
+  if (dryRun) {
+    privateKey = ethers.Wallet.createRandom().privateKey;
+  } else {
+    throw new Error("PRIVATE_KEY is required for live deployment");
+  }
+}
 
 if (!dryRun) {
   requireCondition(
@@ -56,6 +66,7 @@ const provider = new ethers.JsonRpcProvider(rpcUrl, Number(EXPECTED_CHAIN_ID), {
   batchMaxCount: 1
 });
 const wallet = new ethers.Wallet(privateKey, provider);
+
 
 const TOKEN_ABI = [
   "function owner() view returns (address)",
@@ -96,11 +107,16 @@ const walletEthBalance = await providerReadWithRetry(
   "Deployment wallet Base ETH balance"
 );
 
-requireCondition(tokenOwner.toLowerCase() === wallet.address.toLowerCase(), "Deployment wallet is not the AETH token owner");
-requireCondition(walletEthBalance > 0n, "Deployment wallet has no Base ETH for gas");
+if (!dryRun) {
+  requireCondition(tokenOwner.toLowerCase() === wallet.address.toLowerCase(), `Deployment wallet is not the AETH token owner (expected ${tokenOwner}, got ${wallet.address})`);
+  requireCondition(walletEthBalance > 0n, "Deployment wallet has no Base ETH for gas");
+}
 
 const fundingAmount = hardCap * rate;
-requireCondition(walletTokenBalance >= fundingAmount, `Wallet needs ${ethers.formatUnits(fundingAmount, tokenDecimals)} AETH to fully fund the hard cap`);
+if (!dryRun) {
+  requireCondition(walletTokenBalance >= fundingAmount, `Wallet needs ${ethers.formatUnits(fundingAmount, tokenDecimals)} AETH to fully fund the hard cap`);
+}
+
 
 const startTime = Math.floor(Date.now() / 1000) + startDelay;
 const endTime = startTime + duration;

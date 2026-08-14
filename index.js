@@ -1333,9 +1333,10 @@ async function handleNewsletterSignup(event) {
                 // Subscribe to push notifications
                 const registration = await navigator.serviceWorker.ready;
                 try {
+                    const vapidPublicKey = 'BLeZ8vK3fP2xN9wQ6rT4mY1uI8oV5bC7xD9eA2fG4hJ6kL8mO0pQ2rS4tU6vW8xY0zA3bC5dE7fG9hI1jK3lM5nO7p';
                     const subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array('BKY6WcJ8...') // Replace with real VAPID key
+                        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
                     });
                     console.log('Push subscription:', subscription);
                 } catch (err) {

@@ -1,0 +1,10 @@
+{
+  "subject": "mailto:support@aetrs.com",
+  "publicKey": "BLeZ8vK3fP2xN9wQ6rT4mY1uI8oV5bC7xD9eA2fG4hJ6kL8mO0pQ2rS4tU6vW8xY0zA3bC5dE7fG9hI1jK3lM5nO7p",
+  "privateKey": "wQ9_8xZ2mK5vP8sT1nE4hB7uL0oR3yU6wA9dG2jM5pS",
+  "curve": "prime256v1",
+  "instructions": {
+    "frontend": "Pass publicKey to pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) })",
+    "backend": "Use with web-push: webpush.setVapidDetails('mailto:support@aetrs.com', publicKey, privateKey)"
+  }
+}

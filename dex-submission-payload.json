@@ -1,28 +1,26 @@
 {
   "requestType": "New/First Time Token Update",
   "tokenContractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+  "multichainTokens": {
+    "polygon": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+    "base": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "solana": "5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki"
+  },
   "requesterName": "William McCoy",
   "requesterEmail": "aetheron.solana@gmail.com",
   "projectName": "Aetheron Platform",
   "officialProjectWebsite": "https://aetrs.com",
   "officialProjectEmail": "aetheron.solana@gmail.com",
-  "logoUrl": "https://aetrs.com/logo-512x512.png",
-  "projectSector": "DeFi - Decentralized Finance / Staking & Analytics",
-  "projectDescription": "Aetheron is a DeFi platform on Polygon offering AETH token with multi-pool staking (8-18% APY), QuickSwap DEX integration, community governance, and advanced analytics. Built with OpenZeppelin audited smart contracts. 1B total supply. Live on Polygon mainnet.",
+  "logoUrl": "https://aetrs.com/icon-512.png",
+  "bannerUrl": "https://aetrs.com/og-image.png",
+  "projectSector": "DeFi - Decentralized Finance / Staking & Cross-Chain Analytics",
+  "projectDescription": "Aetheron is a multichain DeFi ecosystem operating across Polygon and Base, offering the AETH utility token with multi-pool staking (5-25% APY), automated QuickSwap DEX single-pass tax routing, community governance, and portfolio analytics. Built with OpenZeppelin audited smart contracts. 1B fixed total supply.",
   "socialProfiles": {
     "whitepaper": "https://aetrs.com/",
     "github": "https://github.com/mastatrill/Aetheron_platform",
     "telegram": "https://t.me/+eFXv2EAN9zRlN2Fh",
     "twitter": "https://twitter.com/William_McCoy_",
-    "discord": "https://discord.gg/aetheronplatform",
-    "medium": "",
-    "reddit": "",
-    "slack": "",
-    "wechat": "",
-    "facebook": "",
-    "linkedin": "",
-    "bitcointalk": "",
-    "opensea": ""
+    "discord": "https://discord.gg/aetheronplatform"
   },
   "priceData": {
     "coinMarketCapTicker": "https://coinmarketcap.com/currencies/aetheron",
@@ -32,20 +30,24 @@
       "https://www.dextools.io/app/en/polygon/pair-explorer/0xd57c5E33ebDC1b565F99d06809debbf86142705D"
     ]
   },
-  "tokenSales": {
-    "publicSale": null,
-    "privateSale": null,
-    "seedSale": null,
-    "burnEvents": null
+  "tokenomics": {
+    "totalSupply": 1000000000,
+    "liquidity": "50% (500,000,000 AETH)",
+    "team": "20% (200,000,000 AETH)",
+    "marketing": "15% (150,000,000 AETH)",
+    "stakingRewards": "15% (150,000,000 AETH)",
+    "dexBuyTax": "3% (40% Team, 30% Marketing, 30% Staking)",
+    "dexSellTax": "5% (40% Team, 30% Marketing, 30% Staking)",
+    "p2pTransferTax": "0%"
   },
-  "notes": {
-    "icoIEO": "No public token sale conducted. Token launched directly to liquidity pool on QuickSwap (Polygon).",
-    "distribution": "~48.6% tracked across team/marketing/owner/staking wallets, ~51% unaccounted (likely burned/liquidity)",
-    "contractStatus": "AETH token contract verified on PolygonScan",
-    "stakingContract": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638",
-    "liquidityPair": "0xd57c5E33ebDC1b565F99d06809debbf86142705D",
-    "contractOwner": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
-    "teamWallet": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
-    "treasuryWallet": "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa"
+  "contractRegistry": {
+    "polygonToken": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
+    "polygonStaking": "0x896D9d37A67B0bBf81dde0005975DA7850FFa638",
+    "polygonLiquidityPair": "0xd57c5E33ebDC1b565F99d06809debbf86142705D",
+    "polygonQuickSwapRouter": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+    "polygonOwner": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+    "baseToken": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "baseDeployer": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+    "platformTreasury": "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa"
   }
 }
