@@ -73,6 +73,11 @@
     showStatus('Checking Base contract status…', 'checking');
     const previousRetry = document.getElementById('readinessRetry');
     if (previousRetry) previousRetry.disabled = true;
+    if (config.launchAuthorized !== true) {
+      failClosed(config.statusMessage || 'Public presale is not authorized yet.');
+      return;
+    }
+
     if (!window.ethers || !isPresaleConfigured()) {
       failClosed('Presale configuration is incomplete.');
       return;

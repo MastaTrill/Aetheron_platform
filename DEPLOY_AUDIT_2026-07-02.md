@@ -117,23 +117,9 @@ Current configured rate: 1000 AETH per MATIC | soft cap 5000 MATIC | hard cap 33
 
 ## Option B: Fresh Aetheron Token Redeployment
 
-A prepared redeployment script exists at `smart-contract/scripts/redeploy-aetheron.mjs`.  
-It deploys a **brand new** AETH token with `NEW_OWNER_ADDRESS` as `msg.sender`/owner, plus a fresh `AetheronStaking` contract linked to the new token.
+The former Polygon redeployment script is preserved at `smart-contract/scripts/archive/polygon/redeploy-aetheron.mjs` for historical evidence only. It is not part of the canonical Base production path and must not be used for a current launch.
 
-**This does not touch the existing legacy token** (`0xAb5...671e`).  
-If you execute it, you will have two AETH token contracts on Polygon.  
-Do NOT reuse liquidity/pools/frontend configs from the legacy deployment.
-
-To execute (dev/testing only, not yet recommended for mainnet):
-
-```bash
-cd smart-contract
-# Ensure PRIVATE_KEY in .env belongs to NEW_OWNER_ADDRESS (0xDF5A...)
-# Ensure that wallet has >= 0.1 POL
-node scripts/redeploy-aetheron.mjs
-```
-
-The script saves output to `redeployment.json` and prints the new contract addresses.
+The archived script would deploy a separate Polygon AETH token and staking contract; it does not modify the legacy token (`0xAb5...671e`) or the canonical Base token. Any future redeployment must be implemented as reviewed Base-native tooling and pass the protected launch gates.
 
 **Why fresh redeployment instead of ownership transfer:**
 - Current on-chain owner (`0x8A3a...3452`) has **0 POL** and cannot sign any transaction.

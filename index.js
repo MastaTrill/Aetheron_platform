@@ -2,7 +2,7 @@
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
 // Contract Addresses - UPDATED for Base Mainnet
-const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e";
+const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
 const _LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 const OWNER_ADDRESS = "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5".toLowerCase();
@@ -59,7 +59,7 @@ const _maxAttempts = 5;
 // Initialize read-only provider for live data
 function initReadOnlyProvider() {
     // Try multiple RPC endpoints for reliability
-    for (const rpcUrl of POLYGON_RPC_URLS) {
+    for (const rpcUrl of BASE_RPC_URLS) {
         try {
             readOnlyProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
             console.log('✅ Read-only provider initialized:', rpcUrl);
@@ -511,7 +511,7 @@ async function updateStats() {
 async function updatePrice() {
     try {
         console.log('📊 Fetching live price data...');
-        const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
+        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -633,7 +633,7 @@ async function updateBalances() {
         if (balanceEl) balanceEl.textContent = balance.toFixed(2) + ' AETH';
 
         // Calculate USD value (need current price)
-        const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e');
+        const priceResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
         const priceData = await priceResponse.json();
         if (priceData.pairs && priceData.pairs.length > 0) {
             const price = parseFloat(priceData.pairs[0].priceUsd);
@@ -1799,7 +1799,7 @@ async function loadTransactionHistory() {
         }
         
         // Fetch from blockchain
-        const provider = readOnlyProvider || new ethers.providers.JsonRpcProvider(POLYGON_RPC_URLS[0]);
+        const provider = readOnlyProvider || new ethers.providers.JsonRpcProvider(BASE_RPC_URLS[0]);
         const contract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, provider);
         
         // Get Transfer events
@@ -1864,7 +1864,7 @@ function displayTransactions(transactions) {
             </div>
             <div style="text-align: right;">
                 <div class="fw-600">${parseFloat(tx.value).toFixed(4)} AETH</div>
-                <a href="https://polygonscan.com/tx/${tx.hash}" target="_blank" rel="noopener" class="text-sm" style="color: var(--primary);">
+                <a href="https://basescan.org/tx/${tx.hash}" target="_blank" rel="noopener" class="text-sm" style="color: var(--primary);">
                     View <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>

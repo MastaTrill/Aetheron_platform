@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 22
       - name: Validate canonical Base deployment truth
-        run: node scripts/validate-canonical-deployment.mjs
+        run: node scripts/validate-canonical-deployments.mjs
       - name: Validate operational launch gates in no-action mode
         env:
           LIVE_ACTION: none

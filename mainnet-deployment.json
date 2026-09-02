@@ -24,7 +24,7 @@
   "verified": true,
   "lastUpdated": "2026-07-02T18:25:00.000Z",
   "redeployment": {
-    "note": "A fresh deployment is prepared in scripts/redeploy-aetheron.mjs with NEW_OWNER_ADDRESS as msg.sender/owner",
+    "note": "Historical Polygon redeploy tooling is archived at scripts/archive/polygon/redeploy-aetheron.mjs and is not authorized for the canonical Base deployment",
     "newOwnerAddress": "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5"
   }
 }

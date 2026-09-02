@@ -45,12 +45,12 @@ function makeButtonLink(button, href) {
 }
 
 function reconcilePublicHomepage() {
-  document.title = 'Aetheron (AETH) | Verified Presale on Base';
-  const description = `Explore Aetheron and buy AETH through the verified Base Mainnet presale. Minimum purchase ${MINIMUM} ETH.`;
+  document.title = 'Aetheron (AETH) | Base Mainnet Platform';
+  const description = `Explore Aetheron on Base Mainnet. Public presale purchases remain disabled until final launch authorization is recorded.`;
   setMeta('meta[name="description"]', description);
-  setMeta('meta[property="og:title"]', 'Aetheron (AETH) | Verified Presale on Base');
+  setMeta('meta[property="og:title"]', 'Aetheron (AETH) | Base Mainnet Platform');
   setMeta('meta[property="og:description"]', description);
-  setMeta('meta[name="twitter:title"]', 'Aetheron (AETH) | Verified Presale on Base');
+  setMeta('meta[name="twitter:title"]', 'Aetheron (AETH) | Base Mainnet Platform');
   setMeta('meta[name="twitter:description"]', description);
 
   replaceText(document.body, [
@@ -64,8 +64,8 @@ function reconcilePublicHomepage() {
     ['1 ETH = 1000 AETH', `1 ETH = ${RATE.toLocaleString()} AETH`],
     ['Min 0.001 ETH', `Min ${MINIMUM} ETH`],
     ['Minimum: 0.001 ETH', `Minimum: ${MINIMUM} ETH`],
-    ['100+ Holders', 'Verified on Base'],
-    ['futuristic staking, analytics', 'verified presale access, analytics'],
+    ['100+ Holders', 'Canonical Base token'],
+    ['futuristic staking, analytics', 'Base token status, analytics'],
     ['staking, analytics, and live ecosystem tracking', 'presale access, analytics, and ecosystem tracking'],
     ['trading opportunities', 'presale and platform notices']
   ]);
@@ -96,7 +96,7 @@ function reconcilePublicHomepage() {
 
   const holderCount = document.getElementById('liveHoldersCount');
   if (holderCount) {
-    holderCount.textContent = 'Verified';
+    holderCount.textContent = 'Base';
     const container = holderCount.parentElement;
     if (container) container.lastChild.textContent = ' on Base';
   }
@@ -127,13 +127,13 @@ function reconcilePublicHomepage() {
     const value = card.querySelector('.hero-panel-value');
     if (!label || !value) return;
     if (label.textContent.trim() === 'Network') value.textContent = 'Base Mainnet';
-    if (label.textContent.trim() === 'Max APY') { label.textContent = 'Sale Status'; value.textContent = 'Verified'; }
+    if (label.textContent.trim() === 'Max APY') { label.textContent = 'Launch Status'; value.textContent = 'Pending authorization'; }
     if (label.textContent.trim() === 'Contract') value.textContent = `${PRESALE.slice(0, 8)}...${PRESALE.slice(-4)}`;
     if (label.textContent.trim() === 'Utility') value.textContent = 'Buy, verify, track, and explore on Base';
   });
 
   document.querySelectorAll('a.feature-card[href="presale.html"]').forEach((card) => {
-    setCardCopy(card, 'AETH Base Presale', `Buy AETH through the verified Base Mainnet presale. Minimum ${MINIMUM} ETH.`);
+    setCardCopy(card, 'AETH Base Launch Status', 'Review the Base deployment and launch status. Purchase controls remain disabled until final authorization.');
   });
   document.querySelectorAll('a.feature-card[href="#staking"]').forEach((card) => {
     card.href = 'staking-calculator.html';
@@ -152,7 +152,7 @@ function reconcilePublicHomepage() {
     const value = document.getElementById('priceValue');
     if (value && value.textContent !== '1M AETH / ETH') value.textContent = '1M AETH / ETH';
     const change = document.getElementById('priceChange');
-    if (change) change.innerHTML = '<i class="fas fa-shield-check"></i> <span>Verified Base sale</span>';
+    if (change) change.innerHTML = '<i class="fas fa-shield-check"></i> <span>Canonical Base token</span>';
   };
   factualStats();
   const statObserver = new MutationObserver(factualStats);
@@ -165,8 +165,8 @@ function reconcilePublicHomepage() {
     tradeLink.removeAttribute('target');
     const title = tradeLink.querySelector('.fw-600');
     const subtitle = tradeLink.querySelector('.text-sm');
-    if (title) title.textContent = 'Buy AETH';
-    if (subtitle) subtitle.textContent = 'Verified Base Presale';
+    if (title) title.textContent = 'AETH Launch Status';
+    if (subtitle) subtitle.textContent = 'Purchases currently disabled';
   }
 
   const calculatorTitle = [...document.querySelectorAll('.card-title')].find((node) => node.textContent.trim() === 'Rewards Calculator');
@@ -177,7 +177,7 @@ function reconcilePublicHomepage() {
   if (calcButton) calcButton.innerHTML = '<i class="fas fa-calculator"></i> Estimate Scenario';
 
   const faqAnswers = document.querySelectorAll('.faq-answer');
-  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>To buy AETH:</p><ol><li>Open the verified <a class="primary-link" href="presale.html">Base presale</a>.</li><li>Connect MetaMask or Coinbase Wallet.</li><li>Switch to Base Mainnet and enter at least ${MINIMUM} ETH.</li><li>Review the quote and confirm the transaction in your wallet.</li></ol>`;
+  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>Public AETH purchases are not authorized yet.</p><p>Use the <a class="primary-link" href="presale.html">Base launch-status page</a> to review the canonical contracts. Purchase controls remain disabled until final launch authorization is recorded.</p>`;
   if (faqAnswers[1]) faqAnswers[1].innerHTML = '<p>Public staking is not advertised as active yet. The calculator is a planning tool until a verified Base staking contract and final reward schedule are published.</p>';
   if (faqAnswers[2]) faqAnswers[2].innerHTML = '<p>The presale purchase uses ETH on Base Mainnet plus the wallet network fee. The presale page shows the AETH quote before confirmation. No exchange-liquidity or secondary-market claim is made during this phase.</p>';
   if (faqAnswers[3]) faqAnswers[3].innerHTML = `<p>The presale and AETH token source code are verified on BaseScan. Source verification is not the same as an independent security audit; review the verified code and transaction details before purchasing.</p><p><a class="primary-link" target="_blank" rel="noopener noreferrer" href="${BASESCAN_PRESALE}">View verified presale contract</a></p>`;

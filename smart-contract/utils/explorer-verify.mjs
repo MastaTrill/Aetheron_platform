@@ -5,6 +5,18 @@ import { ethers } from 'ethers';
 const BUILD_INFO_DIR = path.resolve('artifacts', 'build-info');
 
 export const NETWORK_CONFIG = {
+  base: {
+    chainId: '8453',
+    explorerBaseUrl: 'https://basescan.org',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
+    rpcUrlEnv: 'BASE_RPC_URL',
+  },
+  baseSepolia: {
+    chainId: '84532',
+    explorerBaseUrl: 'https://sepolia.basescan.org',
+    explorerApiUrl: 'https://api.etherscan.io/v2/api',
+    rpcUrlEnv: 'BASE_SEPOLIA_RPC_URL',
+  },
   polygon: {
     chainId: '137',
     explorerBaseUrl: 'https://polygonscan.com',

@@ -30,12 +30,13 @@
     "deploy:treasury:mumbai": "hardhat run scripts/deploy-treasury.js --network mumbai",
     "deploy:treasury:sepolia": "hardhat run scripts/deploy-treasury.js --network sepolia",
     "deploy:treasury:base": "hardhat run scripts/deploy-treasury.js --network base",
-    "verify": "node scripts/verify-contracts.mjs",
+    "verify": "node scripts/verify-contracts.mjs base",
     "verify:mumbai": "node scripts/verify-contracts.mjs mumbai",
     "verify:polygon": "node scripts/verify-contracts.mjs polygon",
     "verify:sepolia": "node scripts/verify-contracts.mjs sepolia",
     "node": "hardhat node",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "verify:base": "node scripts/verify-contracts.mjs base"
   },
   "keywords": [
     "solidity",
