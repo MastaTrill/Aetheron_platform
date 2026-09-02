@@ -21,18 +21,12 @@
     "cancel:invalid-base-presale": "node scripts/cancel-invalid-base-presale.mjs",
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
-    "deploy:mumbai": "hardhat run scripts/deploy.mjs --network mumbai",
-    "deploy:polygon": "hardhat run scripts/deploy.mjs --network polygon",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
-    "deploy:treasury": "hardhat run scripts/deploy-treasury.js --network polygon",
-    "deploy:treasury:mumbai": "hardhat run scripts/deploy-treasury.js --network mumbai",
     "deploy:treasury:sepolia": "hardhat run scripts/deploy-treasury.js --network sepolia",
     "deploy:treasury:base": "hardhat run scripts/deploy-treasury.js --network base",
     "verify": "node scripts/verify-contracts.mjs base",
-    "verify:mumbai": "node scripts/verify-contracts.mjs mumbai",
-    "verify:polygon": "node scripts/verify-contracts.mjs polygon",
     "verify:sepolia": "node scripts/verify-contracts.mjs sepolia",
     "node": "hardhat node",
     "clean": "hardhat clean",
@@ -41,7 +35,6 @@
   "keywords": [
     "solidity",
     "ethereum",
-    "polygon",
     "smart-contracts",
     "hardhat",
     "aetheron"
@@ -50,7 +43,6 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
-    "@nomicfoundation/hardhat-verify": "^3.0.21",
     "@openzeppelin/contracts-upgradeable": "^4.9.6",
     "ethers": "^6.16.0",
     "hardhat": "^3.9.0"
@@ -60,7 +52,7 @@
     "dotenv": "^16.3.1"
   },
   "overrides": {
-    "undici": "^6.24.1",
+    "undici": "^6.28.0",
     "serialize-javascript": "^7.0.5"
   },
   "directories": {
