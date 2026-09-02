@@ -23,6 +23,17 @@ jobs:
         run: |
           npm ci
           npx jest __tests__/server-startup.test.js --runInBand
+      - name: Reproduce executable legacy-network package entrypoints
+        id: legacy
+        continue-on-error: true
+        run: node legacy-network-entrypoints.test.mjs
+      - name: Require RED legacy-network regression
+        run: |
+          if [ "${{ steps.legacy.outcome }}" != "failure" ]; then
+            echo "Expected legacy-network package regression to fail before cleanup."
+            exit 1
+          fi
+          echo "RED confirmed: executable legacy-network package entrypoints remain."
       - name: Audit every npm workspace
         shell: bash
         run: |
