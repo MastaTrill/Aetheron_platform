@@ -21,17 +21,21 @@ const excludedTopLevelNames = new Set([
   ".browser-profile-local3",
   ".chrome-profile-debug",
   ".chrome-profile-debug2",
+  ".kilo",
   ".localappdata",
+  ".presale-launch",
   "Aetheron",
   "backend",
   "cache",
   "dashboard-test-isolated",
   "dist",
+  "docs",
   "mobile-app",
   "node_modules",
   "openJdk-25",
   "react-app",
   "Scripts",
+  "scripts",
   "smart-contract",
 ]);
 
@@ -39,20 +43,81 @@ const excludedTopLevelFiles = new Set([
   ".env.example",
   ".gitignore",
   ".gitignore_backup",
+  "add-liquidity.html",
+  "add-liquidity.js",
+  "admin-dashboard.html",
+  "aetheron-advanced.html",
+  "aetheron-advanced-init.js",
+  "aetheron-dashboard-live.html",
+  "aetheron-integration.js",
+  "aetheron-wallet.html",
+  "aetheron-wallet.js",
+  "aetheron-wallet-dom-overrides.js",
   "build-cloudflare-dist.cjs",
+  "community-launch-toolkit.js",
+  "contract-verification.js",
+  "dashboard-features.js",
+  "dashboard-main.js",
+  "dashboard-metamask-connect.js",
+  "defi-integration.js",
+  "deploy-production.js",
+  "deployment-report.json",
+  "dex-listing-docs.json",
+  "dex-listing-package.json",
+  "dex-listing-toolkit.js",
+  "dex-submission-payload.json",
+  "dex-submission-templates.json",
+  "discord-bot-config.json",
+  "enable-trading.js",
+  "execution-engine.js",
+  "final-verification.js",
+  "how-to-buy.html",
+  "investor-dashboard.js",
   "jest.config.cjs",
   "jest.setup.cjs",
+  "logo-converter.html",
+  "logo-generator.html",
+  "mainnet-deployment.json",
+  "marketing-campaign-toolkit.js",
+  "marketing-launch.html",
   "package-lock.json",
   "package.json",
+  "performance-monitor.js",
+  "production-dashboard.js",
+  "production-readiness.js",
+  "production-stats.js",
+  "robust-transaction-monitor.js",
   "server.log",
+  "simple-transaction-monitor.js",
+  "smart-routing-engine.js",
+  "smart-routing-ui.html",
+  "staking-live.html",
+  "staking-live-abi.js",
+  "staking-live.js",
+  "tracked-addresses.json",
+  "trading-competition.js",
+  "trading-terminal-pro.js",
+  "transaction-monitor.js",
+  "transfer-ownership.js",
   "vercel.json",
+  "verify-ownership.js",
+  "voting-history.html",
   "wrangler.toml",
 ]);
 
 const excludedExtensions = new Set([
   ".bat",
+  ".cjs",
   ".ipynb",
+  ".md",
+  ".mjs",
   ".ps1",
+  ".sol",
+  ".txt",
+]);
+
+const allowedTopLevelFiles = new Set([
+  "robots.txt",
 ]);
 
 let copiedFiles = 0;
@@ -72,6 +137,10 @@ function shouldExclude(relativePath, isDirectory) {
   }
 
   if (!isDirectory) {
+    if (!normalized.includes("/") && allowedTopLevelFiles.has(topLevelName)) {
+      return false;
+    }
+
     const extension = path.extname(normalized);
     if (excludedExtensions.has(extension)) {
       return true;

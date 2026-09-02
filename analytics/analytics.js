@@ -220,7 +220,7 @@ class AnalyticsDashboard {
       const ethBalance = parseFloat(ethers.utils.formatEther(balance));
 
       // Get token prices from DexScreener API
-      const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e,0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619,0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174');
+      const priceResponse = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e,0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619,0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174');
       const priceData = await priceResponse.json();
 
       // Extract prices

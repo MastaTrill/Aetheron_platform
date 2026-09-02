@@ -151,16 +151,14 @@
     bind('disconnectBtn', () => invoke('disconnectWallet'));
 
     bind('buyAethBtn', () => {
-      window.open(
-        'https://quickswap.exchange/#/swap?outputCurrency=0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
-        '_blank',
-      );
+      window.location.assign('presale.html');
     });
     bind('addToWalletBtn', () => invoke('addTokenToWallet'));
     bind('viewOnScanBtn', () => {
       window.open(
-        'https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+        'https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
         '_blank',
+        'noopener,noreferrer',
       );
     });
 

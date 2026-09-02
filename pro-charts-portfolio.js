@@ -1,4 +1,4 @@
-const PCP_TOKENS={AETH:{symbol:'AETH',address:'0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',decimals:18},WMATIC:{symbol:'WMATIC',address:'0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',decimals:18},USDC:{symbol:'USDC',address:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',decimals:6}};
+const PCP_TOKENS={AETH:{symbol:'AETH',address:'0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',decimals:18},WMATIC:{symbol:'WMATIC',address:'0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',decimals:18},USDC:{symbol:'USDC',address:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',decimals:6}};
 const PCP_ERC20=['function balanceOf(address owner) external view returns(uint256)'];
 const PCP_STATE={symbol:'AETH',series:[],labels:[],max:240,mainChart:null,allocChart:null,pnlChart:null,provider:null,signer:null,user:null};
 function pcpMoney(v){if(v===null||v===undefined||isNaN(v))return '--';return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:v<1?6:2}).format(v);} 

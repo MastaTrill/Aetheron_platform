@@ -1,6 +1,6 @@
 {
-  "contractAddress": "0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e",
-  "rpcUrl": "https://polygon-rpc.com",
+  "contractAddress": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+  "rpcUrl": "https://mainnet.base.org",
   "trackedAddresses": [
     "0xYourAddress1Here",
     "0xYourAddress2Here",
