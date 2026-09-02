@@ -12,8 +12,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const Networks = {
-  polygon: 137,
-  mumbai: 80002,
   sepolia: 11155111,
   base: 8453,
   baseSepolia: 84532,
@@ -21,25 +19,40 @@ const Networks = {
 
 async function main() {
   const networkName = hre.network.name;
-  const chainId =
-    Networks[networkName] || (await ethers.provider.getNetwork()).chainId;
+  const expectedChainId = Networks[networkName];
+  if (!expectedChainId) {
+    throw new Error(`Unsupported treasury deployment network: ${networkName}`);
+  }
+
+  const providerChainId = Number((await ethers.provider.getNetwork()).chainId);
+  if (providerChainId !== expectedChainId) {
+    throw new Error(
+      `Chain mismatch for ${networkName}: expected ${expectedChainId}, got ${providerChainId}`,
+    );
+  }
 
   if (!process.env.PRIVATE_KEY) {
     throw new Error("PRIVATE_KEY not set in .env");
+  }
+  if (!process.env.TREASURY_WALLET) {
+    throw new Error("TREASURY_WALLET must be explicitly set");
   }
 
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, ethers.provider);
   console.log("Deploying with wallet:", wallet.address);
 
-  const NEW_OWNER = process.env.TREASURY_WALLET || "0xa4737aa4b1e8a3c8f221be9e55f5bda307ecc1fa";
-  const numConfirmationsRequired = parseInt(process.env.CONFIRMATIONS || "1");
+  const newOwner = process.env.TREASURY_WALLET;
+  const numConfirmationsRequired = parseInt(process.env.CONFIRMATIONS || "1", 10);
+  if (!Number.isInteger(numConfirmationsRequired) || numConfirmationsRequired < 1) {
+    throw new Error("CONFIRMATIONS must be a positive integer");
+  }
 
-  console.log(`\nDeploying to ${networkName} (chainId: ${chainId})`);
-  console.log("Treasury owner:", NEW_OWNER);
+  console.log(`\nDeploying to ${networkName} (chainId: ${providerChainId})`);
+  console.log("Treasury owner:", newOwner);
 
   const Treasury = await ethers.getContractFactory("AetheronMultiSigTreasury");
   const { proxyAddress } = await deployUupsProxy(Treasury, [
-    [NEW_OWNER],
+    [newOwner],
     numConfirmationsRequired,
   ]);
 
@@ -54,10 +67,10 @@ async function main() {
 
   const deploymentInfo = {
     network: networkName,
-    chainId: Number(chainId),
+    chainId: providerChainId,
     timestamp: new Date().toISOString(),
     deployer: wallet.address,
-    treasury: NEW_OWNER,
+    treasury: newOwner,
     proxy: proxyAddress,
     implementation: implementationAddress,
   };
