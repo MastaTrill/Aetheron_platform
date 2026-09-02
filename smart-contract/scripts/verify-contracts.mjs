@@ -8,8 +8,19 @@ import {
 dotenv.config();
 
 const cliArgs = process.argv.slice(2);
-const allNetworks = ['polygon', 'mumbai', 'mainnet', 'sepolia'];
+const NETWORK_ALIASES = new Map([
+  ['base', 'base'],
+  ['basesepolia', 'baseSepolia'],
+  ['polygon', 'polygon'],
+  ['mumbai', 'mumbai'],
+  ['mainnet', 'mainnet'],
+  ['sepolia', 'sepolia'],
+]);
 const allContractTypes = ['Aetheron', 'AetxToken', 'AetheronStaking'];
+
+function normalizeNetwork(value) {
+  return NETWORK_ALIASES.get(String(value || '').toLowerCase()) || null;
+}
 const contractDefinitions = {
   Aetheron: {
     sourceName: 'project/contracts/Aetheron.sol',
@@ -25,12 +36,13 @@ const contractDefinitions = {
   },
 };
 
-let network = process.env.NETWORK || 'polygon';
+let network = normalizeNetwork(process.env.NETWORK) || 'base';
 let contractTypes = [];
 
 for (const arg of cliArgs) {
-  if (allNetworks.includes(arg.toLowerCase())) {
-    network = arg.toLowerCase();
+  const selectedNetwork = normalizeNetwork(arg);
+  if (selectedNetwork) {
+    network = selectedNetwork;
   } else if (allContractTypes.includes(arg)) {
     contractTypes.push(arg);
   }
@@ -87,8 +99,8 @@ function readContractAddresses(selectedNetwork) {
   }
 
   return {
-    Aetheron: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
-    AetxToken: { address: '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e' },
+    Aetheron: { address: process.env.AETH_TOKEN_ADDRESS || '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e' },
+    AetxToken: { address: process.env.AETX_TOKEN_ADDRESS || '0x0000000000000000000000000000000000000000' },
     // AetheronStaking address varies per deployment - requires deployment-info.json
     // Placeholder address below should be updated after actual deployment
     AetheronStaking: {
@@ -114,7 +126,7 @@ function getConstructorArgs(contractType, contractAddresses) {
 }
 
 function printVerificationTarget(contractType, address, constructorArgs) {
-  const explorerBaseUrl = NETWORK_CONFIG[network]?.explorerBaseUrl || NETWORK_CONFIG.polygon.explorerBaseUrl;
+  const explorerBaseUrl = NETWORK_CONFIG[network]?.explorerBaseUrl || NETWORK_CONFIG.base.explorerBaseUrl;
 
   console.log(`Verification target for ${contractType}:`);
   console.log(`  Explorer page: ${explorerBaseUrl}/address/${address}#code`);

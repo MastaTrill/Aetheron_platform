@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 
 const packageJsonUrl = new URL("../package.json", import.meta.url);
@@ -37,7 +38,7 @@ describe("Bounded production deployment entrypoint", () => {
   });
 
   it("is valid Node.js module syntax", () => {
-    const result = spawnSync(process.execPath, ["--check", wrapperUrl.pathname], {
+    const result = spawnSync(process.execPath, ["--check", fileURLToPath(wrapperUrl)], {
       encoding: "utf8"
     });
     assert.equal(result.status, 0, result.stderr || result.stdout);

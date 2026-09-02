@@ -1,14 +1,20 @@
-// Quick balance checker
-const ethers = require('ethers');
+import { Wallet } from 'ethers';
 
-const privateKey =
-  '48935deec3b96fc16d5d0a25de885d4ad9b4dfbf38bd78ef018f50dee8818485';
-const wallet = new ethers.Wallet(privateKey);
+const privateKey = process.env.QUICK_CHECK_PRIVATE_KEY;
+if (!privateKey) {
+  console.error('Set QUICK_CHECK_PRIVATE_KEY to inspect a wallet. No private key is stored in this repository.');
+  process.exit(2);
+}
+
+let wallet;
+try {
+  wallet = new Wallet(privateKey);
+} catch {
+  console.error('QUICK_CHECK_PRIVATE_KEY is not a valid EVM private key.');
+  process.exit(2);
+}
 
 console.log('Wallet Address:', wallet.address);
-console.log('Check balances at:');
-console.log('https://polygonscan.com/address/' + wallet.address);
-console.log(
-  'https://polygonscan.com/token/0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e?a=' +
-    wallet.address,
-);
+console.log('Check Base balances at:');
+console.log(`https://basescan.org/address/${wallet.address}`);
+console.log(`https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e?a=${wallet.address}`);

@@ -32,49 +32,14 @@ node smart-contract/scripts/deploy-base-presale-safe.mjs
 
 ---
 
-## ⚡ Execution Phase 2: Polygon DEX Router & Single-Pass Tax Binding
+## Execution Phases 2–4: Legacy Polygon Operations Retired
 
-### 2.1 Dry-Run Preflight Simulation
-```bash
-node smart-contract/scripts/configure-dex-router.mjs --dry-run
-```
-*Expected: Confirms target QuickSwap Router (`0xa5E0...`) and Pool (`0xd57c...`).*
+The previous Polygon DEX-router, governance, and staking-reward commands have been removed from the active production path. Their scripts are preserved under `smart-contract/scripts/archive/polygon/` for historical reference only.
 
-### 2.2 Live Broadcast
-```bash
-PRIVATE_KEY=<POLYGON_OWNER_PRIVATE_KEY> \
-node smart-contract/scripts/configure-dex-router.mjs --confirm
-```
-
----
-
-## ⚡ Execution Phase 3: Polygon Governance Contract Deployment
-
-### 3.1 Dry-Run Preflight Simulation
-```bash
-node smart-contract/scripts/deploy-governance.mjs --dry-run
-```
-
-### 3.2 Live Broadcast
-```bash
-PRIVATE_KEY=<DEPLOYER_PRIVATE_KEY> \
-node smart-contract/scripts/deploy-governance.mjs --confirm
-```
-
----
-
-## ⚡ Execution Phase 4: Staking Reward Pool Funding
-
-### 4.1 Dry-Run Preflight Simulation
-```bash
-node smart-contract/scripts/deposit-staking-rewards.mjs --dry-run --amount 100000
-```
-
-### 4.2 Live Broadcast
-```bash
-PRIVATE_KEY=<AETH_HOLDER_PRIVATE_KEY> \
-node smart-contract/scripts/deposit-staking-rewards.mjs --amount 100000 --confirm
-```
+For the canonical Base deployment:
+- do not run the archived Polygon scripts;
+- do not enable trading, add liquidity, deploy production governance, or fund a production staking reward pool until the final Base Mainnet launch authorization gate (#219) is satisfied;
+- any future live operation must use a reviewed Base-native script, the protected operational gates, the exact approved commit, and the approved owner/treasury roles.
 
 ---
 

@@ -51,18 +51,15 @@ test("contribution limits and schedule satisfy deployment guards", () => {
   assert.equal(production.ownerSmokePurchaseEth, production.minContributionEth);
 });
 
-test("frontend config matches the approved Base terms and recorded launch state", () => {
+test("frontend config matches Base terms and the explicit public authorization gate", () => {
   assert.match(rootFrontendSource, new RegExp(`aethTokenAddress: ["']${production.tokenAddress}["']`));
-  if (deployment.launchable) {
+  if (deployment.contracts?.Presale?.address) {
     assert.match(rootFrontendSource, new RegExp(`presaleContractAddress: ["']${deployment.contracts.Presale.address}["']`));
-    assert.match(rootFrontendSource, /status:\s*["']live["']/);
-  } else {
-    assert.match(rootFrontendSource, /presaleContractAddress:\s*["']["']/);
-    assert.match(
-      rootFrontendSource,
-      /status:\s*["'](?:disabled-awaiting-replacement-deployment|disabled-awaiting-basescan-and-owner-smoke-test|verified-disabled-awaiting-owner-smoke-test)["']/
-    );
   }
+  // Technical deployability is not authorization to accept public funds.
+  assert.match(rootFrontendSource, /launchAuthorized:\s*false/);
+  assert.match(rootFrontendSource, /status:\s*["']pending_final_authorization["']/);
+  assert.match(rootFrontendSource, /recorded_status:\s*["']blocked["']/);
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
   assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
