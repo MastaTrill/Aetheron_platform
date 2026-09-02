@@ -144,23 +144,27 @@ describe("Aetheron Node API Tests", () => {
   });
 
   describe("Network Synchronization", () => {
-    it("should have consistent block height across nodes", async () => {
-      await wait(5000); // Wait for blocks to be produced
+    it(
+      "should have consistent block height across nodes",
+      async () => {
+        await wait(5000); // Wait for blocks to be produced
 
-      const r1 = await axios.get(`${NODE1_URL}/blocks/latest`);
-      const r2 = await axios.get(`${NODE2_URL}/blocks/latest`);
-      const r3 = await axios.get(`${NODE3_URL}/blocks/latest`);
+        const r1 = await axios.get(`${NODE1_URL}/blocks/latest`);
+        const r2 = await axios.get(`${NODE2_URL}/blocks/latest`);
+        const r3 = await axios.get(`${NODE3_URL}/blocks/latest`);
 
-      // Allow for small differences due to propagation delay
-      const diff = Math.abs(r1.data.height - r2.data.height);
-      expect(diff).toBeLessThanOrEqual(1);
-    });
+        // Allow for small differences due to propagation delay
+        const diff = Math.abs(r1.data.height - r2.data.height);
+        expect(diff).toBeLessThanOrEqual(1);
+      },
+      10000,
+    );
   });
 });
 
 describe("Aetheron Blockchain Logic Tests", () => {
   it("should create genesis block correctly", () => {
-    const { Blockchain, Block } = require("../../aetheron-blockchain");
+    const { Blockchain, Block } = require("../../aetheron-blockchain.cjs");
     const chain = new Blockchain();
 
     expect(chain.chain.length).toBe(1);
@@ -169,7 +173,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should validate valid transaction", async () => {
-    const { Transaction, Block } = require("../../aetheron-blockchain");
+    const { Transaction, Block } = require("../../aetheron-blockchain.cjs");
 
     const tx = new Transaction("sender", "receiver", 100, "valid_sig");
     const result = await tx.verify();
@@ -177,14 +181,14 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should reject invalid transaction", async () => {
-    const { Transaction } = require("../../aetheron-blockchain");
+    const { Transaction } = require("../../aetheron-blockchain.cjs");
 
     const tx = new Transaction("", "receiver", 100);
     expect(tx.sender).toBe("");
   });
 
   it("should calculate balance correctly", () => {
-    const { Blockchain } = require("../../aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain.cjs");
     const chain = new Blockchain();
 
     // Genesis block has no transactions, balance should be 0
@@ -192,7 +196,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should register validator with sufficient stake", () => {
-    const { Blockchain } = require("../../aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain.cjs");
     const chain = new Blockchain();
 
     chain.registerValidator("validator1", 100);
@@ -201,7 +205,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should reject validator with insufficient stake", () => {
-    const { Blockchain } = require("../../aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain.cjs");
     const chain = new Blockchain();
 
     expect(() => {
@@ -210,7 +214,7 @@ describe("Aetheron Blockchain Logic Tests", () => {
   });
 
   it("should track validator history", () => {
-    const { Blockchain } = require("../../aetheron-blockchain");
+    const { Blockchain } = require("../../aetheron-blockchain.cjs");
     const chain = new Blockchain();
 
     chain.registerValidator("validator1", 200);
