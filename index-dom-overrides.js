@@ -54,7 +54,7 @@ function reconcilePublicHomepage() {
   setMeta('meta[name="twitter:description"]', description);
 
   replaceText(document.body, [
-    ['0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e', TOKEN],
+    ['0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e', TOKEN],
     ['0xAb5a...9671e', `${TOKEN.slice(0, 8)}...${TOKEN.slice(-4)}`],
     ['Polygon Mainnet', 'Base Mainnet'],
     ['PolygonScan', 'BaseScan'],

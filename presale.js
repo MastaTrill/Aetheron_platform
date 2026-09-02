@@ -5,8 +5,8 @@ const POLYGON_NETWORK = {
     chainId: "0x89",
     chainName: "Polygon Mainnet",
     nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 },
-    rpcUrls: ["https://polygon-rpc.com"],
-    blockExplorerUrls: ["https://polygonscan.com"]
+    rpcUrls: ["https://mainnet.base.org"],
+    blockExplorerUrls: ["https://basescan.org"]
 };
 
 const BASE_NETWORK = {
