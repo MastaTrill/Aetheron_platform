@@ -14,7 +14,7 @@ permissions:
 jobs:
   dashboard-source-safety:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,5 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Enforce source-native DOM safety
-        run: npm run test:dashboard-source-safety
+      - name: Run root safety and smoke tests
+        run: npm test
+
+      - name: Run dashboard Jest suite
+        run: npm run test:dashboard -- --runInBand
+
+      - name: Build production bundle
+        run: npm run build
