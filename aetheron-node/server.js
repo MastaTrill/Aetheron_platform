@@ -1,7 +1,7 @@
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
-const { Blockchain } = require('../aetheron-blockchain');
+const { Blockchain } = require("../aetheron-blockchain.cjs");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,6 +14,9 @@ const RPC_PORT = process.env.RPC_PORT || 8545;
 
 let blockchain = new Blockchain();
 let connectedPeers = [];
+let blockCount = blockchain.getLatestBlock().blockNumber;
+let transactionCount = 0;
+let lastBlockTime = Date.now();
 
 // Initialize some validators
 blockchain.registerValidator("validator1", 1000);
@@ -41,8 +44,8 @@ app.get("/blocks/latest", (req, res) => {
 
 // Get block by number
 app.get("/blocks/:number", (req, res) => {
-  const num = parseInt(req.params.number);
-  if (num > blockCount) {
+  const num = parseInt(req.params.number, 10);
+  if (!Number.isInteger(num) || num < 0 || num > blockCount) {
     return res.status(404).json({ error: "Block not found" });
   }
   res.json({
@@ -64,8 +67,14 @@ app.get("/chain", (req, res) => {
 
 // Send transaction
 app.post("/transactions", (req, res) => {
-  const { to, from, amount, signature } = req.body;
-  if (!to || !amount) {
+  const { to, from, amount } = req.body;
+  if (
+    !to ||
+    !from ||
+    typeof amount !== "number" ||
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ) {
     return res.status(400).json({ error: "Invalid transaction" });
   }
   transactionCount++;
@@ -77,14 +86,14 @@ app.post("/transactions", (req, res) => {
 
 // RPC endpoint
 app.post("/rpc", (req, res) => {
-  const { method, params, id } = req.body;
+  const { method, id } = req.body;
 
   switch (method) {
     case "eth_blockNumber":
       res.json({ result: "0x" + blockchain.getLatestBlock().blockNumber.toString(16), id });
       break;
     case "eth_getBalance":
-      res.json({ result: "0x" + (Math.random() * 1000000).toString(16), id });
+      res.json({ result: "0x" + Math.floor(Math.random() * 1000000).toString(16), id });
       break;
     case "eth_call":
       res.json({ result: "0x", id });
@@ -112,7 +121,10 @@ app.get("/metrics", (req, res) => {
     `aetheron_validator_stake{node="${NODE_NAME}"} ${stats.totalStaked}`,
     `# HELP aetheron_block_time_ms Block creation time in ms`,
     `# TYPE aetheron_block_time_ms gauge`,
-    `aetheron_block_time_ms ${Math.floor(Math.random() * 2000 + 1000)}`,
+    `aetheron_block_time_ms ${Math.max(0, Date.now() - lastBlockTime)}`,
+    `# HELP aetheron_api_transactions_total API transactions accepted`,
+    `# TYPE aetheron_api_transactions_total counter`,
+    `aetheron_api_transactions_total ${transactionCount}`,
   ].join("\n");
 
   res.set("Content-Type", "text/plain");
@@ -154,6 +166,8 @@ setInterval(async () => {
     }
 
     const newBlock = await blockchain.createBlock();
+    blockCount = newBlock.blockNumber;
+    lastBlockTime = Date.now();
     const blockData = {
       type: "new_block",
       height: newBlock.blockNumber,
