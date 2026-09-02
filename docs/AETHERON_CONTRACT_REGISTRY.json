@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-25",
+  "updatedAt": "2026-09-02",
   "authority": "MastaTrill/Aetheron_platform",
   "statusDefinitions": {
     "production": "Live production deployment with recorded transaction and verification evidence",
+    "deployed-disabled": "Live verified deployment retained on-chain, but public launch or fund acceptance is not currently authorized",
     "testnet": "Live testnet deployment",
     "pending": "Planned but not yet deployed",
     "legacy": "Historical deployment not used as current production configuration",
@@ -22,7 +23,31 @@
       "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
       "verification": "verified",
       "status": "production",
-      "source": "smart-contract/deployments/aeth-base.json"
+      "source": "smart-contract/deployments/aeth-base.json",
+      "notes": "The token contract is deployed and verified. Trading remains disabled in the current release model."
+    },
+    {
+      "project": "Aetheron Platform",
+      "contract": "AetheronPresaleV2",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
+      "creationTransaction": "0x7ac118e87c317b8c8cad669fac7fd04788529181fac8b577ee182d01a4270326",
+      "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+      "verification": "verified",
+      "status": "deployed-disabled",
+      "source": "smart-contract/deployments/presale-base.json",
+      "notes": "The corrected Base presale was deployed, funded, source-verified, and owner-smoke-tested on 2026-07-18. Current frontend configuration sets launchAuthorized=false and blocks public purchases pending final authorization."
+    },
+    {
+      "project": "Aetheron Platform",
+      "contract": "AetheronPresale (invalid historical deployment)",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "address": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
+      "status": "legacy",
+      "source": "smart-contract/deployments/presale-base.json",
+      "notes": "Invalid historical presale retained only as evidence because token() did not match the canonical Base AETH token."
     },
     {
       "project": "Sentinel L3",
@@ -78,13 +103,17 @@
       "status": "pending"
     },
     {
-      "project": "Sentinel",
-      "contract": "Unknown claimed token",
+      "project": "Sentinel L3",
+      "contract": "SENTINEL (legacy deployment)",
+      "symbol": "SENTINEL",
       "network": "Base Mainnet",
       "chainId": 8453,
       "address": "0x8c1eb8db47d52a8b5e2b1eb4e5ec9491ce030ba3",
-      "status": "unverified",
-      "notes": "Not linked to an official deployment manifest or source record in the reviewed repositories."
+      "creationTransaction": "0x0733e1e5700ed354298511dd09d3966c8c02093700074cf97d6d231b4544a776",
+      "verification": "verified",
+      "status": "legacy",
+      "source": "MastaTrill/Aetheron-Sentinel-L3:release-evidence/sentinel-mainnet/redeployment-closure.json",
+      "notes": "Live Base Mainnet SENTINEL deployment (100B supply, 18 decimals) with preserved controller and Uniswap V4 evidence. It is intentionally legacy/non-canonical under Sentinel L3's controlled-redeployment release model; the replacement Base Mainnet deployment is not yet recorded."
     }
   ]
 }
