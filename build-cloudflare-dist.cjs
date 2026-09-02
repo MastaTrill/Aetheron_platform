@@ -21,17 +21,21 @@ const excludedTopLevelNames = new Set([
   ".browser-profile-local3",
   ".chrome-profile-debug",
   ".chrome-profile-debug2",
+  ".kilo",
   ".localappdata",
+  ".presale-launch",
   "Aetheron",
   "backend",
   "cache",
   "dashboard-test-isolated",
   "dist",
+  "docs",
   "mobile-app",
   "node_modules",
   "openJdk-25",
   "react-app",
   "Scripts",
+  "scripts",
   "smart-contract",
 ]);
 
@@ -51,8 +55,17 @@ const excludedTopLevelFiles = new Set([
 
 const excludedExtensions = new Set([
   ".bat",
+  ".cjs",
   ".ipynb",
+  ".md",
+  ".mjs",
   ".ps1",
+  ".sol",
+  ".txt",
+]);
+
+const allowedTopLevelFiles = new Set([
+  "robots.txt",
 ]);
 
 let copiedFiles = 0;
@@ -72,6 +85,10 @@ function shouldExclude(relativePath, isDirectory) {
   }
 
   if (!isDirectory) {
+    if (!normalized.includes("/") && allowedTopLevelFiles.has(topLevelName)) {
+      return false;
+    }
+
     const extension = path.extname(normalized);
     if (excludedExtensions.has(extension)) {
       return true;
