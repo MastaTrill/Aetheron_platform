@@ -1,9 +1,19 @@
 // Bridge Modal Logic
-function escapeHtml(text) {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+function clearNode(node) {
+  if (!node) return;
+  node.replaceChildren();
+}
+
+function renderTableMessageRow(container, message, colSpan = 1, className = 'text-gray') {
+  if (!container) return;
+  clearNode(container);
+  const row = document.createElement('tr');
+  const cell = document.createElement('td');
+  cell.colSpan = colSpan;
+  if (className) cell.className = className;
+  cell.textContent = message;
+  row.appendChild(cell);
+  container.appendChild(row);
 }
 
 function setElementText(id, text) {
@@ -14,14 +24,6 @@ function setElementText(id, text) {
 
   element.textContent = text;
   return element;
-}
-
-function setContainerHtml(container, html) {
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = html;
 }
 
 function getDashboardApp() {
@@ -125,10 +127,25 @@ async function withWidgetLoading(element, loadingText, errorText, task) {
   }
 }
 
-function createDashboardModal(contentHtml) {
+function createDashboardModal({ titleText = '', bodyNodes = [], actionButtons = [] } = {}) {
   const modal = document.createElement('div');
   modal.className = 'modal';
-  modal.innerHTML = `<div class="modal-content">${contentHtml}</div>`;
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+
+  if (titleText) {
+    const title = document.createElement('h2');
+    title.textContent = titleText;
+    content.appendChild(title);
+  }
+  for (const node of bodyNodes) {
+    if (node) content.appendChild(node);
+  }
+  for (const button of actionButtons) {
+    if (button) content.appendChild(button);
+  }
+
+  modal.appendChild(content);
   document.body.appendChild(modal);
   return modal;
 }
@@ -308,14 +325,27 @@ class AetheronDashboard {
     const type = document.getElementById('txTypeFilter')?.value || 'all';
     const date = document.getElementById('txDateFilter')?.value || '';
 
-    if (!tableBody) {
+    if (!tableBody) return;
+
+    let txs = this.getTxHistory();
+    if (type !== 'all') txs = txs.filter((tx) => tx.type === type);
+    if (date) txs = txs.filter((tx) => String(tx.date || '').startsWith(date));
+
+    clearNode(tableBody);
+    if (!txs.length) {
+      renderTableMessageRow(tableBody, 'No transactions found.', 5);
       return;
     }
 
-    let txs = this.getTxHistory();
-    if (type !== 'all') txs = txs.filter(tx => tx.type === type);
-    if (date) txs = txs.filter(tx => tx.date.startsWith(date));
-    tableBody.innerHTML = txs.length ? txs.map(tx => `<tr><td>${escapeHtml(tx.date)}</td><td>${escapeHtml(tx.type)}</td><td>${escapeHtml(tx.amount)}</td><td>${escapeHtml(tx.token)}</td><td>${escapeHtml(tx.status)}</td></tr>`).join('') : `<tr><td colspan="5" class="text-gray">No transactions found.</td></tr>`;
+    txs.forEach((tx) => {
+      const row = document.createElement('tr');
+      [tx.date, tx.type, tx.amount, tx.token, tx.status].forEach((value) => {
+        const cell = document.createElement('td');
+        cell.textContent = String(value ?? '');
+        row.appendChild(cell);
+      });
+      tableBody.appendChild(row);
+    });
   }
 
   exportTxCsv() {
@@ -1134,36 +1164,35 @@ class AetheronDashboard {
 
     if (progressBar && progressText) {
       const progress =
-        (this.tradingRewards.currentProgress /
-          this.tradingRewards.dailyTarget) *
-        100;
+        (this.tradingRewards.currentProgress / this.tradingRewards.dailyTarget) * 100;
       progressBar.style.width = `${Math.min(progress, 100)}%`;
       progressText.textContent = `$${this.tradingRewards.currentProgress.toFixed(0)} / $${this.tradingRewards.dailyTarget}`;
     }
 
     if (rewardsList) {
-      rewardsList.innerHTML = '';
+      clearNode(rewardsList);
       this.tradingRewards.rewards.forEach((reward) => {
         const li = document.createElement('li');
-        const isUnlocked =
-          this.tradingRewards.currentProgress >= reward.threshold;
+        const isUnlocked = this.tradingRewards.currentProgress >= reward.threshold;
         li.className = isUnlocked ? 'unlocked' : 'locked';
-        li.innerHTML = `<span class="reward-icon">${isUnlocked ? '✅' : '🔒'}</span> $${reward.threshold}+: ${reward.reward}`;
+        const icon = document.createElement('span');
+        icon.className = 'reward-icon';
+        icon.textContent = isUnlocked ? '✅' : '🔒';
+        li.append(
+          icon,
+          document.createTextNode(` $${reward.threshold}+: ${reward.reward}`),
+        );
         rewardsList.appendChild(li);
       });
     }
   }
 
   showTradeNotification(amount) {
-    // Create floating notification
     const notification = document.createElement('div');
     notification.className = 'trade-notification';
-    notification.innerHTML = `💰 +$${amount.toFixed(2)} volume!`;
+    notification.textContent = `💰 +$${Number(amount).toFixed(2)} volume!`;
     document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    setTimeout(() => notification.remove(), 3000);
   }
 
   generateReferralCode() {
@@ -1268,21 +1297,28 @@ class AetheronDashboard {
 
   updateAchievements() {
     const achievementsList = document.getElementById('achievements-list');
-    if (achievementsList) {
-      achievementsList.innerHTML = '';
-      this.achievements.forEach((achievement) => {
-        const li = document.createElement('li');
-        li.className = `achievement ${achievement.unlocked ? 'unlocked' : 'locked'}`;
-        li.innerHTML = `
-					<div class="achievement-icon">${achievement.unlocked ? '🏆' : '🔒'}</div>
-					<div class="achievement-info">
-						<h4>${achievement.name}</h4>
-						<p>${achievement.description}</p>
-					</div>
-				`;
-        achievementsList.appendChild(li);
-      });
-    }
+    if (!achievementsList) return;
+
+    clearNode(achievementsList);
+    this.achievements.forEach((achievement) => {
+      const li = document.createElement('li');
+      li.className = `achievement ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+
+      const icon = document.createElement('div');
+      icon.className = 'achievement-icon';
+      icon.textContent = achievement.unlocked ? '🏆' : '🔒';
+
+      const info = document.createElement('div');
+      info.className = 'achievement-info';
+      const heading = document.createElement('h4');
+      heading.textContent = achievement.name;
+      const description = document.createElement('p');
+      description.textContent = achievement.description;
+      info.append(heading, description);
+
+      li.append(icon, info);
+      achievementsList.appendChild(li);
+    });
   }
 
   async updateLiveStats() {
@@ -1659,10 +1695,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       const stakingTableBody = el?.querySelector('tbody');
       if (stakingTableBody) {
-        setContainerHtml(
-          stakingTableBody,
-          '<tr><td colspan="5">No data (stub)</td></tr>',
-        );
+        renderTableMessageRow(stakingTableBody, 'No data (stub)', 5);
       }
       if (spinner) spinner.style.display = 'none';
     }, 800);
@@ -1788,13 +1821,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Open profile editor modal
-            const modal = createDashboardModal(`
-              <h2>Edit Profile</h2>
-              <label>Name: <input id="profileNameInput" type="text" value="Alex" /></label><br>
-              <label>Email: <input id="profileEmailInput" type="email" value="alex@email.com" /></label><br>
-              <button id="saveProfileBtn">Save</button>
-              <button id="closeProfileModalBtn">Close</button>
-            `);
+            const nameLabel = document.createElement('label');
+            nameLabel.textContent = 'Name: ';
+            const nameInput = document.createElement('input');
+            nameInput.id = 'profileNameInput';
+            nameInput.type = 'text';
+            nameInput.value = 'Alex';
+            nameLabel.appendChild(nameInput);
+
+            const emailLabel = document.createElement('label');
+            emailLabel.textContent = 'Email: ';
+            const emailInput = document.createElement('input');
+            emailInput.id = 'profileEmailInput';
+            emailInput.type = 'email';
+            emailInput.value = 'alex@email.com';
+            emailLabel.appendChild(emailInput);
+
+            const save = document.createElement('button');
+            save.id = 'saveProfileBtn';
+            save.type = 'button';
+            save.textContent = 'Save';
+            const close = document.createElement('button');
+            close.id = 'closeProfileModalBtn';
+            close.type = 'button';
+            close.textContent = 'Close';
+
+            const modal = createDashboardModal({
+              titleText: 'Edit Profile',
+              bodyNodes: [nameLabel, document.createElement('br'), emailLabel, document.createElement('br')],
+              actionButtons: [save, close],
+            });
             const saveProfileBtn = document.getElementById('saveProfileBtn');
             bindModalClose(modal, 'closeProfileModalBtn');
 
@@ -1860,14 +1916,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Play onboarding video modal
-            const modal = createDashboardModal(`
-              <h2>Welcome to Aetheron!</h2>
-              <video controls autoplay width="400">
-                <source src="onboarding.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              <button id="closeVideoModalBtn">Close</button>
-            `);
+            const video = document.createElement('video');
+            video.controls = true;
+            video.autoplay = true;
+            video.width = 400;
+            const sourceNode = document.createElement('source');
+            sourceNode.src = 'onboarding.mp4';
+            sourceNode.type = 'video/mp4';
+            video.append(
+              sourceNode,
+              document.createTextNode('Your browser does not support the video tag.'),
+            );
+            const close = document.createElement('button');
+            close.id = 'closeVideoModalBtn';
+            close.type = 'button';
+            close.textContent = 'Close';
+            const modal = createDashboardModal({
+              titleText: 'Welcome to Aetheron!',
+              bodyNodes: [video],
+              actionButtons: [close],
+            });
             bindModalClose(modal, 'closeVideoModalBtn');
           };
         }
@@ -1879,16 +1947,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
           btn.onclick = function () {
             // Launch interactive tutorial modal
-            const modal = createDashboardModal(`
-                <h2>Gamified Tutorial</h2>
-                <p>Complete tasks to earn badges and rewards!</p>
-                <ul>
-                  <li>Connect your wallet <span id="task1Status">❌</span></li>
-                  <li>Make your first trade <span id="task2Status">❌</span></li>
-                  <li>Vote in governance <span id="task3Status">❌</span></li>
-                </ul>
-                <button id="closeTutorialModalBtn">Close</button>
-            `);
+            const paragraph = document.createElement('p');
+            paragraph.textContent = 'Complete tasks to earn badges and rewards!';
+            const list = document.createElement('ul');
+            [
+              ['Connect your wallet ', 'task1Status'],
+              ['Make your first trade ', 'task2Status'],
+              ['Vote in governance ', 'task3Status'],
+            ].forEach(([label, id]) => {
+              const item = document.createElement('li');
+              const status = document.createElement('span');
+              status.id = id;
+              status.textContent = '❌';
+              item.append(document.createTextNode(label), status);
+              list.appendChild(item);
+            });
+            const close = document.createElement('button');
+            close.id = 'closeTutorialModalBtn';
+            close.type = 'button';
+            close.textContent = 'Close';
+            const modal = createDashboardModal({
+              titleText: 'Gamified Tutorial',
+              bodyNodes: [paragraph, list],
+              actionButtons: [close],
+            });
             bindModalClose(modal, 'closeTutorialModalBtn');
             // TODO: Track and update progress, persist to backend/localStorage
           };

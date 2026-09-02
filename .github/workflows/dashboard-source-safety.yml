@@ -1,0 +1,38 @@
+name: Dashboard Source Safety
+
+on:
+  pull_request:
+    paths:
+      - 'dashboard.js'
+      - 'dashboard.source-safety.test.mjs'
+      - 'package.json'
+      - '.github/workflows/dashboard-source-safety.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  dashboard-source-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run root safety and smoke tests
+        run: npm test
+
+      - name: Run dashboard Jest suite
+        run: npm run test:dashboard -- --runInBand
+
+      - name: Build production bundle
+        run: npm run build
