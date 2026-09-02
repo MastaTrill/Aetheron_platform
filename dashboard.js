@@ -1166,7 +1166,7 @@ class AetheronDashboard {
       const progress =
         (this.tradingRewards.currentProgress / this.tradingRewards.dailyTarget) * 100;
       progressBar.style.width = `${Math.min(progress, 100)}%`;
-      progressText.textContent = `${this.tradingRewards.currentProgress.toFixed(0)} / ${this.tradingRewards.dailyTarget}`;
+      progressText.textContent = `$${this.tradingRewards.currentProgress.toFixed(0)} / $${this.tradingRewards.dailyTarget}`;
     }
 
     if (rewardsList) {
@@ -1180,7 +1180,7 @@ class AetheronDashboard {
         icon.textContent = isUnlocked ? '✅' : '🔒';
         li.append(
           icon,
-          document.createTextNode(` ${reward.threshold}+: ${reward.reward}`),
+          document.createTextNode(` $${reward.threshold}+: ${reward.reward}`),
         );
         rewardsList.appendChild(li);
       });
@@ -1190,7 +1190,7 @@ class AetheronDashboard {
   showTradeNotification(amount) {
     const notification = document.createElement('div');
     notification.className = 'trade-notification';
-    notification.textContent = `💰 +${Number(amount).toFixed(2)} volume!`;
+    notification.textContent = `💰 +$${Number(amount).toFixed(2)} volume!`;
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 3000);
   }
