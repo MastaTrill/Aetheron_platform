@@ -1,0 +1,54 @@
+name: Apply guarded Base current-surface cleanup
+
+on:
+  push:
+    branches:
+      - fix/canonical-base-cleanup-214
+    paths:
+      - .github/workflows/apply-base-current-surface.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cleanup branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/canonical-base-cleanup-214
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply guarded Base substitutions
+        run: node apply-base-current-surface.mjs
+
+      - name: Verify root safety and production bundle
+        run: npm test
+
+      - name: Validate canonical deployment manifests
+        run: node scripts/validate-canonical-deployments.mjs
+
+      - name: Check patch whitespace
+        run: git diff --check
+
+      - name: Commit verified current-surface cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analytics/analytics.js analytics-dashboard.html dashboard-enhanced.html governance.html index-dom-overrides.js leaderboard-config.json leaderboard-init.js leaderboard.html portfolio-init.js portfolio.html presale.js price-alerts.html privacy-policy.html pro-charts-portfolio.js referral.html roadmap.html terms-of-service.html transaction-history.html
+          if git diff --cached --quiet; then
+            echo "No source changes to commit"
+            exit 1
+          fi
+          git commit -m "fix: canonicalize current public Base metadata"
+          git push origin HEAD:fix/canonical-base-cleanup-214
