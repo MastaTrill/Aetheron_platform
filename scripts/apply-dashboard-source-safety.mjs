@@ -7,7 +7,7 @@ function replaceOnce(expected, replacement, label) {
   if (!source.includes(expected)) {
     throw new Error(`Missing expected source text: ${label}`);
   }
-  source = source.replace(expected, replacement);
+  source = source.replace(expected, () => replacement);
 }
 
 replaceOnce(
