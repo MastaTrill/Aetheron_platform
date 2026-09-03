@@ -31,6 +31,53 @@ jobs:
             curl --fail --silent --show-error --location --retry 3 --max-time 20 "$url" >/dev/null
           done
 
+      - name: Enforce live homepage Base deployment truth
+        shell: bash
+        env:
+          CANONICAL_AETH: 0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e
+          LEGACY_AETH: 0xab5ae0d8f569d7c2b27574319b864a5ba6f9671e
+        run: |
+          set -euo pipefail
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 3 \
+            --max-time 20 \
+            --header 'Cache-Control: no-cache' \
+            --header 'Pragma: no-cache' \
+            "https://aetrs.com/?readiness=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            > /tmp/aetheron-home.html
+
+          tr '[:upper:]' '[:lower:]' < /tmp/aetheron-home.html > /tmp/aetheron-home.lower.html
+
+          grep -Fq "$CANONICAL_AETH" /tmp/aetheron-home.lower.html || {
+            echo "Live homepage is missing the canonical Base AETH address."
+            exit 1
+          }
+          grep -Fq 'base mainnet' /tmp/aetheron-home.lower.html || {
+            echo "Live homepage is missing Base Mainnet labeling."
+            exit 1
+          }
+          grep -Fq 'public purchase controls are disabled pending final authorization' /tmp/aetheron-home.lower.html || {
+            echo "Live homepage is missing the launch-disabled safety notice."
+            exit 1
+          }
+
+          for stale_marker in \
+            "$LEGACY_AETH" \
+            'polygon mainnet' \
+            'chain id: 137' \
+            'quickswap' \
+            'buy aeth now'
+          do
+            if grep -Fq "$stale_marker" /tmp/aetheron-home.lower.html; then
+              echo "Live homepage still exposes stale production marker: $stale_marker"
+              exit 1
+            fi
+          done
+
       - name: Verify Base contract bytecode
         shell: bash
         env:
