@@ -278,6 +278,21 @@ app.use((req, res, next) => {
   return next();
 });
 
+// API routes must be registered before static files so /api is never
+// interpreted as a filesystem directory and redirected to /api/.
+app.get(['/api', '/api/'], (req, res) => {
+  res.json(apiStatus());
+});
+
+app.get('/api/tokens', (req, res) => {
+  res.json(getTokenRegistry());
+});
+
+app.post('/api/logs', (req, res) => {
+  logEvent('INFO', { action: 'client_log', payload: req.body });
+  res.json({ success: true });
+});
+
 app.use(
   express.static(rootDir, {
     dotfiles: 'ignore',
@@ -292,19 +307,6 @@ app.use(
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(rootDir, 'admin-dashboard.html'));
-});
-
-app.get(['/api', '/api/'], (req, res) => {
-  res.json(apiStatus());
-});
-
-app.get('/api/tokens', (req, res) => {
-  res.json(getTokenRegistry());
-});
-
-app.post('/api/logs', (req, res) => {
-  logEvent('INFO', { action: 'client_log', payload: req.body });
-  res.json({ success: true });
 });
 
 app.get('/settings/export', authMiddleware, (req, res) => {
