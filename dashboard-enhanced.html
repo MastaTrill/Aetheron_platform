@@ -8,7 +8,7 @@
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://api.coingecko.com https://api.coinmarketcap.com https://mainnet.base.org https://base.drpc.org https://etherscan.io https://api.etherscan.io https://api.basescan.org https://basescan.org https://api.dexscreener.com https://dexscreener.com https://api.github.com https://github.com https://api.telegram.org https://telegram.org https://discord.com https://discordapp.com https://api.discord.com https://cdn.discordapp.com https://plausible.io https://vercel-node-app-1.vercel.app; frame-src 'self' https://www.youtube.com https://youtube.com https://player.vimeo.com https://vimeo.com;" />
   <title>Aetheron - Enhanced Dashboard</title>
   <meta name="description"
-    content="Aetheron Enhanced Dashboard with launchpad and scanner flows powered by the backend API." />
+    content="Aetheron Enhanced Dashboard with Base launchpad and scanner flows powered by the backend API." />
   <meta name="aetheron-api-base" content="https://vercel-node-app-1.vercel.app" />
   <meta name="aetheron-plausible-domain" content="mastatrill.github.io" />
   <link rel="canonical" href="https://aetrs.com/dashboard-enhanced.html" />
@@ -61,8 +61,8 @@
           <span class="whats-new-feature-icon"><i class="fas fa-rocket" aria-hidden="true"></i></span>
           <div>
             <b>Token Launchpad</b><br />
-            <span class="whats-new-feature-desc">Launch a Polygon token with guided configuration and team allocation
-              controls when the backend API is connected.</span>
+            <span class="whats-new-feature-desc">Launch a Base token with guided configuration and team allocation
+              controls when the backend API is connected and configured for Base Mainnet.</span>
           </div>
         </div>
       </div>
@@ -75,8 +75,9 @@
     <div class="card">
       <h3><i class="fas fa-rocket" aria-hidden="true"></i> Token Launchpad</h3>
       <p class="integration-note">
-        Launch requests need the Aetheron backend API. The public static site previews the flow and can be pointed at a
-        deployed backend with the `aetheron-api-base` meta tag or `window.AETHERON_API_BASE_URL`.
+        Launch requests need the Aetheron backend API configured for Base Mainnet (chain ID 8453). The public static
+        site can be pointed at a deployed backend with the `aetheron-api-base` meta tag or
+        `window.AETHERON_API_BASE_URL`.
       </p>
       <form id="token-launch-form">
         <input type="text" id="launch-token-name" placeholder="Token Name" required class="input-full" />
@@ -91,7 +92,7 @@
         <input type="url" id="launch-logo-url" placeholder="Logo URL (optional)" class="input-full" />
         <input type="url" id="launch-website" placeholder="Project Website (optional)" class="input-full" />
         <textarea id="launch-description" placeholder="Project Description (optional)" class="input-full"></textarea>
-        <button type="submit" class="btn btn-block">Launch Token</button>
+        <button type="submit" class="btn btn-block">Launch Token on Base</button>
       </form>
       <div id="launch-result" class="result-message" aria-live="polite"></div>
     </div>
