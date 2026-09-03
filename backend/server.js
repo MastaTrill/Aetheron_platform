@@ -8,6 +8,8 @@ const express = require('express');
 const app = express();
 const rootDir = path.join(__dirname, '..');
 const PORT = process.env.PORT || 4000;
+const BASE_CHAIN_ID = 8453;
+const CANONICAL_AETH_ADDRESS = '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e';
 
 const ADMIN_PASS_FILE = path.join(__dirname, 'admin.pass');
 const TOKEN_REGISTRY_FILE = path.join(rootDir, 'scripts', 'token-registry.json');
@@ -46,6 +48,9 @@ const stats = {
   networkStatus: 'Healthy',
 };
 
+app.disable('x-powered-by');
+app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? 1 : false);
+
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
@@ -72,7 +77,6 @@ function verifyPassword(password, storedValue) {
 
   try {
     const actualHash = crypto.scryptSync(password, salt, 64).toString('hex');
-
     return crypto.timingSafeEqual(
       Buffer.from(actualHash, 'hex'),
       Buffer.from(expectedHash, 'hex'),
@@ -108,12 +112,7 @@ function saveAdminPasswordHash(hash) {
 let adminPasswordHash = loadAdminPasswordHash();
 
 function getClientIp(req) {
-  const forwardedFor = req.headers['x-forwarded-for'];
-  if (typeof forwardedFor === 'string' && forwardedFor.length > 0) {
-    return forwardedFor.split(',')[0].trim();
-  }
-
-  return req.socket?.remoteAddress || 'unknown';
+  return req.ip || req.socket?.remoteAddress || 'unknown';
 }
 
 function isBlocked(ip) {
@@ -206,8 +205,7 @@ function authMiddleware(req, res, next) {
   }
 
   const separatorIndex = credentials.indexOf(':');
-  const username =
-    separatorIndex >= 0 ? credentials.slice(0, separatorIndex) : credentials;
+  const username = separatorIndex >= 0 ? credentials.slice(0, separatorIndex) : credentials;
   const password = separatorIndex >= 0 ? credentials.slice(separatorIndex + 1) : '';
 
   if (username === 'admin' && verifyPassword(password, adminPasswordHash)) {
@@ -237,34 +235,44 @@ function isSensitivePath(requestPath) {
 
 function getTokenRegistry() {
   try {
-    return JSON.parse(fs.readFileSync(TOKEN_REGISTRY_FILE, 'utf8'));
-  } catch {
+    const registry = JSON.parse(fs.readFileSync(TOKEN_REGISTRY_FILE, 'utf8'));
+    if (!Array.isArray(registry) || registry.length === 0) {
+      throw new Error('Token registry is empty');
+    }
+    return registry;
+  } catch (error) {
+    logEvent('WARN', {
+      action: 'token_registry_fallback',
+      error: error.message,
+    });
     return [
       {
         symbol: 'AETH',
         name: 'Aetheron',
-        chainId: 137,
+        network: 'base',
+        chainId: 8453,
+        address: CANONICAL_AETH_ADDRESS,
+        decimals: 18,
+        status: 'fallback_canonical',
       },
     ];
   }
+}
+
+function apiStatus() {
+  return {
+    status: 'online',
+    version: '2.0.0',
+    network: 'base',
+    chainId: 8453,
+    timestamp: new Date().toISOString(),
+  };
 }
 
 app.use(express.json({ limit: '1mb' }));
 app.use((req, res, next) => {
   if (isSensitivePath(req.path)) {
     return res.status(404).json({ error: 'Not found' });
-  }
-
-  return next();
-});
-
-app.use((req, res, next) => {
-  if (req.path === '/api' || req.path === '/api/') {
-    return res.json({
-      status: 'online',
-      version: '1.0.0',
-      timestamp: new Date().toISOString(),
-    });
   }
 
   return next();
@@ -286,20 +294,8 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(rootDir, 'admin-dashboard.html'));
 });
 
-app.get('/api', (req, res) => {
-  res.json({
-    status: 'online',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/api/', (req, res) => {
-  res.json({
-    status: 'online',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-  });
+app.get(['/api', '/api/'], (req, res) => {
+  res.json(apiStatus());
 });
 
 app.get('/api/tokens', (req, res) => {
@@ -312,10 +308,7 @@ app.post('/api/logs', (req, res) => {
 });
 
 app.get('/settings/export', authMiddleware, (req, res) => {
-  res.setHeader(
-    'Content-Disposition',
-    'attachment; filename="dashboard-settings.json"',
-  );
+  res.setHeader('Content-Disposition', 'attachment; filename="dashboard-settings.json"');
   res.json(dashboardSettings);
 });
 
@@ -328,9 +321,7 @@ app.post('/settings/import', authMiddleware, (req, res) => {
 app.post('/admin/reset-password', authMiddleware, (req, res) => {
   const { newPassword } = req.body || {};
   if (typeof newPassword !== 'string' || newPassword.length < 6) {
-    return res
-      .status(400)
-      .json({ error: 'Password must be at least 6 characters.' });
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
   }
 
   adminPasswordHash = hashPassword(newPassword);
@@ -499,6 +490,9 @@ app.get('/education/:address', authMiddleware, (req, res) => {
 
 app.get('/chain', authMiddleware, (req, res) => {
   res.json({
+    network: 'base',
+    chainId: 8453,
+    simulated: true,
     height: Math.floor(Math.random() * 1_000_000),
     hash: `0x${crypto.randomBytes(32).toString('hex')}`,
     transactions: Math.floor(Math.random() * 1000),
@@ -519,7 +513,11 @@ async function mountApiRouters() {
     try {
       const module = await import(modulePath);
       const router = module.default || module.router || module;
-      app.use('/api', router);
+      if (modulePath === './scanner/nft-api.mjs') {
+        app.use('/api/nft', router);
+      } else {
+        app.use('/api', router);
+      }
       logEvent('INFO', { action: 'router_mounted', modulePath });
     } catch (error) {
       console.warn(`Skipping API module ${modulePath}: ${error.message}`);
@@ -540,13 +538,16 @@ async function startServer() {
       return next();
     }
 
-    res.sendFile(path.join(rootDir, 'index.html'));
+    return res.sendFile(path.join(rootDir, 'index.html'));
   });
 
-  app.use((err, req, res) => {
+  app.use((err, req, res, next) => {
     console.error(err.stack);
     logEvent('ERROR', { message: err.message, path: req.path });
-    res.status(500).json({ error: 'Internal server error' });
+    if (res.headersSent) {
+      return next(err);
+    }
+    return res.status(500).json({ error: 'Internal server error' });
   });
 
   app.use((req, res) => {
@@ -557,6 +558,8 @@ async function startServer() {
     logEvent('SUCCESS', {
       message: 'Aetheron backend server started',
       port: PORT,
+      network: 'base',
+      chainId: BASE_CHAIN_ID,
     });
 
     console.log(`Aetheron backend running on http://localhost:${PORT}`);
