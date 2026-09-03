@@ -10,15 +10,25 @@ const forbiddenLegacy = /POLYGON_RPC_URL|polygon-rpc\.com|polygonscan\.com|0xAb5
 const activePaths = [
   'update-wallets.js',
   'backend/push-notify-wallets.js',
+  'smart-contract/hardhat.config.js',
   'smart-contract/interact-mainnet.mjs',
   'smart-contract/fund-wallets.mjs',
   'smart-contract/utils/validateEnv.mjs',
+  'smart-contract/scripts/deploy.mjs',
+  'smart-contract/scripts/enable-trading.mjs',
   'smart-contract/scripts/verify-setup.mjs',
 ];
 
 for (const path of activePaths) {
   assert.doesNotMatch(read(path), forbiddenLegacy, `${path} must not contain legacy Polygon or ethers-v5 operational code`);
 }
+
+const hardhatConfig = read('smart-contract/hardhat.config.js');
+assert.doesNotMatch(hardhatConfig, /\bpolygon\s*:/i, 'primary Hardhat config must not expose Polygon production network');
+assert.doesNotMatch(hardhatConfig, /\bmumbai\s*:/i, 'primary Hardhat config must not expose Mumbai production network');
+assert.doesNotMatch(hardhatConfig, /\bamoy\s*:/i, 'primary Hardhat config must not expose Amoy production network');
+assert.match(hardhatConfig, /\bbase\s*:/i, 'primary Hardhat config must expose Base Mainnet');
+assert.match(hardhatConfig, /chainId:\s*8453/, 'primary Hardhat config must pin Base chain ID 8453');
 
 const validateEnv = read('smart-contract/utils/validateEnv.mjs');
 assert.match(validateEnv, /BASE_RPC_URL/, 'environment validator must use BASE_RPC_URL');
@@ -42,6 +52,15 @@ assert.match(interactMainnet, /AETH_TOKEN_ADDRESS/, 'mainnet interaction must ta
 const pushMonitor = read('backend/push-notify-wallets.js');
 assert.match(pushMonitor, /BASE_RPC_URL/, 'wallet monitor must use Base RPC');
 assert.match(pushMonitor, /prefetchedTransactions/, 'wallet monitor must use ethers v6 prefetched transactions');
+
+const deployScript = read('smart-contract/scripts/deploy.mjs');
+assert.match(deployScript, /CONFIRM_BASE_DEPLOYMENT/, 'Base deployment must require explicit confirmation');
+assert.match(deployScript, /8453/, 'Base deployment script must verify chain ID 8453');
+
+const enableTrading = read('smart-contract/scripts/enable-trading.mjs');
+assert.match(enableTrading, /CONFIRM_ENABLE_TRADING/, 'enable-trading script must require explicit confirmation');
+assert.match(enableTrading, /8453/, 'enable-trading script must verify Base chain ID 8453');
+assert.match(enableTrading, /basescan\.org/i, 'enable-trading diagnostics must point to BaseScan');
 
 const verifySetup = read('smart-contract/scripts/verify-setup.mjs');
 assert.match(verifySetup, /Base Mainnet/, 'setup verifier must identify Base Mainnet');
