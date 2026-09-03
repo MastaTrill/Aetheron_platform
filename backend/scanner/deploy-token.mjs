@@ -58,6 +58,23 @@ async function loadLaunchpadArtifact() {
   return artifact;
 }
 
+export async function assertExpectedChain(provider, expectedChainId) {
+  const network = await provider.getNetwork();
+  const actualChainId = Number(network.chainId);
+
+  if (actualChainId !== Number(expectedChainId)) {
+    const error = new Error(
+      `Refusing deployment: connected RPC chain ${actualChainId} does not match expected chain ${expectedChainId}.`,
+    );
+    error.code = 'WRONG_DEPLOYMENT_NETWORK';
+    error.actualChainId = actualChainId;
+    error.expectedChainId = Number(expectedChainId);
+    throw error;
+  }
+
+  return actualChainId;
+}
+
 export async function deployToken({
   name,
   symbol,
@@ -66,8 +83,11 @@ export async function deployToken({
   initialRecipient,
   rpcUrl,
   privateKey,
+  expectedChainId,
 }) {
   const provider = new ethers.JsonRpcProvider(rpcUrl);
+  await assertExpectedChain(provider, expectedChainId);
+
   const wallet = new ethers.Wallet(privateKey, provider);
   const artifact = await loadLaunchpadArtifact();
   const initialSupply = ethers.parseUnits(supply.toString(), 18);
