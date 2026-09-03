@@ -2,11 +2,14 @@ import express from 'express';
 
 import scannerApi from './scanner/scanner-api.mjs';
 import launchpadApi from './scanner/launchpad-api.mjs';
+import nftApi from './scanner/nft-api.mjs';
 import coinbaseCommerceApi from './scanner/coinbase-commerce.mjs';
 import paymentHistoryApi from './scanner/payment-history-backend.mjs';
 import allPaymentsApi from './scanner/all-payments-backend.mjs';
 
 const DEFAULT_ALLOWED_ORIGINS = [
+  'https://aetrs.com',
+  'https://www.aetrs.com',
   'https://mastatrill.github.io',
   'https://aetheronplatform.github.io',
   'https://aetheron-platform.pages.dev',
@@ -43,7 +46,8 @@ function resolveCorsOrigin(requestOrigin, allowedOrigins) {
 const apiApp = express();
 const allowedOrigins = getAllowedOrigins();
 
-apiApp.use(express.json());
+apiApp.disable('x-powered-by');
+apiApp.use(express.json({ limit: '1mb' }));
 
 apiApp.use((req, res, next) => {
   const requestOrigin = req.headers.origin;
@@ -54,14 +58,10 @@ apiApp.use((req, res, next) => {
     res.setHeader('Vary', 'Origin');
   }
 
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,OPTIONS',
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization',
-  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
 
   if (req.method === 'OPTIONS') {
     res.status(204).end();
@@ -75,12 +75,15 @@ apiApp.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'aetheron-backend-api',
+    network: 'base',
+    chainId: 8453,
     timestamp: new Date().toISOString(),
   });
 });
 
 apiApp.use(scannerApi);
 apiApp.use(launchpadApi);
+apiApp.use('/nft', nftApi);
 apiApp.use(coinbaseCommerceApi);
 apiApp.use(paymentHistoryApi);
 apiApp.use(allPaymentsApi);
