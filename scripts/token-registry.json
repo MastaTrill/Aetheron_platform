@@ -1,0 +1,11 @@
+[
+  {
+    "symbol": "AETH",
+    "name": "Aetheron",
+    "network": "base",
+    "chainId": 8453,
+    "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "decimals": 18,
+    "status": "verified_on_chain"
+  }
+]

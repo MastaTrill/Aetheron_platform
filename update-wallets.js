@@ -1,54 +1,58 @@
 #!/usr/bin/env node
 
-// update-wallets.js - Update treasury wallet addresses in Aetheron contract
 import { ethers } from 'ethers';
 
-const CONTRACT_ADDRESS = process.env.AETHERON_CONTRACT_ADDRESS; // Set your contract address in .env as AETHERON_CONTRACT_ADDRESS
+const BASE_CHAIN_ID = 8453;
+const RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+const CONTRACT_ADDRESS = process.env.AETH_TOKEN_ADDRESS;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ABI = [
   'function updateWallets(address newTeamWallet, address newMarketingWallet, address newStakingPool)',
 ];
 
-if (!process.env.POLYGON_RPC_URL || !process.env.PRIVATE_KEY || !CONTRACT_ADDRESS) {
-  console.error('Missing POLYGON_RPC_URL, PRIVATE_KEY, or AETHERON_CONTRACT_ADDRESS in .env');
-  process.exit(1);
+function requireAddress(value, name) {
+  if (!value || !ethers.isAddress(value) || value.toLowerCase() === ethers.ZeroAddress.toLowerCase()) {
+    throw new Error(`${name} must be a valid non-zero EVM address`);
+  }
+  return value;
 }
 
-const provider = new ethers.JsonRpcProvider(process.env.POLYGON_RPC_URL);
-const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-
 async function main() {
-  const teamWallet = process.env.TEAM_WALLET;
-  const marketingWallet = process.env.MARKETING_WALLET;
-  const stakingPool = process.env.STAKING_POOL;
+  if (!PRIVATE_KEY || !/^0x[0-9a-fA-F]{64}$/.test(PRIVATE_KEY)) {
+    throw new Error('PRIVATE_KEY must be a valid 0x-prefixed 32-byte key');
+  }
+  requireAddress(CONTRACT_ADDRESS, 'AETH_TOKEN_ADDRESS');
 
-  if (!teamWallet || !marketingWallet || !stakingPool) {
-    console.error('Missing wallet address in .env');
-    process.exit(1);
+  if (process.env.CONFIRM_WALLET_UPDATE !== 'CONFIRM_WALLET_UPDATE') {
+    throw new Error('Refusing wallet update. Set CONFIRM_WALLET_UPDATE=CONFIRM_WALLET_UPDATE for an intentional Base write.');
   }
 
-  if (
-    teamWallet === '0x0000000000000000000000000000000000000000' ||
-    marketingWallet === '0x0000000000000000000000000000000000000000' ||
-    stakingPool === '0x0000000000000000000000000000000000000000'
-  ) {
-    console.error('Wallet address cannot be zero address');
-    process.exit(1);
+  const teamWallet = requireAddress(process.env.TEAM_WALLET, 'TEAM_WALLET');
+  const marketingWallet = requireAddress(process.env.MARKETING_WALLET, 'MARKETING_WALLET');
+  const stakingPool = requireAddress(process.env.STAKING_POOL || process.env.STAKING_CONTRACT_ADDRESS, 'STAKING_POOL');
+
+  const provider = new ethers.JsonRpcProvider(RPC_URL);
+  const network = await provider.getNetwork();
+  if (Number(network.chainId) !== BASE_CHAIN_ID) {
+    throw new Error(`Wrong network: expected Base Mainnet ${BASE_CHAIN_ID}, got ${network.chainId}`);
   }
 
-  console.log('Updating wallets...');
+  const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+  console.log('Updating Aetheron wallets on Base Mainnet...');
+  console.log('Token:', CONTRACT_ADDRESS);
   console.log('Team:', teamWallet);
   console.log('Marketing:', marketingWallet);
   console.log('Staking Pool:', stakingPool);
 
-  const tx = await contract.updateWallets(
-    teamWallet,
-    marketingWallet,
-    stakingPool,
-  );
+  const tx = await contract.updateWallets(teamWallet, marketingWallet, stakingPool);
   console.log('Transaction hash:', tx.hash);
   await tx.wait();
-  console.log('Wallets updated successfully!');
+  console.log('Wallet update confirmed on Base Mainnet.');
 }
 
-main();
+main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});

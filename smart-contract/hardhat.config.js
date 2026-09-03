@@ -34,30 +34,6 @@ export default {
         url: baseForkRpcUrl,
       },
     },
-    polygon: {
-      type: "http",
-      url: process.env.POLYGON_RPC_URL || "https://polygon-rpc.com",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 137,
-    },
-    mumbai: {
-      type: "http",
-      url: process.env.MUMBAI_RPC_URL || "https://rpc-amoy.polygon.technology",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 80002,
-    },
-    amoy: {
-      type: "http",
-      url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 80002,
-    },
-    sepolia: {
-      type: "http",
-      url: process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 11155111,
-    },
     base: {
       type: "http",
       url: baseReadRpcUrl,
@@ -70,14 +46,11 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 84532,
     },
-    mainnet: {
+    sepolia: {
       type: "http",
-      url:
-        process.env.MAINNET_RPC_URL ||
-        "https://eth-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+      url: process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 1,
-      gasPrice: 30000000000,
+      chainId: 11155111,
     },
   },
   paths: {
@@ -88,20 +61,10 @@ export default {
   },
   etherscan: {
     apiKey: {
-      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
-      amoy: process.env.POLYGONSCAN_API_KEY || "",
       base: process.env.BASESCAN_API_KEY || "",
       baseSepolia: process.env.BASESCAN_API_KEY || "",
     },
     customChains: [
-      {
-        network: "amoy",
-        chainId: 80002,
-        urls: {
-          apiURL: "https://api-amoy.polygonscan.com/api",
-          browserURL: "https://amoy.polygonscan.com",
-        },
-      },
       {
         network: "base",
         chainId: 8453,
