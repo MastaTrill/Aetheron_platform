@@ -39,6 +39,11 @@ assert.doesNotMatch(
   /POLYGON_RPC_URL|polygon-rpc\.com/i,
   'NFT API must not silently use Polygon',
 );
+assert.match(
+  nftApi,
+  /smart-contract['"],\s*['"]artifacts/,
+  'NFT API must load Hardhat artifacts from the smart-contract workspace',
+);
 assert.match(nftApi, /NFT_METADATA_DIR/, 'NFT metadata storage path must be defined');
 assert.doesNotMatch(
   nftApi,
