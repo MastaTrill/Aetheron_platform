@@ -3,6 +3,13 @@ name: Dashboard Source Safety
 on:
   pull_request:
     paths:
+      - 'index.html'
+      - 'index.js'
+      - 'index-dom-overrides.js'
+      - 'public-launch-gate.test.cjs'
+      - 'presale-config.js'
+      - 'presale-readiness.js'
+      - 'vercel-analytics.entry.mjs'
       - 'dashboard.js'
       - 'dashboard-enhanced.js'
       - 'dashboard-enhanced.html'
