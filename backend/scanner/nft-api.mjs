@@ -14,6 +14,10 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.join(__dirname, '..', '..');
 const NFT_ARTIFACT_PATH = path.join(rootDir, 'artifacts', 'contracts', 'AetheronNFT.sol', 'AetheronNFT.json');
 const MARKETPLACE_ARTIFACT_PATH = path.join(rootDir, 'artifacts', 'contracts', 'NFTMarketplace.sol', 'NFTMarketplace.json');
+const NFT_METADATA_DIR = process.env.NFT_METADATA_DIR
+  ? path.resolve(process.env.NFT_METADATA_DIR)
+  : '';
+const NFT_METADATA_PUBLIC_BASE_URL = (process.env.NFT_METADATA_PUBLIC_BASE_URL || '').replace(/\/+$/, '');
 
 function getContractConfig() {
   return {
@@ -28,7 +32,7 @@ function loadArtifact(artifactPath) {
   try {
     const content = fs.readFileSync(artifactPath, 'utf8');
     return JSON.parse(content);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -58,6 +62,7 @@ router.get('/config', (req, res) => {
     nftAddress: config.nftAddress,
     marketplaceAddress: config.marketplaceAddress,
     configured: Boolean(config.nftAddress && config.marketplaceAddress),
+    metadataStorageConfigured: Boolean(NFT_METADATA_DIR && NFT_METADATA_PUBLIC_BASE_URL),
   });
 });
 
@@ -80,7 +85,7 @@ router.get('/status', async (req, res) => {
         const nftContract = new ethers.Contract(
           config.nftAddress,
           ['function name() view returns (string)', 'function symbol() view returns (string)', 'function totalSupply() view returns (uint256)'],
-          provider
+          provider,
         );
         const name = await nftContract.name();
         const symbol = await nftContract.symbol();
@@ -96,7 +101,7 @@ router.get('/status', async (req, res) => {
         const marketplaceContract = new ethers.Contract(
           config.marketplaceAddress,
           ['function getActiveListings() view returns (tuple(uint256 listingId, uint256 tokenId, address nftContract, address seller, uint256 price, bool active)[])'],
-          provider
+          provider,
         );
         const listings = await marketplaceContract.getActiveListings();
         status.marketplaceContract = { address: config.marketplaceAddress, activeListings: listings.length };
@@ -129,7 +134,6 @@ router.get('/minted', async (req, res) => {
     }
 
     const nftContract = new ethers.Contract(config.nftAddress, nftArtifact.abi, provider);
-
     const filter = nftContract.filters.NFTMinted();
     const events = await nftContract.queryFilter(filter, -1000);
 
@@ -208,7 +212,6 @@ router.post('/mint', async (req, res) => {
 
     const nftContract = new ethers.Contract(config.nftAddress, nftArtifact.abi, wallet);
     const mintPrice = ethers.parseEther('0.05');
-
     const totalPrice = mintPrice * BigInt(quantity);
     const tx = await nftContract.mint(tokenURI, { value: totalPrice });
     const receipt = await tx.wait();
@@ -295,7 +298,6 @@ router.post('/buy', async (req, res) => {
     }
 
     const marketplaceContract = new ethers.Contract(config.marketplaceAddress, marketplaceArtifact.abi, wallet);
-
     const listing = await marketplaceContract.getListing(listingId);
     const price = listing.price;
 
@@ -319,36 +321,42 @@ router.post('/buy', async (req, res) => {
 // POST /api/nft/upload-metadata - Store NFT metadata and return tokenURI
 router.post('/upload-metadata', express.json({ limit: '10mb' }), (req, res) => {
   try {
-    const { name, description, image, attributes } = req.body;
+    const { name, description, image, attributes } = req.body || {};
     if (!name || !image) {
       return res.status(400).json({ error: 'name and image are required' });
+    }
+
+    if (!NFT_METADATA_DIR || !NFT_METADATA_PUBLIC_BASE_URL) {
+      return res.status(503).json({
+        error: 'NFT metadata storage is not configured.',
+        code: 'NFT_METADATA_STORAGE_NOT_CONFIGURED',
+        details: 'Set NFT_METADATA_DIR and NFT_METADATA_PUBLIC_BASE_URL to persistent storage before uploading metadata.',
+      });
     }
 
     const metadata = {
       name,
       description: description || '',
       image,
-      attributes: attributes || [],
+      attributes: Array.isArray(attributes) ? attributes : [],
     };
 
     const tokenId = `nft-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const tokenURI = `https://aetrs.com/nft/metadata/${tokenId}.json`;
+    fs.mkdirSync(NFT_METADATA_DIR, { recursive: true });
+    fs.writeFileSync(
+      path.join(NFT_METADATA_DIR, `${tokenId}.json`),
+      JSON.stringify(metadata, null, 2),
+      'utf8',
+    );
 
-    try {
-      if (!fs.existsSync(NFT_METADATA_DIR)) {
-        fs.mkdirSync(NFT_METADATA_DIR, { recursive: true });
-      }
-      fs.writeFileSync(
-        path.join(NFT_METADATA_DIR, `${tokenId}.json`),
-        JSON.stringify(metadata, null, 2),
-      );
-    } catch (storageError) {
-      console.warn('Metadata file storage failed, returning URI anyway:', storageError.message);
-    }
-
-    res.json({ tokenURI, tokenId });
+    const tokenURI = `${NFT_METADATA_PUBLIC_BASE_URL}/${tokenId}.json`;
+    return res.status(201).json({ tokenURI, tokenId });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: 'Failed to store NFT metadata.',
+      code: 'NFT_METADATA_STORAGE_FAILED',
+      details: error.message,
+    });
   }
 });
 
