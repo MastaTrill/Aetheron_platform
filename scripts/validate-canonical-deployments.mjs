@@ -10,6 +10,8 @@ const LEGACY_MARKERS = [
   'mumbai.polygonscan.com',
   'chain id: 80001',
 ];
+const LEGACY_OPERATIONAL_SCRIPT_NAME = /(?:^|:)(?:mumbai|polygon)(?::|$)/i;
+const LEGACY_OPERATIONAL_COMMAND = /(?:--network\s+(?:mumbai|polygon)\b|verify-contracts\.mjs\s+(?:mumbai|polygon)\b)/i;
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
@@ -17,6 +19,7 @@ function readJson(relativePath) {
 
 const manifest = readJson('smart-contract/deployments/aeth-base.json');
 const registry = readJson('docs/AETHERON_CONTRACT_REGISTRY.json');
+const contractPackage = readJson('smart-contract/package.json');
 
 const errors = [];
 const manifestAddress = String(manifest?.token?.address ?? '').toLowerCase();
@@ -33,6 +36,19 @@ if (!registryText.includes(CANONICAL_ADDRESS)) {
 }
 if (!registryText.includes(String(CANONICAL_CHAIN_ID))) {
   errors.push('ecosystem registry does not contain Base mainnet chain ID');
+}
+
+const contractScripts = contractPackage?.scripts ?? {};
+for (const [name, command] of Object.entries(contractScripts)) {
+  if (LEGACY_OPERATIONAL_SCRIPT_NAME.test(name) || LEGACY_OPERATIONAL_COMMAND.test(String(command))) {
+    errors.push(`legacy Polygon/Mumbai operational npm script '${name}' remains in smart-contract/package.json`);
+  }
+}
+
+for (const requiredScript of ['deploy:base', 'verify:base']) {
+  if (!contractScripts[requiredScript]) {
+    errors.push(`smart-contract/package.json must retain canonical '${requiredScript}' command`);
+  }
 }
 
 const scanRoots = ['src', 'smart-contract/config', 'smart-contract/scripts'];
