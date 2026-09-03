@@ -5,6 +5,7 @@ on:
     paths:
       - 'docs/AETHERON_CONTRACT_REGISTRY.json'
       - 'smart-contract/deployments/aeth-base.json'
+      - 'smart-contract/package.json'
       - 'src/**'
       - 'smart-contract/config/**'
       - 'smart-contract/scripts/**'
@@ -15,6 +16,7 @@ on:
     paths:
       - 'docs/AETHERON_CONTRACT_REGISTRY.json'
       - 'smart-contract/deployments/aeth-base.json'
+      - 'smart-contract/package.json'
       - 'src/**'
       - 'smart-contract/config/**'
       - 'smart-contract/scripts/**'
