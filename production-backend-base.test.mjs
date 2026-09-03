@@ -10,10 +10,6 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-function readLower(relativePath) {
-  return read(relativePath).toLowerCase();
-}
-
 const launchpadApi = read('backend/scanner/launchpad-api.mjs');
 assert.match(launchpadApi, /BASE_RPC_URL/, 'launchpad API must use BASE_RPC_URL');
 assert.match(launchpadApi, /8453/, 'launchpad API must pin Base Mainnet chain ID 8453');
@@ -43,6 +39,12 @@ assert.doesNotMatch(
   /POLYGON_RPC_URL|polygon-rpc\.com/i,
   'NFT API must not silently use Polygon',
 );
+assert.match(nftApi, /NFT_METADATA_DIR/, 'NFT metadata storage path must be defined');
+assert.doesNotMatch(
+  nftApi,
+  /returning URI anyway/i,
+  'NFT metadata upload must fail closed when metadata cannot be stored',
+);
 
 const dashboardHtml = read('dashboard-enhanced.html');
 assert.doesNotMatch(dashboardHtml, /Launch a Polygon token/i, 'public launchpad copy must be Base-current');
@@ -58,6 +60,10 @@ assert.match(apiApp, /https:\/\/aetrs\.com/, 'backend CORS allowlist must includ
 const vercel = JSON.parse(read('backend/vercel.json'));
 assert.equal(vercel.builds?.[0]?.src, 'vercel-handler.mjs', 'Vercel must use the CORS-aware API handler');
 assert.equal(vercel.routes?.[0]?.dest, '/vercel-handler.mjs', 'Vercel routes must target the API handler');
+
+const backendEnv = read('backend/.env.example');
+assert.match(backendEnv, /BASE_RPC_URL=https:\/\/mainnet\.base\.org/, 'backend env template must default to Base RPC');
+assert.doesNotMatch(backendEnv, /POLYGON_RPC_URL|polygon-rpc\.com/i, 'backend env template must not recommend Polygon');
 
 const registryPath = path.join(ROOT, 'scripts', 'token-registry.json');
 assert.ok(fs.existsSync(registryPath), 'canonical token registry must exist so the backend never falls back to stale chain data');
