@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const frag = fragment();
     frag.appendChild(el('strong', { text: 'Launch submitted successfully.' }));
     frag.appendChild(lineBreak());
-    frag.appendChild(text(data.message || 'Token deployed successfully.'));
+    frag.appendChild(text(data.message || 'Token deployed successfully on Base.'));
     frag.appendChild(spacer());
     frag.appendChild(text('Contract: '));
     frag.appendChild(el('code', { text: data.contractAddress || '' }));
@@ -106,9 +106,9 @@ document.addEventListener('DOMContentLoaded', function () {
     frag.appendChild(lineBreak());
     frag.appendChild(el('a', {
       className: 'result-link',
-      text: 'Open in PolygonScan',
+      text: 'Open in BaseScan',
       attrs: {
-        href: 'https://polygonscan.com/token/' + String(data.contractAddress || ''),
+        href: 'https://basescan.org/token/' + String(data.contractAddress || ''),
         target: '_blank',
         rel: 'noopener',
       },
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const paymentStatus = urlParams.get('payment');
 
       if (paymentStatus === 'success') {
-        setResult(launchResult, 'info', 'Payment confirmed. Launching token...');
+        setResult(launchResult, 'info', 'Payment confirmed. Launching token on Base...');
         try {
           const data = await postJson(apiBase + '/api/launch-token', payload);
           setResult(launchResult, 'success', buildLaunchSuccessMessage(data));
