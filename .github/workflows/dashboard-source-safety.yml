@@ -4,7 +4,20 @@ on:
   pull_request:
     paths:
       - 'dashboard.js'
+      - 'dashboard-enhanced.js'
+      - 'dashboard-enhanced.html'
       - 'dashboard.source-safety.test.mjs'
+      - 'production-backend-base.test.mjs'
+      - 'operational-script-base-safety.test.mjs'
+      - 'update-wallets.js'
+      - 'backend/**'
+      - 'smart-contract/hardhat.config.js'
+      - 'smart-contract/fund-wallets.mjs'
+      - 'smart-contract/interact-mainnet.mjs'
+      - 'smart-contract/utils/**'
+      - 'smart-contract/scripts/deploy.mjs'
+      - 'smart-contract/scripts/enable-trading.mjs'
+      - 'smart-contract/scripts/verify-setup.mjs'
       - 'package.json'
       - '.github/workflows/dashboard-source-safety.yml'
 
@@ -14,7 +27,7 @@ permissions:
 jobs:
   dashboard-source-safety:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,12 +37,21 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
 
       - name: Run root safety and smoke tests
         run: npm test
+
+      - name: Install backend dependencies
+        run: npm --prefix backend ci
+
+      - name: Run backend behavior tests
+        run: npm --prefix backend test -- --runInBand
 
       - name: Run dashboard Jest suite
         run: npm run test:dashboard -- --runInBand
