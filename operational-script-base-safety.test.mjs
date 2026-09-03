@@ -66,8 +66,18 @@ const verifySetup = read('smart-contract/scripts/verify-setup.mjs');
 assert.match(verifySetup, /Base Mainnet/, 'setup verifier must identify Base Mainnet');
 assert.match(verifySetup, /8453/, 'setup verifier must require Base chain ID 8453');
 
+const legacyLocalServer = read('backend/server.js');
+assert.doesNotMatch(legacyLocalServer, /chainId:\s*137/, 'local backend must never fall back to Polygon chain ID 137');
+assert.match(legacyLocalServer, /chainId:\s*8453/, 'local backend status/fallback must identify Base Mainnet');
+assert.match(legacyLocalServer, /network:\s*['"]base['"]/, 'local backend API status must identify Base');
+assert.match(
+  legacyLocalServer,
+  /app\.use\(['"]\/api\/nft['"],\s*router\)/,
+  'local backend must mount NFT routes under /api/nft',
+);
+
 assert.equal(fs.existsSync('backend/scanner/launchpad-api.js'), false, 'obsolete CommonJS Polygon launchpad duplicate must be retired');
 assert.equal(fs.existsSync('smart-contract/scripts/verify-setup.js'), false, 'obsolete duplicate setup verifier must be retired');
 assert.equal(fs.existsSync('smart-contract/hardhat.config.minimal.js'), false, 'unused Polygon minimal Hardhat config must be retired');
 
-console.log('Active operational scripts are Base-only, ethers-v6 compatible, and write-gated.');
+console.log('Active operational scripts and local backend are Base-only, ethers-v6 compatible, correctly routed, and write-gated.');
