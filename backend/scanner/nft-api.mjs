@@ -3,8 +3,10 @@ import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { assertExpectedChain } from './deploy-token.mjs';
 
 const router = express.Router();
+const BASE_CHAIN_ID = 8453;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +19,7 @@ function getContractConfig() {
   return {
     nftAddress: process.env.NFT_CONTRACT_ADDRESS || '',
     marketplaceAddress: process.env.NFT_MARKETPLACE_ADDRESS || '',
-    rpcUrl: process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com',
+    rpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
     deployerKey: process.env.DEPLOYER_PRIVATE_KEY || '',
   };
 }
@@ -31,17 +33,19 @@ function loadArtifact(artifactPath) {
   }
 }
 
-function createProvider() {
+async function createProvider() {
   const { rpcUrl } = getContractConfig();
-  return new ethers.JsonRpcProvider(rpcUrl);
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  await assertExpectedChain(provider, BASE_CHAIN_ID);
+  return provider;
 }
 
-function createWallet() {
-  const { deployerKey, rpcUrl } = getContractConfig();
+async function createWallet() {
+  const { deployerKey } = getContractConfig();
   if (!deployerKey) {
     throw new Error('DEPLOYER_PRIVATE_KEY not configured');
   }
-  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const provider = await createProvider();
   return new ethers.Wallet(deployerKey, provider);
 }
 
@@ -49,6 +53,8 @@ function createWallet() {
 router.get('/config', (req, res) => {
   const config = getContractConfig();
   res.json({
+    network: 'base',
+    chainId: BASE_CHAIN_ID,
     nftAddress: config.nftAddress,
     marketplaceAddress: config.marketplaceAddress,
     configured: Boolean(config.nftAddress && config.marketplaceAddress),
@@ -59,9 +65,11 @@ router.get('/config', (req, res) => {
 router.get('/status', async (req, res) => {
   try {
     const config = getContractConfig();
-    const provider = createProvider();
+    const provider = await createProvider();
 
     const status = {
+      network: 'base',
+      chainId: BASE_CHAIN_ID,
       configured: Boolean(config.nftAddress && config.marketplaceAddress),
       nftContract: null,
       marketplaceContract: null,
@@ -99,7 +107,10 @@ router.get('/status', async (req, res) => {
 
     res.json(status);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_STATUS_FAILED',
+    });
   }
 });
 
@@ -111,7 +122,7 @@ router.get('/minted', async (req, res) => {
       return res.json([]);
     }
 
-    const provider = createProvider();
+    const provider = await createProvider();
     const nftArtifact = loadArtifact(NFT_ARTIFACT_PATH);
     if (!nftArtifact) {
       return res.json([]);
@@ -119,7 +130,6 @@ router.get('/minted', async (req, res) => {
 
     const nftContract = new ethers.Contract(config.nftAddress, nftArtifact.abi, provider);
 
-    // Get NFTMinted events
     const filter = nftContract.filters.NFTMinted();
     const events = await nftContract.queryFilter(filter, -1000);
 
@@ -135,7 +145,10 @@ router.get('/minted', async (req, res) => {
 
     res.json(nfts);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_MINTED_QUERY_FAILED',
+    });
   }
 });
 
@@ -147,7 +160,7 @@ router.get('/listings', async (req, res) => {
       return res.json([]);
     }
 
-    const provider = createProvider();
+    const provider = await createProvider();
     const marketplaceArtifact = loadArtifact(MARKETPLACE_ARTIFACT_PATH);
     if (!marketplaceArtifact) {
       return res.json([]);
@@ -167,7 +180,10 @@ router.get('/listings', async (req, res) => {
 
     res.json(formattedListings);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_LISTINGS_QUERY_FAILED',
+    });
   }
 });
 
@@ -184,7 +200,7 @@ router.post('/mint', async (req, res) => {
       return res.status(503).json({ error: 'NFT contract not configured' });
     }
 
-    const wallet = createWallet();
+    const wallet = await createWallet();
     const nftArtifact = loadArtifact(NFT_ARTIFACT_PATH);
     if (!nftArtifact) {
       return res.status(503).json({ error: 'NFT contract artifact not found' });
@@ -199,12 +215,16 @@ router.post('/mint', async (req, res) => {
 
     res.json({
       success: true,
+      chainId: BASE_CHAIN_ID,
       txHash: receipt.hash,
       blockNumber: receipt.blockNumber,
-      message: `Successfully minted ${quantity} NFT(s)`,
+      message: `Successfully minted ${quantity} NFT(s) on Base`,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_MINT_FAILED',
+    });
   }
 });
 
@@ -221,7 +241,7 @@ router.post('/list', async (req, res) => {
       return res.status(503).json({ error: 'Contracts not configured' });
     }
 
-    const wallet = createWallet();
+    const wallet = await createWallet();
     const nftArtifact = loadArtifact(NFT_ARTIFACT_PATH);
     const marketplaceArtifact = loadArtifact(MARKETPLACE_ARTIFACT_PATH);
 
@@ -232,23 +252,25 @@ router.post('/list', async (req, res) => {
     const nftContract = new ethers.Contract(config.nftAddress, nftArtifact.abi, wallet);
     const marketplaceContract = new ethers.Contract(config.marketplaceAddress, marketplaceArtifact.abi, wallet);
 
-    // Approve marketplace to transfer NFT
     const approveTx = await nftContract.approve(config.marketplaceAddress, tokenId);
     await approveTx.wait();
 
-    // List NFT
     const priceWei = ethers.parseEther(price.toString());
     const listTx = await marketplaceContract.listNFT(config.nftAddress, tokenId, priceWei);
     const receipt = await listTx.wait();
 
     res.json({
       success: true,
+      chainId: BASE_CHAIN_ID,
       txHash: receipt.hash,
       listingId: receipt.logs[0]?.args?.listingId?.toString(),
-      message: 'NFT listed for sale',
+      message: 'NFT listed for sale on Base',
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_LIST_FAILED',
+    });
   }
 });
 
@@ -265,7 +287,7 @@ router.post('/buy', async (req, res) => {
       return res.status(503).json({ error: 'Marketplace not configured' });
     }
 
-    const wallet = createWallet();
+    const wallet = await createWallet();
     const marketplaceArtifact = loadArtifact(MARKETPLACE_ARTIFACT_PATH);
 
     if (!marketplaceArtifact) {
@@ -274,7 +296,6 @@ router.post('/buy', async (req, res) => {
 
     const marketplaceContract = new ethers.Contract(config.marketplaceAddress, marketplaceArtifact.abi, wallet);
 
-    // Get listing to determine price
     const listing = await marketplaceContract.getListing(listingId);
     const price = listing.price;
 
@@ -283,11 +304,15 @@ router.post('/buy', async (req, res) => {
 
     res.json({
       success: true,
+      chainId: BASE_CHAIN_ID,
       txHash: receipt.hash,
-      message: 'NFT purchased successfully',
+      message: 'NFT purchased successfully on Base',
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
+      error: error.message,
+      code: error?.code || 'NFT_BUY_FAILED',
+    });
   }
 });
 
