@@ -1,316 +1,138 @@
-# 🚀 Aetheron Platform - Quick Start Guide
+# Aetheron Platform — Quick Start
 
-## ✅ What's Been Done
+This guide reflects the current Base deployment model. Do not use older Polygon/Mumbai launch instructions for active operations.
 
-### 1. Repository Setup ✓
+## 1. Validate the repository
 
-- Fixed file naming issues
-- Organized project structure
-- Configured Git repository
+From the repository root:
 
-### 2. Smart Contracts Created ✓
-
-- **Aetheron (AETH) Token** - ERC20 with tax system
-- **AetheronStaking** - Multi-pool staking with rewards
-- Comprehensive test suite
-- Deployment scripts
-- Dependencies installed (579 packages)
-
-### 3. Frontend Integration Files ✓
-
-- Web3 connection hooks
-- Token interaction hooks
-- Staking interaction hooks
-- Contract configuration
-
-## 🎯 What to Do Next
-
-### Immediate Next Steps (30 minutes)
-
-#### 1. Compile Smart Contracts
-
-```powershell
-cd "C:\Users\willi\OneDrive\Desktop\Aetheron platform\Aetheron_platform\smart-contract"
-npx hardhat compile
-```
-
-**Expected Result:** Contracts compile successfully, generating ABIs in `artifacts/`
-
-#### 2. Run Tests
-
-```powershell
-npx hardhat test
-```
-
-**Expected Result:** All tests pass (deployment, trading, staking, rewards)
-
-#### 3. Check Test Coverage (Optional)
-
-```powershell
-npx hardhat coverage
-```
-
----
-
-### Short Term (This Week)
-
-#### Day 1: Local Testing
-
-```powershell
-# Terminal 1: Start local blockchain
-npx hardhat node
-
-# Terminal 2: Deploy contracts
-npx hardhat run scripts/deploy.js --network localhost
-```
-
-Take note of the deployed contract addresses from the output.
-
-#### Day 2-3: Configure Environment
-
-1. **Create `.env` file:**
-
-```powershell
-cd smart-contract
-copy .env.example .env
-notepad .env
-```
-
-2. **Add your credentials:**
-
-```env
-PRIVATE_KEY=your_metamask_private_key
-POLYGON_RPC_URL=https://polygon-rpc.com
- # ...existing code...
-POLYGONSCAN_API_KEY=get_from_polygonscan.com
-```
-
-⚠️ **NEVER commit your `.env` file to Git!**
-
-#### Day 4-5: Frontend Setup
-
-1. **Install frontend dependencies:**
-
-```powershell
-cd ..  # Back to root
+```bash
 npm install
+npm test
+node scripts/validate-canonical-deployments.mjs
+node scripts/check-operational-launch-gates.mjs
+node scripts/scan-tracked-secrets.mjs
 ```
 
-2. **Update contract addresses** in `src/config/contracts.js`
+The canonical production values are:
 
-3. **Test frontend locally:**
+- Base Mainnet chain ID: `8453`
+- AETH: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`
+- Deployment manifest: `smart-contract/deployments/aeth-base.json`
+- Registry: `docs/AETHERON_CONTRACT_REGISTRY.json`
 
-```powershell
+If the canonical validation fails, fix the manifest/config mismatch before doing anything on-chain.
+
+## 2. Build and test the smart contracts
+
+```bash
+cd smart-contract
+npm install
+npm run compile
+npm test
+npm run test:production-simulation
+```
+
+For read-only Base fork verification:
+
+```bash
+npm run test:base-fork
+```
+
+Set `BASE_FORK_RPC_URL` or `BASE_RPC_URL` locally when the fork test requires an RPC endpoint.
+
+## 3. Verify Base state without changing it
+
+```bash
+npm run verify:base:readonly
+npm run verify:basescan
+```
+
+Do read-only checks before considering a transaction.
+
+## 4. Rehearse on Base Sepolia
+
+The active rehearsal network is **Base Sepolia** (`84532`). Follow issue `#217` and `docs/RELEASE_EXECUTION.md`.
+
+```bash
+npm run rehearsal:base-sepolia:presale
+npm run verify:base-sepolia:rehearsal
+```
+
+Preserve the required evidence: deployment addresses, transaction hashes, block numbers, bytecode/source hashes, explorer verification, manifest digest, and success/failure-path results.
+
+A successful rehearsal does **not** authorize Base Mainnet launch.
+
+## 5. Production remains gated
+
+Issue `#219` is the final Base Mainnet launch-authorization gate. Until its prerequisites and written authorization are complete:
+
+- do not accept public presale funds;
+- do not enable trading;
+- do not add canonical mainnet liquidity;
+- do not claim presale/staking is production-approved;
+- do not place private keys, mnemonics, wallet exports, or signing sessions in GitHub or CI.
+
+## Frontend development
+
+From the repository root:
+
+```bash
 npm run dev
 ```
 
----
+Build and test the production bundle with:
 
-### Medium Term (Next 2 Weeks)
-
-#### Week 1: Testnet Deployment
-
-1. **Get testnet tokens:**
-   - Mumbai MATIC: https://faucet.polygon.technology
-
-2. **Deploy to Mumbai testnet:**
-
-```powershell
-cd smart-contract
-npm run deploy:mumbai
+```bash
+npm run build
+npm test
 ```
 
-3. **Verify contracts:**
+The public frontend must remain fail-closed when deployment state is unverified or the wallet is on the wrong network.
 
-```powershell
-npx hardhat verify --network mumbai <CONTRACT_ADDRESS>
+## Environment safety
+
+Keep secrets only in an approved local or deployment-secret store. Common variables include:
+
+```text
+BASE_RPC_URL
+BASE_FORK_RPC_URL
+BASE_SEPOLIA_RPC_URL
+BASESCAN_API_KEY
 ```
 
-4. **Test on testnet:**
-   - Connect MetaMask to Mumbai
-   - Test all contract functions
-   - Verify on Mumbai PolygonScan
+Use `PRIVATE_KEY` only in an explicitly authorized local signing context. Never paste a real private key or mnemonic into source, issues, pull requests, CI logs, or chat.
 
-#### Week 2: Integration Testing
+## Common checks
 
-- [ ] Test wallet connection
-- [ ] Test token transfers
-- [ ] Test staking/unstaking
-- [ ] Test reward claims
-- [ ] UI/UX testing
-- [ ] Mobile responsiveness
-- [ ] Error handling
+### Wrong network
 
----
+Verify chain ID before signing:
 
-### Long Term (Before Mainnet)
+- Base Mainnet: `8453`
+- Base Sepolia: `84532`
 
-#### Security Audit
+### Missing dependencies
 
-- [ ] Code review by security experts
-- [ ] Automated security scan (Slither, Mythril)
-- [ ] Penetration testing
-- [ ] Fix any vulnerabilities found
-
-#### Mainnet Preparation
-
-- [ ] Set up multi-sig wallet for contract ownership
-- [ ] Prepare liquidity (at least $10k recommended)
-- [ ] Marketing materials ready
-- [ ] Community built
-- [ ] Legal compliance checked
-
-#### Mainnet Launch
-
-```powershell
-# Only when ready!
-cd smart-contract
-npm run deploy:polygon
-```
-
-**Post-deployment checklist:**
-
-1. Enable trading: `aetheronToken.enableTrading()`
-2. Add liquidity on DEX
-3. Verify contracts on PolygonScan
-4. Update frontend with mainnet addresses
-5. Announce launch
-
----
-
-## 📁 Project Structure
-
-```
-Aetheron_platform/
-├── smart-contract/          # Smart contracts
-│   ├── contracts/          # Solidity contracts
-│   │   ├── Aetheron.sol
-│   │   └── AetheronStaking.sol
-│   ├── scripts/            # Deployment scripts
-│   ├── test/               # Test files
-│   ├── hardhat.config.js   # Hardhat configuration
-│   └── package.json
-│
-├── src/                    # Frontend source
-│   ├── config/            # Contract configs
-│   ├── hooks/             # React hooks
-│   │   ├── useWeb3.js
-│   │   ├── useAetheron.js
-│   │   └── useStaking.js
-│   └── components/        # React components
-│
-├── admin-dashboard.html    # Admin dashboard
-├── dashboard.css          # Dashboard styles
-├── dashboard.js           # Dashboard scripts
-├── ROADMAP.md            # Development roadmap
-└── README.md             # Project documentation
-```
-
----
-
-## 🛠️ Troubleshooting
-
-### "Cannot find module"
-
-```powershell
+```bash
 npm install
 ```
 
-### "Insufficient funds"
+Run it in the repository root or `smart-contract/` depending on which workspace is failing.
 
-- Get testnet tokens from faucet
-- Check wallet balance
+### Contract build problem
 
-### "Transaction reverted"
-
-- Check contract is deployed
-- Verify you have enough tokens
-- Check trading is enabled
-- Review error message
-
-### "Wrong network"
-
-- Switch MetaMask to correct network (Polygon/Mumbai)
-- Update `NEXT_PUBLIC_CHAIN_ID` in `.env`
-
----
-
-## 📚 Resources
-
-### Documentation
-
-- **Hardhat:** https://hardhat.org/docs
-- **OpenZeppelin:** https://docs.openzeppelin.com/
-- **Ethers.js:** https://docs.ethers.org/
-- **Polygon:** https://docs.polygon.technology/
-
-### Block Explorers
-
-- **Polygon:** https://polygonscan.com
-- **Mumbai:** https://mumbai.polygonscan.com
-
-### Faucets
-
-- **Mumbai MATIC:** https://faucet.polygon.technology/
-
-### Tools
-
-- **Remix IDE:** https://remix.ethereum.org/
-- **Hardhat VSCode:** Install extension for Solidity support
-- **MetaMask:** Browser extension for Web3 wallet
-
----
-
-## 🎯 Success Criteria
-
-Before moving to next phase, ensure:
-
-✅ **Smart Contracts:**
-
-- [ ] Compiles without errors
-- [ ] All tests pass
-- [ ] Gas costs are reasonable
-- [ ] Security checks pass
-
-✅ **Local Testing:**
-
-- [ ] Deploys successfully to local network
-- [ ] All functions work as expected
-- [ ] Events are emitted correctly
-- [ ] Edge cases handled
-
-✅ **Testnet:**
-
-- [ ] Deploys to Mumbai successfully
-- [ ] Verified on Mumbai explorer
-- [ ] All functions tested on testnet
-- [ ] No critical bugs found
-
-✅ **Frontend:**
-
-- [ ] Wallet connects successfully
-- [ ] Contract interactions work
-- [ ] UI is responsive
-- [ ] Error messages are clear
-
----
-
-## 🆘 Need Help?
-
-1. **Check logs:** Look at console output for errors
-2. **Review documentation:** See links above
-3. **Check GitHub Issues:** Search for similar problems
-4. **Community:** Ask in blockchain developer forums
-
----
-
-## 🎉 You're Ready!
-
-Run this to start:
-
-```powershell
-cd "C:\Users\willi\OneDrive\Desktop\Aetheron platform\Aetheron_platform\smart-contract"
-npx hardhat compile
+```bash
+cd smart-contract
+npm run clean
+npm run compile
+npm test
 ```
 
-Good luck with Aetheron! 🚀🌌
+### Launch action is blocked
+
+Do not bypass the gate. Check `docs/RELEASE_EXECUTION.md`, issue `#217`, and issue `#219` for the missing evidence or authorization.
+
+## Next safe milestone
+
+Complete and independently reproduce the protected Base Sepolia presale/staking rehearsal. Only after that evidence is complete should the final Base Mainnet authorization be considered.
