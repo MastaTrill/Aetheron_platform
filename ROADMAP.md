@@ -1,225 +1,120 @@
-# 🚀 Aetheron Platform - Development Roadmap
+# Aetheron Platform — Release Roadmap
 
-## ✅ Completed
+This roadmap tracks the current Base-first release path. Historical Polygon/Mumbai deployment plans are not active operational guidance.
 
-- ✅ Repository loaded and file naming issues fixed
-- ✅ Smart contracts created (Aetheron Token & Staking)
-- ✅ Test suite implemented
-- ✅ Deployment scripts configured
-- ✅ Dependencies installing
+## Current canonical state
 
-## 📋 Current Phase: Setup & Testing
+- Production network: **Base Mainnet** (`8453`)
+- Canonical AETH: **`0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`**
+- Canonical deployment manifest: `smart-contract/deployments/aeth-base.json`
+- Cross-project registry: `docs/AETHERON_CONTRACT_REGISTRY.json`
+- Public frontend deployment/configuration is expected to fail closed when presale state is not verified.
 
-### Step 1: Smart Contract Setup (IN PROGRESS)
+## Completed engineering controls
+
+- [x] Canonical Base deployment validator added.
+- [x] Production-source scanning blocks known stale Polygon/Mumbai production markers.
+- [x] Operational launch-gate checks added.
+- [x] Tracked-secret scanner added to CI.
+- [x] Public frontend bundle migrated to Base-current configuration.
+- [x] Legacy Polygon/Mumbai npm deploy, treasury, and verify entry points retired from the active smart-contract package.
+- [x] Active developer documentation updated to Base-only operational guidance.
+
+## Current release blockers
+
+### 1. Complete cleanup regression coverage — issue #214
+
+- [x] Canonical Base chain ID and AETH address enforced.
+- [x] Active public surfaces removed from stale Polygon/Mumbai production configuration.
+- [x] Legacy smart-contract npm entry points retired.
+- [ ] Keep historical material clearly separated from active operational guidance as future files are touched.
+- [ ] Continue secret-history review/rotation when evidence indicates an actual exposed credential.
+
+### 2. Protected Base Sepolia rehearsal — issue #217
+
+Before any public-funds launch:
+
+- [ ] Deploy the approved rehearsal release on Base Sepolia.
+- [ ] Exercise success, cancellation, refund, claim, treasury withdrawal, staking, unstaking, emergency exit, and unauthorized-call paths.
+- [ ] Preserve addresses, transaction hashes, block numbers, source/bytecode hashes, explorer verification, and manifest digest.
+- [ ] Review economic parameters and privilege separation.
+- [ ] Obtain independent review of the exact release candidate.
+
+The rehearsal must be independently reproducible. A successful rehearsal is evidence, not mainnet authorization.
+
+### 3. Final Base Mainnet authorization — issue #219
+
+Before any production signing or broadcast:
+
+- [ ] Resolve every prerequisite recorded in issue #219.
+- [ ] Record the exact approved commit SHA and chain ID `8453`.
+- [ ] Record exact presale/staking addresses and constructor arguments.
+- [ ] Verify deployer, owner, treasury, multisig, and timelock roles.
+- [ ] Approve economic parameters, liquidity plan, transaction limits, rollback conditions, and incident response.
+- [ ] Obtain named independent reviewer sign-off.
+- [ ] Record explicit time-bounded written launch authorization.
+
+While #219 remains open:
+
+- do not accept public presale funds;
+- do not enable trading;
+- do not add canonical mainnet liquidity;
+- do not market the presale/staking release as production-approved.
+
+## Engineering workstream
+
+### Repository and CI
+
+```bash
+npm install
+npm test
+node scripts/validate-canonical-deployments.mjs
+node scripts/check-operational-launch-gates.mjs
+node scripts/scan-tracked-secrets.mjs
+```
+
+Goal: keep every pull request green on canonical deployment truth, source safety, launch gates, and secret scanning.
+
+### Smart contracts
+
 ```bash
 cd smart-contract
-npm install           # ⏳ Installing now
-npm run compile      # Next: Compile contracts
-npm test             # Next: Run test suite
-```
-
-### Step 2: Environment Configuration
-Create `.env` file in `smart-contract/` directory:
-```bash
-cp .env.example .env
-```
-
-Then edit `.env` with your values:
-```
-PRIVATE_KEY=your_wallet_private_key_here
-POLYGON_RPC_URL=https://polygon-rpc.com
-POLYGONSCAN_API_KEY=your_polygonscan_api_key
-```
-
-### Step 3: Test Deployment (Local)
-```bash
-# Start local Hardhat node
-npm run node
-
-# Deploy to local network (new terminal)
-npm run deploy:local
-```
-
-## 🎯 Next Development Phases
-
-### Phase 2: Frontend Development
-**Priority: HIGH**
-
-#### 2.1 Web Dashboard Integration
-- [ ] Create Web3 connection logic
-- [ ] Integrate contract ABIs
-- [ ] Build token balance display
-- [ ] Add staking interface
-- [ ] Create transaction history view
-
-**Files to create:**
-
-- `src/config/contracts.js` - Contract addresses & ABIs
-- `src/hooks/useWeb3.js` - Web3 connection hook
-- `src/hooks/useAetheron.js` - Token interaction hook
-- `src/hooks/useStaking.js` - Staking interaction hook
-- `src/components/WalletConnect.jsx` - Wallet connection
-- `src/components/StakingDashboard.jsx` - Staking UI
-
-#### 2.2 Mobile App (React Native)
-
-- [ ] Set up React Native project structure
-- [ ] Integrate WalletConnect for mobile
-- [ ] Build mobile staking interface
-- [ ] Add push notifications for rewards
-
-### Phase 3: Testing & Security
-
-**Priority: HIGH**
-
-- [ ] Complete smart contract audit
-- [ ] Frontend security review
-- [ ] Penetration testing
-- [ ] Load testing
-- [ ] Bug bounty program
-
-### Phase 4: Testnet Deployment
-
-**Priority: MEDIUM**
-
-```bash
-# Deploy to Mumbai testnet
-npm run deploy:mumbai
-
-# Verify contracts
-npm run verify:mumbai -- <CONTRACT_ADDRESS> <ARGS>
-```
-
-#### Post-Testnet Tasks:
-- [ ] Test all contract functions
-- [ ] Test frontend integration
-- [ ] Get community testing feedback
-- [ ] Fix any issues found
-
-### Phase 5: Mainnet Preparation
-
-**Priority: MEDIUM**
-
-- [ ] Final security audit
-- [ ] Prepare liquidity for DEX
-- [ ] Set up multi-sig wallet for contract ownership
-- [ ] Prepare marketing materials
-- [ ] Set up monitoring & alerts
-
-### Phase 6: Mainnet Launch
-
-**Priority: LOW (Do after all testing)**
-
-```bash
-# Deploy to Polygon Mainnet
-npm run deploy:polygon
-
-# Verify on Polygonscan
-npm run verify:polygon -- <CONTRACT_ADDRESS> <ARGS>
-```
-
-#### Post-Launch Checklist:
-- [ ] Enable trading on token contract
-- [ ] Add liquidity to DEX (Uniswap/SushiSwap)
-- [ ] Deposit staking rewards
-- [ ] Configure tax exclusions for DEX router
-- [ ] Update frontend with mainnet addresses
-- [ ] Announce launch
-
-### Phase 7: Marketing & Growth
-
-- [ ] CoinGecko listing
-- [ ] CoinMarketCap listing
-- [ ] Social media campaign
-- [ ] Partnership announcements
-- [ ] Community building
-- [ ] CEX listings (if applicable)
-
-## 🛠️ Immediate TODO (This Week)
-
-### Day 1-2: Contract Testing
-```bash
-# Compile and test
-cd smart-contract
+npm install
 npm run compile
 npm test
-npm run test:coverage
+npm run test:production-simulation
+npm run test:base-fork
 ```
 
-### Day 3-4: Frontend Setup
+Goal: reproducible build/test evidence for the exact release candidate.
+
+### Base Sepolia rehearsal
+
 ```bash
-# Create frontend structure
-mkdir -p src/{components,hooks,config,utils}
-mkdir -p src/components/{Wallet,Staking,Dashboard}
+npm run rehearsal:base-sepolia:presale
+npm run verify:base-sepolia:rehearsal
 ```
 
-### Day 5-7: Integration
-- Connect frontend to local testnet
-- Test wallet connection
-- Test token display
-- Test staking functionality
+Goal: produce the evidence package required by issue #217 without treating a testnet result as production approval.
 
-## 📦 Quick Commands Reference
+### Frontend
 
 ```bash
-# Smart Contracts
-cd smart-contract
-npm install                    # Install dependencies
-npm run compile               # Compile contracts
-npm test                      # Run tests
-npm run test:coverage         # Test coverage report
-npm run node                  # Start local node
-npm run deploy:local          # Deploy locally
-npm run deploy:mumbai         # Deploy to testnet
-npm run deploy:polygon        # Deploy to mainnet
-
-# Root Project
 cd ..
-npm install                   # Install frontend deps
-npm run dev                   # Start dev server
-npm run build                 # Build for production
-npm start                     # Start production server
+npm run build
+npm test
 ```
 
-## 🔐 Security Checklist
+Goal: keep public surfaces canonical to Base, wrong-network safe, and explicit about unverified launch state.
 
-- [ ] Never commit `.env` files
-- [ ] Use multi-sig for mainnet contract ownership
-- [ ] Enable contract verification on block explorers
-- [ ] Set up monitoring for unusual transactions
-- [ ] Keep private keys in hardware wallet
-- [ ] Test emergency functions
-- [ ] Set up automated alerts
+## Security principles
 
-## 📊 Success Metrics
+- Never commit or post private keys, mnemonics, wallet exports, or authenticated RPC URLs.
+- Do not bypass release gates because a transaction technically succeeds.
+- Verify critical on-chain state through independent sources before authorization.
+- Keep historical chain/deployment records separate from active commands and production configuration.
+- Preserve reproducible evidence for security-sensitive release decisions.
 
-**Smart Contracts:**
-- ✅ 100% test coverage
-- ✅ Gas optimization (<200k gas for transfers)
-- ✅ Zero critical security issues
+## Definition of production-ready
 
-**Frontend:**
-
-- ⏳ Wallet connection success rate >99%
-- ⏳ Transaction success rate >95%
-- ⏳ Page load time <2 seconds
-
-**Platform:**
-
-- ⏳ Total Value Locked (TVL)
-- ⏳ Active stakers
-- ⏳ Daily transactions
-- ⏳ Token holders
-
-## 🤝 Need Help?
-
-- Smart Contract Issues: Review Hardhat docs
-- Frontend Issues: Check Web3.js/Ethers.js docs
-- Deployment: See deployment.json after each deploy
-- Community: GitHub Issues for bug reports
-
----
-
-**Current Status:** 🟢 Setup Phase
-**Next Milestone:** ✅ Complete contract testing
-**Target Launch:** TBD (after thorough testing)
+Aetheron is production-ready for public presale/staking/trading only when the exact release candidate has passing CI, reproducible Base Sepolia rehearsal evidence, independent review, verified role separation and economic parameters, and explicit Base Mainnet authorization recorded under issue #219.
