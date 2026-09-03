@@ -3,13 +3,15 @@
 
 import express from 'express';
 import {
+  assertExpectedChain,
   deployToken,
   getLaunchTokenDeploymentDiagnostics,
 } from './deploy-token.mjs';
 const router = express.Router();
 
+const BASE_CHAIN_ID = 8453;
 const TEAM_WALLET = process.env.TEAM_WALLET || '0xYourTeamWalletHere';
-const RPC_URL = process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com';
+const RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
 const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY || '';
 
 function isNonEmptyString(value) {
@@ -28,6 +30,8 @@ function buildDiagnostics({ teamWallet }) {
   const artifactDiagnostics = getLaunchTokenDeploymentDiagnostics();
 
   return {
+    network: 'base',
+    chainId: BASE_CHAIN_ID,
     rpcUrlConfigured: isNonEmptyString(RPC_URL),
     deployerKeyConfigured: isLikelyPrivateKey(DEPLOYER_KEY),
     teamWalletConfigured: isLikelyAddress(
@@ -123,7 +127,6 @@ router.post('/launch-token', async (req, res) => {
     const mintRecipient =
       allocation === 100 ? teamWalletFinal : new ethers.Wallet(DEPLOYER_KEY).address;
 
-    // Deploy contract
     const contractAddress = await deployToken({
       name,
       symbol,
@@ -132,16 +135,14 @@ router.post('/launch-token', async (req, res) => {
       initialRecipient: mintRecipient,
       rpcUrl: RPC_URL,
       privateKey: DEPLOYER_KEY,
+      expectedChainId: BASE_CHAIN_ID,
     });
 
-    // Allocation logic: transfer allocationPercent (default 1%) to team wallet
-    // Use ethers.js to transfer allocation% to teamWalletFinal if needed
-    // (Assume deployer gets all tokens, then transfer allocation% to team)
-    // If allocation < 100, transfer allocation% to team wallet
     let allocationTxHash = null;
     if (allocation > 0 && allocation < 100) {
       const ethers = await import('ethers');
       const provider = new ethers.JsonRpcProvider(RPC_URL);
+      await assertExpectedChain(provider, BASE_CHAIN_ID);
       const wallet = new ethers.Wallet(DEPLOYER_KEY, provider);
       const contract = new ethers.Contract(
         contractAddress,
@@ -164,6 +165,8 @@ router.post('/launch-token', async (req, res) => {
       symbol,
       supply,
       contractAddress,
+      chainId: BASE_CHAIN_ID,
+      network: 'base',
       status: 'deployed',
       allocationPercent: allocation,
       teamWallet: teamWalletFinal,
@@ -171,16 +174,18 @@ router.post('/launch-token', async (req, res) => {
       logoUrl,
       website,
       description,
-      message: 'Token deployed to Polygon. Allocation logic executed.',
+      message: 'Token deployed to Base. Allocation logic executed.',
     });
   } catch (err) {
     const message = err?.message || 'Deployment failed.';
     const lowerMessage = message.toLowerCase();
 
-    let code = 'DEPLOYMENT_FAILED';
+    let code = err?.code || 'DEPLOYMENT_FAILED';
     let details = 'The token deployment request reached the backend but failed during execution.';
 
-    if (lowerMessage.includes('artifact')) {
+    if (code === 'WRONG_DEPLOYMENT_NETWORK') {
+      details = 'The configured RPC endpoint is not Base Mainnet (chain ID 8453). Deployment was refused before signing.';
+    } else if (lowerMessage.includes('artifact')) {
       code = 'ARTIFACT_NOT_READY';
       details =
         'The LaunchpadToken artifact is missing or unreadable. Recompile the smart-contract project.';
@@ -189,7 +194,7 @@ router.post('/launch-token', async (req, res) => {
       details = 'DEPLOYER_PRIVATE_KEY is present but invalid.';
     } else if (lowerMessage.includes('network') || lowerMessage.includes('rpc')) {
       code = 'RPC_CONNECTION_FAILED';
-      details = 'The backend could not connect to the configured Polygon RPC endpoint.';
+      details = 'The backend could not connect to the configured Base RPC endpoint.';
     }
 
     res.status(500).json({
