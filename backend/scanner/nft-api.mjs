@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const rootDir = path.join(__dirname, '..', '..');
-const NFT_ARTIFACT_PATH = path.join(rootDir, 'artifacts', 'contracts', 'AetheronNFT.sol', 'AetheronNFT.json');
-const MARKETPLACE_ARTIFACT_PATH = path.join(rootDir, 'artifacts', 'contracts', 'NFTMarketplace.sol', 'NFTMarketplace.json');
+const NFT_ARTIFACT_PATH = path.join(rootDir, 'smart-contract', 'artifacts', 'contracts', 'AetheronNFT.sol', 'AetheronNFT.json');
+const MARKETPLACE_ARTIFACT_PATH = path.join(rootDir, 'smart-contract', 'artifacts', 'contracts', 'NFTMarketplace.sol', 'NFTMarketplace.json');
 const NFT_METADATA_DIR = process.env.NFT_METADATA_DIR
   ? path.resolve(process.env.NFT_METADATA_DIR)
   : '';
