@@ -1,14 +1,16 @@
 import { renderWalletStatus, renderTransactions, createIndexWalletChooserModal, renderUserStakes } from './index-safe-renderers.js';
 
 const CONFIG = window.AETHERON_PRESALE_CONFIG || {};
-const TOKEN = CONFIG.tokenAddress || '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e';
-const PRESALE = CONFIG.presaleAddress || '0xe0A3B6368312dFd3E7E76202e673f895f8235A3d';
-const MINIMUM = CONFIG.minimumPurchaseEth || '0.0003';
+const TOKEN = CONFIG.aethTokenAddress || CONFIG.tokenAddress || '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e';
+const PRESALE = CONFIG.presaleContractAddress || CONFIG.presaleAddress || '0xe0A3B6368312dFd3E7E76202e673f895f8235A3d';
+const MINIMUM = CONFIG.minContribution || CONFIG.minimumPurchaseEth || '0.0003';
 const RATE = Number(CONFIG.tokensPerEth || 1000000);
 const BASESCAN_TOKEN = `https://basescan.org/token/${TOKEN}`;
 const BASESCAN_PRESALE = `https://basescan.org/address/${PRESALE}#code`;
 
-window.POLYGON_RPC_URLS = CONFIG.rpcUrls || ['https://mainnet.base.org', 'https://base.drpc.org', 'https://rpc.ankr.com/base'];
+window.BASE_RPC_URLS = CONFIG.publicRpcUrls || CONFIG.rpcUrls || ['https://mainnet.base.org', 'https://base.drpc.org', 'https://rpc.ankr.com/base'];
+// Backward-compatible alias for older homepage runtime code. Values are Base RPC endpoints only.
+window.POLYGON_RPC_URLS = window.BASE_RPC_URLS;
 
 function replaceText(root, replacements) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -44,9 +46,16 @@ function makeButtonLink(button, href) {
   }, true);
 }
 
+function lockPublicAdminControls() {
+  // The public homepage is intentionally read-only. Owner write operations belong in a
+  // separately reviewed operator workflow, not in a consumer-facing page.
+  const adminPanel = document.getElementById('adminPanel');
+  if (adminPanel) adminPanel.remove();
+}
+
 function reconcilePublicHomepage() {
   document.title = 'Aetheron (AETH) | Base Mainnet Platform';
-  const description = `Explore Aetheron on Base Mainnet. Public presale purchases remain disabled until final launch authorization is recorded.`;
+  const description = 'Explore Aetheron on Base Mainnet. Public purchases and canonical liquidity remain unavailable until final launch authorization and market setup are complete.';
   setMeta('meta[name="description"]', description);
   setMeta('meta[property="og:title"]', 'Aetheron (AETH) | Base Mainnet Platform');
   setMeta('meta[property="og:description"]', description);
@@ -60,14 +69,14 @@ function reconcilePublicHomepage() {
     ['PolygonScan', 'BaseScan'],
     ['Polygon DeFi Command', 'Base DeFi Command'],
     ['MATIC', 'ETH'],
-    ['QuickSwap', 'Base presale'],
+    ['QuickSwap', 'Base launch'],
     ['1 ETH = 1000 AETH', `1 ETH = ${RATE.toLocaleString()} AETH`],
     ['Min 0.001 ETH', `Min ${MINIMUM} ETH`],
     ['Minimum: 0.001 ETH', `Minimum: ${MINIMUM} ETH`],
     ['100+ Holders', 'Canonical Base token'],
     ['futuristic staking, analytics', 'Base token status, analytics'],
-    ['staking, analytics, and live ecosystem tracking', 'presale access, analytics, and ecosystem tracking'],
-    ['trading opportunities', 'presale and platform notices']
+    ['staking, analytics, and live ecosystem tracking', 'token status, analytics, and ecosystem tracking'],
+    ['trading opportunities', 'platform and launch notices']
   ]);
 
   document.querySelectorAll('a').forEach((link) => {
@@ -85,7 +94,7 @@ function reconcilePublicHomepage() {
   const oldStakingNav = [...document.querySelectorAll('a.nav-link')].find((link) => link.getAttribute('href') === '#staking');
   if (oldStakingNav) {
     oldStakingNav.href = 'presale.html';
-    oldStakingNav.textContent = 'Presale';
+    oldStakingNav.textContent = 'Launch Status';
   }
 
   const copy = document.getElementById('copyContractBtn');
@@ -127,13 +136,13 @@ function reconcilePublicHomepage() {
     const value = card.querySelector('.hero-panel-value');
     if (!label || !value) return;
     if (label.textContent.trim() === 'Network') value.textContent = 'Base Mainnet';
-    if (label.textContent.trim() === 'Max APY') { label.textContent = 'Launch Status'; value.textContent = 'Pending authorization'; }
-    if (label.textContent.trim() === 'Contract') value.textContent = `${PRESALE.slice(0, 8)}...${PRESALE.slice(-4)}`;
-    if (label.textContent.trim() === 'Utility') value.textContent = 'Buy, verify, track, and explore on Base';
+    if (label.textContent.trim() === 'Max APY') { label.textContent = 'Launch Status'; value.textContent = 'Market setup pending'; }
+    if (label.textContent.trim() === 'Contract') value.textContent = `${TOKEN.slice(0, 8)}...${TOKEN.slice(-4)}`;
+    if (label.textContent.trim() === 'Utility') value.textContent = 'Verify, track, and explore on Base';
   });
 
   document.querySelectorAll('a.feature-card[href="presale.html"]').forEach((card) => {
-    setCardCopy(card, 'AETH Base Launch Status', 'Review the Base deployment and launch status. Purchase controls remain disabled until final authorization.');
+    setCardCopy(card, 'AETH Base Launch Status', 'Review the Base deployment and launch status. Public purchases and canonical liquidity remain unavailable.');
   });
   document.querySelectorAll('a.feature-card[href="#staking"]').forEach((card) => {
     card.href = 'staking-calculator.html';
@@ -146,13 +155,13 @@ function reconcilePublicHomepage() {
   const priceCard = document.getElementById('priceValue')?.closest('.stat-card');
   if (priceCard) {
     const label = priceCard.querySelector('.label');
-    if (label) label.textContent = 'Presale Rate';
+    if (label) label.textContent = 'Recorded Presale Rate';
   }
   const factualStats = () => {
     const value = document.getElementById('priceValue');
     if (value && value.textContent !== '1M AETH / ETH') value.textContent = '1M AETH / ETH';
     const change = document.getElementById('priceChange');
-    if (change) change.innerHTML = '<i class="fas fa-shield-check"></i> <span>Canonical Base token</span>';
+    if (change) change.innerHTML = '<i class="fas fa-shield-check"></i> <span>No canonical DEX market</span>';
   };
   factualStats();
   const statObserver = new MutationObserver(factualStats);
@@ -166,7 +175,7 @@ function reconcilePublicHomepage() {
     const title = tradeLink.querySelector('.fw-600');
     const subtitle = tradeLink.querySelector('.text-sm');
     if (title) title.textContent = 'AETH Launch Status';
-    if (subtitle) subtitle.textContent = 'Purchases currently disabled';
+    if (subtitle) subtitle.textContent = 'Canonical liquidity unavailable';
   }
 
   const calculatorTitle = [...document.querySelectorAll('.card-title')].find((node) => node.textContent.trim() === 'Rewards Calculator');
@@ -177,12 +186,14 @@ function reconcilePublicHomepage() {
   if (calcButton) calcButton.innerHTML = '<i class="fas fa-calculator"></i> Estimate Scenario';
 
   const faqAnswers = document.querySelectorAll('.faq-answer');
-  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>Public AETH purchases are not authorized yet.</p><p>Use the <a class="primary-link" href="presale.html">Base launch-status page</a> to review the canonical contracts. Purchase controls remain disabled until final launch authorization is recorded.</p>`;
-  if (faqAnswers[1]) faqAnswers[1].innerHTML = '<p>Public staking is not advertised as active yet. The calculator is a planning tool until a verified Base staking contract and final reward schedule are published.</p>';
-  if (faqAnswers[2]) faqAnswers[2].innerHTML = '<p>The presale purchase uses ETH on Base Mainnet plus the wallet network fee. The presale page shows the AETH quote before confirmation. No exchange-liquidity or secondary-market claim is made during this phase.</p>';
-  if (faqAnswers[3]) faqAnswers[3].innerHTML = `<p>The presale and AETH token source code are verified on BaseScan. Source verification is not the same as an independent security audit; review the verified code and transaction details before purchasing.</p><p><a class="primary-link" target="_blank" rel="noopener noreferrer" href="${BASESCAN_PRESALE}">View verified presale contract</a></p>`;
+  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>Public AETH purchases are not authorized.</p><p>The on-chain tradingEnabled flag is not evidence of public market readiness; canonical liquidity remains unavailable until a verified Base pool and final launch authorization are published.</p><p>Use the <a class="primary-link" href="presale.html">Base launch-status page</a> for the canonical contracts and current release state.</p>`;
+  if (faqAnswers[1]) faqAnswers[1].innerHTML = '<p>Public staking is not advertised as active. The calculator is a planning tool until a verified Base staking contract and final reward schedule are published.</p>';
+  if (faqAnswers[2]) faqAnswers[2].innerHTML = '<p>The token contract stores 3% buy and 5% sell tax rates, but no canonical Base DEX pool is configured. Do not infer effective market fees from stored contract values until the final DEX design and liquidity deployment are published.</p>';
+  if (faqAnswers[3]) faqAnswers[3].innerHTML = `<p>The presale and AETH token source code are verified on BaseScan. Source verification is not the same as an independent security audit. The recorded presale window has ended, so no public purchase should be attempted from this page.</p><p><a class="primary-link" target="_blank" rel="noopener noreferrer" href="${BASESCAN_PRESALE}">View verified presale contract</a></p>`;
   if (faqAnswers[4]) faqAnswers[4].innerHTML = '<p>This applies only after a Base staking program is publicly activated. No active staking deposit is promoted on this page today.</p>';
   if (faqAnswers[5]) faqAnswers[5].innerHTML = `<p>Click “Add to MetaMask,” or add the token manually:</p><ul><li><strong>Network:</strong> Base Mainnet</li><li><strong>Contract:</strong> ${TOKEN}</li><li><strong>Symbol:</strong> AETH</li><li><strong>Decimals:</strong> 18</li></ul>`;
+
+  lockPublicAdminControls();
 }
 
 function patchSafeRenderers() {
