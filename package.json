@@ -27,7 +27,8 @@
     "verify": "node run-smart-contract.cjs verify",
     "hardhat:compile": "node run-smart-contract.cjs compile",
     "hardhat:test": "node run-smart-contract.cjs test",
-    "test:launch-gate": "node public-launch-gate.test.cjs"
+    "test:launch-gate": "node public-launch-gate.test.cjs",
+    "audit:production": "node scripts/audit-production-dependencies.mjs"
   },
   "keywords": [
     "blockchain",
@@ -51,8 +52,10 @@
   "homepage": "https://aetrs.com",
   "overrides": {
     "undici": "^7.24.0",
-    "js-yaml": "^4.2.0",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "body-parser": "^2.3.0",
+    "qs": "^6.16.0",
+    "protobufjs": "^7.6.5"
   },
   "dependencies": {
     "@metamask/connect-multichain": "^0.11.0",
