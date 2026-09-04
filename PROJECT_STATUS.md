@@ -1,7 +1,7 @@
 # Aetheron Platform — Canonical Project Status
 
 **Status:** Active flagship  
-**Last updated:** 2026-09-02  
+**Last updated:** 2026-09-04  
 **Canonical role:** Commercial Aetheron product: AETH token, presale, staking, public frontend, wallet onboarding, and treasury-facing operations.
 
 ## Production truth
@@ -42,7 +42,7 @@ Canonical portfolio registry: `docs/AETHERON_CONTRACT_REGISTRY.json`.
 
 - Sentinel L3 security-suite development (see `MastaTrill/Aetheron-Sentinel-L3`)
 - Experimental quantum, ZK, AI-security, bridge, or oracle contracts
-- General-purpose AI agents
+- General-purpose AI agents (including Emvori)
 - Mobile or multichain experiments not required by the public platform
 
 ## Current launch gates
@@ -53,7 +53,7 @@ Canonical portfolio registry: `docs/AETHERON_CONTRACT_REGISTRY.json`.
 - [ ] Complete an independent smart-contract review
 - [ ] Authorize any Base Mainnet presale action separately (issue #219) — testnet rehearsal does **not** authorize mainnet
 - [x] Decide and document the trading-enablement and liquidity plan — **draft published** at `docs/TRADING_AND_LIQUIDITY_PLAN.md` (execution still blocked until #219)
-- [ ] Finish retirement of any remaining active Polygon-first execution/configuration surfaces tracked by #214
+- [x] Finish retirement of active Polygon-first execution/configuration surfaces (issue #214) — **repo cleanup complete as of 2026-09-02/03 merges** (`fix: finish canonical Base production cleanup`, `#236`, `#237`); no active frontend hits for Mumbai/Polygon/Solana in code search
 
 **Evidence templates:**
 - `docs/evidence/BASE_SEPOLIA_REHEARSAL_TEMPLATE.md`
@@ -64,6 +64,17 @@ Canonical portfolio registry: `docs/AETHERON_CONTRACT_REGISTRY.json`.
 **Trading plan:**
 - `docs/TRADING_AND_LIQUIDITY_PLAN.md` (draft only; not authorized for execution)
 
+## What “fix all open issues” cannot mean
+
+Issues **#217** and **#219** are **release gates**. They stay open until:
+
+1. Base Sepolia rehearsal evidence is independently reproducible, and  
+2. Written Base Mainnet authorization is recorded for exact addresses and commit SHA.
+
+Merging more application code does **not** close those gates. Neither does renaming issues or editing this file.
+
+Dashboard growth issues (#106–#115) are product backlog, not production blockers.
+
 ## Repository rules
 
 1. Production contract records belong in `smart-contract/deployments/`.
@@ -73,10 +84,9 @@ Canonical portfolio registry: `docs/AETHERON_CONTRACT_REGISTRY.json`.
 5. Files must not claim “mainnet complete” unless transaction hashes, deployed bytecode, ownership, explorer verification, and applicable release authorization are retained.
 6. Sentinel security contracts belong in `MastaTrill/Aetheron-Sentinel-L3`.
 
-## Next cleanup pass
+## Next real work (priority order)
 
-- Keep root README Base-first.
-- Move remaining historical Polygon instructions into `docs/legacy/` where useful.
-- Remove generated build output and duplicate deployment records from version control where safe.
-- Maintain one machine-readable portfolio contract registry.
-- Keep historical deployment journals immutable where possible; supersede their old launch claims through current release-status files rather than rewriting receipts.
+1. Execute and archive Base Sepolia rehearsal evidence package → close #217.  
+2. Independent contract review + written mainnet auth fields → only then #219.  
+3. Optional: merge prepared AETH V2 PR (#238) as **prepared_not_deployed** only.  
+4. Optional: dashboard reliability backlog (#106, #110, #112) after launch path is clear.
