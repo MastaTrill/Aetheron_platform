@@ -80,4 +80,14 @@ assert.equal(fs.existsSync('backend/scanner/launchpad-api.js'), false, 'obsolete
 assert.equal(fs.existsSync('smart-contract/scripts/verify-setup.js'), false, 'obsolete duplicate setup verifier must be retired');
 assert.equal(fs.existsSync('smart-contract/hardhat.config.minimal.js'), false, 'unused Polygon minimal Hardhat config must be retired');
 
+const legacyDeployWorkflowPath = '.github/workflows/deploy-contracts.yml';
+if (fs.existsSync(legacyDeployWorkflowPath)) {
+  const legacyDeployWorkflow = read(legacyDeployWorkflowPath);
+  assert.doesNotMatch(
+    legacyDeployWorkflow,
+    /\bpolygon\b|\bmumbai\b|verify:\$\{\{\s*matrix\.network\s*\}\}/i,
+    'active contract deployment workflow must not target legacy networks or dynamic stale verify scripts',
+  );
+}
+
 console.log('Active operational scripts and local backend are Base-only, ethers-v6 compatible, correctly routed, and write-gated.');

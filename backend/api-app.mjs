@@ -47,7 +47,14 @@ const apiApp = express();
 const allowedOrigins = getAllowedOrigins();
 
 apiApp.disable('x-powered-by');
-apiApp.use(express.json({ limit: '1mb' }));
+apiApp.use(express.json({
+  limit: '1mb',
+  verify: (req, res, buffer) => {
+    if (req.path === '/coinbase-webhook') {
+      req.rawBody = Buffer.from(buffer);
+    }
+  },
+}));
 
 apiApp.use((req, res, next) => {
   const requestOrigin = req.headers.origin;

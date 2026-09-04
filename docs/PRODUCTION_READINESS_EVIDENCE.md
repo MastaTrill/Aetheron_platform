@@ -1,6 +1,6 @@
 # Aetheron Production Readiness Evidence
 
-This record is the release gate for **public** Base presale / trading / liquidity.  
+This record is the release gate for **public** Base presale / trading / liquidity.
 A green CI run alone is not authorization to launch or move public funds.
 
 **Current product gate:** issue **#219** + `presale-config.js` → `launchAuthorized: false`.

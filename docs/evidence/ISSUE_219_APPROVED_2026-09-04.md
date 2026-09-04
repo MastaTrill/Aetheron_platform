@@ -1,11 +1,11 @@
 # Issue #219 — APPROVED (public presale only)
 
-**Decision:** `approved`  
-**Scope:** Public Base presale purchases via frontend (`launchAuthorized: true`)  
-**Not in scope:** On-chain trading enablement, canonical liquidity, AETH V2 cutover  
-**Approved at (UTC):** 2026-09-04T05:12:00Z  
-**Approved by:** Owner (MastaTrill) — message "Approved" in operator session  
-**Candidate commit before flip:** `5b28fc129427e12a0210c6003fb59fd44bdea3c7`  
+**Decision:** `approved`
+**Scope:** Public Base presale purchases via frontend (`launchAuthorized: true`)
+**Not in scope:** On-chain trading enablement, canonical liquidity, AETH V2 cutover
+**Approved at (UTC):** 2026-09-04T05:12:00Z
+**Approved by:** Owner (MastaTrill) — message "Approved" in operator session
+**Candidate commit before flip:** `5b28fc129427e12a0210c6003fb59fd44bdea3c7`
 
 ## Residual risks accepted by this approval
 

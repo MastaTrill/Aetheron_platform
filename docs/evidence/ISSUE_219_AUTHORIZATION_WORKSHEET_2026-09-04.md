@@ -1,11 +1,11 @@
 # Issue #219 — Base Mainnet public-launch authorization worksheet
 
-**Status:** `DRAFT — NOT APPROVED`  
-**Date prepared:** 2026-09-04  
-**Repo tip at preparation:** `417e2dbde2aae254f81813c0d62e254668d9ccea`  
+**Status:** `DRAFT — NOT APPROVED`
+**Date prepared:** 2026-09-04
+**Repo tip at preparation:** `417e2dbde2aae254f81813c0d62e254668d9ccea`
 **Decision field:** leave blank until owner records `approved` or `rejected`
 
-> Filling this worksheet does **not** authorize public funds, trading, or liquidity.  
+> Filling this worksheet does **not** authorize public funds, trading, or liquidity.
 > Only an explicit `approved` decision on issue #219 with the fields below complete does.
 
 ---
@@ -76,14 +76,14 @@
 
 Do **not** set `launchAuthorized: true` until all of:
 
-1. This worksheet’s “Must be completed by owner” table is filled.  
-2. Owner explicitly accepts **owner == treasury** EOA risk **or** moves treasury/control.  
-3. Independent review note is linked (even a named external reviewer memo).  
-4. Liquidity is either fully specified or explicitly deferred.  
-5. Issue #219 comment from the owner account contains the word **`approved`** and the pinned commit SHA.  
+1. This worksheet’s “Must be completed by owner” table is filled.
+2. Owner explicitly accepts **owner == treasury** EOA risk **or** moves treasury/control.
+3. Independent review note is linked (even a named external reviewer memo).
+4. Liquidity is either fully specified or explicitly deferred.
+5. Issue #219 comment from the owner account contains the word **`approved`** and the pinned commit SHA.
 6. Then — and only then — flip `presale-config.js` `launchAuthorized` to `true` in a dedicated commit.
 
 ## 4. Explicit non-authorization
 
-As of this document: **`decision = not approved`**.  
+As of this document: **`decision = not approved`**.
 Public funds, trading, and canonical liquidity remain **prohibited**.

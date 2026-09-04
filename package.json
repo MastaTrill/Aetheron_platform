@@ -10,14 +10,17 @@
     "build": "npm run build:analytics && npm run build:metamask-connect && node build-cloudflare-dist.cjs",
     "build:analytics": "node build-vercel-analytics.cjs",
     "build:metamask-connect": "node build-dashboard-metamask-connect.cjs",
-    "test": "npm run test:launch-gate && npm run test:pages-domain && npm run test:dashboard-source-safety && npm run test:backend-base-safety && npm run test:operational-base-safety && npm run test:smoke && npm run test:production-bundle",
+    "test": "npm run test:launch-gate && npm run test:pages-domain && npm run test:dashboard-source-safety && npm run test:backend-base-safety && npm run test:canonical-deployments && npm run test:aeth-v2-migration && npm run test:nonproduction-quarantine && npm run test:contract-runner-config && npm run test:operational-base-safety && npm run test:vercel-config && npm run test:smoke && npm run test:production-bundle",
     "test:dashboard": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
     "test:dashboard-source-safety": "node dashboard.source-safety.test.mjs",
     "test:backend-base-safety": "node production-backend-base.test.mjs",
+    "test:canonical-deployments": "node scripts/validate-canonical-deployments.mjs",
+    "test:contract-runner-config": "node contract-test-runner-config.test.mjs",
     "test:operational-base-safety": "node operational-script-base-safety.test.mjs",
     "test:pages-domain": "node pages-domain-config.test.mjs",
+    "test:vercel-config": "node vercel-production-config.test.mjs",
     "test:production-bundle": "npm run build && node production-bundle-base.test.mjs",
     "test:smoke": "node dashboard.test.simple.js",
     "test:smart-contract": "node run-smart-contract.cjs test",
@@ -25,7 +28,10 @@
     "verify": "node run-smart-contract.cjs verify",
     "hardhat:compile": "node run-smart-contract.cjs compile",
     "hardhat:test": "node run-smart-contract.cjs test",
-    "test:launch-gate": "node public-launch-gate.test.cjs"
+    "test:launch-gate": "node public-launch-gate.test.cjs",
+    "audit:production": "node scripts/audit-production-dependencies.mjs",
+    "test:nonproduction-quarantine": "node nonproduction-contract-quarantine.test.mjs",
+    "test:aeth-v2-migration": "node --test smart-contract/test/AetheronV2MigrationInvariants.test.js"
   },
   "keywords": [
     "blockchain",
@@ -49,8 +55,10 @@
   "homepage": "https://aetrs.com",
   "overrides": {
     "undici": "^7.24.0",
-    "js-yaml": "^4.2.0",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "body-parser": "^2.3.0",
+    "qs": "^6.16.0",
+    "protobufjs": "^7.6.5"
   },
   "dependencies": {
     "@metamask/connect-multichain": "^0.11.0",

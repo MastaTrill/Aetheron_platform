@@ -6,7 +6,7 @@
 
 **Rationale:** Canonical AETH and the corrected Base presale already exist on **Base Mainnet** with recorded deployment, verification, funding, and owner smoke-purchase receipts. The original Sepolia gate assumed *testnet first, mainnet second*. Reality inverted that order. Requiring Sepolia after mainnet contracts are live adds process cost without changing the fact that path behavior is already proven by:
 
-1. Mainnet deployment + owner smoke receipts, and  
+1. Mainnet deployment + owner smoke receipts, and
 2. The full offline contract suite (74/74 pass as of 2026-09-04).
 
 **This does not authorize public launch.** Issue **#219** remains the sole gate for public purchases, trading, and liquidity. Frontend must keep `launchAuthorized: false` until #219 is explicitly approved.
@@ -48,5 +48,5 @@
 
 > As of 2026-09-04, Aetheron Platform treats Base Mainnet deployment evidence plus the green offline production simulation suite as sufficient to **close the Sepolia rehearsal blocker (#217)**. Public acceptance of funds, trading enablement, and liquidity remain **blocked** until issue **#219** records written authorization for the exact commit SHA and addresses.
 
-Operator: repository policy update on behalf of owner direction (“Do what you recommend”).  
+Operator: repository policy update on behalf of owner direction (“Do what you recommend”).
 Sepolia scripts and templates remain available if a future operator still wants a testnet dress rehearsal; they are no longer required to close #217.

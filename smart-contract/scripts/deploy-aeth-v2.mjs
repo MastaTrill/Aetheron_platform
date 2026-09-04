@@ -132,6 +132,18 @@ async function main() {
   manifest.v2.status = "deployed_not_cutover";
   manifest.v2.deploymentTransactionHash = deploymentTx.hash;
   manifest.v2.deploymentBlockNumber = receipt?.blockNumber ?? null;
+  if (!manifest.cutover?.evidence) {
+    throw new Error("AETH V2 migration manifest is missing cutover evidence gates");
+  }
+  manifest.cutover.targetAddress = address;
+  manifest.cutover.authorized = false;
+  manifest.cutover.evidence.v2AddressRecorded = true;
+  manifest.cutover.evidence.runtimeVerified = true;
+  manifest.cutover.evidence.supplyVerified = true;
+  manifest.cutover.evidence.sourceVerified = false;
+  manifest.cutover.evidence.balanceMigrationPlanApproved = false;
+  manifest.cutover.evidence.canonicalRegistryUpdated = false;
+  manifest.cutover.evidence.releaseAuthorized = false;
   manifest.publicLaunchAuthorized = false;
   manifest.liquidityAuthorized = false;
   manifest.migrationAuthorized = false;

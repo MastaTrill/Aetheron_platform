@@ -21,6 +21,8 @@ const forbiddenMarkers = [
   'chain id 80001',
   'chain id: 80002',
   'chain id 80002',
+  'smart-routing-ui.html',
+  'trading-terminal-pro.html',
 ];
 
 const textExtensions = new Set([

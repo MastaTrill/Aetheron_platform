@@ -2,7 +2,9 @@
 // Handles charge creation and webhook verification for both Launchpad and Scanner
 
 import express from 'express';
+import crypto from 'node:crypto';
 import { sendPaymentEmail } from './send-email.mjs';
+import { requireOperator } from '../security.mjs';
 const router = express.Router();
 const COINBASE_API_KEY =
   process.env.COINBASE_COMMERCE_API_KEY || 'YOUR_COINBASE_COMMERCE_API_KEY';
@@ -40,7 +42,7 @@ async function createCoinbaseCharge({
 }
 
 // POST /api/create-coinbase-charge
-router.post('/create-coinbase-charge', async (req, res) => {
+router.post('/create-coinbase-charge', requireOperator, async (req, res) => {
   try {
     const {
       name,
@@ -69,7 +71,7 @@ router.post('/create-coinbase-charge', async (req, res) => {
 });
 
 // POST /api/create-launchpad-charge
-router.post('/create-launchpad-charge', async (req, res) => {
+router.post('/create-launchpad-charge', requireOperator, async (req, res) => {
   try {
     const {
       name,
@@ -114,33 +116,57 @@ router.post('/create-launchpad-charge', async (req, res) => {
   }
 });
 
-// Webhook endpoint for Coinbase Commerce (to be set in Coinbase dashboard)
-router.post(
-  '/coinbase-webhook',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    // NOTE: In production, verify the signature header for security!
-    try {
-      const event = JSON.parse(req.body.toString());
-      if (
-        event.type === 'charge:confirmed' &&
-        event.data &&
-        event.data.metadata &&
-        event.data.metadata.email
-      ) {
-        // Send confirmation email
-        await sendPaymentEmail({
-          to: event.data.metadata.email,
-          subject: 'Aetheron Payment Confirmed',
-          text: `Your payment of ${event.data.pricing.local.amount} ${event.data.pricing.local.currency} was confirmed. Thank you!`,
-          html: `<p>Your payment of <b>${event.data.pricing.local.amount} ${event.data.pricing.local.currency}</b> was confirmed. Thank you for supporting Aetheron!</p>`,
-        });
-      }
-      res.status(200).json({ received: true });
-    } catch (err) {
-      res.status(400).json({ error: err.message });
+function verifyCoinbaseWebhook(req, res, next) {
+  const secret = (process.env.COINBASE_COMMERCE_WEBHOOK_SECRET || '').trim();
+  if (!secret) {
+    return res.status(503).json({
+      error: 'Coinbase webhook verification is not configured.',
+      code: 'WEBHOOK_SECRET_NOT_CONFIGURED',
+    });
+  }
+
+  const signature = req.get('X-CC-Webhook-Signature') || '';
+  const rawBody = req.rawBody;
+  if (!Buffer.isBuffer(rawBody) || !/^[0-9a-fA-F]{64}$/.test(signature)) {
+    return res.status(401).json({
+      error: 'Invalid Coinbase webhook signature.',
+      code: 'INVALID_WEBHOOK_SIGNATURE',
+    });
+  }
+
+  const expected = crypto.createHmac('sha256', secret).update(rawBody).digest();
+  const provided = Buffer.from(signature, 'hex');
+  if (provided.length !== expected.length || !crypto.timingSafeEqual(provided, expected)) {
+    return res.status(401).json({
+      error: 'Invalid Coinbase webhook signature.',
+      code: 'INVALID_WEBHOOK_SIGNATURE',
+    });
+  }
+
+  return next();
+}
+
+// Webhook endpoint for the legacy Coinbase Commerce charge API.
+router.post('/coinbase-webhook', verifyCoinbaseWebhook, async (req, res) => {
+  try {
+    const event = req.body;
+    if (
+      event.type === 'charge:confirmed' &&
+      event.data &&
+      event.data.metadata &&
+      event.data.metadata.email
+    ) {
+      await sendPaymentEmail({
+        to: event.data.metadata.email,
+        subject: 'Aetheron Payment Confirmed',
+        text: `Your payment of ${event.data.pricing.local.amount} ${event.data.pricing.local.currency} was confirmed. Thank you!`,
+        html: `<p>Your payment of <b>${event.data.pricing.local.amount} ${event.data.pricing.local.currency}</b> was confirmed. Thank you for supporting Aetheron!</p>`,
+      });
     }
-  },
-);
+    return res.status(200).json({ received: true });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
 
 export default router;
