@@ -150,6 +150,45 @@ describe('Production API app', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.received).toBe(true);
   });
+  it('protects NFT metadata uploads behind operator authentication', async () => {
+    const res = await request(apiApp)
+      .post('/nft/upload-metadata')
+      .send({ name: 'Test NFT', image: 'https://example.com/image.png' });
+    expect(res.statusCode).toBe(401);
+    expect(res.body.code).toBe('OPERATOR_AUTH_REQUIRED');
+  });
+
+  it.each(['/create-coinbase-charge', '/create-launchpad-charge'])(
+    'protects %s behind operator authentication while public funds are disabled',
+    async (path) => {
+      const originalFetch = global.fetch;
+      global.fetch = jest.fn(async () => ({ ok: false, json: async () => ({}) }));
+      try {
+        const res = await request(apiApp)
+          .post(path)
+          .send({ name: 'Test', amount: '1', currency: 'USD', symbol: 'TST', supply: '1000' });
+        expect(res.statusCode).toBe(401);
+        expect(res.body.code).toBe('OPERATOR_AUTH_REQUIRED');
+        expect(global.fetch).not.toHaveBeenCalled();
+      } finally {
+        global.fetch = originalFetch;
+      }
+    },
+  );
+
+  it('rejects NFT mint quantities above one before any wallet or RPC work', async () => {
+    process.env.AETHERON_SIGNER_ROUTES_ENABLED = 'true';
+    try {
+      const res = await request(apiApp)
+        .post('/nft/mint')
+        .set('Authorization', OPERATOR_AUTH)
+        .send({ tokenURI: 'https://example.com/1.json', quantity: 2 });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.code).toBe('UNSUPPORTED_MINT_QUANTITY');
+    } finally {
+      process.env.AETHERON_SIGNER_ROUTES_ENABLED = 'false';
+    }
+  });
   it('rejects unknown API routes without falling through to HTML', async () => {
     const res = await request(apiApp).get('/does-not-exist');
     expect(res.statusCode).toBe(404);

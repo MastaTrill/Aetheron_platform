@@ -199,6 +199,12 @@ router.post('/mint', requireOperator, requireSignerEnabled, async (req, res) => 
     if (!tokenURI) {
       return res.status(400).json({ error: 'tokenURI is required' });
     }
+    if (Number(quantity) !== 1) {
+      return res.status(400).json({
+        error: 'Only single-NFT minting is supported by this endpoint.',
+        code: 'UNSUPPORTED_MINT_QUANTITY',
+      });
+    }
 
     const config = getContractConfig();
     if (!config.nftAddress) {
@@ -213,8 +219,7 @@ router.post('/mint', requireOperator, requireSignerEnabled, async (req, res) => 
 
     const nftContract = new ethers.Contract(config.nftAddress, nftArtifact.abi, wallet);
     const mintPrice = ethers.parseEther('0.05');
-    const totalPrice = mintPrice * BigInt(quantity);
-    const tx = await nftContract.mint(tokenURI, { value: totalPrice });
+    const tx = await nftContract.mint(tokenURI, { value: mintPrice });
     const receipt = await tx.wait();
 
     res.json({
@@ -222,7 +227,7 @@ router.post('/mint', requireOperator, requireSignerEnabled, async (req, res) => 
       chainId: BASE_CHAIN_ID,
       txHash: receipt.hash,
       blockNumber: receipt.blockNumber,
-      message: `Successfully minted ${quantity} NFT(s) on Base`,
+      message: 'Successfully minted 1 NFT on Base',
     });
   } catch (error) {
     res.status(error?.code === 'WRONG_DEPLOYMENT_NETWORK' ? 503 : 500).json({
@@ -320,7 +325,7 @@ router.post('/buy', requireOperator, requireSignerEnabled, async (req, res) => {
 });
 
 // POST /api/nft/upload-metadata - Store NFT metadata and return tokenURI
-router.post('/upload-metadata', express.json({ limit: '10mb' }), (req, res) => {
+router.post('/upload-metadata', requireOperator, express.json({ limit: '10mb' }), (req, res) => {
   try {
     const { name, description, image, attributes } = req.body || {};
     if (!name || !image) {

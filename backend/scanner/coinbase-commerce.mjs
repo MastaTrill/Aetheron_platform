@@ -4,6 +4,7 @@
 import express from 'express';
 import crypto from 'node:crypto';
 import { sendPaymentEmail } from './send-email.mjs';
+import { requireOperator } from '../security.mjs';
 const router = express.Router();
 const COINBASE_API_KEY =
   process.env.COINBASE_COMMERCE_API_KEY || 'YOUR_COINBASE_COMMERCE_API_KEY';
@@ -41,7 +42,7 @@ async function createCoinbaseCharge({
 }
 
 // POST /api/create-coinbase-charge
-router.post('/create-coinbase-charge', async (req, res) => {
+router.post('/create-coinbase-charge', requireOperator, async (req, res) => {
   try {
     const {
       name,
@@ -70,7 +71,7 @@ router.post('/create-coinbase-charge', async (req, res) => {
 });
 
 // POST /api/create-launchpad-charge
-router.post('/create-launchpad-charge', async (req, res) => {
+router.post('/create-launchpad-charge', requireOperator, async (req, res) => {
   try {
     const {
       name,
