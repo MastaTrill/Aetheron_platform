@@ -1,7 +1,10 @@
-import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
-const npmCli = path.join(process.env.ProgramFiles || 'C:/Program Files', 'nodejs', 'node_modules', 'npm', 'bin', 'npm-cli.js');
+const npmCli = process.env.npm_execpath
+  || path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
 const nodeExe = process.execPath;
 const projects = [
   ['root', process.cwd()],
@@ -9,13 +12,35 @@ const projects = [
   ['contracts', path.join(process.cwd(), 'smart-contract')],
 ];
 
-function dependencyTree(cwd) {
-  const stdout = execFileSync(
-    nodeExe,
-    [npmCli, 'ls', '--omit=dev', '--all', '--json'],
-    { cwd, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 },
-  );
-  return JSON.parse(stdout);
+function dependencyTree(label, cwd) {
+  const outputPath = path.join(os.tmpdir(), `aetheron-prod-tree-${process.pid}-${label}.json`);
+  let outputFd;
+  try {
+    outputFd = fs.openSync(outputPath, 'w');
+    const result = spawnSync(
+      nodeExe,
+      [npmCli, 'ls', '--omit=dev', '--all', '--json'],
+      {
+        cwd,
+        encoding: 'utf8',
+        stdio: ['ignore', outputFd, 'pipe'],
+      },
+    );
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(
+        `${label} production dependency tree failed with exit ${result.status}: ${String(result.stderr || '').trim()}`,
+      );
+    }
+  } finally {
+    if (outputFd !== undefined) fs.closeSync(outputFd);
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
 }
 
 function flatten(node, out = new Map()) {
@@ -26,7 +51,9 @@ function flatten(node, out = new Map()) {
   return [...out.values()];
 }
 
-const sets = Object.fromEntries(projects.map(([label, cwd]) => [label, flatten(dependencyTree(cwd))]));
+const sets = Object.fromEntries(
+  projects.map(([label, cwd]) => [label, flatten(dependencyTree(label, cwd))]),
+);
 const unique = new Map();
 for (const list of Object.values(sets)) {
   for (const pkg of list) unique.set(`${pkg.name}@${pkg.version}`, pkg);
