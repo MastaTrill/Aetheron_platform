@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "npm run compile && node --test --test-concurrency=1 test/*.test.js",
-    "test:aeth-v2": "npm run compile && node --test --test-concurrency=1 test/AetheronV2.test.js test/AetheronV2DeploymentSafety.test.js",
+    "test:aeth-v2": "npm run compile && node --test --test-concurrency=1 test/AetheronV2.test.js test/AetheronV2DeploymentSafety.test.js test/AetheronV2MigrationInvariants.test.js",
     "test:production-simulation": "node --test test/ProductionPresaleSimulation.test.js",
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-presale-state.mjs",
