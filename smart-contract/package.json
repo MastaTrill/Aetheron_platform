@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "node --test test/*.test.js",
+    "test": "npm run compile && node --test --test-concurrency=1 test/*.test.js",
     "test:production-simulation": "node --test test/ProductionPresaleSimulation.test.js",
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-presale-state.mjs",
