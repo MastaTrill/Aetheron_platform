@@ -7,6 +7,7 @@ import {
   deployToken,
   getLaunchTokenDeploymentDiagnostics,
 } from './deploy-token.mjs';
+import { requireOperator, requireSignerEnabled } from '../security.mjs';
 const router = express.Router();
 
 const BASE_CHAIN_ID = 8453;
@@ -53,7 +54,7 @@ function parseAllocationPercent(value) {
 }
 
 // POST /api/launch-token
-router.post('/launch-token', async (req, res) => {
+router.post('/launch-token', requireOperator, requireSignerEnabled, async (req, res) => {
   const {
     name,
     symbol,

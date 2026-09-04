@@ -1,10 +1,13 @@
 const request = require('supertest');
 
 process.env.ADMIN_PASSWORD = 'test-admin-password';
+process.env.AETHERON_OPERATOR_API_KEY = 'test-operator-api-key-0123456789abcdef';
+process.env.AETHERON_SIGNER_ROUTES_ENABLED = 'false';
 
 const app = require('./server');
 
 const CANONICAL_AETH = '0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e';
+const OPERATOR_AUTH = `Bearer ${process.env.AETHERON_OPERATOR_API_KEY}`;
 
 describe('Local backend server', () => {
   it('GET /api returns Base online status', async () => {
@@ -73,6 +76,27 @@ describe('Production API app', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.network).toBe('base');
     expect(res.body.chainId).toBe(8453);
+  });
+
+  it.each([
+    ['/launch-token', { name: 'Test', symbol: 'TST', supply: '1000' }],
+    ['/nft/mint', { tokenURI: 'https://example.com/1.json' }],
+    ['/nft/list', { tokenId: '1', price: '0.1' }],
+    ['/nft/buy', { listingId: '1' }],
+  ])('POST %s rejects unauthenticated server-signing requests', async (path, body) => {
+    const res = await request(apiApp).post(path).send(body);
+    expect(res.statusCode).toBe(401);
+    expect(res.body.code).toBe('OPERATOR_AUTH_REQUIRED');
+  });
+
+  it('keeps signer routes disabled even for an authenticated operator by default', async () => {
+    const res = await request(apiApp)
+      .post('/launch-token')
+      .set('Authorization', OPERATOR_AUTH)
+      .send({ name: 'Test', symbol: 'TST', supply: '1000' });
+
+    expect(res.statusCode).toBe(503);
+    expect(res.body.code).toBe('SIGNER_ROUTES_DISABLED');
   });
 
   it('rejects unknown API routes without falling through to HTML', async () => {
