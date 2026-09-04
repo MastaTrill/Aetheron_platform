@@ -26,6 +26,7 @@ const excludedTopLevelNames = new Set([
   ".presale-launch",
   "Aetheron",
   "backend",
+  "backend-api",
   "cache",
   "dashboard-test-isolated",
   "dist",

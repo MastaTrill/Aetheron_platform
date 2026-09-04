@@ -1,4 +1,5 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
@@ -7,6 +8,7 @@ import { assertExpectedChain } from './deploy-token.mjs';
 import { requireOperator, requireSignerEnabled } from '../security.mjs';
 
 const router = express.Router();
+const metadataWriteLimiter = rateLimit({ windowMs: 60_000, limit: 20, standardHeaders: 'draft-8', legacyHeaders: false });
 const BASE_CHAIN_ID = 8453;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -325,7 +327,7 @@ router.post('/buy', requireOperator, requireSignerEnabled, async (req, res) => {
 });
 
 // POST /api/nft/upload-metadata - Store NFT metadata and return tokenURI
-router.post('/upload-metadata', requireOperator, express.json({ limit: '10mb' }), (req, res) => {
+router.post('/upload-metadata', metadataWriteLimiter, requireOperator, express.json({ limit: '10mb' }), (req, res) => {
   try {
     const { name, description, image, attributes } = req.body || {};
     if (!name || !image) {
