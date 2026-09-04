@@ -39,8 +39,19 @@ function walk(dir) {
   return files;
 }
 
+const distFiles = walk(DIST);
+const packagedNodeModules = distFiles
+  .map((file) => path.relative(DIST, file))
+  .filter((relative) => relative.split(path.sep).includes('node_modules'));
+
+assert.deepEqual(
+  packagedNodeModules,
+  [],
+  `Production bundle must not contain nested node_modules files:\n${packagedNodeModules.slice(0, 20).map((item) => `- ${item}`).join('\n')}`,
+);
+
 const failures = [];
-for (const file of walk(DIST)) {
+for (const file of distFiles) {
   const ext = path.extname(file).toLowerCase();
   if (!textExtensions.has(ext)) continue;
   const text = fs.readFileSync(file, 'utf8').toLowerCase();

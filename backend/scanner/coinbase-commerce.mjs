@@ -88,7 +88,7 @@ router.post('/create-launchpad-charge', requireOperator, async (req, res) => {
 
     const charge = await createCoinbaseCharge({
       name: `Aetheron Token Launch: ${name} (${symbol})`,
-      description: `Polygon ERC20 token launch via Aetheron Platform.\nSymbol: ${symbol}\nSupply: ${supply}\nTeam Wallet: ${teamWallet || 'default'}`,
+      description: `Base ERC20 token launch via Aetheron Platform.\nSymbol: ${symbol}\nSupply: ${supply}\nTeam Wallet: ${teamWallet || 'default'}`,
       amount: '30',
       currency: 'USDC',
       metadata: {
@@ -160,7 +160,6 @@ router.post('/coinbase-webhook', verifyCoinbaseWebhook, async (req, res) => {
         to: event.data.metadata.email,
         subject: 'Aetheron Payment Confirmed',
         text: `Your payment of ${event.data.pricing.local.amount} ${event.data.pricing.local.currency} was confirmed. Thank you!`,
-        html: `<p>Your payment of <b>${event.data.pricing.local.amount} ${event.data.pricing.local.currency}</b> was confirmed. Thank you for supporting Aetheron!</p>`,
       });
     }
     return res.status(200).json({ received: true });

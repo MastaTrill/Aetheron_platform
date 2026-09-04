@@ -1008,43 +1008,32 @@ class AetheronDashboard {
     showNotification(type, title, message) {
         const container = document.getElementById("notificationContainer");
         if (!container) return;
-
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <div class="notification-header">
-                <div class="notification-title">${title}</div>
-                <button class="notification-close">&times;</button>
-            </div>
-            <div class="notification-message">${message}</div>
-        `;
-
+        const header = document.createElement("div");
+        header.className = "notification-header";
+        const titleEl = document.createElement("div");
+        titleEl.className = "notification-title";
+        titleEl.textContent = title;
+        const closeBtn = document.createElement("button");
+        closeBtn.className = "notification-close";
+        closeBtn.type = "button";
+        closeBtn.textContent = "×";
+        const messageEl = document.createElement("div");
+        messageEl.className = "notification-message";
+        messageEl.textContent = message;
+        header.append(titleEl, closeBtn);
+        notification.append(header, messageEl);
         container.appendChild(notification);
-
-        // Show notification
-        setTimeout(() => {
-            notification.classList.add("show");
-        }, 100);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
+        setTimeout(() => notification.classList.add("show"), 100);
+        const removeNotification = () => {
             notification.classList.remove("show");
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 5000);
-
-        // Manual close
-        const closeBtn = notification.querySelector(".notification-close");
+            setTimeout(() => notification.remove(), 300);
+        };
+        const autoRemove = setTimeout(removeNotification, 5000);
         closeBtn.addEventListener("click", () => {
-            notification.classList.remove("show");
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
+            clearTimeout(autoRemove);
+            removeNotification();
         });
     }
 
@@ -1799,17 +1788,17 @@ class AetheronDashboard {
     addChatMessage(sender, message) {
         const aiChatMessages = document.getElementById("aiChatMessages");
         if (!aiChatMessages) return;
-
         const messageDiv = document.createElement("div");
         messageDiv.className = `chat-message ${sender}`;
-        messageDiv.innerHTML = `
-            <div class="message-content">${message}</div>
-            <div class="message-time">${new Date().toLocaleTimeString()}</div>
-        `;
-
+        const content = document.createElement("div");
+        content.className = "message-content";
+        content.textContent = message;
+        const time = document.createElement("div");
+        time.className = "message-time";
+        time.textContent = new Date().toLocaleTimeString();
+        messageDiv.append(content, time);
         aiChatMessages.appendChild(messageDiv);
         aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-
         this.chatHistory.push({ sender, message, timestamp: new Date() });
     }
 

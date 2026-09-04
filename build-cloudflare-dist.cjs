@@ -41,6 +41,7 @@ const excludedTopLevelNames = new Set([
 
 const excludedTopLevelFiles = new Set([
   ".env.example",
+  ".gitattributes",
   ".gitignore",
   ".gitignore_backup",
   "add-liquidity.html",
@@ -135,7 +136,11 @@ function shouldExclude(relativePath, isDirectory) {
   const normalized = relativePath.split(path.sep).join("/");
   if (!normalized) return false;
 
-  const [topLevelName] = normalized.split("/");
+  const segments = normalized.split("/").filter(Boolean);
+  const [topLevelName] = segments;
+  if (segments.includes("node_modules") || segments.includes(".git")) {
+    return true;
+  }
   if (excludedTopLevelNames.has(topLevelName)) {
     return true;
   }

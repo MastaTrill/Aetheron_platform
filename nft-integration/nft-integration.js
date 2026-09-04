@@ -157,24 +157,17 @@ class NFTIntegration {
     const previewImage = document.getElementById('previewImage');
     const previewVideo = document.getElementById('previewVideo');
     const previewAudio = document.getElementById('previewAudio');
-
-    previewImage.style.display = 'none';
-    previewVideo.style.display = 'none';
-    previewAudio.style.display = 'none';
-
-    const fileURL = URL.createObjectURL(file);
-
-    if (file.type.startsWith('image/')) {
-      previewImage.src = fileURL;
-      previewImage.style.display = 'block';
-    } else if (file.type.startsWith('video/')) {
-      previewVideo.src = fileURL;
-      previewVideo.style.display = 'block';
-    } else if (file.type.startsWith('audio/')) {
-      previewAudio.src = fileURL;
-      previewAudio.style.display = 'block';
+    for (const media of [previewImage, previewVideo, previewAudio]) {
+      media.removeAttribute('src');
+      media.style.display = 'none';
     }
-
+    let note = previewContainer.querySelector('.preview-file-note');
+    if (!note) {
+      note = document.createElement('p');
+      note.className = 'preview-file-note';
+      previewContainer.appendChild(note);
+    }
+    note.textContent = `Selected: ${file.name} (${file.type || 'unknown type'}). Local preview disabled for security.`;
     previewContainer.style.display = 'block';
   }
 
@@ -1035,36 +1028,38 @@ class NFTIntegration {
 
   showToast(message, type = 'info') {
     const toastContainer = document.getElementById('toastContainer');
+    const safeType = ['success', 'error', 'warning', 'info'].includes(type) ? type : 'info';
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-
-    const iconClass = type === 'success' ? 'fas fa-check-circle' :
-      type === 'error' ? 'fas fa-exclamation-circle' :
-        type === 'warning' ? 'fas fa-exclamation-triangle' :
-          'fas fa-info-circle';
-
-    toast.innerHTML = `
-            <i class="${iconClass}"></i>
-            <div class="toast-content">
-                <div class="toast-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
-                <div class="toast-message">${message}</div>
-            </div>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
+    toast.className = `toast ${safeType}`;
+    const icon = document.createElement('i');
+    icon.className = safeType === 'success' ? 'fas fa-check-circle' :
+      safeType === 'error' ? 'fas fa-exclamation-circle' :
+        safeType === 'warning' ? 'fas fa-exclamation-triangle' : 'fas fa-info-circle';
+    const content = document.createElement('div');
+    content.className = 'toast-content';
+    const title = document.createElement('div');
+    title.className = 'toast-title';
+    title.textContent = safeType.charAt(0).toUpperCase() + safeType.slice(1);
+    const body = document.createElement('div');
+    body.className = 'toast-message';
+    body.textContent = message;
+    content.append(title, body);
+    const close = document.createElement('button');
+    close.className = 'toast-close';
+    close.type = 'button';
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'fas fa-times';
+    close.appendChild(closeIcon);
+    close.addEventListener('click', () => toast.remove());
+    toast.append(icon, content, close);
     toastContainer.appendChild(toast);
-
-    // Trigger animation
     setTimeout(() => toast.classList.add('show'), 10);
-
-    // Auto remove after 5 seconds
     setTimeout(() => {
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
     }, 5000);
   }
+
 }
 
 // Global function for onclick handlers

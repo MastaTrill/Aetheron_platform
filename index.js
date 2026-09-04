@@ -1511,7 +1511,8 @@ function initProgressBar() {
     // Show progress on page navigation
     document.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', (_e) => {
-            if (link.href && !link.href.startsWith('javascript:') && !link.target) {
+            const targetUrl = new URL(link.href, window.location.href);
+            if ((targetUrl.protocol === 'https:' || targetUrl.protocol === 'http:') && !link.target) {
                 progressBar.classList.add('active');
             }
         });

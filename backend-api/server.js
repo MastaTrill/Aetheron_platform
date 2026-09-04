@@ -16,7 +16,10 @@ app.get("/api/health", (req,res)=>{
 app.get("/api/market/:token", async (req,res)=>{
   try{
     const token = req.params.token;
-    const r = await fetch(`https://api.dexscreener.com/token-pairs/v1/polygon/${token}`);
+    if (!/^0x[a-fA-F0-9]{40}$/.test(token)) {
+      return res.status(400).json({error:"invalid token address"});
+    }
+    const r = await fetch(`https://api.dexscreener.com/token-pairs/v1/base/${token}`);
     const data = await r.json();
     res.json(data);
   }catch(e){

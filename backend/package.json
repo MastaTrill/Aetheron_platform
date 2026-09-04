@@ -20,7 +20,8 @@
     "body-parser": "^2.3.0",
     "dotenv": "^16.6.1",
     "ethers": "^6.15.0",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "nodemailer": "^9.1.1"
   },
   "devDependencies": {
     "eslint": "^9.0.0",
