@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import { describe, it, before, beforeEach } from "node:test";
 import { network } from "hardhat";
 
-describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function () {
+describe("AetheronV2 — Base launch invariants", { concurrency: false }, function () {
   let ethers;
   let token;
-  let owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient;
+  let owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking;
 
   before(async function () {
     ({ ethers } = await network.connect());
-    [owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient] = await ethers.getSigners();
+    [owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
@@ -18,35 +18,46 @@ describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function 
     await token.waitForDeployment();
   });
 
-  it("preserves the intended 1B AETH supply allocation", async function () {
+  it("preserves the intended 1B AETH supply allocation and fixed tax rates", async function () {
     const e = ethers.parseEther;
     assert.equal(await token.totalSupply(), e("1000000000"));
     assert.equal(await token.balanceOf(owner.address), e("500000000"));
     assert.equal(await token.balanceOf(teamWallet.address), e("200000000"));
     assert.equal(await token.balanceOf(marketingWallet.address), e("150000000"));
     assert.equal(await token.balanceOf(stakingPool.address), e("150000000"));
+    assert.equal(await token.buyTaxRate(), 3n);
+    assert.equal(await token.sellTaxRate(), 5n);
   });
 
-  it("registers an AMM pair without making it tax-exempt", async function () {
+  it("lets only the owner register valid AMM pairs", async function () {
+    await assert.rejects(() => token.connect(buyer).setAutomatedMarketMakerPair(pair.address, true), /Ownable: caller is not the owner/);
+    await assert.rejects(() => token.setAutomatedMarketMakerPair(ethers.ZeroAddress, true), /Invalid AMM pair/);
+    await assert.rejects(() => token.setAutomatedMarketMakerPair(owner.address, true), /Owner cannot be AMM pair/);
     await token.setAutomatedMarketMakerPair(pair.address, true);
     assert.equal(await token.isAutomatedMarketMakerPair(pair.address), true);
-    assert.equal(await token.isExcludedFromTax(pair.address), false);
   });
 
-  it("prevents an active AMM pair from being tax-exempt", async function () {
+  it("allows owner liquidity seeding before launch but blocks public pair transfers", async function () {
+    const e = ethers.parseEther;
     await token.setAutomatedMarketMakerPair(pair.address, true);
-    await assert.rejects(() => token.setExcludedFromTax(pair.address, true), /AMM pair cannot be tax-exempt/);
+    await token.transfer(pair.address, e("1000000"));
+    assert.equal(await token.balanceOf(pair.address), e("1000000"));
+    await assert.rejects(() => token.connect(pair).transfer(buyer.address, e("1000")), /Trading not enabled/);
   });
 
-  it("rejects registering an already tax-exempt account as an AMM pair", async function () {
-    await token.setExcludedFromTax(pair.address, true);
-    await assert.rejects(() => token.setAutomatedMarketMakerPair(pair.address, true), /Tax-exempt account cannot be AMM pair/);
-  });
+  it("supports a bounded pre-launch transfer agent without granting post-launch tax exemption", async function () {
+    const e = ethers.parseEther;
+    await assert.rejects(() => token.connect(buyer).setPreLaunchTransferAgent(agent.address, true), /Ownable: caller is not the owner/);
+    await token.setPreLaunchTransferAgent(agent.address, true);
+    await token.transfer(agent.address, e("10000"));
+    await token.connect(agent).transfer(recipient.address, e("1000"));
+    assert.equal(await token.balanceOf(recipient.address), e("1000"));
 
-  it("blocks public pair trading until the one-way trading gate is enabled", async function () {
     await token.setAutomatedMarketMakerPair(pair.address, true);
-    await token.transfer(pair.address, ethers.parseEther("1000000"));
-    await assert.rejects(() => token.connect(pair).transfer(buyer.address, ethers.parseEther("1000")), /Trading not enabled/);
+    await token.enableTrading();
+    const pairBefore = await token.balanceOf(pair.address);
+    await token.connect(agent).transfer(pair.address, e("1000"));
+    assert.equal(await token.balanceOf(pair.address) - pairBefore, e("950"));
   });
 
   it("applies exactly 3% tax to AMM buys after trading is enabled", async function () {
@@ -54,6 +65,7 @@ describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function 
     await token.setAutomatedMarketMakerPair(pair.address, true);
     await token.transfer(pair.address, e("1000000"));
     await token.enableTrading();
+
     const amount = e("10000");
     const tax = (amount * 3n) / 100n;
     const teamTax = (tax * 40n) / 100n;
@@ -62,7 +74,9 @@ describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function 
     const teamBefore = await token.balanceOf(teamWallet.address);
     const marketingBefore = await token.balanceOf(marketingWallet.address);
     const stakingBefore = await token.balanceOf(stakingPool.address);
+
     await token.connect(pair).transfer(buyer.address, amount);
+
     assert.equal(await token.balanceOf(buyer.address), amount - tax);
     assert.equal(await token.balanceOf(teamWallet.address) - teamBefore, teamTax);
     assert.equal(await token.balanceOf(marketingWallet.address) - marketingBefore, marketingTax);
@@ -75,10 +89,18 @@ describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function 
     await token.transfer(seller.address, e("100000"));
     await token.enableTrading();
     const amount = e("10000");
-    const tax = (amount * 5n) / 100n;
     const pairBefore = await token.balanceOf(pair.address);
     await token.connect(seller).transfer(pair.address, amount);
-    assert.equal(await token.balanceOf(pair.address) - pairBefore, amount - tax);
+    assert.equal(await token.balanceOf(pair.address) - pairBefore, e("9500"));
+  });
+
+  it("taxes owner AMM trades after launch instead of preserving an admin fee bypass", async function () {
+    const e = ethers.parseEther;
+    await token.setAutomatedMarketMakerPair(pair.address, true);
+    await token.enableTrading();
+    const pairBefore = await token.balanceOf(pair.address);
+    await token.transfer(pair.address, e("1000"));
+    assert.equal(await token.balanceOf(pair.address) - pairBefore, e("950"));
   });
 
   it("keeps wallet-to-wallet transfers tax-free", async function () {
@@ -87,6 +109,31 @@ describe("AetheronV2 — Base AMM tax safety", { concurrency: false }, function 
     await token.enableTrading();
     await token.connect(seller).transfer(recipient.address, e("1000"));
     assert.equal(await token.balanceOf(recipient.address), e("1000"));
+  });
+
+  it("lets only the owner rotate nonzero tax wallets and uses the new destinations", async function () {
+    const e = ethers.parseEther;
+    await assert.rejects(
+      () => token.connect(buyer).updateTaxWallets(newTeam.address, newMarketing.address, newStaking.address),
+      /Ownable: caller is not the owner/
+    );
+    await assert.rejects(
+      () => token.updateTaxWallets(ethers.ZeroAddress, newMarketing.address, newStaking.address),
+      /Invalid tax wallet/
+    );
+
+    await token.updateTaxWallets(newTeam.address, newMarketing.address, newStaking.address);
+    assert.equal(await token.teamWallet(), newTeam.address);
+    assert.equal(await token.marketingWallet(), newMarketing.address);
+    assert.equal(await token.stakingPool(), newStaking.address);
+
+    await token.setAutomatedMarketMakerPair(pair.address, true);
+    await token.transfer(seller.address, e("1000"));
+    await token.enableTrading();
+    await token.connect(seller).transfer(pair.address, e("1000"));
+    assert.equal(await token.balanceOf(newTeam.address), e("20"));
+    assert.equal(await token.balanceOf(newMarketing.address), e("15"));
+    assert.equal(await token.balanceOf(newStaking.address), e("15"));
   });
 
   it("keeps trading activation one-way", async function () {
