@@ -33,29 +33,35 @@ The machine-readable deployment record is:
 
 `smart-contract/deployments/aeth-base.json`
 
+Corrected Base presale (deployed; public launch still gated):
+
+`smart-contract/deployments/presale-base.json` → `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`
+
 The cross-project registry is:
 
 `docs/AETHERON_CONTRACT_REGISTRY.json`
 
-## Presale status
+## Presale / public launch status
 
-The Base presale and staking release is not considered production-approved merely because code or older deployments exist.
+Contracts on Base are **not** the same as authorization to accept public funds, enable trading, or add liquidity.
 
-The required path is:
+Path behavior for the corrected presale is treated as evidenced by mainnet receipts plus the offline production suite (issue **#217** closed; see `docs/evidence/ISSUE_217_PATH_EVIDENCE_SUBSTITUTION_2026-09-04.md`).
 
-1. protected Base Sepolia readiness;
-2. guarded rehearsal deployment;
-3. success, refund, staking, and privilege-path execution;
-4. BaseScan verification;
-5. immutable evidence review;
-6. explicit mainnet authorization.
+**Base Sepolia is not a required step.** Scripts and runbooks may remain for optional operator practice only.
 
-No README statement should be treated as authorization to deploy, enable trading, add liquidity, or accept public funds.
+The remaining gate is issue **#219** (written Base Mainnet public-launch authorization). Until that issue records an explicit `approved` decision:
+
+- keep `launchAuthorized: false` in public frontend config;
+- do not enable trading;
+- do not add canonical mainnet liquidity;
+- do not market the presale as open to the public.
+
+No README statement authorizes deployment actions, trading, liquidity, or acceptance of public funds.
 
 ## Repository truth rules
 
 - Base mainnet is the current canonical production network.
-- Polygon Mumbai, Polygon mainnet, Ethereum Sepolia, Base Sepolia, Solana, simulations, and local deployments must be labeled explicitly.
+- Polygon Mumbai, Polygon mainnet, Ethereum Sepolia, Base Sepolia, Solana, simulations, and local deployments must be labeled explicitly when referenced.
 - Historical Polygon and Mumbai references are legacy records, not current production configuration.
 - A deployment is only considered verified when its network, chain ID, contract address, creation transaction, deployer, owner, bytecode/source verification, and status are recorded together.
 - Never copy a testnet address into production frontend configuration.
