@@ -4,6 +4,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
+const { rateLimit } = require('express-rate-limit');
 
 const app = express();
 const rootDir = path.join(__dirname, '..');
@@ -50,6 +51,13 @@ const stats = {
 
 app.disable('x-powered-by');
 app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? 1 : false);
+
+const requestLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+});
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -270,6 +278,7 @@ function apiStatus() {
 }
 
 app.use(express.json({ limit: '1mb' }));
+app.use(requestLimiter);
 app.use((req, res, next) => {
   if (isSensitivePath(req.path)) {
     return res.status(404).json({ error: 'Not found' });

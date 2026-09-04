@@ -50,6 +50,12 @@ assert.deepEqual(
   `Production bundle must not contain nested node_modules files:\n${packagedNodeModules.slice(0, 20).map((item) => `- ${item}`).join('\n')}`,
 );
 
+assert.equal(
+  fs.existsSync(path.join(DIST, 'backend-api')),
+  false,
+  'Production bundle must not publish backend-api server source or configuration',
+);
+
 const failures = [];
 for (const file of distFiles) {
   const ext = path.extname(file).toLowerCase();

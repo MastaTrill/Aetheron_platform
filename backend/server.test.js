@@ -52,6 +52,15 @@ describe('Local backend server', () => {
     const res = await request(app).get('/logs/export');
     expect(res.statusCode).toBe(401);
   });
+
+  it('rate limits repeated requests to the local backend', async () => {
+    let res;
+    for (let i = 0; i < 130; i += 1) {
+      res = await request(app).get('/stats');
+      if (res.statusCode === 429) break;
+    }
+    expect(res.statusCode).toBe(429);
+  });
 });
 
 describe('Production API app', () => {
@@ -189,6 +198,24 @@ describe('Production API app', () => {
       process.env.AETHERON_SIGNER_ROUTES_ENABLED = 'false';
     }
   });
+  it('rate limits repeated all-payment history requests', async () => {
+    let res;
+    for (let i = 0; i < 70; i += 1) {
+      res = await request(apiApp).get('/all-payments');
+      if (res.statusCode === 429) break;
+    }
+    expect(res.statusCode).toBe(429);
+  });
+
+  it('rate limits repeated NFT metadata uploads', async () => {
+    let res;
+    for (let i = 0; i < 30; i += 1) {
+      res = await request(apiApp).post('/nft/upload-metadata').send({ name: 'Rate limit', image: 'https://example.com/image.png' });
+      if (res.statusCode === 429) break;
+    }
+    expect(res.statusCode).toBe(429);
+  });
+
   it('rejects unknown API routes without falling through to HTML', async () => {
     const res = await request(apiApp).get('/does-not-exist');
     expect(res.statusCode).toBe(404);
