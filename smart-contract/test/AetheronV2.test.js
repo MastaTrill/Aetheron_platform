@@ -5,11 +5,11 @@ import { network } from "hardhat";
 describe("AetheronV2 — Base launch invariants", { concurrency: false }, function () {
   let ethers;
   let token;
-  let owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking;
+  let owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking, prospectiveOwner;
 
   before(async function () {
     ({ ethers } = await network.connect());
-    [owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking] = await ethers.getSigners();
+    [owner, teamWallet, marketingWallet, stakingPool, pair, buyer, seller, recipient, agent, newTeam, newMarketing, newStaking, prospectiveOwner] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
@@ -27,6 +27,16 @@ describe("AetheronV2 — Base launch invariants", { concurrency: false }, functi
     assert.equal(await token.balanceOf(stakingPool.address), e("150000000"));
     assert.equal(await token.buyTaxRate(), 3n);
     assert.equal(await token.sellTaxRate(), 5n);
+  });
+
+  it("requires a pending owner to explicitly accept ownership", async function () {
+    await token.transferOwnership(prospectiveOwner.address);
+    assert.equal(await token.owner(), owner.address);
+    assert.equal(await token.pendingOwner(), prospectiveOwner.address);
+    await assert.rejects(() => token.connect(buyer).acceptOwnership(), /caller is not the new owner/i);
+    await token.connect(prospectiveOwner).acceptOwnership();
+    assert.equal(await token.owner(), prospectiveOwner.address);
+    assert.equal(await token.pendingOwner(), ethers.ZeroAddress);
   });
 
   it("lets only the owner register valid AMM pairs", async function () {
