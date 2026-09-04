@@ -10,13 +10,26 @@ const __dirname = path.dirname(__filename);
 const DATA_DIR = path.join(__dirname, "storage");
 const DB_FILE = path.join(DATA_DIR, "db.json");
 const PORT = process.env.PORT || 3000;
-const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://aetrs.com",
+  "https://www.aetrs.com",
+  "https://mastatrill.github.io"
+];
+const ALLOWED_ORIGINS = new Set(
+  (process.env.ALLOWED_ORIGIN || DEFAULT_ALLOWED_ORIGINS.join(","))
+    .split(",").map((value) => value.trim()).filter(Boolean)
+);
 const API_KEY = process.env.INTERNAL_API_KEY || "dev-key";
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const app = express();
-app.use(cors({ origin: ORIGIN === "*" ? true : ORIGIN.split(",") }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.has(origin)) return callback(null, true);
+    return callback(new Error("Origin not allowed"));
+  }
+}));
 app.use(express.json({ limit: "1mb" }));
 
 let db = {

@@ -235,7 +235,13 @@ async function addLiquidity() {
     } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
       errorMsg = 'Transaction may fail. Check token approvals and balances.';
     }
-    resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${errorMsg}</div>`;
+    resultDiv.replaceChildren();
+    const errorBox = document.createElement('div');
+    errorBox.className = 'error';
+    const errorLabel = document.createElement('strong');
+    errorLabel.textContent = 'Error:';
+    errorBox.append(errorLabel, document.createTextNode(` ${errorMsg}`));
+    resultDiv.appendChild(errorBox);
     updateStatus('Error: ' + errorMsg, 'error');
   } finally {
     setLoading(false);

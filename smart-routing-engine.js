@@ -105,8 +105,18 @@ function srRenderHistory(){
   const rows=JSON.parse(localStorage.getItem(key)||'[]');
   const el=document.getElementById('srHistory');
   if(!el) return;
-  if(!rows.length){el.innerHTML='<div class="flow-row"><div>No trades yet</div><div>-</div><div>-</div></div>';return;}
-  el.innerHTML='<div class="flow-head">Pair | Route | Output</div>' + rows.map(r=>`<div class="flow-row"><div>${r.pair}</div><div>${r.route}</div><div>${r.output}</div></div>`).join('');
+  el.replaceChildren();
+  if(!rows.length){
+    const empty=document.createElement('div'); empty.className='flow-row';
+    for(const value of ['No trades yet','-','-']){const cell=document.createElement('div');cell.textContent=value;empty.appendChild(cell);}
+    el.appendChild(empty); return;
+  }
+  const head=document.createElement('div'); head.className='flow-head'; head.textContent='Pair | Route | Output'; el.appendChild(head);
+  rows.forEach((rowData)=>{
+    const row=document.createElement('div'); row.className='flow-row';
+    for(const value of [rowData.pair,rowData.route,rowData.output]){const cell=document.createElement('div');cell.textContent=String(value ?? '');row.appendChild(cell);}
+    el.appendChild(row);
+  });
 }
 async function srExecute(oneClick=false){
   try{

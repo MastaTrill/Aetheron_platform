@@ -21,14 +21,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendPaymentEmail({ to, subject, text, html }) {
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function textToHtml(text) {
+  return `<p>${escapeHtml(text).replace(/\r?\n/g, '<br>')}</p>`;
+}
+
+export async function sendPaymentEmail({ to, subject, text }) {
   try {
     return await transporter.sendMail({
       from: process.env.SMTP_FROM || 'Aetheron <no-reply@aetheron.online>',
       to,
       subject,
       text,
-      html,
+      html: textToHtml(text),
     });
   } catch (error) {
     console.error('Failed to send payment email via SMTP:', error);

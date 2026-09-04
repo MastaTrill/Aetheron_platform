@@ -37,28 +37,18 @@ async function generateEncryptionKey() {
   );
 }
 
-async function deriveKeyFromPassword(password) {
-  // Derive a key from a user password using PBKDF2
+async function deriveKeyFromPassword(password, salt) {
   const encoder = new TextEncoder();
-  const salt = window.crypto.getRandomValues(new Uint8Array(16));
-
   const keyMaterial = await window.crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"],
+    "raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]
   );
-
-  const key = await window.crypto.subtle.deriveKey(
+  return await window.crypto.subtle.deriveKey(
     { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     true,
     ["encrypt", "decrypt"],
   );
-
-  return { key, salt };
 }
 
 async function encryptData(data, key) {
@@ -92,21 +82,19 @@ async function decryptData(encryptedObj, key) {
 }
 
 async function encryptWalletData(walletData, password) {
-  const { key, salt } = await deriveKeyFromPassword(password);
+  const salt = window.crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKeyFromPassword(password, salt);
   const encrypted = await encryptData(walletData, key);
-  return {
-    salt: Array.from(salt),
-    ...encrypted,
-  };
+  return { salt: Array.from(salt), ...encrypted };
 }
 
 async function decryptWalletData(encryptedWallet, password) {
-  const { key, salt } = await deriveKeyFromPassword(password);
-  salt.set(encryptedWallet.salt);
+  const salt = new Uint8Array(encryptedWallet.salt);
+  const key = await deriveKeyFromPassword(password, salt);
   return await decryptData(encryptedWallet, key);
 }
 
-// Generate or retrieve encryption key for session
+// Generate or retrieve encryption key for session// Generate or retrieve encryption key for session
 async function getSessionKey() {
   if (!encryptionKey) {
     encryptionKey = await generateEncryptionKey();
@@ -203,7 +191,7 @@ function showMigrationPrompt(encryptedData) {
 async function unlockWallet(encryptedData, password) {
   try {
     const salt = new Uint8Array(encryptedData.salt);
-    const { key } = await deriveKeyFromPasswordWithSalt(password, salt);
+    const key = await deriveKeyFromPassword(password, salt);
     const walletData = await decryptData(encryptedData, key);
 
     // Verify password using stored hash
@@ -227,26 +215,6 @@ async function unlockWallet(encryptedData, password) {
     alert("Failed to unlock wallet. Incorrect password?");
     showScreen("welcome");
   }
-}
-
-// Derive key from password with existing salt
-async function deriveKeyFromPasswordWithSalt(password, existingSalt) {
-  const encoder = new TextEncoder();
-  const keyMaterial = await window.crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"],
-  );
-  const key = await window.crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt: existingSalt, iterations: 100000, hash: "SHA-256" },
-    keyMaterial,
-    { name: "AES-GCM", length: 256 },
-    true,
-    ["encrypt", "decrypt"],
-  );
-  return { key, salt: existingSalt };
 }
 
 function updateConnectionStatus(status) {
@@ -346,7 +314,7 @@ async function attemptUnlock() {
   
   try {
     const salt = new Uint8Array(pendingEncryptedWallet.salt);
-    const { key } = await deriveKeyFromPasswordWithSalt(password, salt);
+    const key = await deriveKeyFromPassword(password, salt);
     const walletData = await decryptData(pendingEncryptedWallet, key);
     
     // Verify password using stored hash
@@ -371,6 +339,19 @@ async function attemptUnlock() {
   }
 }
 
+function renderSeedWords(display, words) {
+  display.replaceChildren();
+  words.forEach((word, i) => {
+    const item = document.createElement("div");
+    item.className = "seed-word";
+    const number = document.createElement("span");
+    number.className = "number";
+    number.textContent = String(i + 1).padStart(2, "0");
+    item.append(number, document.createTextNode(` ${word}`));
+    display.appendChild(item);
+  });
+}
+
 // Seed Phrase Generation
 function generateSeedPhrase() {
   // Use ethers.js to generate mnemonic
@@ -380,18 +361,9 @@ function generateSeedPhrase() {
 
   currentSeedPhrase = words;
 
-  // Display seed phrase
+  // Display seed phrase without interpreting mnemonic words as HTML.
   const display = document.getElementById("seedPhraseDisplay");
-  display.innerHTML = words
-    .map(
-      (word, i) => `
-        <div class="seed-word">
-            <span class="number">${String(i + 1).padStart(2, "0")}</span>
-            ${word}
-        </div>
-    `,
-    )
-    .join("");
+  renderSeedWords(display, words);
 
   // Enable create button when checkbox is checked AND password is filled
   const updateCreateButtonState = () => {
@@ -484,7 +456,8 @@ async function saveAndLoadWallet(mnemonic, password) {
     };
 
     // Encrypt wallet data using password before storing
-    const { key, salt } = await deriveKeyFromPassword(password);
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const key = await deriveKeyFromPassword(password, salt);
     const encryptedData = await encryptData(walletData, key);
 
     // Store encrypted data with salt in localStorage
@@ -797,21 +770,11 @@ function showSeedPhrase() {
 // Display Stored Seed
 function displayStoredSeed() {
   if (!currentSeedPhrase) return;
-
   const display = document.getElementById("viewSeedPhrase");
-  display.innerHTML = currentSeedPhrase
-    .map(
-      (word, i) => `
-        <div class="seed-word">
-            <span class="number">${String(i + 1).padStart(2, "0")}</span>
-            ${word}
-        </div>
-    `,
-    )
-    .join("");
+  renderSeedWords(display, currentSeedPhrase);
 }
 
-// Copy Seed Phrase
+// Copy Seed Phrase// Copy Seed Phrase
 function copySeedPhrase() {
   if (!currentSeedPhrase) return;
 

@@ -189,7 +189,8 @@ class ProductionReadinessChecker {
       const content = fs.readFileSync(file, 'utf8');
       // Check for external HTTPS links OR if file only has relative/internal links (which is fine)
       const hasHttpsLinks = content.includes('https://');
-      const hasHttpLinks = content.includes('http://') && !content.includes('http://www.w3.org'); // Ignore SVG namespace
+      const httpLinks = content.match(/http:\/\/[^\s\"'<>]+/gi) || [];
+      const hasHttpLinks = httpLinks.some((url) => url !== 'http://www.w3.org/2000/svg');
       const hasOnlyRelativeLinks = !hasHttpsLinks && !hasHttpLinks;
 
       if (hasHttpsLinks && !hasHttpLinks) {

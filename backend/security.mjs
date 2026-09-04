@@ -7,9 +7,10 @@ function configuredOperatorKey() {
 }
 
 function secureEqual(left, right) {
-  const leftDigest = crypto.createHash('sha256').update(left).digest();
-  const rightDigest = crypto.createHash('sha256').update(right).digest();
-  return crypto.timingSafeEqual(leftDigest, rightDigest);
+  const leftBuffer = Buffer.from(left, 'utf8');
+  const rightBuffer = Buffer.from(right, 'utf8');
+  if (leftBuffer.length !== rightBuffer.length) return false;
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
 }
 
 export function requireOperator(req, res, next) {
