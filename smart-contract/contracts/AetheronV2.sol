@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /// @title Aetheron V2 (AETH)
 /// @notice Base-ready fixed-supply AETH with deterministic AMM taxation and a one-way launch gate.
 /// @dev AMM pairs are never implicitly fee-exempt. Before launch, only the owner, this contract,
 ///      or an explicitly authorized transfer agent can originate transfers. After launch, every
 ///      AMM buy/sell is taxed at the same fixed rate, including owner-originated trades.
-contract AetheronV2 is ERC20, Ownable {
+contract AetheronV2 is ERC20, Ownable2Step {
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 10 ** 18;
     uint256 public constant LIQUIDITY_ALLOCATION = TOTAL_SUPPLY * 50 / 100;
     uint256 public constant TEAM_ALLOCATION = TOTAL_SUPPLY * 20 / 100;
