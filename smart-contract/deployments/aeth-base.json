@@ -10,7 +10,11 @@
     "totalSupplyWei": "1000000000000000000000000000",
     "totalSupplyTokens": "1000000000.0",
     "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
-    "tradingEnabled": false
+    "tradingEnabled": true,
+    "tradingEnabledSource": "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md",
+    "canonicalLiquidityConfigured": false,
+    "quickswapRouter": null,
+    "liquidityPool": null
   },
   "deployment": {
     "creationTransaction": "0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829",
@@ -30,5 +34,10 @@
     "compilerVersion": "v0.8.20+commit.a1b79de6",
     "constructorArguments": "00000000000000000000000076a83f91dc64fc4f29cef6635f9a36477eca67840000000000000000000000008a3ad49656bd07981c9cfc7ad826a808847c34520000000000000000000000008a3ad49656bd07981c9cfc7ad826a808847c3452",
     "url": "https://basescan.org/address/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e#code"
+  },
+  "productAuthorization": {
+    "tradingAuthorized": true,
+    "liquidityAuthorized": false,
+    "updatedAt": "2026-09-04T05:25:00Z"
   }
 }

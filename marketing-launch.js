@@ -1,6 +1,6 @@
 // marketing-launch.js
-// Public presale funding authorized 2026-09-04 (#219).
-// Trading and canonical liquidity remain disabled until separate on-chain actions.
+// Public presale + trading flag authorized 2026-09-04.
+// Canonical liquidity remains disabled until a verified Base pool exists.
 (function () {
   const status = Object.freeze({
     network: 'Base Mainnet',
@@ -8,7 +8,8 @@
     token: '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
     launchAuthorized: true,
     publicFundingAuthorized: true,
-    tradingAuthorized: false,
+    tradingAuthorized: true,
+    onChainTradingEnabled: true,
     canonicalLiquidityAuthorized: false,
     statusUrl: 'presale.html',
   });
@@ -23,11 +24,7 @@
     }
 
     launchCampaign() {
-      if (!status.publicFundingAuthorized) {
-        console.warn('Aetheron public funding is not authorized.');
-        return false;
-      }
-      return true;
+      return status.publicFundingAuthorized === true;
     }
   }
 

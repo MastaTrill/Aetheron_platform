@@ -5,20 +5,24 @@ window.AETHERON_PRESALE_CONFIG = {
   invalidPresaleContractAddress: "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
   launchAuthorized: true,
   status: "authorized",
-  recorded_status: "public_presale_authorized",
-  statusMessage: "Public Base presale authorized by owner on 2026-09-04 (issue #219). Trading and canonical liquidity remain disabled until separate on-chain enablement.",
+  recorded_status: "public_presale_and_trading_authorized",
+  statusMessage: "Public Base presale and trading flags authorized. On-chain tradingEnabled is already true (2026-09-03 audit). Canonical liquidity is not configured yet — do not claim a live liquid market until a verified pool exists.",
   authorization: {
     issue: 219,
     decision: "approved",
     approvedAtUtc: "2026-09-04T05:12:00Z",
-    approvedBy: "owner (MastaTrill) via operator chat",
-    scope: "public_presale_purchases_only",
-    tradingAuthorized: false,
+    tradingAuthorizedAtUtc: "2026-09-04T05:25:00Z",
+    approvedBy: "owner (MastaTrill)",
+    scope: "public_presale_purchases_and_trading_flag",
+    tradingAuthorized: true,
     liquidityAuthorized: false,
+    onChainTradingEnabled: true,
+    onChainNote: "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md records tradingEnabled=true; enableTrading() must not be called again (one-way).",
     residualRisks: [
       "owner and treasury are the same EOA",
-      "independent review not archived as a separate memo",
-      "liquidity deferred"
+      "no canonical DEX pool / router configured on token",
+      "liquidity deferred — tradingEnabled does not equal a liquid market",
+      "token tax/DEX interaction design caveats in live audit"
     ]
   },
   expectedOwner: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",

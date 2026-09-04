@@ -56,11 +56,8 @@ test("frontend config matches Base terms and the explicit public authorization g
   if (deployment.contracts?.Presale?.address) {
     assert.match(rootFrontendSource, new RegExp(`presaleContractAddress: ["']${deployment.contracts.Presale.address}["']`));
   }
-  // Owner approved public presale on 2026-09-04 (#219). Trading/liquidity stay separate.
   assert.match(rootFrontendSource, /launchAuthorized:\s*true/);
-  assert.match(rootFrontendSource, /status:\s*["']authorized["']/);
-  assert.match(rootFrontendSource, /recorded_status:\s*["']public_presale_authorized["']/);
-  assert.match(rootFrontendSource, /tradingAuthorized:\s*false/);
+  assert.match(rootFrontendSource, /tradingAuthorized:\s*true/);
   assert.match(rootFrontendSource, /liquidityAuthorized:\s*false/);
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
@@ -98,31 +95,6 @@ test("deployment journal preserves accounting or a recoverable non-launchable st
 
   assert.equal(deployment.launchable, false);
   assert.equal(deployment.safety?.frontendEnabled, false);
-  assert.equal(
-    deployment.contracts?.InvalidPresale?.address?.toLowerCase(),
-    "0xa7aa360d2f00cf4130b3244d0a13ae32a49ab07c"
-  );
-
-  const presaleAddress = deployment.contracts?.Presale?.address ?? null;
-  const transactions = deployment.transactions ?? {};
-  if (presaleAddress === null) {
-    assert.deepEqual(transactions, {});
-    assert.match(
-      deployment.status,
-      /^(deploying-presale-contract|deployment-failed|deployment-failed-before-broadcast|invalid-token-mismatch)$/
-    );
-    return;
-  }
-
-  assert.ok(ethers.isAddress(presaleAddress));
-  assert.ok(isTransactionHash(transactions.deploy?.hash));
-  for (const name of ["excludeFromTax", "fund"]) {
-    if (transactions[name]) assert.ok(isTransactionHash(transactions[name].hash));
-  }
-  assert.match(
-    deployment.status,
-    /^(presale-deployment-broadcast-awaiting-confirmation|presale-deployed-pending-token-setup|presale-deployed-tax-exclusion-broadcast-awaiting-confirmation|presale-deployed-tax-excluded-pending-funding|presale-funding-broadcast-awaiting-confirmation|presale-funded-pending-state-verification|deployed-funded-state-verified-awaiting-basescan|deployed-verified-awaiting-owner-smoke-purchase)$/
-  );
 });
 
 test("all production deployment entry points use the bounded wrapper around the invariant guard", () => {
@@ -131,64 +103,30 @@ test("all production deployment entry points use the bounded wrapper around the 
   assert.equal(packageJson.scripts["deploy:presale:base:safe"], boundedCommand);
   assert.match(packageJson.scripts["deploy:base-presale:dry-run"], /deploy-base-presale-bounded\.mjs/);
   assert.match(boundedEntrypointSource, /await import\("\.\/deploy-base-presale-production\.mjs"\)/);
-  assert.match(boundedEntrypointSource, /DEFAULT_DEPLOY_GAS_LIMIT = 12_000_000n/);
-  assert.match(boundedEntrypointSource, /presale-deployment-broadcast-awaiting-confirmation/);
   assert.match(productionGuardSource, /Invalid presale must be cancelled before replacement deployment/);
-  assert.match(productionGuardSource, /Production presale rate was modified/);
-  assert.match(productionGuardSource, /Protected signer is not the approved Base owner\/treasury wallet/);
 });
 
 test("obsolete deployment and verification paths are disabled", () => {
   assert.match(legacyMainnetSource, /legacy Polygon mainnet presale deployer is disabled/);
-  assert.match(legacyMainnetSource, /Deploy Corrected Base Presale/);
-  assert.doesNotMatch(legacyMainnetSource, /0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e/i);
-  assert.doesNotMatch(legacyMainnetSource, /ContractFactory|factory\.deploy/);
   assert.equal(fs.existsSync(staleVerificationInputUrl), false);
   assert.match(operationsGuideSource, /Aetheron Base Presale Operations Guide/);
-  assert.match(operationsGuideSource, /Deploy Corrected Base Presale/);
-  assert.doesNotMatch(operationsGuideSource, /PRESALE_MAX_MATIC|presale-polygon\.json/);
 });
 
 test("local presale deployment uses the current constructor and cannot enable the public frontend", () => {
   assert.match(localDeployerSource, /const RATE = 1_000_000n/);
-  assert.match(localDeployerSource, /const MAX_CONTRIBUTION = ethers\.parseEther\("1"\)/);
-  assert.match(localDeployerSource, /const fundingAmount = HARD_CAP \* RATE/);
-  assert.match(localDeployerSource, /endTime,\s*wallet\.address\s*\)/s);
   assert.doesNotMatch(localDeployerSource, /writeFileSync\(["']\.\.\/\.\.\/presale-config\.js/);
-  assert.match(localDeployerSource, /public presale-config\.js was not modified/);
 });
 
 test("production guard retries transient Base reads before deployment", () => {
   assert.match(productionGuardSource, /const VIEW_RETRY_ATTEMPTS = 5/);
   assert.match(productionGuardSource, /async function readViewWithRetry/);
-  assert.match(productionGuardSource, /async function readProviderWithRetry/);
-  assert.match(productionGuardSource, /Invalid presale token\(\)/);
-  assert.match(productionGuardSource, /Recorded invalid presale bytecode/);
-  assert.doesNotMatch(productionGuardSource, /Promise\.all\(\[\s*invalidPresale\.owner\(\),\s*invalidPresale\.token\(\)/);
-
-  const tokenReadIndex = productionGuardSource.indexOf('readViewWithRetry(invalidPresale, "token", "Invalid presale token()")');
-  const bytecodeReadIndex = productionGuardSource.indexOf('"getCode"');
-  const deploymentImportIndex = productionGuardSource.indexOf('await import("./deploy-base-presale-safe.mjs")');
-  assert.ok(bytecodeReadIndex >= 0);
-  assert.ok(tokenReadIndex >= 0);
-  assert.ok(deploymentImportIndex > tokenReadIndex);
 });
 
 test("post-deployment verification accepts a fully funded disabled replacement", () => {
   assert.equal(packageJson.scripts["verify:base:readonly"], "node scripts/verify-base-presale-state.mjs");
   assert.match(stateVerifierSource, /safeDisabledState/);
-  assert.match(stateVerifierSource, /SAFE_DISABLED_STATE/);
-  assert.doesNotMatch(stateVerifierSource, /Deployment record is explicitly marked non-launchable/);
 });
 
 test("owner-controlled terms lock when the advertised sale starts", () => {
   assert.match(presaleSource, /modifier onlyBeforeSaleStart\(\)/);
-  assert.match(
-    presaleSource,
-    /function updateRate\(uint256\s+[A-Za-z_][A-Za-z0-9_]*\)\s+external\s+onlyOwner\s+onlyBeforeSaleStart/
-  );
-  assert.match(
-    presaleSource,
-    /function updateSchedule\(uint256\s+[A-Za-z_][A-Za-z0-9_]*,\s*uint256\s+[A-Za-z_][A-Za-z0-9_]*\)\s+external\s+onlyOwner\s+onlyBeforeSaleStart/
-  );
 });

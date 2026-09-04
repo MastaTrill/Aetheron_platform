@@ -17,8 +17,8 @@ if (typeof window !== 'undefined') {
     minimumPurchaseEth: '0.0003',
     tokensPerEth: 1000000,
     launchAuthorized: true,
-    launchStatus: 'public-presale-authorized',
-    tradingAuthorized: false,
+    launchStatus: 'public-presale-and-trading-authorized',
+    tradingAuthorized: true,
     liquidityAuthorized: false
   });
   window.BASE_RPC_URLS = [...window.AETHERON_PRESALE_CONFIG.rpcUrls];
