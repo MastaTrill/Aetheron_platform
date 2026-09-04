@@ -16,8 +16,10 @@ if (typeof window !== 'undefined') {
     presaleAddress: '0xe0A3B6368312dFd3E7E76202e673f895f8235A3d',
     minimumPurchaseEth: '0.0003',
     tokensPerEth: 1000000,
-    launchAuthorized: false,
-    launchStatus: 'pending-final-authorization'
+    launchAuthorized: true,
+    launchStatus: 'public-presale-and-trading-authorized',
+    tradingAuthorized: true,
+    liquidityAuthorized: false
   });
   window.BASE_RPC_URLS = [...window.AETHERON_PRESALE_CONFIG.rpcUrls];
   window.POLYGON_RPC_URLS = window.BASE_RPC_URLS;

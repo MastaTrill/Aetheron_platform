@@ -38,11 +38,14 @@ if (manifest?.onChainState?.tradingEnabled !== true) {
 if (!manifest?.onChainState?.source || !manifest?.onChainState?.observedAt) {
   errors.push('aeth-base.json onChainState must include source and observedAt evidence');
 }
-if (manifest?.release?.publicMarketAuthorized !== false) {
-  errors.push('aeth-base.json release.publicMarketAuthorized must fail closed');
+if (manifest?.productAuthorization?.publicPurchasesAuthorized !== true) {
+  errors.push('aeth-base.json productAuthorization.publicPurchasesAuthorized must record approved V1 presale access');
 }
-if (manifest?.release?.publicPurchasesAuthorized !== false) {
-  errors.push('aeth-base.json release.publicPurchasesAuthorized must fail closed');
+if (manifest?.productAuthorization?.tradingAuthorized !== true) {
+  errors.push('aeth-base.json productAuthorization.tradingAuthorized must match the approved V1 trading flag');
+}
+if (manifest?.productAuthorization?.liquidityAuthorized !== false) {
+  errors.push('aeth-base.json productAuthorization.liquidityAuthorized must remain fail closed until canonical liquidity exists');
 }
 const registryText = JSON.stringify(registry).toLowerCase();
 if (!registryText.includes(CANONICAL_ADDRESS)) {

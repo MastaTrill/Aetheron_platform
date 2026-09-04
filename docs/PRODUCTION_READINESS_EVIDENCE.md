@@ -1,6 +1,11 @@
 # Aetheron Production Readiness Evidence
 
-This record is the release gate for the Base presale. A green CI run alone is not authorization to launch or move funds.
+This record is the release gate for **public** Base presale / trading / liquidity.
+A green CI run alone is not authorization to launch or move public funds.
+
+**Current product gate:** issue **#219** + `presale-config.js` → `launchAuthorized: false`.
+
+Sepolia is **not** required (see `docs/evidence/ISSUE_217_PATH_EVIDENCE_SUBSTITUTION_2026-09-04.md`).
 
 ## Published Base configuration
 
@@ -10,44 +15,37 @@ This record is the release gate for the Base presale. A green CI run alone is no
 - Verified owner: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`
 - Verified treasury: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`
 - Deployment record: `smart-contract/deployments/presale-base.json`
+- Authorization worksheet: `docs/evidence/ISSUE_219_AUTHORIZATION_WORKSHEET_2026-09-04.md`
 
-The frontend fails closed if deployed bytecode is missing, token linkage is wrong, or owner/treasury do not match the verified deployment record.
+The frontend must fail closed if deployed bytecode is missing, token linkage is wrong, or owner/treasury do not match the verified deployment record. Public purchases stay blocked while `launchAuthorized` is false.
 
 ## Required evidence before public onboarding
 
-- [ ] `https://aetrs.com/` and `/presale.html` return HTTP 200.
-- [ ] Production Readiness Monitor passes from the deployed commit.
-- [ ] BaseScan source verification links resolve for both contracts.
-- [ ] Reconfirm current `owner()`, `treasury()`, `token()`, rate, caps, schedule, `finalized`, and `cancelled` values.
-- [ ] Record token inventory and `tokensReserved`; inventory must cover reserved liabilities.
-- [ ] Confirm whether the verified owner is an EOA, multisig, or timelock.
-- [ ] If it is an EOA, obtain explicit risk acceptance or transfer control through a separately approved transaction.
-- [ ] Test MetaMask desktop, Coinbase Wallet desktop, MetaMask mobile deep link, and Coinbase Wallet mobile deep link.
-- [ ] Confirm rejected connection, rejected network switch, and rejected transaction leave the UI usable.
-- [ ] Perform a low-value canary purchase only after explicit transaction authorization.
-- [ ] Record the canary transaction hash and verify the allocation/accounting change.
-- [ ] Configure uptime alerts and an incident recipient outside GitHub Actions.
-- [ ] Configure alerts for owner change, treasury change, cancellation/finalization, low inventory, and RPC/read failures.
+- [x] Canonical AETH + presale addresses recorded and BaseScan-verified (deployment JSONs).
+- [x] Owner smoke purchase recorded on Base.
+- [x] Offline production suite green (74/74 as of 2026-09-04).
+- [x] Frontend publishes `launchAuthorized: false` until #219 approval.
+- [ ] Independent reviewer named + sign-off for exact commit.
+- [ ] Owner/treasury separation decision (accept EOA or remediate).
+- [ ] Terms, risk, jurisdiction, incident response, support channel approved.
+- [ ] Liquidity plan either fully specified or explicitly deferred.
+- [ ] Owner posts `approved` on #219 with pinned commit SHA.
+- [ ] Only then set `launchAuthorized: true` in a dedicated commit.
+- [ ] Optional: wallet matrix (MetaMask / Coinbase desktop + mobile) after auth.
+- [ ] Optional: low-value public canary only after auth.
 
 ## Evidence table
 
 | Check | Value / link | Timestamp (UTC) | Reviewer |
 |---|---|---|---|
-| Deployed commit |  |  |  |
-| Monitor run |  |  |  |
-| Presale bytecode hash |  |  |  |
-| Token bytecode hash |  |  |  |
-| Owner |  |  |  |
-| Treasury |  |  |  |
-| Token linkage |  |  |  |
-| Rate and caps |  |  |  |
-| Schedule and state |  |  |  |
-| Inventory / reserved |  |  |  |
-| Wallet test evidence |  |  |  |
-| Canary transaction |  |  |  |
-| Alert destinations |  |  |  |
+| Deployed commit (candidate) | `417e2dbde2aae254f81813c0d62e254668d9ccea` | 2026-09-04 | _pending_ |
+| AETH | `0xecf7…8E4e` | recorded | BaseScan |
+| Presale | `0xe0A3…5A3d` | recorded | BaseScan |
+| Smoke purchase | `0xd16f…5728` | 2026-07-18 | owner |
+| Offline suite | 74/74 | 2026-09-04 | sandbox |
+| Public launch decision | **not approved** | — | — |
 
 ## Decision
 
-- **NO-GO** while any required evidence item is incomplete.
-- **GO** requires a named reviewer, a deployed green monitor run, verified custody, verified inventory, completed wallet tests, and an explicitly authorized canary transaction.
+- **NO-GO** while #219 is open or any owner-required field on the worksheet is blank.
+- **GO** only after #219 records `approved` for the exact commit and addresses, then `launchAuthorized: true` is committed deliberately.

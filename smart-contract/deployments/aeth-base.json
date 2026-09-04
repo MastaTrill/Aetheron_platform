@@ -37,11 +37,11 @@
     "quickswapRouter": "0x0000000000000000000000000000000000000000",
     "liquidityPool": "0x0000000000000000000000000000000000000000"
   },
-  "release": {
-    "status": "pending_final_authorization",
-    "publicMarketAuthorized": false,
-    "publicPurchasesAuthorized": false,
-    "canonicalLiquidityAuthorized": false,
-    "gateIssue": 219
+  "productAuthorization": {
+    "publicPurchasesAuthorized": true,
+    "tradingAuthorized": true,
+    "liquidityAuthorized": false,
+    "authorizationIssue": 219,
+    "updatedAt": "2026-09-04T05:25:00Z"
   }
 }

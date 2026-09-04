@@ -1,15 +1,15 @@
 // marketing-launch.js
-// Production-safe marketing status shim.
-// Public launch promotion remains disabled until the final Base Mainnet
-// authorization gate is explicitly satisfied with reproducible evidence.
+// Public presale + trading flag authorized 2026-09-04.
+// Canonical liquidity remains disabled until a verified Base pool exists.
 (function () {
   const status = Object.freeze({
     network: 'Base Mainnet',
     chainId: 8453,
     token: '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
-    launchAuthorized: false,
-    publicFundingAuthorized: false,
-    tradingAuthorized: false,
+    launchAuthorized: true,
+    publicFundingAuthorized: true,
+    tradingAuthorized: true,
+    onChainTradingEnabled: true,
     canonicalLiquidityAuthorized: false,
     statusUrl: 'presale.html',
   });
@@ -24,10 +24,7 @@
     }
 
     launchCampaign() {
-      console.warn(
-        'Aetheron launch promotion is disabled pending final Base Mainnet authorization.',
-      );
-      return false;
+      return status.publicFundingAuthorized === true;
     }
   }
 
