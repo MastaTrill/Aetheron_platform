@@ -24,8 +24,6 @@
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
-    "deploy:treasury:sepolia": "hardhat run scripts/deploy-treasury.js --network sepolia",
-    "deploy:treasury:base": "hardhat run scripts/deploy-treasury.js --network base",
     "verify": "node scripts/verify-contracts.mjs base",
     "verify:sepolia": "node scripts/verify-contracts.mjs sepolia",
     "node": "hardhat node",
