@@ -1,8 +1,10 @@
 const request = require('supertest');
+const crypto = require('node:crypto');
 
 process.env.ADMIN_PASSWORD = 'test-admin-password';
 process.env.AETHERON_OPERATOR_API_KEY = 'test-operator-api-key-0123456789abcdef';
 process.env.AETHERON_SIGNER_ROUTES_ENABLED = 'false';
+process.env.COINBASE_COMMERCE_WEBHOOK_SECRET = 'test-commerce-webhook-secret-0123456789';
 
 const app = require('./server');
 
@@ -99,6 +101,55 @@ describe('Production API app', () => {
     expect(res.body.code).toBe('SIGNER_ROUTES_DISABLED');
   });
 
+  it('protects payment history behind operator authentication', async () => {
+    const unauthenticated = await request(apiApp).get('/payment-history?user=other-user');
+    expect(unauthenticated.statusCode).toBe(401);
+    expect(unauthenticated.body.code).toBe('OPERATOR_AUTH_REQUIRED');
+
+    const authenticated = await request(apiApp)
+      .get('/payment-history?user=other-user')
+      .set('Authorization', OPERATOR_AUTH);
+    expect(authenticated.statusCode).toBe(200);
+    expect(authenticated.body.history).toEqual([]);
+  });
+
+  it('protects all-payment history behind operator authentication', async () => {
+    const unauthenticated = await request(apiApp).get('/all-payments');
+    expect(unauthenticated.statusCode).toBe(401);
+    expect(unauthenticated.body.code).toBe('OPERATOR_AUTH_REQUIRED');
+
+    const authenticated = await request(apiApp)
+      .get('/all-payments')
+      .set('Authorization', OPERATOR_AUTH);
+    expect(authenticated.statusCode).toBe(200);
+    expect(authenticated.body.payments).toEqual([]);
+  });
+
+  it('rejects Coinbase webhooks with an invalid signature', async () => {
+    const res = await request(apiApp)
+      .post('/coinbase-webhook')
+      .set('Content-Type', 'application/json')
+      .set('X-CC-Webhook-Signature', '00'.repeat(32))
+      .send({ type: 'charge:confirmed', data: { metadata: {} } });
+    expect(res.statusCode).toBe(401);
+    expect(res.body.code).toBe('INVALID_WEBHOOK_SIGNATURE');
+  });
+
+  it('accepts a Coinbase webhook only when the raw body signature is valid', async () => {
+    const rawBody = JSON.stringify({ type: 'charge:confirmed', data: { metadata: {} } });
+    const signature = crypto
+      .createHmac('sha256', process.env.COINBASE_COMMERCE_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest('hex');
+
+    const res = await request(apiApp)
+      .post('/coinbase-webhook')
+      .set('Content-Type', 'application/json')
+      .set('X-CC-Webhook-Signature', signature)
+      .send(rawBody);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.received).toBe(true);
+  });
   it('rejects unknown API routes without falling through to HTML', async () => {
     const res = await request(apiApp).get('/does-not-exist');
     expect(res.statusCode).toBe(404);

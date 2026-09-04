@@ -2,6 +2,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import { requireOperator } from '../security.mjs';
 const router = express.Router();
 
 const HISTORY_FILE = path.join(path.resolve(), 'payment-history.json');
@@ -13,7 +14,7 @@ function getUserHistory(userId) {
 }
 
 // GET /api/payment-history
-router.get('/payment-history', (req, res) => {
+router.get('/payment-history', requireOperator, (req, res) => {
   // TODO: Replace with real user auth/session
   const userId = req.query.user || 'demo';
   const history = getUserHistory(userId);
