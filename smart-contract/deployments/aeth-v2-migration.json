@@ -1,0 +1,36 @@
+{
+  "network": "Base Mainnet",
+  "chainId": 8453,
+  "legacyToken": {
+    "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
+    "symbol": "AETH",
+    "status": "canonical_until_v2_cutover",
+    "notes": "Existing Base token remains canonical until V2 is deployed, verified, reconciled, and explicitly approved for cutover."
+  },
+  "v2": {
+    "contract": "AetheronV2",
+    "source": "contracts/AetheronV2.sol",
+    "address": null,
+    "status": "prepared_not_deployed",
+    "deploymentTransactionHash": null,
+    "deploymentBlockNumber": null,
+    "symbol": "AETH",
+    "decimals": 18,
+    "totalSupply": "1000000000000000000000000000",
+    "buyTaxRate": 3,
+    "sellTaxRate": 5
+  },
+  "publicLaunchAuthorized": false,
+  "liquidityAuthorized": false,
+  "migrationAuthorized": false,
+  "cutoverRequirements": [
+    "Deploy AetheronV2 on Base Mainnet through the gated deployment entrypoint.",
+    "Verify deployed source and runtime invariants on BaseScan and through read-only RPC calls.",
+    "Reconcile legacy AETH balances and identify which owner-controlled allocations should be represented in V2.",
+    "Do not reuse the expired legacy presale as a V2 presale because its token address is immutable.",
+    "Choose and verify the canonical Base AMM pool before registering it in V2.",
+    "Create liquidity only after opening-price and liquidity-size decisions are explicitly reviewed in the signing wallet.",
+    "Enable trading only after liquidity, public-site configuration, and final launch checks all agree on the V2 address.",
+    "Update the public token registry only after the V2 deployment and cutover are verified."
+  ]
+}

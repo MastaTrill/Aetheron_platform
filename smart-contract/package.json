@@ -7,6 +7,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "node --test test/*.test.js",
+    "test:aeth-v2": "node --test test/AetheronV2.test.js test/AetheronV2DeploymentSafety.test.js",
     "test:production-simulation": "node --test test/ProductionPresaleSimulation.test.js",
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-presale-state.mjs",
@@ -22,6 +23,7 @@
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
+    "deploy:aeth-v2:base": "hardhat run scripts/deploy-aeth-v2.mjs --network base",
     "deploy:base": "hardhat run scripts/deploy-subscription.mjs --network base",
     "deploy:base-sepolia": "hardhat run scripts/deploy-subscription.mjs --network baseSepolia",
     "deploy:treasury:sepolia": "hardhat run scripts/deploy-treasury.js --network sepolia",
