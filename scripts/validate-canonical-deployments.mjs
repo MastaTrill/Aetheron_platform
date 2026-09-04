@@ -29,7 +29,21 @@ if (manifest?.chainId !== CANONICAL_CHAIN_ID) {
 if (manifestAddress !== CANONICAL_ADDRESS) {
   errors.push('aeth-base.json token address does not match canonical AETH');
 }
-
+if (Object.prototype.hasOwnProperty.call(manifest?.token ?? {}, 'tradingEnabled')) {
+  errors.push('aeth-base.json token deployment facts must not embed mutable tradingEnabled state');
+}
+if (manifest?.onChainState?.tradingEnabled !== true) {
+  errors.push('aeth-base.json must record the observed on-chain tradingEnabled=true state');
+}
+if (!manifest?.onChainState?.source || !manifest?.onChainState?.observedAt) {
+  errors.push('aeth-base.json onChainState must include source and observedAt evidence');
+}
+if (manifest?.release?.publicMarketAuthorized !== false) {
+  errors.push('aeth-base.json release.publicMarketAuthorized must fail closed');
+}
+if (manifest?.release?.publicPurchasesAuthorized !== false) {
+  errors.push('aeth-base.json release.publicPurchasesAuthorized must fail closed');
+}
 const registryText = JSON.stringify(registry).toLowerCase();
 if (!registryText.includes(CANONICAL_ADDRESS)) {
   errors.push('ecosystem registry does not contain canonical AETH address');

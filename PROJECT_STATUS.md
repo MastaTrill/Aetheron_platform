@@ -14,7 +14,7 @@
 - Presale deployment transaction: `0x7ac118e87c317b8c8cad669fac7fd04788529181fac8b577ee182d01a4270326`.
 - The corrected presale is deployed, funded, source-verified, and has a recorded owner smoke purchase in `smart-contract/deployments/presale-base.json`.
 - **Deployment is not launch authorization.** Current frontend configuration sets `launchAuthorized: false` and `status: "pending_final_authorization"`; public purchases remain blocked pending issue #219.
-- Token trading is currently recorded as **disabled** in the canonical release model (any on-chain enablement does not by itself constitute production launch approval).
+- The canonical Base V1 token is observed on-chain with `tradingEnabled: true`, while the release model explicitly keeps `publicMarketAuthorized: false` and `publicPurchasesAuthorized: false`. The on-chain flag does not constitute production launch approval.
 - The older Base presale `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C` is invalid/legacy and must not be used for public purchases.
 - Polygon Mumbai, Polygon mainnet, Solana, and any earlier AETH addresses are **legacy deployments** unless separately revalidated and entered into the canonical registry.
 
