@@ -3,10 +3,24 @@ window.AETHERON_PRESALE_CONFIG = {
   presaleContractAddress: "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
   replacementPresaleContractAddress: "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
   invalidPresaleContractAddress: "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
-  launchAuthorized: false,
-  status: "pending_final_authorization",
-  recorded_status: "blocked",
-  statusMessage: "Public presale is disabled until the final Base Mainnet launch authorization is recorded.",
+  launchAuthorized: true,
+  status: "authorized",
+  recorded_status: "public_presale_authorized",
+  statusMessage: "Public Base presale authorized by owner on 2026-09-04 (issue #219). Trading and canonical liquidity remain disabled until separate on-chain enablement.",
+  authorization: {
+    issue: 219,
+    decision: "approved",
+    approvedAtUtc: "2026-09-04T05:12:00Z",
+    approvedBy: "owner (MastaTrill) via operator chat",
+    scope: "public_presale_purchases_only",
+    tradingAuthorized: false,
+    liquidityAuthorized: false,
+    residualRisks: [
+      "owner and treasury are the same EOA",
+      "independent review not archived as a separate memo",
+      "liquidity deferred"
+    ]
+  },
   expectedOwner: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
   expectedTreasury: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
   publicRpcUrl: "https://mainnet.base.org",

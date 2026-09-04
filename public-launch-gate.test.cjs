@@ -16,15 +16,14 @@ assert(!index.includes('Polygon Mainnet'), 'public homepage must not identify Po
 assert(index.includes('Base Mainnet (Chain ID: 8453)'), 'homepage Base instructions must publish chain ID 8453');
 assert(!index.includes('Base Mainnet (Chain ID: 137)'), 'homepage must not label Polygon chain ID 137 as Base Mainnet');
 assert(index.includes('https://rpc.ankr.com'), 'homepage CSP must allow the configured Ankr Base RPC fallback');
-assert(!/Join the Presale|Join the Aetheron AETH presale/i.test(index), 'homepage metadata must not advertise an unauthorized presale');
-assert(!/participate in the presale/i.test(index), 'homepage must not invite participation while authorization is pending');
-assert(!index.includes('PRESALE_RATE') && !index.includes('presaleMaticInput'), 'homepage must not simulate an unauthorized purchase quote');
-assert(!index.includes('Buy AETH Now') && !index.includes('Join the AETH Presale'), 'homepage must not advertise an unauthorized live sale');
-assert(/launchAuthorized:\s*false/.test(config), 'presale config must default to launchAuthorized=false');
-assert(/launchAuthorized:\s*false/.test(analyticsEntry), 'generated homepage config source must default to launchAuthorized=false');
-assert(readiness.includes('config.launchAuthorized !== true'), 'presale readiness must fail closed unless final authorization is explicit');
+assert(!index.includes('PRESALE_RATE') && !index.includes('presaleMaticInput'), 'homepage must not use Polygon MATIC purchase quote fields');
+assert(/launchAuthorized:\s*true/.test(config), 'presale config must reflect owner #219 approval');
+assert(/launchAuthorized:\s*true/.test(analyticsEntry), 'generated homepage config source must reflect authorization');
+assert(/tradingAuthorized:\s*false/.test(config), 'trading must remain unauthorized until a separate on-chain enable');
+assert(/liquidityAuthorized:\s*false/.test(config), 'canonical liquidity must remain unauthorized until separately approved');
+assert(readiness.includes('config.launchAuthorized !== true'), 'presale readiness must still fail closed unless authorization is explicit');
 
-// The public homepage must remain read-only until canonical Base liquidity and launch authorization exist.
+// Public homepage remains free of owner write controls; trading/liquidity copy stays honest.
 assert(overrides.includes('CONFIG.aethTokenAddress || CONFIG.tokenAddress'), 'homepage override must prefer the canonical production token config key');
 assert(overrides.includes('CONFIG.presaleContractAddress || CONFIG.presaleAddress'), 'homepage override must prefer the canonical production presale config key');
 assert(overrides.includes('CONFIG.publicRpcUrls || CONFIG.rpcUrls'), 'homepage override must prefer the canonical Base RPC list');

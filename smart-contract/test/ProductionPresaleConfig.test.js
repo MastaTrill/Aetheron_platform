@@ -56,10 +56,12 @@ test("frontend config matches Base terms and the explicit public authorization g
   if (deployment.contracts?.Presale?.address) {
     assert.match(rootFrontendSource, new RegExp(`presaleContractAddress: ["']${deployment.contracts.Presale.address}["']`));
   }
-  // Technical deployability is not authorization to accept public funds.
-  assert.match(rootFrontendSource, /launchAuthorized:\s*false/);
-  assert.match(rootFrontendSource, /status:\s*["']pending_final_authorization["']/);
-  assert.match(rootFrontendSource, /recorded_status:\s*["']blocked["']/);
+  // Owner approved public presale on 2026-09-04 (#219). Trading/liquidity stay separate.
+  assert.match(rootFrontendSource, /launchAuthorized:\s*true/);
+  assert.match(rootFrontendSource, /status:\s*["']authorized["']/);
+  assert.match(rootFrontendSource, /recorded_status:\s*["']public_presale_authorized["']/);
+  assert.match(rootFrontendSource, /tradingAuthorized:\s*false/);
+  assert.match(rootFrontendSource, /liquidityAuthorized:\s*false/);
   assert.match(rootFrontendSource, /network:\s*["']base["']/);
   assert.match(rootFrontendSource, /chainId:\s*8453/);
   assert.match(rootFrontendSource, new RegExp(`minContribution:\\s*${production.minContributionEth.replace(".", "\\.")}`));
