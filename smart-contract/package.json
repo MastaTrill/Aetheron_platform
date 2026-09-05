@@ -12,6 +12,7 @@
     "test:base-fork": "node --test test/BaseForkReadOnly.fork.js",
     "verify:base:readonly": "node scripts/verify-base-presale-state.mjs",
     "verify:aeth-v1-migration-snapshot": "node scripts/verify-aeth-v1-migration-snapshot.mjs",
+    "verify:aeth-v1-replacement-recovery": "node scripts/verify-aeth-v1-replacement-presale-recovery.mjs",
     "verify:basescan": "node scripts/verify-basescan-v2.mjs",
     "record:verified-frontend": "node scripts/record-verified-presale-frontend.mjs",
     "inspect:invalid-presale": "node scripts/inspect-invalid-presale-recovery.mjs",
