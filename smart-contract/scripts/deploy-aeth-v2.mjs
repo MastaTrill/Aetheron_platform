@@ -76,8 +76,11 @@ async function main() {
     teamWallet,
     marketingWallet,
     stakingPool,
+    transferTaxBps: 0,
+    transferTaxPolicy: "none",
+    standardErc20Transfers: true,
     tradingWillRemainDisabled: true,
-    ammPairWillRemainUnconfigured: true,
+    liquidityWillRemainUnconfigured: true,
     presaleWillRemainUnfunded: true,
   }, null, 2));
 
@@ -89,19 +92,22 @@ async function main() {
   await token.waitForDeployment();
   const address = await token.getAddress();
 
-  const [owner, tradingEnabled, buyTaxRate, sellTaxRate, totalSupply] = await Promise.all([
+  const [owner, tradingEnabled, totalSupply, deployedTeam, deployedMarketing, deployedStaking] = await Promise.all([
     token.owner(),
     token.tradingEnabled(),
-    token.buyTaxRate(),
-    token.sellTaxRate(),
     token.totalSupply(),
+    token.teamWallet(),
+    token.marketingWallet(),
+    token.stakingPool(),
   ]);
 
   const expectedSupply = ethers.parseUnits("1000000000", 18);
   if (owner.toLowerCase() !== deployer.address.toLowerCase()) throw new Error("Unexpected AETH V2 owner after deployment");
   if (tradingEnabled) throw new Error("AETH V2 unexpectedly deployed with trading enabled");
-  if (buyTaxRate !== 3n || sellTaxRate !== 5n) throw new Error("Unexpected AETH V2 tax constants after deployment");
   if (totalSupply !== expectedSupply) throw new Error("Unexpected AETH V2 total supply after deployment");
+  if (deployedTeam.toLowerCase() !== teamWallet.toLowerCase()) throw new Error("Unexpected AETH V2 team allocation wallet");
+  if (deployedMarketing.toLowerCase() !== marketingWallet.toLowerCase()) throw new Error("Unexpected AETH V2 marketing allocation wallet");
+  if (deployedStaking.toLowerCase() !== stakingPool.toLowerCase()) throw new Error("Unexpected AETH V2 staking allocation wallet");
 
   const receipt = await deploymentTx.wait();
   const evidence = {
@@ -116,8 +122,9 @@ async function main() {
     teamWallet,
     marketingWallet,
     stakingPool,
-    buyTaxRate: Number(buyTaxRate),
-    sellTaxRate: Number(sellTaxRate),
+    transferTaxBps: 0,
+    transferTaxPolicy: "none",
+    standardErc20Transfers: true,
     totalSupply: totalSupply.toString(),
     tradingEnabled,
     liquidityConfigured: false,
@@ -132,6 +139,9 @@ async function main() {
   manifest.v2.status = "deployed_not_cutover";
   manifest.v2.deploymentTransactionHash = deploymentTx.hash;
   manifest.v2.deploymentBlockNumber = receipt?.blockNumber ?? null;
+  manifest.v2.transferTaxBps = 0;
+  manifest.v2.transferTaxPolicy = "none";
+  manifest.v2.standardErc20Transfers = true;
   if (!manifest.cutover?.evidence) {
     throw new Error("AETH V2 migration manifest is missing cutover evidence gates");
   }
@@ -152,7 +162,7 @@ async function main() {
 
   console.log(`AETH V2 deployed at ${address}`);
   console.log(`BaseScan: https://basescan.org/address/${address}`);
-  console.log("Trading, AMM configuration, liquidity, presale funding, and canonical cutover remain disabled.");
+  console.log("Trading, liquidity, presale funding, migration, and canonical cutover remain disabled.");
 }
 
 main().catch((error) => {

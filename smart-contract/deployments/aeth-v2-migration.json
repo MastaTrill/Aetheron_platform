@@ -64,8 +64,9 @@
       "marketing": 15,
       "staking": 15
     },
-    "buyTaxRate": 3,
-    "sellTaxRate": 5
+    "transferTaxBps": 0,
+    "transferTaxPolicy": "none",
+    "standardErc20Transfers": true
   },
   "cutover": {
     "authorized": false,
@@ -89,7 +90,7 @@
     "Verify deployed source and runtime invariants on BaseScan and through read-only RPC calls.",
     "Reconcile the dated V1 balance snapshot against the intended V2 migration plan and preserve a reviewable mapping.",
     "Do not reuse the expired legacy presale as a V2 presale because its token address is immutable.",
-    "Choose and verify the canonical Base AMM pool before registering it in V2.",
+    "Choose and verify the canonical Base AMM pool before creating V2 liquidity.",
     "Create liquidity only after opening-price and liquidity-size decisions are explicitly reviewed in the signing wallet.",
     "Enable trading only after liquidity, public-site configuration, and final launch checks all agree on the verified V2 address.",
     "Update the public token registry only after the V2 deployment, migration evidence, and cutover authorization are verified."
