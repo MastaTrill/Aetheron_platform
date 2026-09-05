@@ -77,6 +77,10 @@
       failClosed(config.statusMessage || 'Public presale is not authorized yet.');
       return;
     }
+    if (config.purchaseAuthorized !== true) {
+      failClosed(config.statusMessage || 'Public presale purchases are disabled pending schedule verification.');
+      return;
+    }
 
     if (!window.ethers || !isPresaleConfigured()) {
       failClosed('Presale configuration is incomplete.');

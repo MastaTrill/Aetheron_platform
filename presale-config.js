@@ -4,9 +4,10 @@ window.AETHERON_PRESALE_CONFIG = {
   replacementPresaleContractAddress: "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
   invalidPresaleContractAddress: "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
   launchAuthorized: true,
-  status: "authorized",
-  recorded_status: "public_presale_and_trading_authorized",
-  statusMessage: "Public Base presale and trading flags authorized. On-chain tradingEnabled is already true (2026-09-03 audit). Canonical liquidity is not configured yet — do not claim a live liquid market until a verified pool exists.",
+  purchaseAuthorized: false,
+  status: "authorized-window-ended",
+  recorded_status: "launch-approved-purchases-paused-window-ended",
+  statusMessage: "Launch approval remains recorded, but public purchases are disabled because the configured on-chain presale window ended on 2026-08-01. Do not market the presale as open until a replacement deployment is verified and purchaseAuthorized is explicitly restored. Trading is authorized, but canonical liquidity is still not configured.",
   authorization: {
     issue: 219,
     decision: "approved",

@@ -72,4 +72,11 @@ describe("presale frontend safety invariants", function () {
     assert.match(readinessSource, /retry\.textContent = 'Retry Base verification'/);
     assert.match(readinessSource, /retry\.addEventListener\('click', verifyReadOnlyState/);
   });
+  it("requires explicit purchase authorization in addition to launch approval", function () {
+    assert.match(configSource, /purchaseAuthorized:\s*false/);
+    assert.match(source, /const PURCHASE_AUTHORIZED = PRESALE_CONFIG\.purchaseAuthorized === true/);
+    assert.match(source, /const isLive = PURCHASE_AUTHORIZED && now >= start && now <= end/);
+    assert.match(source, /!PURCHASE_AUTHORIZED \|\| !isPresaleConfigured\(\)/);
+    assert.match(readinessSource, /config\.purchaseAuthorized !== true/);
+  });
 });

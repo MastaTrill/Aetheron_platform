@@ -43,20 +43,15 @@ The cross-project registry is:
 
 ## Presale / public launch status
 
-Contracts on Base are **not** the same as authorization to accept public funds, enable trading, or add liquidity.
+Issue **#219 is approved**, so `launchAuthorized: true` remains the durable record of owner launch approval. That approval is intentionally separate from the live purchase gate.
 
-Path behavior for the corrected presale is treated as evidenced by mainnet receipts plus the offline production suite (issue **#217** closed; see `docs/evidence/ISSUE_217_PATH_EVIDENCE_SUBSTITUTION_2026-09-04.md`).
+The deployed Base presale at `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d` ended on **2026-08-01 20:06:40 UTC**. A 2026-09-05 read-only Base check confirmed the sale is closed and refunds are available. Public configuration therefore keeps `purchaseAuthorized: false` and must not market the current presale as open.
 
-**Base Sepolia is not a required step.** Scripts and runbooks may remain for optional operator practice only.
+Because the current contract has already received contributions, its verified schedule mutator cannot be used to create a new sale window. Any new public presale requires a separately approved replacement deployment, funding, source/runtime verification, smoke test, canonical-address update, and explicit restoration of `purchaseAuthorized: true`.
 
-The remaining gate is issue **#219** (written Base Mainnet public-launch authorization). Until that issue records an explicit `approved` decision:
+Trading authorization is separate from liquidity. On-chain `tradingEnabled` is already true, but canonical Base liquidity remains unavailable until a verified pool is explicitly authorized and recorded.
 
-- keep `launchAuthorized: false` in public frontend config;
-- do not enable trading;
-- do not add canonical mainnet liquidity;
-- do not market the presale as open to the public.
-
-No README statement authorizes deployment actions, trading, liquidity, or acceptance of public funds.
+No README statement authorizes deployment actions, liquidity provisioning, replacement-sale terms, or movement of contributor funds.
 
 ## Repository truth rules
 

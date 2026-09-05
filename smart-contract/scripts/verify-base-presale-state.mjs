@@ -167,7 +167,7 @@ const report = {
   chainId: network.chainId.toString(),
   latestBlock: latestBlock.number,
   deploymentStatus: deployment.status,
-  launchReady: deployment.launchable === true && fullyFundedForHardCap && !cancelled && !finalized,
+  launchReady: deployment.launchable === true && fullyFundedForHardCap && saleLive,
   safeDisabledState: prelaunchDisabled && fullyFundedForHardCap,
   token: {
     address: expectedTokenAddress,

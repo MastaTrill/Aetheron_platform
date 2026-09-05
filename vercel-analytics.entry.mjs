@@ -17,7 +17,8 @@ if (typeof window !== 'undefined') {
     minimumPurchaseEth: '0.0003',
     tokensPerEth: 1000000,
     launchAuthorized: true,
-    launchStatus: 'public-presale-and-trading-authorized',
+    purchaseAuthorized: false,
+    launchStatus: 'presale-window-ended-purchases-paused',
     tradingAuthorized: true,
     liquidityAuthorized: false
   });

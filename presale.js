@@ -20,6 +20,7 @@ const BASE_NETWORK = {
 const PRESALE_CONFIG = window.AETHERON_PRESALE_CONFIG || {};
 const AETH_TOKEN_ADDRESS = PRESALE_CONFIG.aethTokenAddress || "";
 const PRESALE_CONTRACT_ADDRESS = PRESALE_CONFIG.presaleContractAddress || "";
+const PURCHASE_AUTHORIZED = PRESALE_CONFIG.purchaseAuthorized === true;
 const MAX_PRESALE_TOKENS = PRESALE_CONFIG.maxPresaleTokens || 33333333;
 const NETWORK_CONFIG = PRESALE_CONFIG.network === "base" ? BASE_NETWORK : POLYGON_NETWORK;
 const CURRENT_CHAIN_ID = NETWORK_CONFIG.chainId;
@@ -341,7 +342,7 @@ async function loadPresaleData() {
         const now = Date.now() / 1000;
         const start = startTime.toNumber();
         const end = endTime.toNumber();
-        const isLive = now >= start && now <= end && !finalized && !cancelled;
+        const isLive = PURCHASE_AUTHORIZED && now >= start && now <= end && !finalized && !cancelled;
         const isEnded = finalized || cancelled || now > end;
         presaleIsLive = isLive;
 
@@ -385,7 +386,7 @@ function calculateTokens() {
     warning.style.display = 'none';
     warning.innerText = '';
 
-    if (!isPresaleConfigured() || !presaleContract || !presaleIsLive) {
+    if (!PURCHASE_AUTHORIZED || !isPresaleConfigured() || !presaleContract || !presaleIsLive) {
         setPurchaseControlsEnabled(false, 'Unavailable');
         return;
     }
@@ -411,7 +412,7 @@ function calculateTokens() {
 }
 
 async function buyTokens() {
-    if (!isPresaleConfigured() || !presaleContract || !signer || !presaleIsLive) {
+    if (!PURCHASE_AUTHORIZED || !isPresaleConfigured() || !presaleContract || !signer || !presaleIsLive) {
         alert("Presale is not live yet.");
         return;
     }
