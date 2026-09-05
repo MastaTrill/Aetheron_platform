@@ -90,4 +90,24 @@ if (fs.existsSync(legacyDeployWorkflowPath)) {
   );
 }
 
+const readinessMonitor = read('.github/workflows/production-readiness-monitor.yml');
+assert.match(readinessMonitor, /CANONICAL_AETH:\s*['"]0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e['"]/i, 'monitor must quote CANONICAL_AETH');
+assert.match(readinessMonitor, /LEGACY_AETH:\s*['"]0xab5ae0d8f569d7c2b27574319b864a5ba6f9671e['"]/i, 'monitor must quote LEGACY_AETH');
+assert.match(readinessMonitor, /AETH_TOKEN:\s*['"]0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e['"]/i, 'monitor must quote AETH_TOKEN');
+assert.match(readinessMonitor, /PRESALE:\s*['"]0xe0A3B6368312dFd3E7E76202e673f895f8235A3d['"]/i, 'monitor must quote PRESALE');
+assert.match(readinessMonitor, /grep -q 'launchAuthorized: true' presale-config\.js/);
+assert.match(readinessMonitor, /grep -q 'purchaseAuthorized: false' presale-config\.js/);
+assert.match(readinessMonitor, /grep -q 'status: "authorized-window-ended"' presale-config\.js/);
+assert.doesNotMatch(readinessMonitor, /verify_on_chain|pending final authorization|trading remain(?:s)? disabled/i);
+
+for (const publicPath of ['index.html', 'presale.html', 'faq.html', 'litepaper.html', 'index-dom-overrides.js']) {
+  const publicSource = read(publicPath);
+  assert.doesNotMatch(
+    publicSource,
+    /pending final authorization|trading remains disabled|liquidity and trading remain disabled/i,
+    `${publicPath} must not publish superseded pre-authorization state`,
+  );
+}
+assert.match(read('index.html'), /presale window (?:has )?ended|recorded sale window (?:has )?ended/i);
+assert.match(read('presale.html'), /presale window (?:has )?ended|recorded sale window (?:has )?ended/i);
 console.log('Active operational scripts and local backend are Base-only, ethers-v6 compatible, correctly routed, and write-gated.');
