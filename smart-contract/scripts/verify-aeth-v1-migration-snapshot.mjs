@@ -1,13 +1,17 @@
 import fs from "node:fs";
-import { JsonRpcProvider, Contract, getAddress } from "ethers";
+import { JsonRpcProvider, Contract, Interface, getAddress } from "ethers";
 import { readWithRetry } from "./lib/base-read-retry.mjs";
 
 const MANIFEST_URL = new URL("../deployments/aeth-v2-migration.json", import.meta.url);
 const SNAPSHOT_CONFIRMATIONS = 3;
+const MULTICALL3_ADDRESS = getAddress("0xca11bde05977b3631167028862be2a173976ca11");
 const ERC20_READ_ABI = [
   "function balanceOf(address account) view returns (uint256)",
   "function decimals() view returns (uint8)",
   "function totalSupply() view returns (uint256)",
+];
+const MULTICALL3_ABI = [
+  "function aggregate3((address target,bool allowFailure,bytes callData)[] calls) payable returns ((bool success,bytes returnData)[] returnData)",
 ];
 
 function loadManifest() {
@@ -20,6 +24,13 @@ function tokenWei(tokens, decimals) {
 
 function serialize(value) {
   return JSON.stringify(value, (_, item) => typeof item === "bigint" ? item.toString() : item, 2);
+}
+
+function requireCallResult(result, label) {
+  if (!result?.success) {
+    throw new Error(`${label} failed in pinned-block multicall`);
+  }
+  return result.returnData;
 }
 
 async function main() {
@@ -48,18 +59,49 @@ async function main() {
   );
 
   const tokenAddress = getAddress(manifest.canonicalToken.address);
-  const bytecode = await readWithRetry(
-    () => provider.getCode(tokenAddress, blockNumber),
-    "AETH V1 bytecode",
-  );
-  if (!bytecode || bytecode === "0x") {
+  const [tokenBytecode, multicallBytecode] = await Promise.all([
+    readWithRetry(() => provider.getCode(tokenAddress, blockNumber), "AETH V1 bytecode"),
+    readWithRetry(() => provider.getCode(MULTICALL3_ADDRESS, blockNumber), "Base Multicall3 bytecode"),
+  ]);
+  if (!tokenBytecode || tokenBytecode === "0x") {
     throw new Error(`No runtime bytecode found at canonical AETH V1 address ${tokenAddress} at block ${blockNumber}`);
   }
+  if (!multicallBytecode || multicallBytecode === "0x") {
+    throw new Error(`No Multicall3 runtime bytecode found at ${MULTICALL3_ADDRESS} at block ${blockNumber}`);
+  }
 
-  const token = new Contract(tokenAddress, ERC20_READ_ABI, provider);
-  const decimals = Number(await readWithRetry(() => token.decimals({ blockTag: blockNumber }), "AETH V1 decimals"));
-  const totalSupplyWei = await readWithRetry(() => token.totalSupply({ blockTag: blockNumber }), "AETH V1 totalSupply");
+  const tokenInterface = new Interface(ERC20_READ_ABI);
+  const callSpecs = [
+    { label: "AETH V1 decimals", functionName: "decimals", args: [] },
+    { label: "AETH V1 totalSupply", functionName: "totalSupply", args: [] },
+    ...manifest.v1Snapshot.balances.map((row) => ({
+      label: `AETH V1 balanceOf(${row.role})`,
+      functionName: "balanceOf",
+      args: [getAddress(row.address)],
+      row,
+    })),
+  ];
+  const calls = callSpecs.map((spec) => ({
+    target: tokenAddress,
+    allowFailure: true,
+    callData: tokenInterface.encodeFunctionData(spec.functionName, spec.args),
+  }));
 
+  const multicall = new Contract(MULTICALL3_ADDRESS, MULTICALL3_ABI, provider);
+  const results = await readWithRetry(
+    () => multicall.aggregate3.staticCall(calls, { blockTag: blockNumber }),
+    "AETH V1 pinned-block multicall",
+    { validate: (value) => value?.length === calls.length },
+  );
+
+  const decoded = results.map((result, index) => {
+    const spec = callSpecs[index];
+    const returnData = requireCallResult(result, spec.label);
+    return tokenInterface.decodeFunctionResult(spec.functionName, returnData)[0];
+  });
+
+  const decimals = Number(decoded[0]);
+  const totalSupplyWei = BigInt(decoded[1]);
   if (decimals !== 18) {
     throw new Error(`AETH V1 decimals mismatch: expected 18, found ${decimals}`);
   }
@@ -74,13 +116,10 @@ async function main() {
   let currentTotalWei = 0n;
   let mismatches = 0;
 
-  for (const row of manifest.v1Snapshot.balances) {
+  manifest.v1Snapshot.balances.forEach((row, rowIndex) => {
     const address = getAddress(row.address);
     const expectedWei = tokenWei(row.tokens, decimals);
-    const currentWei = await readWithRetry(
-      () => token.balanceOf(address, { blockTag: blockNumber }),
-      `AETH V1 balanceOf(${row.role})`,
-    );
+    const currentWei = BigInt(decoded[rowIndex + 2]);
     const deltaWei = currentWei - expectedWei;
     const matches = deltaWei === 0n;
 
@@ -97,7 +136,7 @@ async function main() {
       deltaWei,
       matches,
     });
-  }
+  });
 
   const expectedLedgerWei = tokenWei(manifest.v1Snapshot.reconciledSupplyTokens, decimals);
   const totalsMatch = expectedTotalWei === expectedLedgerWei && currentTotalWei === totalSupplyWei;
@@ -111,6 +150,7 @@ async function main() {
     blockNumber,
     blockHash: pinnedBlock.hash,
     tokenAddress,
+    multicallAddress: MULTICALL3_ADDRESS,
     decimals,
     totalSupplyWei,
     expectedLedgerWei,
