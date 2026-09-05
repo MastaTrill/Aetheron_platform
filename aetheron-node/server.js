@@ -1,7 +1,7 @@
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
-const { Blockchain } = require('../aetheron-blockchain');
+const { Blockchain, Transaction } = require('../aetheron-blockchain.cjs');
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 const NODE_NAME = process.env.NODE_NAME || "aetheron-node";
 const METRICS_PORT = process.env.METRICS_PORT || 8080;
 const RPC_PORT = process.env.RPC_PORT || 8545;
+const BLOCK_INTERVAL_MS = Number.parseInt(process.env.BLOCK_INTERVAL_MS || "10000", 10);
 
 let blockchain = new Blockchain();
 let connectedPeers = [];
@@ -41,14 +42,18 @@ app.get("/blocks/latest", (req, res) => {
 
 // Get block by number
 app.get("/blocks/:number", (req, res) => {
-  const num = parseInt(req.params.number);
-  if (num > blockCount) {
+  const num = Number(req.params.number);
+  if (!Number.isInteger(num) || num < 0 || num >= blockchain.chain.length) {
     return res.status(404).json({ error: "Block not found" });
   }
+
+  const block = blockchain.chain[num];
   res.json({
-    number: num,
-    hash: `blockhash_${num}`,
-    validator: `validator_${num % 3}`,
+    number: block.blockNumber,
+    hash: block.hash,
+    validator: block.validator,
+    timestamp: block.timestamp,
+    transactions: block.transactions,
   });
 });
 
@@ -63,16 +68,29 @@ app.get("/chain", (req, res) => {
 });
 
 // Send transaction
-app.post("/transactions", (req, res) => {
+app.post("/transactions", async (req, res) => {
   const { to, from, amount, signature } = req.body;
-  if (!to || !amount) {
+  if (
+    !from ||
+    !to ||
+    typeof amount !== "number" ||
+    !Number.isFinite(amount) ||
+    amount <= 0 ||
+    !signature
+  ) {
     return res.status(400).json({ error: "Invalid transaction" });
   }
-  transactionCount++;
-  res.json({
-    txHash: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    block: blockCount + 1,
-  });
+
+  try {
+    const transaction = new Transaction(from, to, amount, signature);
+    await blockchain.addTransaction(transaction);
+    res.json({
+      txHash: await transaction.calculateHash(),
+      block: blockchain.getLatestBlock().blockNumber + 1,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 // RPC endpoint
@@ -127,9 +145,7 @@ wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     const data = JSON.parse(message);
     if (data.type === "new_block") {
-      blockCount = data.height;
-      lastBlockTime = Date.now();
-      // Broadcast to other peers
+      // Broadcast the peer notification without mutating nonexistent mock counters.
       connectedPeers.forEach((peer) => {
         if (peer !== ws && peer.readyState === WebSocket.OPEN) {
           peer.send(JSON.stringify(data));
@@ -149,7 +165,12 @@ setInterval(async () => {
     // Add some mock transactions
     const numTx = Math.floor(Math.random() * 5) + 1;
     for (let i = 0; i < numTx; i++) {
-      const tx = { sender: "mock_sender", receiver: "mock_receiver", amount: Math.random() * 10 };
+      const tx = new Transaction(
+        "mock_sender",
+        "mock_receiver",
+        Math.random() * 10 + 0.01,
+        "valid_sig",
+      );
       await blockchain.addTransaction(tx);
     }
 
@@ -172,7 +193,7 @@ setInterval(async () => {
   } catch (error) {
     console.error("Block creation failed:", error.message);
   }
-}, 10000);
+}, BLOCK_INTERVAL_MS);
 
 // Start server
 server.listen(PORT, () => {
