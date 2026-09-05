@@ -38,6 +38,7 @@
     "ethereum",
     "base",
     "smart-contracts",
+    "hardhat",
     "aetheron"
   ],
   "author": "MastaTrill",
