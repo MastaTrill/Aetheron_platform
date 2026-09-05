@@ -1,0 +1,73 @@
+name: AETH V2 Migration Readiness
+
+on:
+  pull_request:
+    paths:
+      - "smart-contract/contracts/AetheronV2.sol"
+      - "smart-contract/contracts/AetheronPermanentSupplyLock.sol"
+      - "smart-contract/deployments/aeth-v2-migration.json"
+      - "smart-contract/scripts/verify-aeth-v1-migration-snapshot.mjs"
+      - "smart-contract/scripts/lib/base-read-retry.mjs"
+      - "smart-contract/test/AethV1MigrationSnapshotVerifier.test.js"
+      - "smart-contract/test/AetheronV2MigrationLedger.test.js"
+      - "smart-contract/package.json"
+      - "smart-contract/package-lock.json"
+      - ".github/workflows/aeth-v2-migration-readiness.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "smart-contract/contracts/AetheronV2.sol"
+      - "smart-contract/contracts/AetheronPermanentSupplyLock.sol"
+      - "smart-contract/deployments/aeth-v2-migration.json"
+      - "smart-contract/scripts/verify-aeth-v1-migration-snapshot.mjs"
+      - "smart-contract/scripts/lib/base-read-retry.mjs"
+      - "smart-contract/test/AethV1MigrationSnapshotVerifier.test.js"
+      - "smart-contract/test/AetheronV2MigrationLedger.test.js"
+      - "smart-contract/package.json"
+      - "smart-contract/package-lock.json"
+      - ".github/workflows/aeth-v2-migration-readiness.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-v1-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: smart-contract
+    env:
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+      SNAPSHOT_OUTPUT_PATH: ../aeth-v1-migration-snapshot.json
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: smart-contract/package-lock.json
+
+      - name: Install exact dependencies
+        run: npm ci
+
+      - name: Verify migration snapshot policy test
+        run: node --test test/AethV1MigrationSnapshotVerifier.test.js
+
+      - name: Verify all prepared V1 migration balances on Base
+        run: npm run verify:aeth-v1-migration-snapshot
+
+      - name: Upload read-only migration snapshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aeth-v1-migration-snapshot
+          path: aeth-v1-migration-snapshot.json
+          if-no-files-found: warn
+          retention-days: 30
