@@ -36,11 +36,12 @@ jobs:
   verify-v1-snapshot:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    environment: presale-dry-run
     defaults:
       run:
         working-directory: smart-contract
     env:
-      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
       SNAPSHOT_OUTPUT_PATH: ../aeth-v1-migration-snapshot.json
 
     steps:
