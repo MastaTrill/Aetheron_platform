@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "network": "Base Mainnet",
   "chainId": 8453,
   "canonicalToken": {
@@ -46,7 +46,7 @@
       }
     ],
     "reconciledSupplyTokens": "1000000000",
-    "notes": "This is a dated read-only accounting snapshot, not a claim that balances remain unchanged after the observation time."
+    "notes": "This is a dated read-only accounting snapshot, not a claim that balances remain unchanged after the observation time. A fresh pre-cutover snapshot is mandatory."
   },
   "v2": {
     "contract": "AetheronV2",
@@ -68,6 +68,114 @@
     "transferTaxPolicy": "none",
     "standardErc20Transfers": true
   },
+  "migrationPlan": {
+    "status": "prepared_unapproved",
+    "basisSnapshotObservedAt": "2026-09-03",
+    "basisEvidence": [
+      "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md",
+      "smart-contract/PRESALE_RECOVERY_EVIDENCE_2026-07-17.md"
+    ],
+    "sourceNominalSupplyTokens": "1000000000",
+    "sourceAccessibleSupplyTokens": "950000000",
+    "sourceInaccessibleSupplyTokens": "50000000",
+    "targetNominalSupplyTokens": "1000000000",
+    "targetAccessibleSupplyTokens": "950000000",
+    "targetPermanentlyLockedSupplyTokens": "50000000",
+    "executionAuthorized": false,
+    "freshBalanceSnapshotRequired": true,
+    "economicPrinciple": "Do not make the 50,000,000 AETH that is inaccessible in V1 newly accessible in V2 without a separately reviewed tokenomics decision.",
+    "permanentSupplyLock": {
+      "contract": "AetheronPermanentSupplyLock",
+      "source": "contracts/AetheronPermanentSupplyLock.sol",
+      "address": null,
+      "status": "prepared_not_deployed",
+      "requiredTokens": "50000000",
+      "verified": false,
+      "executionAuthorized": false
+    },
+    "replacementPresaleRecovery": {
+      "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
+      "snapshotBalanceTokens": "33333333",
+      "snapshotReservedTokens": "4900",
+      "snapshotUnsoldRecoverableTokens": "33328433",
+      "snapshotContributorScope": "owner_only",
+      "recoveryRequiredBeforeCutover": true,
+      "recoveryVerified": false,
+      "notes": "The legacy presale is immutable to V1 and must never receive V2. Re-verify balance, reserved tokens, contribution ownership, refund state, and withdrawal eligibility before any recovery transaction."
+    },
+    "rows": [
+      {
+        "sourceRole": "owner",
+        "sourceAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "sourceTokens": "416666667",
+        "targetDisposition": "owner_migration_reserve",
+        "targetAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "targetTokens": "416666667",
+        "executionAuthorized": false
+      },
+      {
+        "sourceRole": "team",
+        "sourceAddress": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
+        "sourceTokens": "200000000",
+        "targetDisposition": "same_holder",
+        "targetAddress": "0x76A83f91dC64FC4F29CEf6635f9a36477ECA6784",
+        "targetTokens": "200000000",
+        "executionAuthorized": false
+      },
+      {
+        "sourceRole": "marketing_and_staking",
+        "sourceAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+        "sourceTokens": "300000000",
+        "targetDisposition": "same_holder_via_split_constructor_allocations",
+        "targetAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+        "targetTokens": "300000000",
+        "v2AllocationComponents": {
+          "marketingTokens": "150000000",
+          "stakingTokens": "150000000"
+        },
+        "executionAuthorized": false
+      },
+      {
+        "sourceRole": "invalid_presale",
+        "sourceAddress": "0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C",
+        "sourceTokens": "50000000",
+        "targetDisposition": "permanent_supply_lock",
+        "targetAddress": null,
+        "targetTokens": "50000000",
+        "executionAuthorized": false,
+        "notes": "V1 recovery evidence classifies this 50M balance as inaccessible by the deployed presale interface. V2 parity requires a verified permanent lock unless a later independently reviewed tokenomics decision explicitly changes that treatment."
+      },
+      {
+        "sourceRole": "replacement_presale",
+        "sourceAddress": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
+        "sourceTokens": "33333333",
+        "currentReservedTokens": "4900",
+        "currentUnsoldRecoverableTokens": "33328433",
+        "targetDisposition": "owner_migration_reserve_after_v1_recovery",
+        "targetAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "targetTokens": "33333333",
+        "executionAuthorized": false,
+        "notes": "Do not send V2 to this legacy presale. Recover or otherwise reconcile its V1 balance first, after a fresh read-only verification."
+      }
+    ],
+    "reconciledTargetByRoleTokens": {
+      "ownerMigrationReserveAfterV1Recovery": "450000000",
+      "team": "200000000",
+      "marketingAndStaking": "300000000",
+      "permanentlyLocked": "50000000"
+    },
+    "requiredPreCutoverChecks": [
+      "Capture and reconcile a fresh Base V1 balance snapshot immediately before migration execution.",
+      "Confirm the invalid-presale 50,000,000 AETH remains inaccessible or produce new independently verified recovery evidence.",
+      "Re-verify the replacement presale balance, tokensReserved, contribution ownership, refund state, and withdrawUnsoldTokens eligibility.",
+      "Complete any owner-initiated V1 replacement-presale refund and unsold-token recovery needed to reconcile the 33,333,333 AETH balance.",
+      "Deploy AetheronPermanentSupplyLock, verify its source/runtime, and record its address without transferring tokens yet.",
+      "Deploy AetheronV2 with trading disabled and verify source, runtime, ownership, allocation wallets, and total supply.",
+      "Transfer exactly 50,000,000 V2 AETH into the verified permanent lock only after an explicit irreversible-transfer approval.",
+      "Verify V2 accessible balances reconcile to exactly 950,000,000 AETH before any canonical cutover.",
+      "Keep migration, liquidity, public launch, and cutover gates false until independent review and explicit authorization are complete."
+    ]
+  },
   "cutover": {
     "authorized": false,
     "targetAddress": null,
@@ -77,6 +185,9 @@
       "sourceVerified": false,
       "runtimeVerified": false,
       "supplyVerified": false,
+      "currentBalanceSnapshotVerified": false,
+      "v1RecoveryVerified": false,
+      "permanentSupplyLockVerified": false,
       "balanceMigrationPlanApproved": false,
       "canonicalRegistryUpdated": false,
       "releaseAuthorized": false
@@ -86,9 +197,12 @@
   "liquidityAuthorized": false,
   "migrationAuthorized": false,
   "cutoverRequirements": [
+    "Capture and reconcile a fresh V1 balance snapshot against the prepared migration ledger.",
+    "Resolve the replacement-presale V1 recovery dependency and record read-only plus transaction evidence where applicable.",
+    "Deploy and source/runtime verify the permanent 50,000,000 AETH supply lock, but do not fund it until separately approved.",
     "Deploy AetheronV2 on Base Mainnet through the gated deployment entrypoint.",
     "Verify deployed source and runtime invariants on BaseScan and through read-only RPC calls.",
-    "Reconcile the dated V1 balance snapshot against the intended V2 migration plan and preserve a reviewable mapping.",
+    "Verify exactly 50,000,000 V2 AETH is permanently locked and exactly 950,000,000 V2 AETH remains accessible before cutover.",
     "Do not reuse the expired legacy presale as a V2 presale because its token address is immutable.",
     "Choose and verify the canonical Base AMM pool before creating V2 liquidity.",
     "Create liquidity only after opening-price and liquidity-size decisions are explicitly reviewed in the signing wallet.",
