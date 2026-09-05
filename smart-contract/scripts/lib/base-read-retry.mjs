@@ -1,8 +1,23 @@
 export const DEFAULT_READ_ATTEMPTS = 5;
 export const DEFAULT_READ_DELAY_MS = 1500;
+export const DEFAULT_READ_TIMEOUT_MS = 8000;
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function withReadTimeout(read, label, timeoutMs) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const error = new Error(`${label} timed out after ${timeoutMs}ms`);
+      error.code = "TIMEOUT";
+      reject(error);
+    }, timeoutMs);
+  });
+
+  return Promise.race([Promise.resolve().then(read), timeout])
+    .finally(() => clearTimeout(timer));
 }
 
 export function describeReadError(error) {
@@ -23,11 +38,12 @@ export async function readWithRetry(read, label, options = {}) {
   const attempts = options.attempts ?? DEFAULT_READ_ATTEMPTS;
   const delayMs = options.delayMs ?? DEFAULT_READ_DELAY_MS;
   const validate = options.validate ?? ((value) => value !== null && value !== undefined);
+  const timeoutMs = options.timeoutMs ?? DEFAULT_READ_TIMEOUT_MS;
   let lastError;
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      const value = await read();
+      const value = await withReadTimeout(read, label, timeoutMs);
       if (!validate(value)) {
         const invalidResult = new Error(`${label} returned an invalid result`);
         invalidResult.code = "INVALID_READ_RESULT";

@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ethers } from "ethers";
 import {
+  DEFAULT_READ_TIMEOUT_MS,
   callViewWithRetry,
   providerReadWithRetry,
   readWithRetry
@@ -20,8 +21,12 @@ if (!ethers.isAddress(expectedToken) || !ethers.isAddress(invalidPresale)) {
   throw new Error("Expected token or invalid presale address is missing from presale-base.json");
 }
 
+const rpcRequest = new ethers.FetchRequest(
+  process.env.BASE_RPC_URL || "https://mainnet.base.org"
+);
+rpcRequest.timeout = DEFAULT_READ_TIMEOUT_MS;
 const provider = new ethers.JsonRpcProvider(
-  process.env.BASE_RPC_URL || "https://mainnet.base.org",
+  rpcRequest,
   8453,
   { staticNetwork: true, batchMaxCount: 1 }
 );
