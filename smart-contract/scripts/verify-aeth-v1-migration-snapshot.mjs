@@ -32,20 +32,23 @@ async function main() {
     throw new Error(`Migration manifest must target Base Mainnet chain 8453, found ${manifest.chainId}`);
   }
 
-  const provider = new JsonRpcProvider(rpcUrl, 8453, { staticNetwork: true });
+  const provider = new JsonRpcProvider(rpcUrl);
   const network = await readWithRetry(() => provider.getNetwork(), "Base network");
   if (Number(network.chainId) !== manifest.chainId) {
     throw new Error(`RPC chain mismatch: expected ${manifest.chainId}, found ${network.chainId}`);
   }
 
+  const blockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
   const tokenAddress = getAddress(manifest.canonicalToken.address);
-  const bytecode = await readWithRetry(() => provider.getCode(tokenAddress), "AETH V1 bytecode");
+  const bytecode = await readWithRetry(
+    () => provider.getCode(tokenAddress, blockNumber),
+    "AETH V1 bytecode",
+  );
   if (!bytecode || bytecode === "0x") {
-    throw new Error(`No runtime bytecode found at canonical AETH V1 address ${tokenAddress}`);
+    throw new Error(`No runtime bytecode found at canonical AETH V1 address ${tokenAddress} at block ${blockNumber}`);
   }
 
   const token = new Contract(tokenAddress, ERC20_READ_ABI, provider);
-  const blockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
   const decimals = Number(await readWithRetry(() => token.decimals({ blockTag: blockNumber }), "AETH V1 decimals"));
   const totalSupplyWei = await readWithRetry(() => token.totalSupply({ blockTag: blockNumber }), "AETH V1 totalSupply");
 
