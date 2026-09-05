@@ -20,7 +20,7 @@
     "deploy:base-presale:dry-run": "DRY_RUN=true node scripts/deploy-base-presale-bounded.mjs",
     "rehearsal:base-sepolia:presale": "node scripts/deploy-base-sepolia-presale-rehearsal.mjs",
     "verify:base-sepolia:rehearsal": "node scripts/verify-base-sepolia-rehearsal.mjs",
-    "cancel:invalid-base-presale": "node scripts/cancel-invalid-presale.mjs",
+    "cancel:invalid-base-presale": "node scripts/cancel-invalid-base-presale.mjs",
     "test:coverage": "node -e \"console.log('Coverage tooling was removed during dependency hardening. Re-add solidity-coverage if you need contract coverage reports.')\"",
     "deploy:local": "hardhat run scripts/deploy.mjs --network hardhat",
     "deploy:sepolia": "hardhat run scripts/deploy.mjs --network sepolia",
