@@ -1,30 +1,34 @@
-# Aetheron Platform — Canonical Project Status
+# Aetheron Platform - Canonical Project Status
 
-**Status:** Active flagship — public presale authorized; trading flag on; liquidity deferred
-**Last updated:** 2026-09-04
+**Status:** Active flagship - launch approval recorded; presale purchases paused; refunds available; trading flag on; liquidity deferred
+**Last updated:** 2026-09-05
 
 ## Production truth
 
 - Canonical network: **Base Mainnet** (`8453`).
 - Canonical AETH V1: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`.
-- Corrected Base presale: `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`.
-- `launchAuthorized: true` under closed issue #219.
-- Product `tradingAuthorized: true`; on-chain `tradingEnabled: true` was observed on 2026-09-03.
+- Current Base presale: `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`.
+- Issue #219 remains approved and `launchAuthorized: true` records that approval.
+- Public purchase execution is separately fail-closed with `purchaseAuthorized: false` because the deployed sale window ended on **2026-08-01 20:06:40 UTC**.
+- Read-only Base verification on 2026-09-05 confirmed `saleLive: false`, `weiRaised: 0.0049 ETH`, `tokensReserved: 4,900 AETH`, `softCap: 5 ETH`, `refundsAvailable: true`, `finalized: false`, and `cancelled: false`.
+- The current presale cannot be safely reused for a new window: the verified `updateSchedule` path is restricted to before sale start and requires `weiRaised == 0`, while this deployment has already received contributions. A replacement presale is required for any new sale window.
+- Product `tradingAuthorized: true`; on-chain `tradingEnabled: true` was observed on 2026-09-03 and remains true.
 - `liquidityAuthorized: false`; no canonical Base pool is configured.
 - Owner / treasury records currently point to `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`.
 - AETH V2 remains `prepared_not_deployed`; V1 stays canonical until a separately verified V2 cutover.
-- The presale schedule may be expired on-chain; authorization must not be described as an active sale until the current contract window is verified.
 
 ## Closed
 
 - #214 Base cleanup.
 - #217 path-evidence gate.
-- #219 public presale authorization.
+- #219 public launch authorization.
 - Product trading authorization aligned with live chain state.
+- Frontend purchase gate split from launch approval so an expired sale cannot be marketed or executed as open.
 
 ## Open hardening / launch follow-up
 
-- [ ] Verify the current presale schedule before marketing an “open sale”.
+- [ ] Preserve the current expired presale for contributor refund/claim handling; do not repurpose its balances.
+- [ ] Approve explicit replacement presale start/end terms, then deploy a new Base presale, fund it, source-verify it, smoke-test it, and record the new canonical address before setting `purchaseAuthorized: true`.
 - [ ] Choose, authorize, create, and publicly record canonical Base liquidity.
 - [ ] Complete independent contract review.
 - [ ] Improve owner / treasury separation with reviewed multisig controls if adopted.
@@ -32,13 +36,15 @@
 
 ## Production safety rules
 
-1. `tradingEnabled` does not prove a liquid public market exists.
-2. Do not call `enableTrading()` again; the V1 flag is one-way and already true.
-3. Liquidity authorization is separate from trading authorization and requires public transaction/pool evidence.
-4. V1 remains canonical until the V2 migration manifest records verified deployment evidence and a separate cutover authorization.
-5. Custom `AetheronGovernance`, `AetheronMultiSigTreasury`, and `AetheronVendor` are retained only as experimental/test surfaces and are not production-authorized deployment paths.
-6. Production contract records belong in `smart-contract/deployments/`, and public configuration must consume canonical Base deployment truth.
-7. Never infer production readiness from a deployment alone; deployment state, product authorization, liquidity state, and canonical-token state are separate facts.
+1. `launchAuthorized: true` records owner approval; it does not prove an active sale window.
+2. `purchaseAuthorized` and live on-chain schedule checks must both be true before the frontend can enable purchases.
+3. Do not call `enableTrading()` again; the V1 flag is one-way and already true.
+4. `tradingEnabled` does not prove a liquid public market exists.
+5. Liquidity authorization is separate from trading authorization and requires public transaction/pool evidence.
+6. Do not attempt to reschedule the current presale; its verified schedule mutator is locked after sale start / contributions.
+7. V1 remains canonical until the V2 migration manifest records verified deployment evidence and a separate cutover authorization.
+8. Custom `AetheronGovernance`, `AetheronMultiSigTreasury`, and `AetheronVendor` are retained only as experimental/test surfaces and are not production-authorized deployment paths.
+9. Production contract records belong in `smart-contract/deployments/`, and public configuration must consume canonical Base deployment truth.
 
 ## Scope boundary
 

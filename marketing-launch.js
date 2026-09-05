@@ -1,5 +1,5 @@
 // marketing-launch.js
-// Public presale + trading flag authorized 2026-09-04.
+// Launch approval + trading flag recorded 2026-09-04; presale purchases paused because the configured sale window ended.
 // Canonical liquidity remains disabled until a verified Base pool exists.
 (function () {
   const status = Object.freeze({
@@ -7,7 +7,8 @@
     chainId: 8453,
     token: '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e',
     launchAuthorized: true,
-    publicFundingAuthorized: true,
+    publicFundingAuthorized: false,
+    presalePurchaseAuthorized: false,
     tradingAuthorized: true,
     onChainTradingEnabled: true,
     canonicalLiquidityAuthorized: false,
@@ -24,7 +25,7 @@
     }
 
     launchCampaign() {
-      return status.publicFundingAuthorized === true;
+      return status.presalePurchaseAuthorized === true;
     }
   }
 
