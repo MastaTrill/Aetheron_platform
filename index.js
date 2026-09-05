@@ -4,7 +4,6 @@
 // Contract Addresses - UPDATED for Base Mainnet
 const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
-const _LIQUIDITY_PAIR = "0xd57c5E33ebDC1b565F99d06809debbf86142705D";
 const OWNER_ADDRESS = "0xDF5A2b892254C42F80000A029dfE8b311f777Bd5".toLowerCase();
 const BASE_CHAIN_ID = '0x2105'; // 8453 in hex
 const BASE_RPC_URLS = [
@@ -159,14 +158,14 @@ window.addEventListener('load', async () => {
 // Set default values to avoid stuck "Loading..." states
 function setDefaultValues() {
     const defaults = [
-        { id: 'priceValue', value: '$0.00000001' },
-        { id: 'priceChange', value: '+0.00% (24h)' },
-        { id: 'marketCapValue', value: '$10' },
-        { id: 'marketCapChange', value: '+0.00% (24h)' },
-        { id: 'stakedValue', value: '0 AETH' },
-        { id: 'stakedChange', value: '150M AETH Pool' },
-        { id: 'holdersValue', value: '1+' },
-        { id: 'holdersChange', value: 'Growing' }
+        { id: 'priceValue', value: 'N/A' },
+        { id: 'priceChange', value: 'No canonical DEX market' },
+        { id: 'marketCapValue', value: 'N/A' },
+        { id: 'marketCapChange', value: 'No canonical DEX market' },
+        { id: 'stakedValue', value: 'N/A' },
+        { id: 'stakedChange', value: 'No active public staking' },
+        { id: 'holdersValue', value: 'Snapshot tracked' },
+        { id: 'holdersChange', value: 'Use verified migration ledger' }
     ];
     
     defaults.forEach(({ id, value }) => {
@@ -509,6 +508,15 @@ async function updateStats() {
 
 // Update price from DexScreener
 async function updatePrice() {
+    if (window.AETHERON_PRESALE_CONFIG?.liquidityAuthorized !== true) {
+        const priceEl = document.getElementById('priceValue');
+        const changeEl = document.getElementById('priceChange');
+        const marketCapEl = document.getElementById('marketCapValue');
+        if (priceEl) priceEl.textContent = 'N/A';
+        if (changeEl) changeEl.textContent = 'No canonical DEX market';
+        if (marketCapEl) marketCapEl.textContent = 'N/A';
+        return;
+    }
     try {
         console.log('📊 Fetching live price data...');
         const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
@@ -533,7 +541,7 @@ async function updatePrice() {
                 if (price > 0) {
                     priceEl.textContent = price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toFixed(8)}`;
                 } else {
-                    priceEl.textContent = '$0.00000001';
+                    priceEl.textContent = 'N/A';
                 }
             }
             
@@ -604,11 +612,11 @@ async function updatePrice() {
             // Show default values instead of "Loading..."
             const priceEl = document.getElementById('priceValue');
             if (priceEl && priceEl.textContent === 'Loading...') {
-                priceEl.textContent = '$0.00000001';
+                priceEl.textContent = 'N/A';
             }
             const marketCapEl = document.getElementById('marketCapValue');
             if (marketCapEl && marketCapEl.textContent === 'Loading...') {
-                marketCapEl.textContent = '$10';
+                marketCapEl.textContent = 'N/A';
             }
         }
     } catch (error) {
@@ -616,7 +624,7 @@ async function updatePrice() {
         // Show friendly error message
         const priceEl = document.getElementById('priceValue');
         if (priceEl && priceEl.textContent === 'Loading...') {
-            priceEl.textContent = '$0.00000001';
+            priceEl.textContent = 'N/A';
         }
     }
 }
@@ -1050,31 +1058,11 @@ function copyContractAddress() {
     });
 }
 
-// Update live holder count
+// Holder counts must come from a verified indexer or migration snapshot, never a DEX-volume estimate.
 async function updateHolderCount() {
     const holdersCountEl = document.getElementById('liveHoldersCount');
-    if (!holdersCountEl) {
-        return;
-    }
-
-    try {
-        // Estimate holders based on total supply and average holding
-        // In production, you'd query this from a backend or indexer
-        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${AETH_ADDRESS}`);
-        const data = await response.json();
-        
-        if (data.pairs && data.pairs.length > 0) {
-            // Rough estimate: use transaction count or volume as proxy
-            const txCount = data.pairs[0].txns?.h24?.total || 0;
-            const estimatedHolders = Math.max(Math.floor(txCount / 2) + 50, 100);
-            holdersCountEl.textContent = estimatedHolders + '+';
-        } else {
-            holdersCountEl.textContent = '100+';
-        }
-    } catch (error) {
-        console.log('Could not fetch holder count:', error);
-        holdersCountEl.textContent = '100+';
-    }
+    if (!holdersCountEl) return;
+    holdersCountEl.textContent = 'Verified snapshot';
 }
 
 // Toggle FAQ accordion
@@ -1097,6 +1085,12 @@ async function updatePriceWithChange() {
     const changeDiv = document.getElementById('priceChange');
 
     if (!priceValueEl || !arrow || !changePercent || !changeDiv) {
+        return;
+    }
+    if (window.AETHERON_PRESALE_CONFIG?.liquidityAuthorized !== true) {
+        priceValueEl.textContent = 'N/A';
+        changeDiv.className = 'change';
+        changePercent.textContent = 'No canonical DEX market';
         return;
     }
 
@@ -1124,15 +1118,15 @@ async function updatePriceWithChange() {
             
             _lastPrice = currentPrice;
         } else {
-            priceValueEl.textContent = '$0.00000001';
+            priceValueEl.textContent = 'N/A';
             changeDiv.className = 'change positive';
-            changePercent.textContent = '+0.00%';
+            changePercent.textContent = 'No canonical DEX market';
         }
     } catch (error) {
         console.log('Could not update price with change:', error);
-        priceValueEl.textContent = '$0.00000001';
+        priceValueEl.textContent = 'N/A';
         changeDiv.className = 'change positive';
-        changePercent.textContent = '+0.00%';
+        changePercent.textContent = 'No canonical DEX market';
     }
 }
 
@@ -1188,7 +1182,7 @@ function closeShareModal() {
 
 /* eslint-disable-next-line no-unused-vars */
 function shareTwitter() {
-    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with verified Base launch status and deployment details! 💎\n\n🎯 Features:\n✅ Gamified Leaderboards\n✅ Referral Rewards (5%)\n✅ Transparent Roadmap\n\n#Aetheron #DeFi #Crypto');
     const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
     trackShare('twitter');
@@ -1203,7 +1197,7 @@ function shareFacebook() {
 
 /* eslint-disable-next-line no-unused-vars */
 function shareTelegram() {
-    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with up to 50% APY staking rewards!');
+    const text = encodeURIComponent('🚀 Join Aetheron (AETH) - Revolutionary DeFi platform with verified Base launch status and deployment details!');
     const url = encodeURIComponent('https://aetrs.com/');
     window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
     trackShare('telegram');
@@ -1648,13 +1642,13 @@ function displayUserStakes(stakes) {
         list.innerHTML = `
             <div class="wallet-section">
                 <i class="fas fa-inbox empty-icon"></i>
-                <p class="text-gray">No active stakes yet. Start staking to earn rewards!</p>
+                <p class="text-gray">No active stakes shown. Public staking is not currently launched.</p>
             </div>
         `;
         return;
     }
     
-    const poolNames = ['30 Days (5% APY)', '90 Days (12% APY)', '180 Days (25% APY)'];
+    const poolNames = ['30 Days', '90 Days', '180 Days'];
     
     list.innerHTML = stakes.map(stake => {
         const isUnlocked = new Date() >= stake.unlockTime;
