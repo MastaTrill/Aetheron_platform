@@ -5,9 +5,10 @@ jest.mock(
 );
 
 jest.mock('react-native-onesignal', () => ({
-  setAppId: jest.fn(),
-  promptForPushNotificationsWithUserResponse: jest.fn(),
-  setNotificationOpenedHandler: jest.fn(),
+  OneSignal: {
+    initialize: jest.fn(),
+    Notifications: {requestPermission: jest.fn(), addEventListener: jest.fn()},
+  },
 }), {virtual: true});
 
 jest.mock('@walletconnect/react-native-compat', () => ({
