@@ -3,6 +3,7 @@ import { JsonRpcProvider, Contract, getAddress } from "ethers";
 import { readWithRetry } from "./lib/base-read-retry.mjs";
 
 const MANIFEST_URL = new URL("../deployments/aeth-v2-migration.json", import.meta.url);
+const SNAPSHOT_CONFIRMATIONS = 3;
 const ERC20_READ_ABI = [
   "function balanceOf(address account) view returns (uint256)",
   "function decimals() view returns (uint8)",
@@ -38,7 +39,14 @@ async function main() {
     throw new Error(`RPC chain mismatch: expected ${manifest.chainId}, found ${network.chainId}`);
   }
 
-  const blockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
+  const latestBlockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
+  const blockNumber = Math.max(latestBlockNumber - SNAPSHOT_CONFIRMATIONS, 0);
+  const pinnedBlock = await readWithRetry(
+    () => provider.getBlock(blockNumber),
+    `Base pinned block ${blockNumber}`,
+    { validate: (value) => Boolean(value?.hash) },
+  );
+
   const tokenAddress = getAddress(manifest.canonicalToken.address);
   const bytecode = await readWithRetry(
     () => provider.getCode(tokenAddress, blockNumber),
@@ -98,7 +106,10 @@ async function main() {
   const report = {
     checkedAt: new Date().toISOString(),
     chainId: Number(network.chainId),
+    latestBlockNumber,
+    snapshotConfirmations: SNAPSHOT_CONFIRMATIONS,
     blockNumber,
+    blockHash: pinnedBlock.hash,
     tokenAddress,
     decimals,
     totalSupplyWei,
