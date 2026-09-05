@@ -55,7 +55,7 @@ function lockPublicAdminControls() {
 
 function reconcilePublicHomepage() {
   document.title = 'Aetheron (AETH) | Base Mainnet Platform';
-  const description = 'Explore Aetheron on Base Mainnet. Public purchases and canonical liquidity remain unavailable until final launch authorization and market setup are complete.';
+  const description = 'Explore Aetheron on Base Mainnet. The recorded presale window has ended, so public purchases are paused. The on-chain trading flag is enabled; canonical liquidity remains unavailable until a verified Base pool is published.';
   setMeta('meta[name="description"]', description);
   setMeta('meta[property="og:title"]', 'Aetheron (AETH) | Base Mainnet Platform');
   setMeta('meta[property="og:description"]', description);
@@ -186,7 +186,7 @@ function reconcilePublicHomepage() {
   if (calcButton) calcButton.innerHTML = '<i class="fas fa-calculator"></i> Estimate Scenario';
 
   const faqAnswers = document.querySelectorAll('.faq-answer');
-  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>Public AETH purchases are not authorized.</p><p>The on-chain tradingEnabled flag is not evidence of public market readiness; canonical liquidity remains unavailable until a verified Base pool and final launch authorization are published.</p><p>Use the <a class="primary-link" href="presale.html">Base launch-status page</a> for the canonical contracts and current release state.</p>`;
+  if (faqAnswers[0]) faqAnswers[0].innerHTML = `<p>Public AETH purchases are paused because the recorded presale window has ended.</p><p>The on-chain tradingEnabled flag is true, but it is not evidence of public market readiness; canonical liquidity remains unavailable until a verified Base pool is published.</p><p>Use the <a class="primary-link" href="presale.html">Base launch-status page</a> for the canonical contracts and current release state.</p>`;
   if (faqAnswers[1]) faqAnswers[1].innerHTML = '<p>Public staking is not advertised as active. The calculator is a planning tool until a verified Base staking contract and final reward schedule are published.</p>';
   if (faqAnswers[2]) faqAnswers[2].innerHTML = '<p>The token contract stores 3% buy and 5% sell tax rates, but no canonical Base DEX pool is configured. Do not infer effective market fees from stored contract values until the final DEX design and liquidity deployment are published.</p>';
   if (faqAnswers[3]) faqAnswers[3].innerHTML = `<p>The presale and AETH token source code are verified on BaseScan. Source verification is not the same as an independent security audit. The recorded presale window has ended, so no public purchase should be attempted from this page.</p><p><a class="primary-link" target="_blank" rel="noopener noreferrer" href="${BASESCAN_PRESALE}">View verified presale contract</a></p>`;
