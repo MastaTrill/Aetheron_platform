@@ -7,6 +7,8 @@ node_modules
 .env.staging
 backend/.env
 backend/admin.pass
+.*key
+*.key
 
 # Build outputs
 dist/
