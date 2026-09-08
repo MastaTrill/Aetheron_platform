@@ -13,10 +13,9 @@ let cachedCreationRecord;
 async function recoverCreationRecord() {
   if (cachedCreationRecord) return cachedCreationRecord;
 
-  const token = new ethers.Contract(tokenAddress, [
-    "function owner() view returns (address)"
-  ], provider);
-  const creator = ethers.getAddress(await token.owner());
+  const creator = ethers.getAddress(
+    process.env.AETH_CREATOR_ADDRESS || "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2"
+  );
   const latestNonce = await provider.getTransactionCount(creator, "latest");
 
   let deploymentNonce = -1;

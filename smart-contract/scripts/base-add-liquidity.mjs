@@ -84,7 +84,7 @@ async function main() {
     console.log('  LIQUIDITY_AMOUNT_TOKEN=' + aethAmountTokens);
     console.log('  LIQUIDITY_AMOUNT_ETH=' + ethAmountEth);
     console.log('  node smart-contract/scripts/base-add-liquidity.mjs --execute');
-    return;
+    process.exit(0);
   }
 
   const privateKey = process.env.BASE_DEPLOYER_PRIVATE_KEY || process.env.PRIVATE_KEY;
