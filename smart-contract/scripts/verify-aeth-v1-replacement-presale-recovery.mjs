@@ -169,6 +169,12 @@ async function main() {
     ownerContribution === weiRaised &&
     ownerTokensOwed === tokensReserved &&
     !ownerRefunded;
+  const ownerRefundSettled =
+    ownerRefunded &&
+    ownerContribution === 0n &&
+    ownerTokensOwed === 0n &&
+    tokensReserved === 0n &&
+    presaleEthBalance === 0n;
   const refundLiabilityCovered = presaleEthBalance >= ownerContribution;
   const currentUnsoldRecoverable = inventory - tokensReserved;
   const expectedUnsoldRecoverable = BigInt(recoveryPlan.snapshotUnsoldRecoverableTokens) * 10n ** 18n;
@@ -185,19 +191,25 @@ async function main() {
     "owner withdrawUnsoldTokens static simulation",
   );
 
-  const refundExecutionStateReady =
+  const refundExecutionStateReady = ownerRefundSettled || (
     refundsAvailable &&
     !finalized &&
     ownerOnlyContributorScopeVerified &&
     refundLiabilityCovered &&
-    claimRefundSimulation.succeeded;
+    claimRefundSimulation.succeeded
+  );
   const currentUnsoldWithdrawalStateReady =
     (finalized || refundsAvailable) &&
     currentUnsoldRecoverable > 0n &&
     withdrawUnsoldSimulation.succeeded;
   const recoveryReadyForExplicitOwnerApproval = refundExecutionStateReady && currentUnsoldWithdrawalStateReady;
   const recommendedSequence = recoveryReadyForExplicitOwnerApproval
-    ? [
+    ? ownerRefundSettled
+      ? [
+        "owner_withdrawUnsoldTokens_after_completed_refund",
+        "verify_presale_v1_balance_is_zero_before_v2_cutover",
+      ]
+      : [
         "owner_claimRefund_first",
         "verify_tokensReserved_is_zero_and_refund_receipt",
         "owner_withdrawUnsoldTokens_after_refund",
@@ -241,6 +253,7 @@ async function main() {
       ownerTokensOwedTokens: formatUnits(ownerTokensOwed, 18),
       ownerRefunded,
       ownerOnlyContributorScopeVerified,
+      ownerRefundSettled,
     },
     readiness: {
       refundLiabilityCovered,

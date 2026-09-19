@@ -25,8 +25,8 @@ describe("AETH V1 -> V2 migration invariants", function () {
   });
 
   it("reconciles the dated V1 balance snapshot to exactly the full supply", function () {
-    assert.equal(migration.v1Snapshot.observedAt, "2026-09-03");
-    assert.equal(migration.v1Snapshot.source, "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md");
+    assert.equal(migration.v1Snapshot.observedAt, "2026-09-19");
+    assert.equal(migration.v1Snapshot.source, "docs/AETH_V1_MIGRATION_SNAPSHOT_2026-09-19.md");
     const total = migration.v1Snapshot.balances.reduce((sum, row) => sum + tokenUnits(row.tokens), 0n);
     assert.equal(total, 1_000_000_000n);
     assert.equal(tokenUnits(migration.v1Snapshot.reconciledSupplyTokens), 1_000_000_000n);

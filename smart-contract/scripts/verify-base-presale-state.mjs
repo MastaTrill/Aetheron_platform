@@ -8,6 +8,8 @@ import {
 
 const deploymentUrl = new URL("../deployments/presale-base.json", import.meta.url);
 const deployment = JSON.parse(await fs.readFile(deploymentUrl, "utf8"));
+const tokenDeploymentUrl = new URL("../deployments/aeth-base.json", import.meta.url);
+const tokenDeployment = JSON.parse(await fs.readFile(tokenDeploymentUrl, "utf8"));
 const activePresaleAddress = deployment.contracts?.Presale?.address;
 
 // Preserve the detailed invalid-presale inspection before a replacement exists.
@@ -21,12 +23,14 @@ function requireCondition(condition, message) {
 }
 
 const expectedTokenAddress = deployment.contracts?.Aetheron?.address;
+const expectedTokenOwner = tokenDeployment.token?.owner;
 const expectedOwner = deployment.wallets?.owner;
 const expectedTreasury = deployment.wallets?.treasury;
 const parameters = deployment.parameters || {};
 
 for (const [name, value] of Object.entries({
   expectedTokenAddress,
+  expectedTokenOwner,
   activePresaleAddress,
   expectedOwner,
   expectedTreasury
@@ -127,7 +131,7 @@ const latestBlock = await providerReadWithRetry(
 );
 
 requireCondition(tokenDecimals === 18n, "AETH token decimals are not 18");
-requireCondition(tokenOwner.toLowerCase() === expectedOwner.toLowerCase(), "AETH owner does not match the deployment record");
+requireCondition(tokenOwner.toLowerCase() === expectedTokenOwner.toLowerCase(), "AETH owner does not match the canonical token deployment record");
 requireCondition(presaleOwner.toLowerCase() === expectedOwner.toLowerCase(), "Replacement presale owner does not match the deployment record");
 requireCondition(linkedToken.toLowerCase() === expectedTokenAddress.toLowerCase(), "Replacement presale token linkage is incorrect");
 requireCondition(linkedTreasury.toLowerCase() === expectedTreasury.toLowerCase(), "Replacement presale treasury linkage is incorrect");
@@ -153,12 +157,11 @@ const remainingWeiCapacity = hardCap - weiRaised;
 const unreservedInventory = inventory - tokensReserved;
 const tokensNeededForRemainingHardCap = remainingWeiCapacity * rate;
 const fullyFundedForHardCap = unreservedInventory >= tokensNeededForRemainingHardCap;
-requireCondition(fullyFundedForHardCap, "Replacement presale is not fully funded for the remaining hard cap");
-
-const prelaunchDisabled = deployment.launchable === false;
-if (prelaunchDisabled) {
-  requireCondition(!cancelled && !finalized, "Prelaunch replacement is unexpectedly cancelled or finalized");
+if (deployment.launchable === true) {
+  requireCondition(fullyFundedForHardCap, "Launchable presale is not fully funded for the remaining hard cap");
 }
+
+const publicPurchasesDisabled = deployment.launchable === false;
 
 const now = BigInt(latestBlock.timestamp);
 const saleLive = now >= startTime && now <= endTime && !cancelled && !finalized;
@@ -168,7 +171,7 @@ const report = {
   latestBlock: latestBlock.number,
   deploymentStatus: deployment.status,
   launchReady: deployment.launchable === true && fullyFundedForHardCap && saleLive,
-  safeDisabledState: prelaunchDisabled && fullyFundedForHardCap,
+  safeDisabledState: publicPurchasesDisabled && !saleLive,
   token: {
     address: expectedTokenAddress,
     owner: tokenOwner,
@@ -196,5 +199,5 @@ const report = {
 
 console.log(JSON.stringify(report, null, 2));
 if (report.safeDisabledState) {
-  console.log("SAFE_DISABLED_STATE: replacement is fully funded and verified while public purchase controls remain disabled.");
+  console.log("SAFE_DISABLED_STATE: public purchases are disabled and the recorded sale is not live.");
 }

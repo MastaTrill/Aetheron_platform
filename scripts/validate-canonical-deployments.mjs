@@ -38,8 +38,8 @@ if (manifest?.onChainState?.tradingEnabled !== true) {
 if (!manifest?.onChainState?.source || !manifest?.onChainState?.observedAt) {
   errors.push('aeth-base.json onChainState must include source and observedAt evidence');
 }
-if (manifest?.productAuthorization?.publicPurchasesAuthorized !== true) {
-  errors.push('aeth-base.json productAuthorization.publicPurchasesAuthorized must record approved V1 presale access');
+if (manifest?.productAuthorization?.publicPurchasesAuthorized !== false) {
+  errors.push('aeth-base.json productAuthorization.publicPurchasesAuthorized must remain false while the V1 presale is closed');
 }
 if (manifest?.productAuthorization?.tradingAuthorized !== true) {
   errors.push('aeth-base.json productAuthorization.tradingAuthorized must match the approved V1 trading flag');

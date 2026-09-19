@@ -48,11 +48,23 @@ describe("AETH V2 migration ledger", function () {
   it("accounts for the recoverable replacement-presale balance without assigning V2 to the legacy presale", function () {
     const row = migration.migrationPlan?.rows?.find((entry) => entry.sourceRole === "replacement_presale");
     assert.ok(row);
-    assert.equal(tokens(row.sourceTokens), 33_333_333n);
-    assert.equal(tokens(row.currentReservedTokens), 4_900n);
-    assert.equal(tokens(row.currentUnsoldRecoverableTokens), 33_328_433n);
-    assert.equal(row.targetDisposition, "owner_migration_reserve_after_v1_recovery");
+    assert.equal(tokens(row.sourceTokens), 4_900n);
+    assert.equal(tokens(row.currentReservedTokens), 0n);
+    assert.equal(tokens(row.currentUnsoldRecoverableTokens), 4_900n);
+    assert.equal(row.targetDisposition, "platform_treasury_after_v1_recovery");
     assert.notEqual(row.targetAddress?.toLowerCase(), row.sourceAddress.toLowerCase());
+    assert.equal(row.executionAuthorized, false);
+  });
+
+  it("keeps the unclassified 416.7M security-transfer balance fail closed", function () {
+    const row = migration.migrationPlan?.rows?.find(
+      (entry) => entry.sourceRole === "unclassified_security_transfer_destination",
+    );
+    assert.ok(row);
+    assert.equal(row.sourceAddress.toLowerCase(), "0x43b18f8fb488e30d524757d78da1438881d1aaaa");
+    assert.equal(tokens(row.sourceTokens), 416_666_667n);
+    assert.equal(row.targetDisposition, "custody_review_required");
+    assert.equal(row.targetAddress, null);
     assert.equal(row.executionAuthorized, false);
   });
 

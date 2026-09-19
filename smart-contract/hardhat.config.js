@@ -1,7 +1,11 @@
 import hardhatEthers from "@nomicfoundation/hardhat-ethers";
 import dotenv from "dotenv";
+import { createRequire } from "node:module";
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+const localSolcPath = require.resolve("solc/soljson.js");
 
 const baseReadRpcUrl = process.env.BASE_RPC_URL || "https://mainnet.base.org";
 const baseForkRpcUrl =
@@ -16,6 +20,7 @@ export default {
   plugins: [hardhatEthers],
   solidity: {
     version: "0.8.20",
+    path: localSolcPath,
     settings: {
       optimizer: {
         enabled: true,

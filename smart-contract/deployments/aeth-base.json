@@ -9,8 +9,17 @@
     "decimals": 18,
     "totalSupplyWei": "1000000000000000000000000000",
     "totalSupplyTokens": "1000000000.0",
-    "owner": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
-    "tradingEnabled": true
+    "owner": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa"
+  },
+  "onChainState": {
+    "tradingEnabled": true,
+    "source": "docs/LIVE_BASE_STATE_2026-09-19.md at Base block 51514063",
+    "observedAt": "2026-09-19"
+  },
+  "productAuthorization": {
+    "publicPurchasesAuthorized": false,
+    "tradingAuthorized": true,
+    "liquidityAuthorized": false
   },
   "deployment": {
     "creationTransaction": "0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829",
