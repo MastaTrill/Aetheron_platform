@@ -9,7 +9,7 @@ Base presale missed soft cap. We will **not finalize**. We will **not** treat th
 
 ## Production truth
 
-- Canonical network: **Base Mainnet** (`8453`), live-read block **51514063** via `base.drpc.org` on 2026-09-19.
+- Canonical network: **Base Mainnet** (`8453`), live-read block **51514452** via `base.drpc.org` on 2026-09-19.
 - Canonical AETH V1: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e` (`tradingEnabled: true`).
 - Current Base presale (do not reuse): `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`.
 - `finalized: false`, `cancelled: false`, `refundsAvailable: true`.
@@ -22,8 +22,9 @@ Base presale missed soft cap. We will **not finalize**. We will **not** treat th
 - `liquidityAuthorized: false`.
 - Owner / treasury: `0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2`.
 - AETH V2 remains `prepared_not_deployed` / `prepared_unapproved`.
+- Invalid superseded sale `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C`: already `cancelled=true`, ETH 0, linked token is not V1, but **50,000,000 V1 AETH** currently sit on that address. See `docs/INVALID_PRESALE_STATE_2026-09-19.md`.
 
-Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md` and `docs/PRESALE_CLOSEOUT.md`.
+Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md`, `docs/PRESALE_CLOSEOUT.md`, `docs/INVALID_PRESALE_STATE_2026-09-19.md`.
 
 ## Closed
 
@@ -32,17 +33,18 @@ Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md` and `docs/PRESALE_CLOSEOUT.md`.
 - 2026-09-19 decision recorded: missed-cap refund close, not finalize, not V2 cutover.
 - 2026-09-19 live pre-check completed.
 - Owner smoke / owner contributions already refunded on-chain.
+- Sentinel public `index.html` / `site/index.html` replaced with closed-sale page (no 85% / $4.25M copy).
 
 ## Open hardening / launch follow-up
 
 - [x] Preserve expired presale; do not reuse.
 - [x] Live Base pre-check 2026-09-19.
-- [ ] Optional owner `cancel()` for an explicit Cancelled event.
+- [ ] Optional owner `cancel()` for an explicit Cancelled event on the current sale.
 - [x] Owner `claimRefund()` already mined.
-- [ ] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH (requires owner wallet; this session cannot sign).
+- [ ] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH from current sale (requires owner wallet; this session cannot sign).
 - [x] Keep `purchaseAuthorized: false`.
-- [ ] Align Sentinel L3 public pages that still show fabricated raise figures (85% / $4.25M).
-- [ ] Invalid presale `0xA7aa360d2F00Cf4130B3244D0A13AE32a49ab07C` separate recovery.
+- [x] Align Sentinel L3 public pages (landing replaced 2026-09-19; GitHub Pages may lag a few minutes).
+- [ ] Invalid presale `0xA7aa36…b07C` owner recovery of 50M V1 AETH sitting on that address (already cancelled; separate ticket).
 - [ ] V2 ledger approval, lock, deploy, replacement presale, liquidity — all still fail-closed.
 
 ## Production safety rules
