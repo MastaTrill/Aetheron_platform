@@ -7,7 +7,7 @@ window.AETHERON_PRESALE_CONFIG = {
   purchaseAuthorized: false,
   status: "authorized-window-ended",
   recorded_status: "launch-approved-purchases-paused-window-ended",
-  statusMessage: "Launch approval remains recorded, but public purchases are disabled because the configured on-chain presale window ended on 2026-08-01. Do not market the presale as open until a replacement deployment is verified and purchaseAuthorized is explicitly restored. Trading is authorized, but canonical liquidity is still not configured.",
+  statusMessage: "Sale ended 2026-08-01. Soft cap missed. Refunds are available on-chain. Owner ETH already claimed (0.0049 ETH). Do not market this presale as open. TradingEnabled is true on V1 but no canonical pool exists. Remaining 4,900 AETH on the presale is unsold inventory pending owner withdrawUnsoldTokens().",
   authorization: {
     issue: 219,
     decision: "approved",
@@ -18,12 +18,13 @@ window.AETHERON_PRESALE_CONFIG = {
     tradingAuthorized: true,
     liquidityAuthorized: false,
     onChainTradingEnabled: true,
-    onChainNote: "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md records tradingEnabled=true; enableTrading() must not be called again (one-way).",
+    onChainNote: "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md records tradingEnabled=true; enableTrading() must not be called again (one-way). 2026-09-19 live read confirmed tradingEnabled still true and presale ETH balance 0.",
     residualRisks: [
       "owner and treasury are the same EOA",
       "no canonical DEX pool / router configured on token",
       "liquidity deferred — tradingEnabled does not equal a liquid market",
-      "token tax/DEX interaction design caveats in live audit"
+      "token tax/DEX interaction design caveats in live audit",
+      "4,900 AETH still sitting on expired presale after refund accounting cleared"
     ]
   },
   expectedOwner: "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
