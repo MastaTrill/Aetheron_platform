@@ -1,8 +1,8 @@
 {
   "network": "base",
   "chainId": 8453,
-  "status": "live-owner-smoke-purchase-confirmed",
-  "launchable": true,
+  "status": "closed-soft-cap-missed-owner-refunded",
+  "launchable": false,
   "timestamp": "2026-07-18T19:06:40.802Z",
   "contracts": {
     "Aetheron": {
@@ -59,10 +59,10 @@
     "reason": "token() did not match the configured Base AETH token"
   },
   "safety": {
-    "frontendEnabled": true,
-    "note": "The verified Base presale passed the owner smoke purchase and the public purchase address is enabled."
+    "frontendEnabled": false,
+    "note": "The sale window ended below soft cap. Public purchases are disabled; the owner refund is complete and 4,900 AETH remains pending owner withdrawal."
   },
-  "updatedAt": "2026-07-18T21:33:42.406Z",
+  "updatedAt": "2026-09-19",
   "inventory": {
     "tokenUnits": "33333333000000000000000000",
     "tokenAmount": "33333333.0"
@@ -86,6 +86,18 @@
     "bytecodePresent": true,
     "inventoryTokenUnits": "33333333000000000000000000"
   },
+  "onChainState": {
+    "observedAt": "2026-09-19",
+    "source": "docs/LIVE_BASE_STATE_2026-09-19.md at Base block 51514063",
+    "weiRaised": "4900000000000000",
+    "tokensReserved": "0",
+    "ethBalance": "0",
+    "inventoryTokenUnits": "4900000000000000000000",
+    "refundsAvailable": true,
+    "ownerRefunded": true,
+    "cancelled": false,
+    "finalized": false
+  },
   "verification": {
     "explorer": "BaseScan",
     "api": "Etherscan V2",
@@ -99,9 +111,9 @@
   },
   "frontend": {
     "replacementAddressPublished": true,
-    "publicPurchaseAddressEnabled": true,
-    "status": "live",
-    "updatedAt": "2026-07-18T21:33:42.406Z"
+    "publicPurchaseAddressEnabled": false,
+    "status": "closed",
+    "updatedAt": "2026-09-19"
   },
   "smokePurchase": {
     "buyer": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",

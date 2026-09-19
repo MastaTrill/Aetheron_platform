@@ -15,13 +15,23 @@
     "notes": "Existing Base token remains canonical until V2 is deployed, verified, reconciled, and explicitly approved for cutover."
   },
   "v1Snapshot": {
-    "observedAt": "2026-09-03",
-    "source": "docs/LIVE_BASE_STATE_AUDIT_2026-09-03.md",
+    "observedAt": "2026-09-19",
+    "source": "docs/AETH_V1_MIGRATION_SNAPSHOT_2026-09-19.md",
     "totalSupplyTokens": "1000000000",
     "balances": [
       {
         "role": "owner",
         "address": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "tokens": "0"
+      },
+      {
+        "role": "platform_treasury",
+        "address": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
+        "tokens": "33328433"
+      },
+      {
+        "role": "unclassified_security_transfer_destination",
+        "address": "0x43b18F8fB488E30d524757d78DA1438881d1AAAA",
         "tokens": "416666667"
       },
       {
@@ -42,7 +52,7 @@
       {
         "role": "replacement_presale",
         "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
-        "tokens": "33333333"
+        "tokens": "4900"
       }
     ],
     "reconciledSupplyTokens": "1000000000",
@@ -95,9 +105,9 @@
     },
     "replacementPresaleRecovery": {
       "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
-      "snapshotBalanceTokens": "33333333",
-      "snapshotReservedTokens": "4900",
-      "snapshotUnsoldRecoverableTokens": "33328433",
+      "snapshotBalanceTokens": "4900",
+      "snapshotReservedTokens": "0",
+      "snapshotUnsoldRecoverableTokens": "4900",
       "snapshotContributorScope": "owner_only",
       "recoveryRequiredBeforeCutover": true,
       "recoveryVerified": false,
@@ -105,12 +115,22 @@
     },
     "rows": [
       {
-        "sourceRole": "owner",
-        "sourceAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "sourceRole": "unclassified_security_transfer_destination",
+        "sourceAddress": "0x43b18F8fB488E30d524757d78DA1438881d1AAAA",
         "sourceTokens": "416666667",
-        "targetDisposition": "owner_migration_reserve",
-        "targetAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "targetDisposition": "custody_review_required",
+        "targetAddress": null,
         "targetTokens": "416666667",
+        "executionAuthorized": false,
+        "notes": "Do not assign a V2 destination until control and transfer intent for this address are independently verified."
+      },
+      {
+        "sourceRole": "platform_treasury",
+        "sourceAddress": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
+        "sourceTokens": "33328433",
+        "targetDisposition": "same_holder",
+        "targetAddress": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
+        "targetTokens": "33328433",
         "executionAuthorized": false
       },
       {
@@ -148,27 +168,29 @@
       {
         "sourceRole": "replacement_presale",
         "sourceAddress": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
-        "sourceTokens": "33333333",
-        "currentReservedTokens": "4900",
-        "currentUnsoldRecoverableTokens": "33328433",
-        "targetDisposition": "owner_migration_reserve_after_v1_recovery",
-        "targetAddress": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
-        "targetTokens": "33333333",
+        "sourceTokens": "4900",
+        "currentReservedTokens": "0",
+        "currentUnsoldRecoverableTokens": "4900",
+        "targetDisposition": "platform_treasury_after_v1_recovery",
+        "targetAddress": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
+        "targetTokens": "4900",
         "executionAuthorized": false,
         "notes": "Do not send V2 to this legacy presale. Recover or otherwise reconcile its V1 balance first, after a fresh read-only verification."
       }
     ],
     "reconciledTargetByRoleTokens": {
-      "ownerMigrationReserveAfterV1Recovery": "450000000",
+      "custodyReviewRequired": "416666667",
+      "platformTreasuryAfterV1Recovery": "33333333",
       "team": "200000000",
       "marketingAndStaking": "300000000",
       "permanentlyLocked": "50000000"
     },
     "requiredPreCutoverChecks": [
       "Capture and reconcile a fresh Base V1 balance snapshot immediately before migration execution.",
+      "Independently verify custody and transfer intent for the 416,666,667 AETH at 0x43b18F8fB488E30d524757d78DA1438881d1AAAA before assigning any V2 migration disposition.",
       "Confirm the invalid-presale 50,000,000 AETH remains inaccessible or produce new independently verified recovery evidence.",
       "Re-verify the replacement presale balance, tokensReserved, contribution ownership, refund state, and withdrawUnsoldTokens eligibility.",
-      "Complete any owner-initiated V1 replacement-presale refund and unsold-token recovery needed to reconcile the 33,333,333 AETH balance.",
+      "Complete the remaining owner-initiated withdrawal of 4,900 unsold V1 AETH from the replacement presale and verify its balance reaches zero.",
       "Deploy AetheronPermanentSupplyLock, verify its source/runtime, and record its address without transferring tokens yet.",
       "Deploy AetheronV2 with trading disabled and verify source, runtime, ownership, allocation wallets, and total supply.",
       "Transfer exactly 50,000,000 V2 AETH into the verified permanent lock only after an explicit irreversible-transfer approval.",

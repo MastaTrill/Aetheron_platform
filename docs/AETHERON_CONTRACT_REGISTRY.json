@@ -20,11 +20,11 @@
       "address": "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e",
       "creationTransaction": "0x53c1a82cd949b5ad01e0656934ba3903c7d6e202ab2f4606f321a7c152346829",
       "deployer": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
-      "owner": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+      "owner": "0xA4737aa4b1E8a3C8f221BE9E55F5BDa307eCC1Fa",
       "verification": "verified",
       "status": "production",
       "source": "smart-contract/deployments/aeth-base.json",
-      "notes": "The token contract is deployed and verified. Trading remains disabled in the current release model."
+      "notes": "The token contract is deployed and verified. On-chain tradingEnabled is true, but no canonical liquidity is authorized or recorded."
     },
     {
       "project": "Aetheron Platform",
@@ -37,7 +37,7 @@
       "verification": "verified",
       "status": "deployed-disabled",
       "source": "smart-contract/deployments/presale-base.json",
-      "notes": "The corrected Base presale was deployed, funded, source-verified, and owner-smoke-tested on 2026-07-18. Current frontend configuration sets launchAuthorized=false and blocks public purchases pending final authorization."
+      "notes": "The corrected Base presale was deployed, funded, source-verified, and owner-smoke-tested on 2026-07-18. Its sale window ended below soft cap; the owner refund is complete and public purchases remain disabled."
     },
     {
       "project": "Aetheron Platform",
