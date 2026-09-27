@@ -16,24 +16,42 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check public pages and assets
+        id: public
         shell: bash
         run: |
           set -euo pipefail
+
+          custom_domain_ok=true
           for url in \
             https://aetrs.com/ \
             https://aetrs.com/presale.html \
             https://aetrs.com/presale-config.js \
             https://aetrs.com/presale.js \
-            https://aetrs.com/presale-readiness.js \
+            https://aetrs.com/presale-readiness.js
+          do
+            if ! curl --fail --silent --show-error --location --retry 3 --max-time 20 "$url" >/dev/null; then
+              echo "::warning::Custom production domain is unavailable: $url"
+              custom_domain_ok=false
+              break
+            fi
+          done
+
+          for url in \
             https://mastatrill.github.io/Aetheron_platform/ \
-            https://mastatrill.github.io/Aetheron_platform/presale.html
+            https://mastatrill.github.io/Aetheron_platform/presale.html \
+            https://mastatrill.github.io/Aetheron_platform/presale-config.js \
+            https://mastatrill.github.io/Aetheron_platform/presale.js \
+            https://mastatrill.github.io/Aetheron_platform/presale-readiness.js
           do
             curl --fail --silent --show-error --location --retry 3 --max-time 20 "$url" >/dev/null
           done
 
+          echo "custom_domain_ok=$custom_domain_ok" >> "$GITHUB_OUTPUT"
+
       - name: Enforce live homepage Base deployment truth
         shell: bash
         env:
+          CUSTOM_DOMAIN_OK: ${{ steps.public.outputs.custom_domain_ok }}
           CANONICAL_AETH: '0xecf7e17fae148c01e1b5008a31dfd2d1b6608e4e'
           LEGACY_AETH: '0xab5ae0d8f569d7c2b27574319b864a5ba6f9671e'
         run: |
@@ -87,14 +105,18 @@ jobs:
             done
           }
 
-          assert_homepage 'https://aetrs.com/' 'aetrs.com homepage' 'custom-domain'
           assert_homepage 'https://mastatrill.github.io/Aetheron_platform/' 'GitHub Pages homepage' 'github-pages'
+          if [[ "$CUSTOM_DOMAIN_OK" == "true" ]]; then
+            assert_homepage 'https://aetrs.com/' 'aetrs.com homepage' 'custom-domain'
+          else
+            echo "::warning::Skipping custom-domain content assertion because aetrs.com is unavailable."
+          fi
 
       - name: Verify Base contract bytecode
         shell: bash
         env:
           BASE_RPC_URL: https://mainnet.base.org
-          AETH_TOKEN: '0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e'
+          AETH_TOKEN: '0xecf7E17faE148C01e1b5008A31Dfd2d1B6608E4e'
           PRESALE: '0xe0A3B6368312dFd3E7E76202e673f895f8235A3d'
         run: |
           set -euo pipefail
@@ -122,3 +144,15 @@ jobs:
           grep -q 'status: "authorized-window-ended"' presale-config.js
           grep -q 'presale-readiness.js' presale.html
           ! grep -q 'VERIFIED PRESALE LIVE' presale.html
+
+      - name: Require custom production domain availability
+        if: always()
+        shell: bash
+        env:
+          CUSTOM_DOMAIN_OK: ${{ steps.public.outputs.custom_domain_ok }}
+        run: |
+          set -euo pipefail
+          if [[ "$CUSTOM_DOMAIN_OK" != "true" ]]; then
+            echo "aetrs.com is unavailable; production certification remains blocked even if fallback and Base checks pass."
+            exit 1
+          fi
