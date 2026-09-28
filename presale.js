@@ -1,14 +1,6 @@
 // Presale Logic
 let provider, signer, presaleContract;
 
-const POLYGON_NETWORK = {
-    chainId: "0x89",
-    chainName: "Polygon Mainnet",
-    nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 },
-    rpcUrls: ["https://mainnet.base.org"],
-    blockExplorerUrls: ["https://basescan.org"]
-};
-
 const BASE_NETWORK = {
     chainId: "0x2105",
     chainName: "Base Mainnet",
@@ -22,7 +14,7 @@ const AETH_TOKEN_ADDRESS = PRESALE_CONFIG.aethTokenAddress || "";
 const PRESALE_CONTRACT_ADDRESS = PRESALE_CONFIG.presaleContractAddress || "";
 const PURCHASE_AUTHORIZED = PRESALE_CONFIG.purchaseAuthorized === true;
 const MAX_PRESALE_TOKENS = PRESALE_CONFIG.maxPresaleTokens || 33333333;
-const NETWORK_CONFIG = PRESALE_CONFIG.network === "base" ? BASE_NETWORK : POLYGON_NETWORK;
+const NETWORK_CONFIG = BASE_NETWORK;
 const CURRENT_CHAIN_ID = NETWORK_CONFIG.chainId;
 
 const PRESALE_ABI = [
