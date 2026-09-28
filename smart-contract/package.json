@@ -57,7 +57,9 @@
   },
   "overrides": {
     "undici": "^6.24.1",
-    "serialize-javascript": "^7.0.5"
+    "serialize-javascript": "^7.0.5",
+    "adm-zip": "0.6.1",
+    "tmp": "0.2.7"
   },
   "directories": {
     "test": "test"
