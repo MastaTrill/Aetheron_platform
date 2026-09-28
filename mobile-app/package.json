@@ -66,7 +66,8 @@
     "decode-uri-component": "0.5.0",
     "metro": "0.84.6",
     "metro-config": "0.84.6",
-    "metro-transform-worker": "0.84.6"
+    "metro-transform-worker": "0.84.6",
+    "joi": "17.13.6"
   },
   "engines": {
     "node": ">=20.19.4",
