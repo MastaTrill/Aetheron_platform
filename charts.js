@@ -1,20 +1,5 @@
-// Live DexScreener market widget for the AETH Polygon pair
-const DEXSCREENER_PAIR_URL =
-  'https://dexscreener.com/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D';
-const DEXSCREENER_API_URL =
-  'https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D';
-
-function formatUsd(value, options = {}) {
-  const amount = Number(value);
-  if (!Number.isFinite(amount)) return '--';
-
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: options.maximumFractionDigits ?? 2,
-    notation: options.compact ? 'compact' : 'standard'
-  }).format(amount);
-}
+const BASESCAN_TOKEN_URL = 'https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e';
+const LAUNCH_STATUS_URL = 'presale.html';
 
 function injectDexWidget() {
   if (document.getElementById('aethDexWidget')) return;
@@ -31,59 +16,41 @@ function injectDexWidget() {
   widget.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px">
       <div>
-        <h2 id="dexWidgetTitle" style="margin:0 0 4px">Live AETH Market</h2>
-        <div id="dexStatus" role="status" aria-live="polite" style="font-size:.85rem;opacity:.75">Loading DexScreener data…</div>
+        <h2 id="dexWidgetTitle" style="margin:0 0 4px">AETH Market Status</h2>
+        <div id="dexStatus" role="status" aria-live="polite" style="font-size:.9rem;opacity:.82">
+          No canonical Base DEX pool is live. Public purchases and market-price claims remain disabled.
+        </div>
       </div>
-      <a href="${DEXSCREENER_PAIR_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-outline"
-        aria-label="View the AETH Polygon market on DexScreener">
-        <i class="fas fa-chart-line" aria-hidden="true"></i> View on DexScreener
-      </a>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="${LAUNCH_STATUS_URL}" class="btn btn-outline" aria-label="Review verified AETH Base launch status">
+          <i class="fas fa-shield-alt" aria-hidden="true"></i> Launch Status
+        </a>
+        <a href="${BASESCAN_TOKEN_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Verify the AETH token on BaseScan">
+          <i class="fas fa-external-link-alt" aria-hidden="true"></i> BaseScan
+        </a>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
-      <div>Price<br><strong id="dexPrice">--</strong></div>
-      <div>Liquidity<br><strong id="dexLiquidity">--</strong></div>
-      <div>24h Volume<br><strong id="dexVolume">--</strong></div>
-      <div>24h Buys / Sells<br><strong id="dexTx">--</strong></div>
+      <div>Network<br><strong>Base Mainnet</strong></div>
+      <div>Canonical Liquidity<br><strong>Not live</strong></div>
+      <div>Purchases<br><strong>Closed</strong></div>
+      <div>Price Feed<br><strong>Not published</strong></div>
     </div>
   `;
 
   container.insertBefore(widget, container.children[1] || null);
 }
 
-async function updateDexWidget() {
+function updateDexWidget() {
   const status = document.getElementById('dexStatus');
-
-  try {
-    const response = await fetch(DEXSCREENER_API_URL);
-    if (!response.ok) throw new Error(`DexScreener request failed (${response.status})`);
-
-    const data = await response.json();
-    const pair = data.pairs?.[0];
-    if (!pair) throw new Error('DexScreener returned no matching pair');
-
-    document.getElementById('dexPrice').textContent = formatUsd(pair.priceUsd, {
-      maximumFractionDigits: 10
-    });
-    document.getElementById('dexLiquidity').textContent = formatUsd(pair.liquidity?.usd, {
-      compact: true
-    });
-    document.getElementById('dexVolume').textContent = formatUsd(pair.volume?.h24, {
-      compact: true
-    });
-    document.getElementById('dexTx').textContent =
-      `${pair.txns?.h24?.buys ?? '--'} / ${pair.txns?.h24?.sells ?? '--'}`;
-
-    if (status) status.textContent = 'Live data · refreshes every 60 seconds';
-  } catch (error) {
-    console.error('Unable to refresh DexScreener market data:', error);
-    if (status) status.textContent = 'Live data is temporarily unavailable. Open DexScreener for the latest market.';
+  if (status) {
+    status.textContent = 'No canonical Base DEX pool is live. Public purchases and market-price claims remain disabled.';
   }
 }
 
 function initializeCharts() {
   injectDexWidget();
   updateDexWidget();
-  window.setInterval(updateDexWidget, 60000);
 }
 
 if (document.readyState === 'loading') {

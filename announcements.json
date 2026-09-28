@@ -1,16 +1,16 @@
 {
   "announcements": [
     {
-      "title": "Aetheron Updates",
-      "text": "CoinMarketCap application submitted. Watch for listing updates.",
-      "linkText": "Track Progress",
-      "linkHref": "CMC_APPLICATION_READY.md"
+      "title": "Verified Base Launch Status",
+      "text": "AETH V1 is deployed on Base Mainnet. The recorded presale has ended, refunds are available, and no canonical Base liquidity pool is live.",
+      "linkText": "Review Status",
+      "linkHref": "presale.html"
     },
     {
-      "title": "Referral Season",
-      "text": "Top referrers unlock bonus multipliers and leaderboard rewards.",
-      "linkText": "View Referrals",
-      "linkHref": "referral.html"
+      "title": "Platform Roadmap",
+      "text": "Explore the planned Aetheron analytics, governance, social, and yield tooling.",
+      "linkText": "View Roadmap",
+      "linkHref": "roadmap.html"
     }
   ]
 }
