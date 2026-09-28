@@ -1,5 +1,11 @@
 # Launch Execution Runbook — 2026-04-23
 
+
+> [!WARNING]
+> **Production notice:** this document contains legacy Polygon / QuickSwap material. Do not treat those references as the current production path.
+> The canonical production network is **Base Mainnet (Chain ID 8453)**. Current AETH: `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`. The recorded Base presale has ended, refunds are available, and no canonical Base liquidity pool is live.
+> For current truth, use [`README.md`](./README.md), [`PROJECT_STATUS.md`](./PROJECT_STATUS.md), [`docs/PRODUCTION_READINESS_EVIDENCE.md`](./docs/PRODUCTION_READINESS_EVIDENCE.md), and the machine-readable Base deployment records under `smart-contract/deployments/`.
+
 This runbook packages the remaining launch-critical and short-term actions for Aetheron (AETH) into one place.
 
 ## Manual-only tasks
