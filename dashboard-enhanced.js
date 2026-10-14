@@ -39,7 +39,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const globalBase = typeof window.AETHERON_API_BASE_URL === 'string' ? window.AETHERON_API_BASE_URL.trim() : '';
     const configuredBase = globalBase || metaBase || '';
 
-    if (configuredBase) return configuredBase.replace(/\/+$/, '');
+    if (configuredBase) {
+      try {
+        const url = new URL(configuredBase);
+        const localDevelopment = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+        if ((url.protocol === 'https:' || (localDevelopment && url.protocol === 'http:')) &&
+            !url.username && !url.password && !url.search && !url.hash) {
+          return url.href.replace(/\/+$/, '');
+        }
+      } catch (_error) {
+        // Invalid API targets must never be used for launchpad or scanner requests.
+      }
+    }
 
     // Fail closed on every host until an approved API is explicitly configured.
     return '';
