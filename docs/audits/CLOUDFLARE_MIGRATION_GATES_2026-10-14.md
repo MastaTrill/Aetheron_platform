@@ -23,6 +23,11 @@ Status: **NOT CUT OVER / NOT CERTIFIED**. This is evidence and a checklist, not 
 - Live page content and redirects are confirmed, **not** HTTP security headers, asset loading, JavaScript execution, wallet connection, or deployed source identity. Public domain availability does not prove that the Cloudflare Worker serves the domain.
 - The isolated Render API's dedicated GitHub hosted HTTP acceptance workflow and three other certification workflows passed on commit `c8b1b8d`; frontend integration remains unverified.
 
+## Frontend configuration blocker discovered
+
+- `dashboard-enhanced.html` on the audit branch still declares `meta[name="aetheron-api-base"]` as `https://vercel-node-app-1.vercel.app`, and its CSP `connect-src` explicitly allows that Vercel API. `dashboard-enhanced.js` prioritizes that meta URL when selecting the backend. This means the enhanced dashboard is **not migrated to the isolated Render API or Cloudflare**, even though the homepage and preview API are individually reachable.
+- Do not replace the production dashboard URL with the certification Render preview without an intentional environment split, authentication design, and release verification. The correct follow-up is to remove the stale production dependency on an isolated branch and fail closed until a production API target is approved, then test the dashboard's API-unavailable state.
+
 ## Required checks before DNS or CI changes
 
 1. Verify actual Worker URL serves the expected HTML, JS, CSS and security headers with HTTP checks, and compare content/version with GitHub `main`.
