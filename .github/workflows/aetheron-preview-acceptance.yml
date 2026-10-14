@@ -1,0 +1,23 @@
+name: Aetheron Preview HTTP Acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verify-aetheron-preview.mjs'
+      - '.github/workflows/aetheron-preview-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview-http:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify isolated Render API over HTTPS without credentials
+        run: node scripts/verify-aetheron-preview.mjs
