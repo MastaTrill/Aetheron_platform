@@ -72,6 +72,9 @@ jobs:
       - name: Audit backend production dependencies
         run: npm --prefix backend audit --omit=dev --audit-level=high
 
+      - name: Validate isolated API entrypoint
+        run: node --test backend/standalone-api.test.mjs
+
       - name: Run backend behavior tests
         run: npm --prefix backend test -- --runInBand
 
