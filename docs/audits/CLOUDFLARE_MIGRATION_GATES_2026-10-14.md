@@ -61,3 +61,10 @@ No changes to live DNS, deployment, contracts, presale, liquidity, or funds unde
 - The dashboard now rejects malformed endpoint URLs, non-HTTPS remote endpoints, embedded credentials, query strings, and fragments. Local HTTP is permitted only for localhost/loopback development.
 - This is **source-level and CI verification**, not browser wallet testing or proof of the Cloudflare Worker deployment identity.
 - Next acceptance requires a read-only mobile wallet connection and wrong-chain test, plus authenticated inspection of Worker routes/assets and a rollback plan before any production cutover.
+
+## Cloud-first wallet source review — release blocker
+
+- The MetaMask multichain bridge source `dashboard-metamask-connect.entry.mjs` currently hard-codes **Polygon** (`eip155:137`, `0x89`, `https://polygon-rpc.com/`) and rejects requests to switch to other networks.
+- The canonical AETH V1 release information identifies **Base** (chain ID **8453**, hex `0x2105`). These are different networks. This is a **wallet-network alignment blocker** until the intended usage of the legacy Polygon bridge is confirmed and Base wallet acceptance is implemented and tested.
+- Do not simply change the bridge constants: inspect all callers and supported chain-specific operations first. Do not initiate signatures, token approvals, transactions, or wallet funding for tests.
+- Cloud-hosted CI and mocked provider tests can verify wrong-chain refusal, rejected connections, disconnect events, and mobile-sized layout, but cannot certify real wallet extension/mobile handoff. TRIOLOGY may stay offline until short final device acceptance.
