@@ -1,0 +1,27 @@
+name: Payment History Routing Regression
+on:
+  pull_request:
+    paths:
+      - 'payment-history.js'
+      - 'payment-history.routing.test.mjs'
+      - '.github/workflows/payment-history-routing.yml'
+  push:
+    branches:
+      - 'audit/release-truth-2026-10-14'
+    paths:
+      - 'payment-history.js'
+      - 'payment-history.routing.test.mjs'
+      - '.github/workflows/payment-history-routing.yml'
+permissions:
+  contents: read
+jobs:
+  routing-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test payment history API routing
+        run: node --test payment-history.routing.test.mjs
