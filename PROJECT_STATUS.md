@@ -1,7 +1,7 @@
 # Aetheron Platform - Canonical Project Status
 
 **Status:** Active flagship - Base V1 presale closed as missed soft cap; owner ETH refunded; 4,900 AETH still on sale contract; V2 remains prepared and unapproved; liquidity deferred
-**Last updated:** 2026-09-19
+**Last updated:** 2026-10-14 (signing card prepared; on-chain recovery still pending owner wallet)
 
 ## Decision (2026-09-19)
 
@@ -26,6 +26,8 @@ Base presale missed soft cap. We will **not finalize**. We will **not** treat th
 
 Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md`, `docs/PRESALE_CLOSEOUT.md`, `docs/INVALID_PRESALE_STATE_2026-09-19.md`.
 
+**2026-10-14 note:** Exact function calls and calldata prepared in `docs/OWNER_SIGNING_CARD_2026-10-14.md`. Recovery still requires the owner EOA to sign. Public pages remain closed-sale / no-liquidity.
+
 ## Closed
 
 - #214, #217, #219 (historical launch approval only).
@@ -39,12 +41,12 @@ Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md`, `docs/PRESALE_CLOSEOUT.md`, `doc
 
 - [x] Preserve expired presale; do not reuse.
 - [x] Live Base pre-check 2026-09-19.
-- [ ] Optional owner `cancel()` for an explicit Cancelled event on the current sale.
+- [ ] Optional owner `cancel()` for an explicit Cancelled event on the current sale. (Calldata ready: `0xea8a1af0`)
 - [x] Owner `claimRefund()` already mined.
-- [ ] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH from current sale (requires owner wallet; this session cannot sign).
+- [ ] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH from current sale (requires owner wallet). Calldata: `0xc8bdbfb6`. See signing card.
 - [x] Keep `purchaseAuthorized: false`.
 - [x] Align Sentinel L3 public pages (landing replaced 2026-09-19; GitHub Pages may lag a few minutes).
-- [ ] Invalid presale `0xA7aa36…b07C` owner recovery of 50M V1 AETH sitting on that address (already cancelled; separate ticket).
+- [ ] Invalid presale `0xA7aa36…b07C` owner recovery of 50M V1 AETH sitting on that address (already cancelled; separate ticket #255). Source unverified; inspect before any call.
 - [ ] V2 ledger approval, lock, deploy, replacement presale, liquidity — all still fail-closed.
 
 ## Production safety rules
