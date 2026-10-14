@@ -46,3 +46,11 @@ Status: **NOT CUT OVER / NOT CERTIFIED**. This is evidence and a checklist, not 
 ## Guardrails
 
 No changes to live DNS, deployment, contracts, presale, liquidity, or funds under this audit. No deletion of Vercel checks until their replacement tests pass. Do not claim Cloudflare Pages exists merely because the Worker exists.
+
+## Updated isolated certification — commit 37ee69f (2026-10-14)
+
+- GitHub reports **success** for all four PR workflows: Dashboard Source Safety, Payment History Routing Regression, Operational Safety Gates, and Aetheron Preview HTTP Acceptance.
+- Backend lockfile resolves `ip-address` to **10.7.4**, replacing vulnerable 10.7.0. The live-preview workflow now includes `npm audit --omit=dev --audit-level=moderate` and passed.
+- Live preview acceptance also verifies that unauthenticated payment-history requests with a caller-selected user fail closed.
+- Enhanced dashboard includes accessible status announcements and bounded API requests, with source regression tests. Automated checks do **not** substitute for mobile assistive-technology or wallet acceptance.
+- **Still blocked:** Cloudflare Worker-specific access, deployed source comparison, real-device wallet connect/wrong-chain behavior, and production cutover approval. Do not infer production readiness from these four green checks.
