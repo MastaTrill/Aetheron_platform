@@ -1,14 +1,14 @@
 import { createMultichainClient } from '@metamask/connect-multichain';
 
-const POLYGON_SCOPE = 'eip155:137';
-const POLYGON_CHAIN_ID = '0x89';
-const POLYGON_RPC_URL = 'https://polygon-rpc.com/';
+const BASE_SCOPE = 'eip155:8453';
+const BASE_CHAIN_ID = '0x2105';
+const BASE_RPC_URL = 'https://mainnet.base.org/';
 
 class MultichainProviderAdapter {
   constructor(client) {
     this.client = client;
     this.accounts = [];
-    this.chainId = POLYGON_CHAIN_ID;
+    this.chainId = BASE_CHAIN_ID;
     this.selectedAddress = null;
     this.listeners = new Map();
     this.isMetaMask = true;
@@ -27,7 +27,7 @@ class MultichainProviderAdapter {
       return existingAccounts;
     }
 
-    await this.client.connect([POLYGON_SCOPE], [], undefined, forceRequest);
+    await this.client.connect([BASE_SCOPE], [], undefined, forceRequest);
 
     return this.request({
       method: 'eth_accounts',
@@ -54,7 +54,7 @@ class MultichainProviderAdapter {
       case 'eth_accounts': {
         const result = await this.client
           .invokeMethod({
-            scope: POLYGON_SCOPE,
+            scope: BASE_SCOPE,
             request: {
               method: 'eth_accounts',
               params: [],
@@ -73,31 +73,31 @@ class MultichainProviderAdapter {
       }
       case 'wallet_switchEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
-        if (!nextChainId || nextChainId === POLYGON_CHAIN_ID) {
-          this.syncChainId(POLYGON_CHAIN_ID);
+        if (!nextChainId || nextChainId === BASE_CHAIN_ID) {
+          this.syncChainId(BASE_CHAIN_ID);
           this.emit('chainChanged', this.chainId);
           return null;
         }
 
-        const error = new Error('Aetheron currently supports Polygon Mainnet only.');
+        const error = new Error('Aetheron wallet connection supports Base Mainnet only.');
         error.code = 4902;
         throw error;
       }
       case 'wallet_addEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
-        if (nextChainId === POLYGON_CHAIN_ID) {
-          this.syncChainId(POLYGON_CHAIN_ID);
+        if (nextChainId === BASE_CHAIN_ID) {
+          this.syncChainId(BASE_CHAIN_ID);
           this.emit('chainChanged', this.chainId);
           return null;
         }
 
-        const error = new Error('Only Polygon Mainnet is supported.');
+        const error = new Error('Only Base Mainnet is supported.');
         error.code = 4902;
         throw error;
       }
       default: {
         return this.client.invokeMethod({
-          scope: POLYGON_SCOPE,
+          scope: BASE_SCOPE,
           request: {
             method,
             params,
@@ -186,7 +186,7 @@ async function initializeBridge() {
       },
       api: {
         supportedNetworks: {
-          [POLYGON_SCOPE]: POLYGON_RPC_URL,
+          [BASE_SCOPE]: BASE_RPC_URL,
         },
       },
       ui: {
@@ -204,7 +204,7 @@ async function initializeBridge() {
     });
 
     client.on('metamask_chainChanged', function (event) {
-      provider.syncChainId((event && event.chainId) || POLYGON_CHAIN_ID);
+      provider.syncChainId((event && event.chainId) || BASE_CHAIN_ID);
       provider.emit('chainChanged', provider.chainId);
     });
 
@@ -250,7 +250,7 @@ async function initializeBridge() {
       },
       disconnect: async function () {
         try {
-          await client.disconnect([POLYGON_SCOPE]);
+          await client.disconnect([BASE_SCOPE]);
         } catch (_error) {
           await client.disconnect();
         }
