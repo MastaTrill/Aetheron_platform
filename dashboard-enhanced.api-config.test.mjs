@@ -24,3 +24,9 @@ test('dashboard communicates async results accessibly and bounds API requests', 
   assert.ok(js.includes("element.setAttribute('aria-atomic', 'true')"));
   assert.ok(js.includes('signal: AbortSignal.timeout(30000)'));
 });
+
+test('dashboard explains network failures and timeouts without exposing technical errors', () => {
+  assert.ok(js.includes("error.name === 'TimeoutError' || error.name === 'AbortError'"));
+  assert.ok(js.includes('The Aetheron API took too long to respond. Please try again.'));
+  assert.ok(js.includes('Unable to reach the Aetheron API. Check your connection and try again.'));
+});
