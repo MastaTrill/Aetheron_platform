@@ -2,8 +2,6 @@
 // Handles launchpad and token scanner flows when the backend API is available.
 
 document.addEventListener('DOMContentLoaded', function () {
-  const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
-
   function text(value) {
     return document.createTextNode(String(value));
   }
@@ -43,12 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (configuredBase) return configuredBase.replace(/\/+$/, '');
 
-    const hostname = window.location.hostname;
-    const isStaticHost = STATIC_HOST_SUFFIXES.some(function (suffix) {
-      return hostname === suffix || hostname.endsWith('.' + suffix);
-    });
-
-    return isStaticHost ? '' : window.location.origin;
+    // Fail closed on every host until an approved API is explicitly configured.
+    return '';
   }
 
   function setResult(element, tone, content) {
