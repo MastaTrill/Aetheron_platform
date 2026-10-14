@@ -48,6 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function setResult(element, tone, content) {
     if (!element) return;
     element.className = 'result-message result-' + tone;
+    element.setAttribute('role', tone === 'error' || tone === 'warning' ? 'alert' : 'status');
+    element.setAttribute('aria-live', tone === 'error' || tone === 'warning' ? 'assertive' : 'polite');
+    element.setAttribute('aria-atomic', 'true');
     element.replaceChildren();
     if (content instanceof Node) element.appendChild(content);
     else element.textContent = String(content || '');
@@ -65,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function postJson(url, payload) {
     const response = await fetch(url, {
+      signal: AbortSignal.timeout(30000),
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
