@@ -1,6 +1,11 @@
 name: Prepare audited dependency lockfile
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - audit/release-truth-2026-10-14
+    paths:
+      - '.github/workflows/prepare-audited-lockfile.yml'
 permissions:
   contents: read
 jobs:
