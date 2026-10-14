@@ -67,12 +67,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function postJson(url, payload) {
-    const response = await fetch(url, {
+    let response;
+    try {
+      response = await fetch(url, {
       signal: AbortSignal.timeout(30000),
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    });
+      });
+    } catch (error) {
+      if (error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
+        throw new Error('The Aetheron API took too long to respond. Please try again.');
+      }
+      throw new Error('Unable to reach the Aetheron API. Check your connection and try again.');
+    }
 
     const data = await response.json().catch(function () {
       return {};
