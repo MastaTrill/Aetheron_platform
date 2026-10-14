@@ -70,10 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let response;
     try {
       response = await fetch(url, {
-      signal: AbortSignal.timeout(30000),
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(30000),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       if (error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
