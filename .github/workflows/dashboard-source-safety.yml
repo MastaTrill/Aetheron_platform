@@ -52,6 +52,10 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
+      - name: Verify patched proxy-addr resolution
+        run: |
+          node -e "const p=require('./node_modules/proxy-addr/package.json'); if(p.version !== '2.0.8') throw new Error('Unexpected proxy-addr version: '+p.version); console.log('Verified proxy-addr '+p.version)"
+
       - name: Audit root production dependencies
         run: npm audit --omit=dev --audit-level=high
 
