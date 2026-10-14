@@ -110,7 +110,7 @@ describe('Production API app', () => {
     expect(res.body.code).toBe('SIGNER_ROUTES_DISABLED');
   });
 
-  it('protects payment history behind operator authentication', async () => {
+  it('requires operator authentication and keeps unconfigured payment history unavailable', async () => {
     const unauthenticated = await request(apiApp).get('/payment-history?user=other-user');
     expect(unauthenticated.statusCode).toBe(401);
     expect(unauthenticated.body.code).toBe('OPERATOR_AUTH_REQUIRED');
@@ -118,8 +118,8 @@ describe('Production API app', () => {
     const authenticated = await request(apiApp)
       .get('/payment-history?user=other-user')
       .set('Authorization', OPERATOR_AUTH);
-    expect(authenticated.statusCode).toBe(200);
-    expect(authenticated.body.history).toEqual([]);
+    expect(authenticated.statusCode).toBe(503);
+    expect(authenticated.body.code).toBe('PAYMENT_HISTORY_NOT_CONFIGURED');
   });
 
   it('protects all-payment history behind operator authentication', async () => {
