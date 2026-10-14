@@ -1,6 +1,6 @@
 // payment-history.js - Handles fetching and displaying user payment history
 
-const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
+const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev', 'workers.dev'];
 // Static hosting requires an explicitly configured backend; never silently use retired Vercel infrastructure.
 
 function getPaymentHistoryApiBase() {
