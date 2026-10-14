@@ -32,6 +32,7 @@
   },
   "overrides": {
     "qs": "^6.16.0",
-    "proxy-addr": "^2.0.8"
+    "proxy-addr": "^2.0.8",
+    "ip-address": "^10.8.0"
   }
 }
