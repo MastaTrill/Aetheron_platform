@@ -12,7 +12,10 @@ test('enhanced dashboard does not trust legacy Vercel API', () => {
 test('dashboard requires explicit backend configuration', () => {
   assert.ok(html.includes('name="aetheron-api-base" content=""'));
   assert.ok(js.includes("const configuredBase = globalBase || metaBase || '';"));
-  assert.ok(js.includes('if (configuredBase) return configuredBase.replace'));
+  assert.ok(js.includes('const url = new URL(configuredBase)'));
+  assert.ok(js.includes("url.protocol === 'https:'"));
+  assert.ok(js.includes("localDevelopment && url.protocol === 'http:'"));
+  assert.ok(js.includes('!url.username && !url.password && !url.search && !url.hash'));
   assert.ok(js.includes("return '';"));
   assert.ok(!js.includes('window.location.origin'));
   assert.ok(js.includes('if (!apiBase)'));
