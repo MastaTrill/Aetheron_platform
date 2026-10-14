@@ -8,7 +8,12 @@ Status: **NOT CUT OVER / NOT CERTIFIED**. This is evidence and a checklist, not 
 - User-reported Cloudflare DNS: apex `@` A records include `185.199.108.153`, `185.199.109.153`, `185.199.111.153`, proxied; `www` CNAME targets `mastatrill.github.io`. These are GitHub Pages origin settings behind Cloudflare proxy; other DNS records were not exhaustively checked.
 - Repository `wrangler.toml` configures Worker `aetheron`, build command `npm run build`, and assets directory `dist`. Cloudflare Pages dashboard configuration is independent and not authenticated/verified.
 - Vercel account is suspended and old Vercel deployment checks are failing. Do not treat Vercel status as a Cloudflare health test.
-- `payment-history.js` still defaults to `https://vercel-node-app-1.vercel.app` for its API. Removing Vercel without replacing and testing this dependency could break functionality.
+- On the isolated audit branch, `payment-history.js` no longer defaults to the Vercel API. It fails closed with an unavailable message until a reachable backend is explicitly configured. The replacement backend remains undeployed/unverified.
+
+## Isolated branch security milestone
+
+- Commit `31c20c6` passed Dashboard Source Safety (including both dependency audits, backend behavior tests, dashboard Jest tests and production build), Payment History Routing Regression, and Operational Safety Gates. These are GitHub CI results, **not** live Cloudflare certification.
+- Payment-history backend remains deliberately unavailable (HTTP 503 after operator authentication) pending user-scoped authentication and persistent storage. Do not advertise it as operational.
 
 ## Required checks before DNS or CI changes
 
