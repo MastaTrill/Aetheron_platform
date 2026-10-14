@@ -1,6 +1,13 @@
 # Aetheron isolated API deployment plan — 2026-10-14
 
-**Status:** configuration only; no hosted API created, DNS changed, or production traffic switched.
+**Status:** isolated Render preview deployed and read-only health verified; no DNS changed or production traffic switched.
+
+## Live preview evidence (2026-10-14)
+
+- Render service `srv-db80g99srm7s7388ipc0` (`aetheron-api-cert-preview`, free plan, Ohio) deployed audit branch commit `9326f29`, with automatic deployment disabled. Deploy `dep-db80g9psrm7s7388irl0` reported `live`.
+- Read-only HTTPS request to `https://aetheron-api-cert-preview.onrender.com/health` returned JSON `status: ok`, `service: aetheron-backend-api`, `network: base`, `chainId: 8453` and timestamp `2026-10-14T22:55:39.993Z`.
+- A request to `/nonexistent-acceptance-route` returned HTTP 404. Response body and headers were not inspected, so JSON 404 formatting remains unverified.
+- **Not yet verified:** CORS response headers, authorization boundaries, signing-disabled responses, webhook signature rejection, payment-history quarantine, Cloudflare frontend integration, wallet UX.
 
 ## Build and start
 
@@ -25,6 +32,6 @@
 
 ## Explicit blockers
 
-- No verified Cloudflare custom-domain binding, active origin inventory, backend service, preview URL, or hosted acceptance results.
+- No verified Cloudflare custom-domain binding or active origin inventory. A preview backend exists and health responds, but complete hosted acceptance is outstanding.
 - Do not reuse the Render service labeled “Aetheron Platform 2026”: it currently points to the unrelated JarvisAI repository.
 - Service creation, secrets and any paid plan require a separate reviewed decision; this document does not authorize deployment or merging PR #260.
