@@ -47,6 +47,18 @@ for (const path of ['/launch-token', '/nft/mint', '/nft/list', '/nft/buy']) {
 }
 console.log('PASS unauthenticated financial writes rejected');
 
+// Payment history must never expose another user's records without authentication.
+const paymentHistory = await fetch(new URL('/payment-history?user=another-user', base), {
+  signal: AbortSignal.timeout(45000),
+});
+assert.ok([401, 503].includes(paymentHistory.status), 'Payment history must fail closed');
+const historyBody = await paymentHistory.json();
+assert.ok(
+  ['OPERATOR_AUTH_REQUIRED', 'OPERATOR_AUTH_NOT_CONFIGURED', 'PAYMENT_HISTORY_NOT_CONFIGURED'].includes(historyBody.code),
+  'Payment history returned an unexpected error code',
+);
+console.log('PASS payment history denies unauthenticated cross-user requests');
+
 const missing = await check('/nonexistent-acceptance-route', {}, 404);
 assert.match(missing.headers.get('content-type') || '', /application\/json/);
 console.log('PASS unknown routes return JSON 404');
