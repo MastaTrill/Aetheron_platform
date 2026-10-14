@@ -6,14 +6,14 @@ const html = readFileSync(new URL('./dashboard-enhanced.html', import.meta.url),
 const js = readFileSync(new URL('./dashboard-enhanced.js', import.meta.url), 'utf8');
 
 test('enhanced dashboard does not trust legacy Vercel API', () => {
-  assert.doesNotMatch(html, /vercel-node-app-1\\.vercel\\.app/);
-  assert.doesNotMatch(js, /vercel-node-app-1\\.vercel\\.app/);
+  assert.ok(!html.includes('vercel-node-app-1.vercel.app'));
+  assert.ok(!js.includes('vercel-node-app-1.vercel.app'));
 });
 test('dashboard requires explicit backend configuration', () => {
-  assert.match(html, /name="aetheron-api-base" content=""/);
-  assert.match(js, /const configuredBase = globalBase \\|\\| metaBase \\|\\| '';/);
-  assert.match(js, /if \(configuredBase\) return configuredBase\.replace/);
-  assert.match(js, /return '';/);
-  assert.doesNotMatch(js, /window\.location\.origin/);
-  assert.match(js, /if \(!apiBase\)/);
+  assert.ok(html.includes('name="aetheron-api-base" content=""'));
+  assert.ok(js.includes("const configuredBase = globalBase || metaBase || '';"));
+  assert.ok(js.includes('if (configuredBase) return configuredBase.replace'));
+  assert.ok(js.includes("return '';"));
+  assert.ok(!js.includes('window.location.origin'));
+  assert.ok(js.includes('if (!apiBase)'));
 });
