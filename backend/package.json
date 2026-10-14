@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs",
-    "lint": "eslint server.js"
+    "lint": "eslint server.js",
+    "start:api": "node standalone-api.mjs"
   },
   "keywords": [
     "aetheron",
