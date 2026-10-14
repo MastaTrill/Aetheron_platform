@@ -10,6 +10,12 @@ Status: **NOT CUT OVER / NOT CERTIFIED**. This is evidence and a checklist, not 
 - Vercel account is suspended and old Vercel deployment checks are failing. Do not treat Vercel status as a Cloudflare health test.
 - On the isolated audit branch, `payment-history.js` no longer defaults to the Vercel API. It fails closed with an unavailable message until a reachable backend is explicitly configured. The replacement backend remains undeployed/unverified.
 
+## Latest isolated certification (commit `20c83f0`)
+
+- GitHub confirms four successful workflows: Dashboard Source Safety, Payment History Routing Regression, Operational Safety Gates, and Aetheron Preview HTTP Acceptance.
+- Enhanced dashboard no longer includes the stale Vercel API endpoint and fails closed until an API is explicitly configured; the regression test is included in Dashboard Source Safety.
+- This does not certify Cloudflare Worker deployment, wallet acceptance, or production release.
+
 ## Isolated branch security milestone
 
 - Commit `31c20c6` passed Dashboard Source Safety (including both dependency audits, backend behavior tests, dashboard Jest tests and production build), Payment History Routing Regression, and Operational Safety Gates. These are GitHub CI results, **not** live Cloudflare certification.
