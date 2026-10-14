@@ -17,3 +17,10 @@ test('dashboard requires explicit backend configuration', () => {
   assert.ok(!js.includes('window.location.origin'));
   assert.ok(js.includes('if (!apiBase)'));
 });
+
+test('dashboard communicates async results accessibly and bounds API requests', () => {
+  assert.ok(js.includes("element.setAttribute('role', tone === 'error' || tone === 'warning' ? 'alert' : 'status')"));
+  assert.ok(js.includes("element.setAttribute('aria-live', tone === 'error' || tone === 'warning' ? 'assertive' : 'polite')"));
+  assert.ok(js.includes("element.setAttribute('aria-atomic', 'true')"));
+  assert.ok(js.includes('signal: AbortSignal.timeout(30000)'));
+});
