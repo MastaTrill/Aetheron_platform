@@ -8,7 +8,7 @@ on:
       - '.github/workflows/prepare-audited-lockfile.yml'
       - 'package.json'
 permissions:
-  contents: read
+  contents: write
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -23,6 +23,18 @@ jobs:
           npm install --package-lock-only --ignore-scripts
           npm ci --ignore-scripts
           npm audit --omit=dev --audit-level=high
+      - name: Commit validated lockfile to isolated audit branch
+        if: success() && github.ref == 'refs/heads/audit/release-truth-2026-10-14'
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo 'Lockfile already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- package-lock.json
+          git commit -m 'security: refresh audited npm dependency lockfile'
+          git push origin HEAD:audit/release-truth-2026-10-14
       - name: Upload reviewed lockfile candidate
         if: always()
         uses: actions/upload-artifact@v4
