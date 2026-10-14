@@ -20,4 +20,4 @@ test('GitHub Pages requires configured backend', () => assert.equal(setup('masta
 test('custom domain defaults to same origin', () => assert.equal(setup('www.aetrs.com'), 'https://www.aetrs.com'));
 test('explicit backend URL takes priority and trims trailing slash', () => assert.equal(setup('aetheron.pages.dev', { globalBase: 'https://api.example.test/' }), 'https://api.example.test'));
 test('meta backend URL is supported', () => assert.equal(setup('aetheron.pages.dev', { metaBase: 'https://api.example.test/' }), 'https://api.example.test'));
-test('unconfigured static host cannot silently use Vercel', () => assert.doesNotMatch(script, /vercel-node-app-1\\.vercel\\.app/));
+test('unconfigured static host cannot silently use Vercel', () => assert.doesNotMatch(script, /vercel-node-app-1\.vercel\.app/));
