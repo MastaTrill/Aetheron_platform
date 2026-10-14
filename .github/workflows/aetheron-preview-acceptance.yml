@@ -8,6 +8,7 @@ on:
       - 'backend/package.json'
       - 'backend/package-lock.json'
       - 'backend/standalone-api.mjs'
+      - 'scripts/audit-production-dependencies.mjs'
   workflow_dispatch:
 
 permissions:
@@ -22,5 +23,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Audit deployed backend production dependencies
+        run: |
+          cd backend
+          npm ci --omit=dev --ignore-scripts
+          npm audit --omit=dev --audit-level=moderate
       - name: Verify isolated Render API over HTTPS without credentials
         run: node scripts/verify-aetheron-preview.mjs
