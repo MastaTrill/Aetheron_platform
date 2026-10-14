@@ -54,3 +54,10 @@ No changes to live DNS, deployment, contracts, presale, liquidity, or funds unde
 - Live preview acceptance also verifies that unauthenticated payment-history requests with a caller-selected user fail closed.
 - Enhanced dashboard includes accessible status announcements and bounded API requests, with source regression tests. Automated checks do **not** substitute for mobile assistive-technology or wallet acceptance.
 - **Still blocked:** Cloudflare Worker-specific access, deployed source comparison, real-device wallet connect/wrong-chain behavior, and production cutover approval. Do not infer production readiness from these four green checks.
+
+## Secure dashboard endpoint certification — commit b75a0a7
+
+- All four GitHub PR checks **passed** on commit `b75a0a7`, including Dashboard Source Safety, Operational Safety Gates, Payment History Routing Regression, and Aetheron Preview HTTP Acceptance.
+- The dashboard now rejects malformed endpoint URLs, non-HTTPS remote endpoints, embedded credentials, query strings, and fragments. Local HTTP is permitted only for localhost/loopback development.
+- This is **source-level and CI verification**, not browser wallet testing or proof of the Cloudflare Worker deployment identity.
+- Next acceptance requires a read-only mobile wallet connection and wrong-chain test, plus authenticated inspection of Worker routes/assets and a rollback plan before any production cutover.
