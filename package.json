@@ -60,7 +60,8 @@
     "uuid": "^11.1.1",
     "body-parser": "^2.3.0",
     "qs": "^6.16.0",
-    "protobufjs": "^7.6.5"
+    "protobufjs": "^7.6.5",
+    "proxy-addr": "^2.0.8"
   },
   "dependencies": {
     "@metamask/connect-multichain": "^0.11.0",
