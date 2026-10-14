@@ -5,6 +5,9 @@ on:
     paths:
       - 'scripts/verify-aetheron-preview.mjs'
       - '.github/workflows/aetheron-preview-acceptance.yml'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'backend/standalone-api.mjs'
   workflow_dispatch:
 
 permissions:
