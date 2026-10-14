@@ -4,6 +4,8 @@ on:
     paths:
       - 'payment-history.js'
       - 'payment-history.routing.test.mjs'
+      - 'backend/payment-history-quarantine.test.mjs'
+      - 'backend/scanner/payment-history-backend.mjs'
       - '.github/workflows/payment-history-routing.yml'
   push:
     branches:
@@ -11,6 +13,8 @@ on:
     paths:
       - 'payment-history.js'
       - 'payment-history.routing.test.mjs'
+      - 'backend/payment-history-quarantine.test.mjs'
+      - 'backend/scanner/payment-history-backend.mjs'
       - '.github/workflows/payment-history-routing.yml'
 permissions:
   contents: read
@@ -24,4 +28,4 @@ jobs:
         with:
           node-version: '22'
       - name: Test payment history API routing
-        run: node --test payment-history.routing.test.mjs
+        run: node --test payment-history.routing.test.mjs backend/payment-history-quarantine.test.mjs
