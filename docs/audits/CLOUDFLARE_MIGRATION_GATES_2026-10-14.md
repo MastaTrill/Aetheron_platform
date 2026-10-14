@@ -15,6 +15,14 @@ Status: **NOT CUT OVER / NOT CERTIFIED**. This is evidence and a checklist, not 
 - Commit `31c20c6` passed Dashboard Source Safety (including both dependency audits, backend behavior tests, dashboard Jest tests and production build), Payment History Routing Regression, and Operational Safety Gates. These are GitHub CI results, **not** live Cloudflare certification.
 - Payment-history backend remains deliberately unavailable (HTTP 503 after operator authentication) pending user-scoped authentication and persistent storage. Do not advertise it as operational.
 
+## Live public frontend observations (2026-10-14)
+
+- Read-only HTTPS content fetch of `https://aetrs.com` succeeded and returned the Aetheron DeFi platform page. It shows the canonical AETH V1 Base address `0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e`, chain ID 8453, V2 not deployed, no canonical DEX pool, and staking as planning only. The site warns users not to send funds and reports purchases paused.
+- `https://www.aetrs.com` redirected to `https://aetrs.com/` and served the same platform content.
+- `https://aetheron.williammccoy2012.workers.dev` remained inaccessible to unauthenticated content inspection (`login_required`). This does not establish a broken Worker, but blocks Worker-specific acceptance.
+- Live page content and redirects are confirmed, **not** HTTP security headers, asset loading, JavaScript execution, wallet connection, or deployed source identity. Public domain availability does not prove that the Cloudflare Worker serves the domain.
+- The isolated Render API's dedicated GitHub hosted HTTP acceptance workflow and three other certification workflows passed on commit `c8b1b8d`; frontend integration remains unverified.
+
 ## Required checks before DNS or CI changes
 
 1. Verify actual Worker URL serves the expected HTML, JS, CSS and security headers with HTTP checks, and compare content/version with GitHub `main`.
