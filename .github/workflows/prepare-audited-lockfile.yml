@@ -6,6 +6,7 @@ on:
       - audit/release-truth-2026-10-14
     paths:
       - '.github/workflows/prepare-audited-lockfile.yml'
+      - 'package.json'
 permissions:
   contents: read
 jobs:
