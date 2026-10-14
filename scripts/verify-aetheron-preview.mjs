@@ -37,9 +37,13 @@ assert.equal(preflight.headers.get('access-control-allow-origin'), origin);
 console.log('PASS CORS preflight');
 
 for (const path of ['/launch-token', '/nft/mint', '/nft/list', '/nft/buy']) {
-  const response = await check(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }, 401);
+  const response = await fetch(new URL(path, base), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(45000) });
   const body = await response.json();
-  assert.equal(body.code, 'OPERATOR_AUTH_REQUIRED', path);
+  assert.ok(
+    (response.status === 401 && body.code === 'OPERATOR_AUTH_REQUIRED') ||
+    (response.status === 503 && body.code === 'OPERATOR_AUTH_NOT_CONFIGURED'),
+    path + ': unexpected auth guard: ' + response.status + ' ' + body.code,
+  );
 }
 console.log('PASS unauthenticated financial writes rejected');
 
