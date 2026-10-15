@@ -18,3 +18,12 @@ test('wallet bridge rejects unsupported chain requests and clears disconnected a
   assert.match(source, /provider\.syncAccounts\(\[\]\)/);
   assert.match(source, /provider\.emit\('accountsChanged', \[\]\)/);
 });
+
+
+test('network switching never claims success without verifying the actual chain', () => {
+  assert.match(source, /const actualChainId = await this.request\(\{ method: 'eth_chainId' \}\)/);
+  assert.match(source, /actualChainId === BASE_CHAIN_ID/);
+  assert.match(source, /error\.code = 4901/);
+  assert.doesNotMatch(source, /this\.chainId = BASE_CHAIN_ID/);
+  assert.match(source, /method: 'eth_chainId', params: \[\]/);
+});
