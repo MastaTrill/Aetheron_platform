@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('./dashboard-metamask-connect.entry.mjs', import.meta.url), 'utf8');
 const adapterSource = source.slice(source.indexOf('class MultichainProviderAdapter'), source.indexOf('function getDappUrl'));
-const Adapter = vm.runInNewContext(adapterSource + '\nMultichainProviderAdapter');
+const Adapter = vm.runInNewContext(adapterSource + '\nMultichainProviderAdapter', { BASE_SCOPE: 'eip155:8453', BASE_CHAIN_ID: '0x2105', console });
 
 function setup(chain = '0x2105') {
   const calls = [];
