@@ -74,7 +74,11 @@ class MultichainProviderAdapter {
       case 'wallet_switchEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
         if (nextChainId === BASE_CHAIN_ID) {
-          return null;
+          const actualChainId = await this.request({ method: 'eth_chainId' });
+          if (actualChainId === BASE_CHAIN_ID) return null;
+          const error = new Error('Wallet is not connected to Base Mainnet. Switch networks in your wallet and retry.');
+          error.code = 4901;
+          throw error;
         }
 
         const error = new Error('Aetheron wallet connection supports Base Mainnet only.');
