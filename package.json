@@ -14,7 +14,7 @@
     "test:dashboard": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:dashboard:jest": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config jest.config.cjs dashboard.test.js",
     "test:diagnose": "jest --showConfig --runInBand --runTestsByPath dashboard.test.js",
-    "test:dashboard-source-safety": "node dashboard.source-safety.test.mjs && npm run test:dashboard-api-config && node --test dashboard-wallet-network.test.mjs",
+    "test:dashboard-source-safety": "node dashboard.source-safety.test.mjs && npm run test:dashboard-api-config && node --test dashboard-wallet-network.test.mjs && node --test dashboard-wallet-behavior.test.mjs",
     "test:backend-base-safety": "node production-backend-base.test.mjs",
     "test:canonical-deployments": "node scripts/validate-canonical-deployments.mjs",
     "test:contract-runner-config": "node contract-test-runner-config.test.mjs",
