@@ -88,7 +88,11 @@ class MultichainProviderAdapter {
       case 'wallet_addEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
         if (nextChainId === BASE_CHAIN_ID) {
-          return null;
+          const actualChainId = await this.request({ method: 'eth_chainId' });
+          if (actualChainId === BASE_CHAIN_ID) return null;
+          const error = new Error('Base Mainnet must be added or selected in your wallet.');
+          error.code = 4901;
+          throw error;
         }
 
         const error = new Error('Only Base Mainnet is supported.');
@@ -205,7 +209,7 @@ async function initializeBridge() {
 
     client.on('metamask_chainChanged', function (event) {
       provider.syncChainId(event && event.chainId);
-      provider.emit('chainChanged', provider.chainId);
+      if (provider.chainId) provider.emit('chainChanged', provider.chainId);
     });
 
     client.on('wallet_sessionChanged', async function () {
