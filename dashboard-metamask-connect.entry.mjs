@@ -8,7 +8,7 @@ class MultichainProviderAdapter {
   constructor(client) {
     this.client = client;
     this.accounts = [];
-    this.chainId = BASE_CHAIN_ID;
+    this.chainId = null;
     this.selectedAddress = null;
     this.listeners = new Map();
     this.isMetaMask = true;
@@ -69,13 +69,11 @@ class MultichainProviderAdapter {
         return nextAccounts;
       }
       case 'eth_chainId': {
-        return this.chainId;
+        return this.client.invokeMethod({ scope: BASE_SCOPE, request: { method: 'eth_chainId', params: [] } });
       }
       case 'wallet_switchEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
-        if (!nextChainId || nextChainId === BASE_CHAIN_ID) {
-          this.syncChainId(BASE_CHAIN_ID);
-          this.emit('chainChanged', this.chainId);
+        if (nextChainId === BASE_CHAIN_ID) {
           return null;
         }
 
@@ -86,8 +84,6 @@ class MultichainProviderAdapter {
       case 'wallet_addEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
         if (nextChainId === BASE_CHAIN_ID) {
-          this.syncChainId(BASE_CHAIN_ID);
-          this.emit('chainChanged', this.chainId);
           return null;
         }
 
@@ -204,7 +200,7 @@ async function initializeBridge() {
     });
 
     client.on('metamask_chainChanged', function (event) {
-      provider.syncChainId((event && event.chainId) || BASE_CHAIN_ID);
+      provider.syncChainId(event && event.chainId);
       provider.emit('chainChanged', provider.chainId);
     });
 
