@@ -68,3 +68,11 @@ No changes to live DNS, deployment, contracts, presale, liquidity, or funds unde
 - The canonical AETH V1 release information identifies **Base** (chain ID **8453**, hex `0x2105`). These are different networks. This is a **wallet-network alignment blocker** until the intended usage of the legacy Polygon bridge is confirmed and Base wallet acceptance is implemented and tested.
 - Do not simply change the bridge constants: inspect all callers and supported chain-specific operations first. Do not initiate signatures, token approvals, transactions, or wallet funding for tests.
 - Cloud-hosted CI and mocked provider tests can verify wrong-chain refusal, rejected connections, disconnect events, and mobile-sized layout, but cannot certify real wallet extension/mobile handoff. TRIOLOGY may stay offline until short final device acceptance.
+
+## Reconciliation — cloud-side source check (2026-10-15)
+
+- The earlier **Cloud-first wallet source review** above is historical and no longer describes the current audit branch. A fresh read of `dashboard-metamask-connect.entry.mjs` on `audit/release-truth-2026-10-14` shows `BASE_SCOPE = 'eip155:8453'`, `BASE_CHAIN_ID = '0x2105'`, and Base RPC `https://mainnet.base.org/`. It refuses other network switches. This supersedes the earlier Polygon-source blocker **for this branch only**.
+- This is source inspection, not proof that Cloudflare deployed this commit, nor real-device MetaMask connection acceptance. Do not merge or cut over based on this alone.
+- External HTTP checks on the isolated Render API confirmed `/health` 200, approved-origin CORS, no CORS allowance for an untrusted origin, unknown route JSON 404, operator-only actions failing closed without auth, and Coinbase webhook failing closed without a configured secret. These do not certify configured authenticated flows or signed webhook verification.
+- Public `https://aetrs.com` and the isolated Pages preview `https://audit-release-truth-2026-10.aetheron-platform.pages.dev` were readable and showed Base/paused launch messaging. The Worker URL is protected by Cloudflare Access; live Worker deployment identity, routes and bindings are still **unverified**.
+- No DNS, Cloudflare Access, deployment, contract, or production changes were authorized or made in these checks.
