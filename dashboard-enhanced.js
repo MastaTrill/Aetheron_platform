@@ -2,8 +2,6 @@
 // Handles launchpad and token scanner flows when the backend API is available.
 
 document.addEventListener('DOMContentLoaded', function () {
-  const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
-
   function text(value) {
     return document.createTextNode(String(value));
   }
@@ -41,19 +39,29 @@ document.addEventListener('DOMContentLoaded', function () {
     const globalBase = typeof window.AETHERON_API_BASE_URL === 'string' ? window.AETHERON_API_BASE_URL.trim() : '';
     const configuredBase = globalBase || metaBase || '';
 
-    if (configuredBase) return configuredBase.replace(/\/+$/, '');
+    if (configuredBase) {
+      try {
+        const url = new URL(configuredBase);
+        const localDevelopment = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+        if ((url.protocol === 'https:' || (localDevelopment && url.protocol === 'http:')) &&
+            !url.username && !url.password && !url.search && !url.hash) {
+          return url.href.replace(/\/+$/, '');
+        }
+      } catch (_error) {
+        // Invalid API targets must never be used for launchpad or scanner requests.
+      }
+    }
 
-    const hostname = window.location.hostname;
-    const isStaticHost = STATIC_HOST_SUFFIXES.some(function (suffix) {
-      return hostname === suffix || hostname.endsWith('.' + suffix);
-    });
-
-    return isStaticHost ? '' : window.location.origin;
+    // Fail closed on every host until an approved API is explicitly configured.
+    return '';
   }
 
   function setResult(element, tone, content) {
     if (!element) return;
     element.className = 'result-message result-' + tone;
+    element.setAttribute('role', tone === 'error' || tone === 'warning' ? 'alert' : 'status');
+    element.setAttribute('aria-live', tone === 'error' || tone === 'warning' ? 'assertive' : 'polite');
+    element.setAttribute('aria-atomic', 'true');
     element.replaceChildren();
     if (content instanceof Node) element.appendChild(content);
     else element.textContent = String(content || '');
@@ -70,11 +78,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function postJson(url, payload) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: AbortSignal.timeout(30000),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
+        throw new Error('The Aetheron API took too long to respond. Please try again.');
+      }
+      throw new Error('Unable to reach the Aetheron API. Check your connection and try again.');
+    }
 
     const data = await response.json().catch(function () {
       return {};
