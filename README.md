@@ -83,7 +83,9 @@ Use dry-run and protected workflows for deployment preparation. Do not place pri
 
 ## Legacy history
 
-Older Polygon, Mumbai, Solana, space-exploration, and broad ecosystem claims remain available through Git history. They are not the current canonical product definition unless separately revalidated and added to the contract registry.
+Older Polygon, Mumbai, Solana, space-exploration, and broad ecosystem claims remain available through Git history and in [`docs/legacy/`](./docs/legacy/). They are not the current canonical product definition unless separately revalidated and added to the contract registry.
+
+The previous Polygon whitepaper and roadmap have been replaced with notices pointing here. Public site (aetrs.com) now reflects the closed Base status only.
 
 ## License
 
