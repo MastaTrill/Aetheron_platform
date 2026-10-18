@@ -1,7 +1,7 @@
 // payment-history.js - Handles fetching and displaying user payment history
 
-const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev'];
-const DEFAULT_API_BASE = 'https://vercel-node-app-1.vercel.app';
+const STATIC_HOST_SUFFIXES = ['github.io', 'pages.dev', 'workers.dev'];
+// Static hosting requires an explicitly configured backend; never silently use retired Vercel infrastructure.
 
 function getPaymentHistoryApiBase() {
   const metaBase = document
@@ -23,7 +23,7 @@ function getPaymentHistoryApiBase() {
     return hostname === suffix || hostname.endsWith('.' + suffix);
   });
 
-  return isStaticHost ? DEFAULT_API_BASE : window.location.origin;
+  return isStaticHost ? '' : window.location.origin;
 }
 
 function isSafeHttpUrl(value) {
@@ -60,12 +60,13 @@ function appendLinkCell(row, url) {
 async function fetchPaymentHistory() {
   try {
     const apiBase = getPaymentHistoryApiBase();
+    if (!apiBase) return null;
     const res = await fetch(apiBase + '/api/payment-history');
     if (!res.ok) throw new Error('Failed to fetch payment history');
     const data = await res.json();
     return data.history || [];
   } catch (_err) {
-    return [];
+    return null;
   }
 }
 
@@ -75,6 +76,16 @@ async function renderPaymentHistory() {
   if (!container) return;
 
   container.replaceChildren();
+
+  if (history === null) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 5;
+    cell.textContent = 'Payment history is temporarily unavailable. A backend API must be configured and reachable.';
+    row.appendChild(cell);
+    container.appendChild(row);
+    return;
+  }
 
   if (!history.length) {
     const row = document.createElement('tr');

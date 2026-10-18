@@ -52,6 +52,10 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
+      - name: Verify patched proxy-addr resolution
+        run: |
+          node -e "const p=require('./node_modules/proxy-addr/package.json'); if(p.version !== '2.0.8') throw new Error('Unexpected proxy-addr version: '+p.version); console.log('Verified proxy-addr '+p.version)"
+
       - name: Audit root production dependencies
         run: npm audit --omit=dev --audit-level=high
 
@@ -61,8 +65,15 @@ jobs:
       - name: Install backend dependencies
         run: npm --prefix backend ci
 
+      - name: Verify patched backend dependency resolution
+        run: |
+          node -e "const path=require('path'); const root=path.resolve('backend/node_modules'); const proxy=require(path.join(root,'proxy-addr/package.json')); const mail=require(path.join(root,'nodemailer/package.json')); if(proxy.version !== '2.0.8' || mail.version !== '10.1.1') throw new Error('Unexpected backend dependency versions: '+proxy.version+', '+mail.version); console.log('Verified backend proxy-addr '+proxy.version+' and nodemailer '+mail.version)"
+
       - name: Audit backend production dependencies
         run: npm --prefix backend audit --omit=dev --audit-level=high
+
+      - name: Validate isolated API entrypoint
+        run: node --test backend/standalone-api.test.mjs
 
       - name: Run backend behavior tests
         run: npm --prefix backend test -- --runInBand

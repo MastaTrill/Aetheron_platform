@@ -1,24 +1,15 @@
-// payment-history-backend.mjs - Express route for user payment history
+// Payment history is disabled until authenticated, user-scoped storage exists.
+// An operator-wide key plus a caller-controlled ?user= selector is not user authentication.
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import { requireOperator } from '../security.mjs';
+
 const router = express.Router();
 
-const HISTORY_FILE = path.join(path.resolve(), 'payment-history.json');
-
-function getUserHistory(userId) {
-  if (!fs.existsSync(HISTORY_FILE)) return [];
-  const all = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8'));
-  return all[userId] || [];
-}
-
-// GET /api/payment-history
-router.get('/payment-history', requireOperator, (req, res) => {
-  // TODO: Replace with real user auth/session
-  const userId = req.query.user || 'demo';
-  const history = getUserHistory(userId);
-  res.json({ history });
+router.get('/payment-history', requireOperator, (_req, res) => {
+  res.status(503).json({
+    error: 'Payment history is unavailable until authenticated user-scoped storage is configured.',
+    code: 'PAYMENT_HISTORY_NOT_CONFIGURED',
+  });
 });
 
 export default router;
