@@ -1,0 +1,26 @@
+diff --git a/node_modules/@nomicfoundation/hardhat-zod-utils/dist/src/index.js b/node_modules/@nomicfoundation/hardhat-zod-utils/dist/src/index.js
+index ee44ac2..b3c8997 100644
+--- a/node_modules/@nomicfoundation/hardhat-zod-utils/dist/src/index.js
++++ b/node_modules/@nomicfoundation/hardhat-zod-utils/dist/src/index.js
+@@ -162,7 +162,7 @@ export function validateUserConfigZodType(hardhatUserConfig, configType) {
+         return [];
+     }
+     else {
+-        return result.error.errors.map((issue) => ({
++        return (result.error.issues ?? result.error.errors).map((issue) => ({
+             path: issue.path,
+             message: issue.message,
+         }));
+diff --git a/node_modules/@nomicfoundation/hardhat-zod-utils/src/index.ts b/node_modules/@nomicfoundation/hardhat-zod-utils/src/index.ts
+index c12c1ce..946410a 100644
+--- a/node_modules/@nomicfoundation/hardhat-zod-utils/src/index.ts
++++ b/node_modules/@nomicfoundation/hardhat-zod-utils/src/index.ts
+@@ -214,7 +214,7 @@ export function validateUserConfigZodType<
+   if (result.success) {
+     return [];
+   } else {
+-    return result.error.errors.map((issue) => ({
++    return (result.error.issues ?? result.error.errors).map((issue) => ({
+       path: issue.path,
+       message: issue.message,
+     }));
