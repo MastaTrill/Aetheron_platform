@@ -20,3 +20,21 @@ Change since 2026-09-19:
 - Block 53115030 (2026-10-26 07:56:47 CDT / 12:56:47 UTC): the owner called `withdrawUnsoldTokens()` on the closed replacement presale, moving exactly 4,900 AETH (the unsold inventory) to the owner wallet in transaction [`0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f`](https://basescan.org/tx/0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f).
 
 All other balances and total supply are unchanged from 2026-09-19. The custody-review blocker for `0x43b18F8fB488E30d524757d78DA1438881d1AAAA` remains open.
+
+## Replacement-presale recovery verifier: "recovery already done" mode
+
+`migrationPlan.replacementPresaleRecovery.recoveryCompleted` now records the executed recovery
+(tx `0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f`, block 53115030,
+4,900 AETH to the owner). The `snapshot*Tokens` fields are kept as the pre-recovery history.
+
+When `recoveryCompleted` is present, `npm run verify:aeth-v1-replacement-recovery` switches to a
+read-only completed mode and fails (exit 1) unless:
+
+- the replacement presale V1 balance is exactly 0 at a 3-confirmation pinned block;
+- the owner V1 balance is at least the recovered amount;
+- the cited tx exists, succeeded, is at the cited block, is from the owner, targets the presale,
+  has calldata `0xc8bdbfb6` (`withdrawUnsoldTokens()`), and emitted exactly one V1 `Transfer`
+  of exactly the recorded amount from presale to owner.
+
+It prints the BaseScan tx link. Without `recoveryCompleted`, the original pre-recovery readiness
+checks are unchanged. No transaction is ever submitted.

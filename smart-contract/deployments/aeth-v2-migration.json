@@ -111,7 +111,16 @@
       "snapshotContributorScope": "owner_only",
       "recoveryRequiredBeforeCutover": true,
       "recoveryVerified": false,
-      "notes": "The legacy presale is immutable to V1 and must never receive V2. Re-verify balance, reserved tokens, contribution ownership, refund state, and withdrawal eligibility before any recovery transaction."
+      "notes": "The legacy presale is immutable to V1 and must never receive V2. Re-verify balance, reserved tokens, contribution ownership, refund state, and withdrawal eligibility before any recovery transaction. snapshot*Tokens fields record the pre-recovery state; recoveryCompleted records the 2026-10-26 owner withdrawUnsoldTokens() and switches the recovery verifier to completed-mode (presale balance must be 0 and the cited receipt must match).",
+      "recoveryCompleted": {
+        "txHash": "0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f",
+        "blockNumber": 53115030,
+        "completedAt": "2026-10-26T12:56:47Z",
+        "method": "withdrawUnsoldTokens()",
+        "amountTokens": "4900",
+        "recipient": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "txUrl": "https://basescan.org/tx/0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f"
+      }
     },
     "rows": [
       {
