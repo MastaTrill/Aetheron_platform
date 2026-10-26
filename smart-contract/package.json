@@ -59,7 +59,8 @@
     "undici": "^6.24.1",
     "serialize-javascript": "^7.0.5",
     "adm-zip": "0.6.1",
-    "tmp": "0.2.7"
+    "tmp": "0.2.7",
+    "zod": "^4.6.6"
   },
   "directories": {
     "test": "test"
