@@ -15,14 +15,14 @@
     "notes": "Existing Base token remains canonical until V2 is deployed, verified, reconciled, and explicitly approved for cutover."
   },
   "v1Snapshot": {
-    "observedAt": "2026-09-19",
-    "source": "docs/AETH_V1_MIGRATION_SNAPSHOT_2026-09-19.md",
+    "observedAt": "2026-10-26",
+    "source": "docs/AETH_V1_MIGRATION_SNAPSHOT_2026-10-26.md",
     "totalSupplyTokens": "1000000000",
     "balances": [
       {
         "role": "owner",
         "address": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
-        "tokens": "0"
+        "tokens": "4900"
       },
       {
         "role": "platform_treasury",
@@ -52,11 +52,11 @@
       {
         "role": "replacement_presale",
         "address": "0xe0A3B6368312dFd3E7E76202e673f895f8235A3d",
-        "tokens": "4900"
+        "tokens": "0"
       }
     ],
     "reconciledSupplyTokens": "1000000000",
-    "notes": "This is a dated read-only accounting snapshot, not a claim that balances remain unchanged after the observation time. A fresh pre-cutover snapshot is mandatory."
+    "notes": "This is a dated read-only accounting snapshot, not a claim that balances remain unchanged after the observation time. A fresh pre-cutover snapshot is mandatory. 2026-10-26: owner withdrawUnsoldTokens() on the replacement presale moved 4,900 AETH to the owner in tx 0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f (block 53115030, https://basescan.org/tx/0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f); previous 2026-09-19 snapshot preserved in docs/AETH_V1_MIGRATION_SNAPSHOT_2026-09-19.md."
   },
   "v2": {
     "contract": "AetheronV2",
@@ -110,8 +110,17 @@
       "snapshotUnsoldRecoverableTokens": "4900",
       "snapshotContributorScope": "owner_only",
       "recoveryRequiredBeforeCutover": true,
-      "recoveryVerified": false,
-      "notes": "The legacy presale is immutable to V1 and must never receive V2. Re-verify balance, reserved tokens, contribution ownership, refund state, and withdrawal eligibility before any recovery transaction."
+      "recoveryVerified": true,
+      "notes": "The legacy presale is immutable to V1 and must never receive V2. Re-verify balance, reserved tokens, contribution ownership, refund state, and withdrawal eligibility before any recovery transaction. snapshot*Tokens fields record the pre-recovery state; recoveryCompleted records the 2026-10-26 owner withdrawUnsoldTokens() and switches the recovery verifier to completed-mode (presale balance must be 0 and the cited receipt must match).",
+      "recoveryCompleted": {
+        "txHash": "0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f",
+        "blockNumber": 53115030,
+        "completedAt": "2026-10-26T12:56:47Z",
+        "method": "withdrawUnsoldTokens()",
+        "amountTokens": "4900",
+        "recipient": "0x15b9F8ecedafD69Eb1dD93E51fE522690Bf6B7C2",
+        "txUrl": "https://basescan.org/tx/0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f"
+      }
     },
     "rows": [
       {

@@ -8,6 +8,7 @@ import {
   getAddress,
 } from "ethers";
 import { readWithRetry } from "./lib/base-read-retry.mjs";
+import { evaluateCompletedRecovery, parseRecoveryCompleted } from "./lib/aeth-v1-recovery-completion.mjs";
 
 const MIGRATION_URL = new URL("../deployments/aeth-v2-migration.json", import.meta.url);
 const PRESALE_DEPLOYMENT_URL = new URL("../deployments/presale-base.json", import.meta.url);
@@ -61,6 +62,70 @@ async function staticSimulation(call, label) {
   }
 }
 
+async function verifyCompletedRecovery({ provider, network, recoveryPlan, tokenAddress, presaleAddress, owner, treasury }) {
+  const completed = parseRecoveryCompleted(recoveryPlan.recoveryCompleted, owner);
+  const latestBlockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
+  const blockNumber = latestBlockNumber - SNAPSHOT_CONFIRMATIONS;
+  requireCondition(blockNumber >= completed.blockNumber, "Pinned block precedes the cited recovery transaction");
+  const pinnedBlock = await readWithRetry(
+    () => provider.getBlock(blockNumber),
+    `Base pinned block ${blockNumber}`,
+    { validate: (value) => Boolean(value?.hash) },
+  );
+  const [tx, receipt] = await Promise.all([
+    readWithRetry(() => provider.getTransaction(completed.txHash), "recovery transaction", { validate: (value) => Boolean(value?.hash) }),
+    readWithRetry(() => provider.getTransactionReceipt(completed.txHash), "recovery transaction receipt", { validate: (value) => Boolean(value?.hash) }),
+  ]);
+  const token = new Contract(tokenAddress, ERC20_ABI, provider);
+  const [presaleBalance, ownerBalance] = await Promise.all([
+    readWithRetry(() => token.balanceOf(presaleAddress, { blockTag: blockNumber }), "presale V1 balance"),
+    readWithRetry(() => token.balanceOf(owner, { blockTag: blockNumber }), "owner V1 balance"),
+  ]);
+  const evidence = evaluateCompletedRecovery({ completed, tx, receipt, presaleAddress, tokenAddress, owner, presaleBalance, ownerBalance });
+
+  const report = {
+    checkedAt: new Date().toISOString(),
+    mode: "recovery_already_completed",
+    chainId: Number(network.chainId),
+    latestBlockNumber,
+    snapshotConfirmations: SNAPSHOT_CONFIRMATIONS,
+    blockNumber,
+    blockHash: pinnedBlock.hash,
+    tokenAddress,
+    presaleAddress,
+    owner,
+    treasury,
+    recoveryTransaction: {
+      txHash: completed.txHash,
+      txUrl: evidence.txUrl,
+      blockNumber: completed.blockNumber,
+      completedAt: completed.completedAt,
+      method: "withdrawUnsoldTokens()",
+      status: Number(receipt.status),
+      transferLogIndex: evidence.transferLogIndex,
+      amountWei: completed.amountWei,
+      amountTokens: formatUnits(completed.amountWei, 18),
+      recipient: completed.recipient,
+    },
+    state: {
+      presaleV1BalanceWei: presaleBalance,
+      presaleV1BalanceTokens: formatUnits(presaleBalance, 18),
+      ownerV1BalanceWei: ownerBalance,
+      ownerV1BalanceTokens: formatUnits(ownerBalance, 18),
+    },
+    recoveryCompletedVerified: true,
+    recoveryTransactionAuthorized: false,
+    authorizationChanged: false,
+    note: "Read-only evidence only. Verified the previously executed owner withdrawUnsoldTokens() receipt and the presale's zero V1 balance; no transaction was submitted.",
+  };
+
+  const output = serialize(report);
+  console.log(output);
+  console.log(`Recovery tx: ${evidence.txUrl}`);
+  const outputPath = process.env.AETH_V1_RECOVERY_OUTPUT_PATH?.trim();
+  if (outputPath) fs.writeFileSync(outputPath, `${output}\n`, "utf8");
+}
+
 async function main() {
   const rpcUrl = process.env.BASE_RPC_URL?.trim();
   if (!rpcUrl) throw new Error("BASE_RPC_URL is required for read-only recovery verification");
@@ -85,6 +150,11 @@ async function main() {
   const provider = new JsonRpcProvider(rpcUrl);
   const network = await readWithRetry(() => provider.getNetwork(), "Base network");
   requireCondition(Number(network.chainId) === 8453, `RPC chain mismatch: expected 8453, found ${network.chainId}`);
+
+  if (recoveryPlan.recoveryCompleted) {
+    await verifyCompletedRecovery({ provider, network, recoveryPlan, tokenAddress, presaleAddress, owner, treasury });
+    return;
+  }
 
   const latestBlockNumber = await readWithRetry(() => provider.getBlockNumber(), "Base block number");
   const blockNumber = Math.max(latestBlockNumber - SNAPSHOT_CONFIRMATIONS, deployment.contracts.Presale.deploymentBlockNumber || 0);
