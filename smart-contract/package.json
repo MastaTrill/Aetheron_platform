@@ -32,7 +32,8 @@
     "verify:sepolia": "node scripts/verify-contracts.mjs sepolia",
     "node": "hardhat node",
     "clean": "hardhat clean",
-    "verify:base": "node scripts/verify-contracts.mjs base"
+    "verify:base": "node scripts/verify-contracts.mjs base",
+    "postinstall": "patch-package"
   },
   "keywords": [
     "solidity",
@@ -49,6 +50,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.9.6",
     "ethers": "^6.16.0",
     "hardhat": "^3.9.0",
+    "patch-package": "8.0.1",
     "solc": "0.8.20"
   },
   "dependencies": {
