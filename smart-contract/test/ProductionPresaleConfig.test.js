@@ -13,7 +13,9 @@ const presaleSource = fs.readFileSync(new URL("../contracts/AetheronPresale.sol"
 const rootFrontendSource = fs.readFileSync(new URL("../../presale-config.js", import.meta.url), "utf8");
 const legacyMainnetSource = fs.readFileSync(new URL("../scripts/deploy-mainnet.mjs", import.meta.url), "utf8");
 const localDeployerSource = fs.readFileSync(new URL("../scripts/start-presale-local.mjs", import.meta.url), "utf8");
-const operationsGuideSource = fs.readFileSync(new URL("../../PRESALE_GUIDE.md", import.meta.url), "utf8");
+// PRESALE_GUIDE.md was retired as outdated (4eb5d57); the close-out runbook is the canonical operations doc.
+const retiredOperationsGuideUrl = new URL("../../PRESALE_GUIDE.md", import.meta.url);
+const operationsGuideSource = fs.readFileSync(new URL("../../docs/PRESALE_CLOSEOUT.md", import.meta.url), "utf8");
 const duplicateFrontendUrl = new URL("../presale-config.js", import.meta.url);
 const staleVerificationInputUrl = new URL("../../presale-verification-input.json", import.meta.url);
 
@@ -109,7 +111,10 @@ test("all production deployment entry points use the bounded wrapper around the 
 test("obsolete deployment and verification paths are disabled", () => {
   assert.match(legacyMainnetSource, /legacy Polygon mainnet presale deployer is disabled/);
   assert.equal(fs.existsSync(staleVerificationInputUrl), false);
-  assert.match(operationsGuideSource, /Aetheron Base Presale Operations Guide/);
+  assert.equal(fs.existsSync(retiredOperationsGuideUrl), false);
+  assert.match(operationsGuideSource, /Base V1 Presale Close-Out Runbook/);
+  assert.match(operationsGuideSource, /Do not finalize/);
+  assert.match(operationsGuideSource, /0xe0A3B6368312dFd3E7E76202e673f895f8235A3d/);
 });
 
 test("local presale deployment uses the current constructor and cannot enable the public frontend", () => {
