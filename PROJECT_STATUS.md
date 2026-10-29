@@ -1,7 +1,7 @@
 # Aetheron Platform - Canonical Project Status
 
-**Status:** Active flagship - Base V1 presale closed as missed soft cap; owner ETH refunded; 4,900 AETH still on sale contract; V2 remains prepared and unapproved; liquidity deferred
-**Last updated:** 2026-10-14 (signing card prepared; on-chain recovery still pending owner wallet)
+**Status:** Active flagship - Base V1 presale closed as missed soft cap; owner ETH refunded; remaining 4,900 AETH recovered to the owner wallet on 2026-10-26; V2 remains prepared and unapproved; liquidity deferred
+**Last updated:** 2026-10-29 (4,900 AETH recovery completed on-chain 2026-10-26)
 
 ## Decision (2026-09-19)
 
@@ -14,7 +14,7 @@ Base presale missed soft cap. We will **not finalize**. We will **not** treat th
 - Current Base presale (do not reuse): `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`.
 - `finalized: false`, `cancelled: false`, `refundsAvailable: true`.
 - Accounting `weiRaised: 0.0049 ETH`. Contract ETH balance: **0**.
-- `tokensReserved: 0`. Contract still holds **4,900 AETH**.
+- `tokensReserved: 0`. At the 2026-09-19 pre-check the contract held 4,900 AETH; that was recovered on 2026-10-26 (see the 2026-10-26 note below), and the contract's AETH balance is now **0**.
 - Owner `refunded: true`. Owner refund tx: `0xbf43f25810ade862720b50e34451ae3776d005ce9985103ca3a777c640f83cbf` (0.0049 ETH returned).
 - Earlier `withdrawUnsoldTokens`: `0xc1aa3ba5f7ecbbdd02ec8e863bfa747c63c0800407c85afab4100e2a72acfacb`.
 - All six presale transactions are from the owner EOA. No third-party buyers on this contract.
@@ -26,7 +26,9 @@ Base presale missed soft cap. We will **not finalize**. We will **not** treat th
 
 Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md`, `docs/PRESALE_CLOSEOUT.md`, `docs/INVALID_PRESALE_STATE_2026-09-19.md`.
 
-**2026-10-14 note:** Exact function calls and calldata prepared in `docs/OWNER_SIGNING_CARD_2026-10-14.md`. Recovery still requires the owner EOA to sign. Public pages remain closed-sale / no-liquidity.
+**2026-10-14 note:** Exact function calls and calldata prepared in `docs/OWNER_SIGNING_CARD_2026-10-14.md`. That card has now been executed (see below) and is kept as history only. Public pages remain closed-sale / no-liquidity.
+
+**2026-10-26 note (recovery completed):** On 2026-10-26 at block **53115030** (7:56 AM CDT) the owner called `withdrawUnsoldTokens()` (calldata `0xc8bdbfb6`) on `0xe0A3B6368312dFd3E7E76202e673f895f8235A3d`. Tx `0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f` moved exactly **4,900 AETH** to the owner wallet; the sale contract's AETH balance is now **0**. Evidence: `docs/AETH_V1_MIGRATION_SNAPSHOT_2026-10-26.md`. This does not authorize finalize, V2, liquidity, trading or any further transfer; the safety rules below are unchanged.
 
 ## Closed
 
@@ -43,7 +45,7 @@ Evidence: `docs/LIVE_BASE_STATE_2026-09-19.md`, `docs/PRESALE_CLOSEOUT.md`, `doc
 - [x] Live Base pre-check 2026-09-19.
 - [ ] Optional owner `cancel()` for an explicit Cancelled event on the current sale. (Calldata ready: `0xea8a1af0`)
 - [x] Owner `claimRefund()` already mined.
-- [ ] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH from current sale (requires owner wallet). Calldata: `0xc8bdbfb6`. See signing card.
+- [x] Second `withdrawUnsoldTokens()` to pull remaining 4,900 AETH from current sale. Completed 2026-10-26, block 53115030, tx `0x95b85d8863adcde0ee5909390ef4bd13e7436946b03635e0de909549e670d66f`. See `docs/AETH_V1_MIGRATION_SNAPSHOT_2026-10-26.md`.
 - [x] Keep `purchaseAuthorized: false`.
 - [x] Align Sentinel L3 public pages (landing replaced 2026-09-19; GitHub Pages may lag a few minutes).
 - [ ] Invalid presale `0xA7aa36…b07C` owner recovery of 50M V1 AETH sitting on that address (already cancelled; separate ticket #255). Source unverified; inspect before any call.
