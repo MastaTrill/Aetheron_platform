@@ -23,3 +23,13 @@ test('portfolio requests Base network', () => {
   assert.match(portfolio, /chainId: '0x2105'/);
   assert.doesNotMatch(portfolio, /chainId: '0x89'/);
 });
+
+const dashboard = readFileSync(new URL('../index.js', import.meta.url), 'utf8');
+test('dashboard does not automatically reprompt previously permitted accounts', () => {
+  assert.doesNotMatch(dashboard, /if \(accounts.length > 0\) \{\s*await connectWallet\(\)/);
+});
+test('dashboard verifies actual Base chain before connected UI', () => {
+  assert.match(dashboard, /method: 'eth_chainId'/);
+  assert.match(dashboard, /confirmedChain/);
+  assert.match(dashboard, /Connection cancelled/);
+});
