@@ -736,6 +736,35 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
+
+// Track wallet account and network changes without requesting new permissions.
+let observedWallet = null;
+function bindWalletEvents(wallet) {
+    if (!wallet?.on || observedWallet === wallet) return;
+    observedWallet = wallet;
+    wallet.on('accountsChanged', (accounts) => {
+        if (!Array.isArray(accounts) || !accounts.length) {
+            disconnectWallet();
+            return;
+        }
+        // Never retain a signer or account from a different selected address.
+        if (account && accounts[0].toLowerCase() !== account.toLowerCase()) {
+            disconnectWallet();
+            showToast('Account changed', 'Reconnect to use the selected account.', 'info');
+        }
+    });
+    wallet.on('chainChanged', (chainId) => {
+        if (String(chainId).toLowerCase() !== BASE_CHAIN_ID) {
+            disconnectWallet();
+            showToast('Unsupported network', 'Switch to Base Mainnet (8453) and reconnect.', 'info');
+        } else if (account) {
+            // Revalidate the selected account after network changes.
+            disconnectWallet();
+            showToast('Network changed', 'Reconnect to verify your wallet.', 'info');
+        }
+    });
+}
+
 async function connectWallet(options = {}) {
     const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
@@ -746,6 +775,7 @@ async function connectWallet(options = {}) {
     }
 
     try {
+        bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
         await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
