@@ -65,6 +65,19 @@
   <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
   <style>
+    /* Keep the launch announcement readable without hiding the mobile homepage. */
+    .global-announcement { box-sizing: border-box; }
+    .global-announcement-content { min-width: 0; }
+    .global-announcement-actions { display: flex; gap: .5rem; align-items: center; }
+    .global-announcement-actions .btn { min-height: 40px; }
+    @media (max-width: 680px) {
+      .global-announcement { padding: .7rem 1rem !important; }
+      .global-announcement-content { max-width: 100%; }
+      .global-announcement-title { font-size: .9rem; }
+      .global-announcement-text { font-size: .8rem; line-height: 1.35; }
+      .global-announcement-actions { flex-direction: row; flex-wrap: wrap; }
+      .global-announcement-actions .btn { width: auto; flex: 1 1 auto; padding: .55rem .75rem; }
+    }
     /* Launch-status clarity and mobile-first homepage refinement. */
     .hero-copy > h1 { max-width: 18ch; line-height: 1.1; text-wrap: balance; }
     .hero-copy > p { max-width: 68ch; line-height: 1.65; }
