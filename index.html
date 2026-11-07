@@ -65,6 +65,20 @@
   <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
   <style>
+    /* Launch-status clarity and mobile-first homepage refinement. */
+    .hero-copy > h1 { max-width: 18ch; line-height: 1.1; text-wrap: balance; }
+    .hero-copy > p { max-width: 68ch; line-height: 1.65; }
+    .hero-copy .quick-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
+    .hero-copy .quick-action-btn { min-height: 44px; overflow-wrap: anywhere; }
+    .hero-copy .live-indicator { font-weight: 650; }
+    .hero-presale-cta { box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+    .hero-panel-value { overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); }
+      .hero-copy .quick-actions { display: grid; grid-template-columns: minmax(0,1fr); }
+      .hero-copy .quick-action-btn { width: 100%; justify-content: center; }
+      .hero-presale-cta { padding: 1.1rem !important; }
+    }
     #priceValue, #marketCapValue, #stakedValue, #holdersValue {
       color: rgba(110, 231, 255, 0.95) !important;
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
@@ -116,7 +130,7 @@
       <div class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
-            <div class="hero-kicker">AETH Signal Core</div>
+            <div class="hero-kicker">AETH · Base Mainnet · Launch status</div>
             <h1>Aetheron on Base, clearly explained</h1>
             <p>AETH V1 is deployed on Base. V2 is prepared but not deployed. No canonical Base liquidity pool is live; use this site for verified status and planning tools.</p>
             <div class="card" role="status" aria-label="AETH public trading availability" style="padding:1rem 1.2rem;margin:1.1rem 0;border:1px solid rgba(245,158,11,.45);border-radius:14px;background:rgba(245,158,11,.07);">
