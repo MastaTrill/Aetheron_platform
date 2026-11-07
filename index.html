@@ -65,6 +65,71 @@
   <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
   <style>
+    /* Editorial-quality visual hierarchy, responsive touch targets, and keyboard focus. */
+    :root { color-scheme: dark; }
+    .hero { position: relative; isolation: isolate; }
+    .hero::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      inset: -2rem -1rem auto; height: min(42rem, 90vh);
+      background: radial-gradient(ellipse at 75% 15%, rgba(52,211,235,.13), transparent 55%),
+                  radial-gradient(ellipse at 15% 45%, rgba(99,102,241,.11), transparent 60%);
+      filter: blur(12px);
+    }
+    .hero-kicker { letter-spacing: .12em; text-transform: uppercase; font-weight: 750; }
+    .hero-copy > h1 { letter-spacing: -.045em; text-wrap: balance; }
+    .hero-copy > p { max-width: 63ch; line-height: 1.75; }
+    .hero-panel, .hero-presale-cta {
+      box-shadow: 0 20px 60px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
+    }
+    .hero-panel-card { transition: border-color .2s ease, transform .2s ease; }
+    .hero-panel-card:hover { transform: translateY(-2px); border-color: rgba(110,231,255,.32); }
+    .quick-actions { align-items: stretch; }
+    .quick-action-btn:not(.live-indicator), .primary-btn { min-height: 46px; transition: transform .18s ease, box-shadow .18s ease; }
+    .quick-action-btn:not(.live-indicator):hover, .primary-btn:hover { transform: translateY(-2px); }
+    :is(a, button, [role="button"]):focus-visible { outline: 3px solid #7cecff !important; outline-offset: 3px; }
+    .hero-panel-value { word-break: normal; overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero { padding-top: clamp(1rem, 4vw, 2rem); }
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); line-height: 1.08; }
+      .hero-copy > p { font-size: 1rem; }
+      .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .hero-tag { max-width: 100%; }
+      .hero-panel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-panel-card-wide { grid-column: 1 / -1; }
+      .hero-presale-cta { margin-top: 1rem !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-panel-card, .quick-action-btn, .primary-btn { transition: none !important; }
+      .hero-panel-card:hover, .quick-action-btn:hover, .primary-btn:hover { transform: none !important; }
+    }
+    /* Keep the launch announcement readable without hiding the mobile homepage. */
+    .global-announcement { box-sizing: border-box; }
+    .global-announcement-content { min-width: 0; }
+    .global-announcement-actions { display: flex; gap: .5rem; align-items: center; }
+    .global-announcement-actions .btn { min-height: 40px; }
+    @media (max-width: 680px) {
+      .global-announcement { padding: .7rem 1rem !important; }
+      .global-announcement-content { max-width: 100%; }
+      .global-announcement-title { font-size: .9rem; }
+      .global-announcement-text { font-size: .8rem; line-height: 1.35; }
+      .global-announcement-actions { flex-direction: row; flex-wrap: wrap; }
+      .global-announcement-actions .btn { width: auto; flex: 1 1 auto; padding: .55rem .75rem; }
+    }
+    /* Launch-status clarity and mobile-first homepage refinement. */
+    .hero-copy > h1 { max-width: 18ch; line-height: 1.1; text-wrap: balance; }
+    .hero-copy > p { max-width: 68ch; line-height: 1.65; }
+    .hero-copy .quick-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
+    .hero-copy .quick-action-btn { min-height: 44px; overflow-wrap: anywhere; }
+    .hero-copy .live-indicator { font-weight: 650; }
+    .hero-presale-cta { box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+    .hero-panel-value { overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); }
+      .hero-copy .quick-actions { display: grid; grid-template-columns: minmax(0,1fr); }
+      .hero-copy .quick-action-btn { width: 100%; justify-content: center; }
+      .hero-presale-cta { padding: 1.1rem !important; }
+    }
     #priceValue, #marketCapValue, #stakedValue, #holdersValue {
       color: rgba(110, 231, 255, 0.95) !important;
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
@@ -116,13 +181,18 @@
       <div class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
-            <div class="hero-kicker">AETH Signal Core</div>
-            <h1>Welcome to Aetheron</h1>
-            <p>AETH V1 is deployed on Base. V2 is prepared but not deployed. No canonical Base liquidity pool is live; use this site for verified status and planning tools.</p>
+            <div class="hero-kicker">AETH · Base Mainnet · Launch status</div>
+            <h1>Aetheron. Built for what comes next.</h1>
+            <p>Explore the Aetheron ecosystem on Base. Verify the deployed AETH token, review launch readiness, and use platform tools—with clear distinctions between what is live and what is planned.</p>
+            <div class="card" role="status" aria-label="AETH public trading availability" style="padding:1rem 1.2rem;margin:1.1rem 0;border:1px solid rgba(245,158,11,.45);border-radius:14px;background:rgba(245,158,11,.07);">
+              <strong style="display:block;margin-bottom:.4rem;">AETH is deployed — public buying is not open</strong>
+              <p style="margin:0 0 .6rem;">The V1 token is verifiable on Base Mainnet, but no official Base liquidity pool or authorized public purchase route is live. Trading enabled in the contract does not mean a market is available.</p>
+              <a href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer" style="font-weight:600;">Verify the official AETH contract on BaseScan</a>
+            </div>
             <div class="hero-tags">
               <div class="hero-tag"><i class="fas fa-satellite" aria-hidden="true"></i> On-chain status</div>
               <div class="hero-tag"><i class="fas fa-layer-group" aria-hidden="true"></i> Launch safeguards</div>
-              <div class="hero-tag"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet ready</div>
+              <div class="hero-tag"><i class="fas fa-shield-halved" aria-hidden="true"></i> Verify before connecting</div>
             </div>
             <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Base Mainnet (Chain ID: 8453)
             </div>
@@ -148,7 +218,7 @@
            <div class="hero-panel">
             <div class="hero-panel-header">
               <div class="hero-panel-title"><i class="fas fa-wave-square" aria-hidden="true"></i> Command Deck</div>
-              <div class="hero-panel-status">Online</div>
+              <div class="hero-panel-status">Market not launched</div>
             </div>
             <div class="hero-panel-grid">
               <div class="hero-panel-card">
@@ -172,7 +242,7 @@
         </div>
       </div>
       <div class="features-section">
-        <h2>Complete DeFi Ecosystem</h2>
+        <h2>Explore the Aetheron platform</h2>
         <div class="features-grid"><a href="social-trading/index.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-users"></i></div>
             <h3>Social Trading</h3>
@@ -360,13 +430,8 @@
             <h3>Can I unstake early?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-4"></i>
           </div>
           <div class="faq-answer" id="faq-answer-4">
-            <p>Yes, but with conditions:</p>
-            <ul>
-              <li><strong>After Lock Period:</strong> Free unstaking with full rewards</li>
-              <li><strong>Before Lock Period:</strong> Use "Emergency Withdraw" - you'll get your principal back but
-                forfeit all rewards</li>
-              <li><strong>Recommendation:</strong> Plan your staking period carefully to maximize rewards</li>
-            </ul>
+            <p>Public AETH staking is not active. There is currently no verified Base staking deployment, lock period, reward schedule, or public unstaking and emergency-withdrawal feature to use.</p>
+            <p>The staking calculator is illustrative only. Do not transfer tokens to any staking address based on projected rewards. Any future withdrawal terms will be published only after a verified deployment and explicit launch announcement.</p>
           </div>
         </div>
         <div class="faq-item">
@@ -391,7 +456,7 @@
           <div class="newsletter-copy">
             <div class="section-kicker">Signal Feed</div>
             <h2><i class="fas fa-satellite-dish" aria-hidden="true"></i> Stay Updated</h2>
-            <p>Get notified about governance votes, new features, trading opportunities, and important ecosystem
+            <p>Get notified about governance votes, new features, verified launch-status changes, and important ecosystem
               updates.</p>
             <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
               <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
@@ -418,12 +483,12 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo"><i class="fas fa-atom" aria-hidden="true"></i> <span>Aetheron Platform</span></div>
-          <p>🚀 DeFi tooling on Base with staking, analytics, and live ecosystem tracking in one control
+          <p>🚀 Explore Base token status, analytics, and illustrative staking tools in one control
             center.</p>
         </div>
         <div class="footer-status">
           <div class="footer-chip"><i class="fas fa-circle-nodes" aria-hidden="true"></i> Base Mainnet</div>
-          <div class="footer-chip"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet Ready</div>
+          <div class="footer-chip"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet Connection Optional</div>
           <div class="footer-chip"><i class="fas fa-chart-line" aria-hidden="true"></i> Verified Metrics</div>
         </div>
         <div class="footer-nav">
