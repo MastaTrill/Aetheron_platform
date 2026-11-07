@@ -33,3 +33,10 @@ test('dashboard verifies actual Base chain before connected UI', () => {
   assert.match(dashboard, /confirmedChain/);
   assert.match(dashboard, /Connection cancelled/);
 });
+
+test('wallet account and network changes invalidate stale session', () => {
+  assert.match(dashboard, /wallet\.on\('accountsChanged'/);
+  assert.match(dashboard, /wallet\.on\('chainChanged'/);
+  assert.match(dashboard, /disconnectWallet\(\)/);
+  assert.match(dashboard, /Reconnect to verify your wallet/);
+});
