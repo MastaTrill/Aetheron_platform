@@ -330,7 +330,8 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet();
+                    // Existing permission does not authorize a new connection prompt.
+                    await checkWalletStatus();
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -748,7 +749,7 @@ async function connectWallet(options = {}) {
         provider = new ethers.providers.Web3Provider(wallet, 'any');
         await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
-        account = await signer.getAddress();
+        const selectedAccount = await signer.getAddress();
 
         // Switch to Base network
         try {
@@ -776,6 +777,11 @@ async function connectWallet(options = {}) {
             }
         }
 
+        const confirmedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
+            throw new Error('Unsupported network. Switch to Base Mainnet (8453) to continue.');
+        }
+        account = selectedAccount;
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
         
@@ -804,6 +810,10 @@ async function connectWallet(options = {}) {
     } catch (error) {
         console.error('Error connecting:', error);
         hideProgress();
+        if (error?.code === 4001) {
+            showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
+            return;
+        }
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
     }
