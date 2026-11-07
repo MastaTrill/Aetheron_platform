@@ -65,6 +65,44 @@
   <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
   <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
   <style>
+    /* Editorial-quality visual hierarchy, responsive touch targets, and keyboard focus. */
+    :root { color-scheme: dark; }
+    .hero { position: relative; isolation: isolate; }
+    .hero::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      inset: -2rem -1rem auto; height: min(42rem, 90vh);
+      background: radial-gradient(ellipse at 75% 15%, rgba(52,211,235,.13), transparent 55%),
+                  radial-gradient(ellipse at 15% 45%, rgba(99,102,241,.11), transparent 60%);
+      filter: blur(12px);
+    }
+    .hero-kicker { letter-spacing: .12em; text-transform: uppercase; font-weight: 750; }
+    .hero-copy > h1 { letter-spacing: -.045em; text-wrap: balance; }
+    .hero-copy > p { max-width: 63ch; line-height: 1.75; }
+    .hero-panel, .hero-presale-cta {
+      box-shadow: 0 20px 60px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
+    }
+    .hero-panel-card { transition: border-color .2s ease, transform .2s ease; }
+    .hero-panel-card:hover { transform: translateY(-2px); border-color: rgba(110,231,255,.32); }
+    .quick-actions { align-items: stretch; }
+    .quick-action-btn:not(.live-indicator), .primary-btn { min-height: 46px; transition: transform .18s ease, box-shadow .18s ease; }
+    .quick-action-btn:not(.live-indicator):hover, .primary-btn:hover { transform: translateY(-2px); }
+    :is(a, button, [role="button"]):focus-visible { outline: 3px solid #7cecff !important; outline-offset: 3px; }
+    .hero-panel-value { word-break: normal; overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero { padding-top: clamp(1rem, 4vw, 2rem); }
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); line-height: 1.08; }
+      .hero-copy > p { font-size: 1rem; }
+      .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .hero-tag { max-width: 100%; }
+      .hero-panel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-panel-card-wide { grid-column: 1 / -1; }
+      .hero-presale-cta { margin-top: 1rem !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-panel-card, .quick-action-btn, .primary-btn { transition: none !important; }
+      .hero-panel-card:hover, .quick-action-btn:hover, .primary-btn:hover { transform: none !important; }
+    }
     /* Keep the launch announcement readable without hiding the mobile homepage. */
     .global-announcement { box-sizing: border-box; }
     .global-announcement-content { min-width: 0; }
@@ -144,8 +182,8 @@
         <div class="hero-grid">
           <div class="hero-copy">
             <div class="hero-kicker">AETH · Base Mainnet · Launch status</div>
-            <h1>Aetheron on Base, clearly explained</h1>
-            <p>AETH V1 is deployed on Base. V2 is prepared but not deployed. No canonical Base liquidity pool is live; use this site for verified status and planning tools.</p>
+            <h1>Aetheron. Built for what comes next.</h1>
+            <p>Explore the Aetheron ecosystem on Base. Verify the deployed AETH token, review launch readiness, and use platform tools—with clear distinctions between what is live and what is planned.</p>
             <div class="card" role="status" aria-label="AETH public trading availability" style="padding:1rem 1.2rem;margin:1.1rem 0;border:1px solid rgba(245,158,11,.45);border-radius:14px;background:rgba(245,158,11,.07);">
               <strong style="display:block;margin-bottom:.4rem;">AETH is deployed — public buying is not open</strong>
               <p style="margin:0 0 .6rem;">The V1 token is verifiable on Base Mainnet, but no official Base liquidity pool or authorized public purchase route is live. Trading enabled in the contract does not mean a market is available.</p>
