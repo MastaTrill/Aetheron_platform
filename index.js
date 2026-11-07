@@ -330,7 +330,8 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet();
+                    // Existing permission does not authorize a new connection prompt.
+                    await checkWalletStatus();
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -735,6 +736,35 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
+
+// Track wallet account and network changes without requesting new permissions.
+let observedWallet = null;
+function bindWalletEvents(wallet) {
+    if (!wallet?.on || observedWallet === wallet) return;
+    observedWallet = wallet;
+    wallet.on('accountsChanged', (accounts) => {
+        if (!Array.isArray(accounts) || !accounts.length) {
+            disconnectWallet();
+            return;
+        }
+        // Never retain a signer or account from a different selected address.
+        if (account && accounts[0].toLowerCase() !== account.toLowerCase()) {
+            disconnectWallet();
+            showToast('Account changed', 'Reconnect to use the selected account.', 'info');
+        }
+    });
+    wallet.on('chainChanged', (chainId) => {
+        if (String(chainId).toLowerCase() !== BASE_CHAIN_ID) {
+            disconnectWallet();
+            showToast('Unsupported network', 'Switch to Base Mainnet (8453) and reconnect.', 'info');
+        } else if (account) {
+            // Revalidate the selected account after network changes.
+            disconnectWallet();
+            showToast('Network changed', 'Reconnect to verify your wallet.', 'info');
+        }
+    });
+}
+
 async function connectWallet(options = {}) {
     const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
@@ -745,10 +775,11 @@ async function connectWallet(options = {}) {
     }
 
     try {
+        bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
         await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
-        account = await signer.getAddress();
+        const selectedAccount = await signer.getAddress();
 
         // Switch to Base network
         try {
@@ -776,6 +807,11 @@ async function connectWallet(options = {}) {
             }
         }
 
+        const confirmedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
+            throw new Error('Unsupported network. Switch to Base Mainnet (8453) to continue.');
+        }
+        account = selectedAccount;
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
         
@@ -804,6 +840,10 @@ async function connectWallet(options = {}) {
     } catch (error) {
         console.error('Error connecting:', error);
         hideProgress();
+        if (error?.code === 4001) {
+            showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
+            return;
+        }
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
     }
