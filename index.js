@@ -56,7 +56,7 @@ let _detectionAttempts = 0;
 const _maxAttempts = 5;
 
 // The homepage's status, navigation and wallet chooser do not need the ethers
-// bundle at first paint. Load it when the browser is idle or on wallet action.
+// bundle at first paint. Load it when chain stats enter view or on wallet action.
 // Reuse one promise to avoid concurrent duplicate loads and preserve ordering.
 let ethersLoadingPromise;
 function ensureEthersReady() {
@@ -153,12 +153,20 @@ window.addEventListener('load', async () => {
             console.warn('Read-only chain data unavailable; published status remains visible:', error.message);
         }
     };
-    // Idle scheduling avoids competing with initial paint. Wallet actions
-    // call ensureEthersReady() directly and never wait for the idle callback.
-    if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => { void startReadOnlyData(); }, { timeout: 4000 });
+    // Public launch information is available in HTML before any chain request.
+    // Initialize optional chain stats only when their section approaches view,
+    // rather than consuming main-thread time while the visitor reads the hero.
+    const statsSection = document.querySelector('.stats-grid');
+    if (statsSection && 'IntersectionObserver' in window) {
+        const statsObserver = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+                statsObserver.disconnect();
+                void startReadOnlyData();
+            }
+        }, { rootMargin: '200px 0px' });
+        statsObserver.observe(statsSection);
     } else {
-        setTimeout(() => { void startReadOnlyData(); }, 1000);
+        window.addEventListener('scroll', () => { void startReadOnlyData(); }, { once: true, passive: true });
     }
 
     // Then check for wallet
