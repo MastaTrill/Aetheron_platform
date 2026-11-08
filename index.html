@@ -141,7 +141,8 @@
       @media(max-width:960px){.aetheron-live-banner{grid-template-columns:1fr}.aetheron-live-banner__meta{grid-template-columns:repeat(2,1fr)}.aetheron-live-banner__actions{justify-content:flex-start}}
     
     /* Reserve announcement space before hydration, avoiding page-wide movement. */
-    .global-announcement-slot { position: fixed; inset: auto 0 0; z-index: 900; pointer-events: none; }\n    .global-announcement-slot > * { pointer-events: auto; }
+    /* Beat the legacy body > *:not(#starfield-canvas) positional selector (ID specificity). */
+    body > #globalAnnouncementSlot.global-announcement-slot { position: fixed; inset: auto 0 0; z-index: 900; pointer-events: none; }\n    .global-announcement-slot > * { pointer-events: auto; }
     .global-announcement-slot:has(.global-announcement) { min-height: 0; }
     /* Render the market-status block in initial HTML to avoid late layout insertion. */
     .aeth-market-status { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(15,28,52,.94); border: 1px solid rgba(155,211,255,.2); color: #e8f5ff; }
