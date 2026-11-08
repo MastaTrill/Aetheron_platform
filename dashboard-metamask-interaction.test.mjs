@@ -58,4 +58,21 @@ await bridge.disconnect();
 assert.equal(disconnectCount, 1);
 assert.equal(provider.selectedAddress, null);
 assert.ok(events.includes('aetheron:metamask-connect-ready'));
-console.log('Mocked MetaMask connection, reconnection, account events, network rejection and disconnect passed');
+// A rejected connection request must leave the page signed out, without
+// implicitly retrying or asking for a signature/transaction.
+client.connect = async () => {
+  const rejection = new Error('User rejected the connection request');
+  rejection.code = 4001;
+  throw rejection;
+};
+await assert.rejects(bridge.connect({forceRequest:true}), (error) => error.code === 4001);
+assert.equal(provider.selectedAddress, null, 'Cancelled request must not mark a wallet connected');
+assert.deepEqual(Array.from(await provider.request({method:'eth_accounts'})), []);
+let chainEvents = 0;
+provider.on('chainChanged', () => chainEvents++);
+callbacks.get('metamask_chainChanged')({chainId:'0x89'});
+assert.equal(provider.chainId, '0x89', 'Wrong-network events must be observable by the UI');
+callbacks.get('metamask_chainChanged')({chainId:'0x2105'});
+assert.equal(provider.chainId, '0x2105', 'Returning to Base must update the displayed network');
+assert.equal(chainEvents, 2);
+console.log('Mocked MetaMask connection, cancellation, reconnection, network events, network rejection and disconnect passed');
