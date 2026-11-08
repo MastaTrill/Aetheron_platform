@@ -56,7 +56,7 @@
   <script src="monitor.js?v=1.4.2" defer></script>
   <script src="marketing-launch.js?v=1.4.2" defer></script>
   <script src="shared-utils.js?v=1.4.4" defer></script>
-  <script src="charts.js?v=1.4.3" defer></script>
+  <script src="charts.js?v=1.4.4" defer></script>
   <link rel="stylesheet" href="critical.css?v=1.4.3">
   <link rel="stylesheet" href="index.css?v=1.4.3">
   <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
@@ -132,6 +132,11 @@
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
     }
 
+    /* Render the market-status block in initial HTML to avoid late layout insertion. */
+    .aeth-market-status { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(15,28,52,.94); border: 1px solid rgba(155,211,255,.2); color: #e8f5ff; }
+    .aeth-market-status h2, .aeth-market-status strong { color: #f3fbff; }
+    .aeth-market-status #dexStatus { color: #d0e6f5; opacity: 1 !important; }
+    .aeth-market-status .btn { color: #e8f5ff; }
     /* Mobile visual-acceptance repair: never use dark-on-dark text on glass panels. */
     .features-section > h2, .hero-presale-cta h3,
     .hero-panel-title, .hero-panel-label, .hero-panel-value,
@@ -198,6 +203,32 @@
   </nav>
   <main id="main-content" role="main">
     <div class="container">
+      <section id="aethDexWidget" class="aeth-market-status" aria-labelledby="dexWidgetTitle">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <h2 id="dexWidgetTitle" style="margin:0 0 4px">AETH Market Status</h2>
+        <div id="dexStatus" role="status" aria-live="polite" style="font-size:.9rem;opacity:.82">
+          No canonical Base DEX pool is live. Public purchases and market-price claims remain disabled.
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="presale.html" class="btn btn-outline" aria-label="Review verified AETH Base launch status">
+          <i class="fas fa-shield-alt" aria-hidden="true"></i> Launch Status
+        </a>
+        <a href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Verify the AETH token on BaseScan">
+          <i class="fas fa-external-link-alt" aria-hidden="true"></i> BaseScan
+        </a>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+      <div>Network<br><strong>Base Mainnet</strong></div>
+      <div>Canonical Liquidity<br><strong>Not live</strong></div>
+      <div>Purchases<br><strong>Closed</strong></div>
+      <div>Price Feed<br><strong>Not published</strong></div>
+    </div>
+  
+</section>
       <div class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
@@ -556,7 +587,7 @@
     </div>
   </div><button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode" type="button"><i
       class="fas fa-moon" id="themeIcon"></i></button>
-  <script src="dashboard-starfield.js?v=1.4.2" defer></script>
+  <script src="dashboard-starfield.js?v=1.4.3" defer></script>
   <script src="sw-init.js?v=1.4.7" defer></script>
   <script src="dom-bindings.js?v=1.4.2" defer></script>
   <script src="global-announcements.js?v=1.4.7" defer="defer"></script>
