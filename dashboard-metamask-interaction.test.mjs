@@ -16,6 +16,9 @@ const client = {
   async invokeMethod({scope, request}) {
     assert.equal(scope, 'eip155:8453');
     if (request.method === 'eth_accounts') return accounts;
+    if (request.method === 'eth_chainId') return '0x2105';
+    if (request.method === 'wallet_switchEthereumChain') return null;
+    if (request.method === 'wallet_addEthereumChain') return null;
     throw new Error('Unexpected RPC request: ' + request.method);
   },
   on(event, cb) { callbacks.set(event, cb); },
@@ -50,6 +53,7 @@ callbacks.get('metamask_accountsChanged')(['0x2222222222222222222222222222222222
 assert.equal(provider.selectedAddress, '0x2222222222222222222222222222222222222222');
 assert.equal(accountEvents, 1);
 await assert.rejects(provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x89'}]}), /Base Mainnet only/);
+await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2105'}]});
 await bridge.disconnect();
 assert.equal(disconnectCount, 1);
 assert.equal(provider.selectedAddress, null);
