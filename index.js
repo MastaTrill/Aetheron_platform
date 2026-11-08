@@ -1,5 +1,5 @@
 // index.js - Extracted from index.html inline <script>
-// All logic is preserved. Attach this file in index.html after ethers.js and chart.js
+// Homepage uses lazy ethers loading; wallet interactions load the library on demand.
 
 // Contract Addresses - UPDATED for Base Mainnet
 const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e";
@@ -54,6 +54,31 @@ const _APP_VERSION = '1.4.3';
 
 let _detectionAttempts = 0;
 const _maxAttempts = 5;
+
+// The homepage's status, navigation and wallet chooser do not need the ethers
+// bundle at first paint. Load it when the browser is idle or on wallet action.
+// Reuse one promise to avoid concurrent duplicate loads and preserve ordering.
+let ethersLoadingPromise;
+function ensureEthersReady() {
+    if (window.ethers?.providers?.Web3Provider) return Promise.resolve(window.ethers);
+    if (ethersLoadingPromise) return ethersLoadingPromise;
+    ethersLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.onload = () => {
+            if (window.ethers?.providers?.Web3Provider) resolve(window.ethers);
+            else reject(new Error('Ethers loaded without the expected wallet API'));
+        };
+        script.onerror = () => reject(new Error('Unable to load the wallet library'));
+        document.head.appendChild(script);
+    }).catch((error) => {
+        ethersLoadingPromise = null;
+        throw error;
+    });
+    return ethersLoadingPromise;
+}
 
 // Initialize read-only provider for live data
 function initReadOnlyProvider() {
@@ -111,26 +136,31 @@ window.addEventListener('load', async () => {
     // Keep the connect wallet button bound even with late-loading scripts
     initConnectButton();
     
-    // Initialize read-only provider first for live data
-    const readOnlyContracts = initReadOnlyProvider();
-    if (readOnlyContracts) {
-        // Use read-only contracts initially for stats
-        if (!aethContract) aethContract = readOnlyContracts.aethContract;
-        if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
-        console.log('✅ Using RPC:', readOnlyContracts.rpcUrl);
+    // Preserve immediate navigation, wallet discovery and touch controls.
+    // Read-only RPC data is secondary to the published launch-status notice.
+    const startReadOnlyData = async () => {
+        try {
+            await ensureEthersReady();
+            const readOnlyContracts = initReadOnlyProvider();
+            if (readOnlyContracts) {
+                if (!aethContract) aethContract = readOnlyContracts.aethContract;
+                if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
+                await updateStats();
+                initializeWebSocket();
+                setInterval(updateStats, 30000);
+            }
+        } catch (error) {
+            console.warn('Read-only chain data unavailable; published status remains visible:', error.message);
+        }
+    };
+    // Idle scheduling avoids competing with initial paint. Wallet actions
+    // call ensureEthersReady() directly and never wait for the idle callback.
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => { void startReadOnlyData(); }, { timeout: 4000 });
     } else {
-        console.warn('⚠️ Running without blockchain connection - showing defaults only');
+        setTimeout(() => { void startReadOnlyData(); }, 1000);
     }
-    
-    // Start updating stats immediately with live blockchain data
-    await updateStats();
-    
-    // Initialize WebSocket for real-time updates
-    initializeWebSocket();
-    
-    // Fallback polling for blockchain data every 30 seconds
-    setInterval(updateStats, 30000);
-    
+
     // Then check for wallet
     detectWalletWithRetry();
     window.addEventListener('ethereum#initialized', handleEthereumInit, { once: true });
@@ -744,6 +774,7 @@ async function connectWallet(options = {}) {
     }
 
     try {
+        await ensureEthersReady();
         provider = new ethers.providers.Web3Provider(wallet, 'any');
         await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
