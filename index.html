@@ -53,7 +53,7 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
   <script src="vercel-analytics.js?v=1.0.0" async></script>
   <script src="index.js?v=1.4.9" defer></script>
-  <script src="monitor.js?v=1.4.2" defer></script>
+  <script src="monitor.js?v=1.4.3" defer></script>
   <script src="marketing-launch.js?v=1.4.2" defer></script>
   <script src="shared-utils.js?v=1.4.4" defer></script>
   <script src="charts.js?v=1.4.4" defer></script>
@@ -132,6 +132,9 @@
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
     }
 
+    /* Reserve announcement space before hydration, avoiding page-wide movement. */
+    .global-announcement-slot { min-height: 0; }
+    .global-announcement-slot:has(.global-announcement) { min-height: 0; }
     /* Render the market-status block in initial HTML to avoid late layout insertion. */
     .aeth-market-status { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(15,28,52,.94); border: 1px solid rgba(155,211,255,.2); color: #e8f5ff; }
     .aeth-market-status h2, .aeth-market-status strong { color: #f3fbff; }
@@ -172,6 +175,7 @@
 
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="globalAnnouncementSlot" class="global-announcement-slot" aria-live="off"></div>
   <canvas id="starfield-canvas" tabindex="-1" aria-hidden="true"></canvas>
   <!-- Starfield canvas added at top for background visibility -->
   <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Page loading progress"></div>
@@ -203,6 +207,15 @@
   </nav>
   <main id="main-content" role="main">
     <div class="container">
+      <section id="aetheronLiveTradingBanner" class="aetheron-live-banner" aria-label="Verified Base presale status">
+      <div class="aetheron-live-banner__status"><div class="aetheron-live-banner__eyebrow">Sale status</div><div class="aetheron-live-banner__headline"><span class="aetheron-live-banner__dot"></span><span>BASE PRESALE ENDED</span></div><div class="aetheron-live-banner__eyebrow">Soft cap missed. Purchases closed. Refunds via claimRefund().</div></div>
+      <div class="aetheron-live-banner__meta">
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Raised</div><div class="aetheron-live-banner__metric-value">0.0049 ETH</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Soft cap</div><div class="aetheron-live-banner__metric-value">5 ETH missed</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Network</div><div class="aetheron-live-banner__metric-value">Base Mainnet</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Purchases</div><div class="aetheron-live-banner__metric-value">Closed</div></div>
+      </div>
+      <div class="aetheron-live-banner__actions"><a class="aetheron-live-banner__button aetheron-live-banner__button--primary" href="https://basescan.org/address/0xe0A3B6368312dFd3E7E76202e673f895f8235A3d#writeContract" target="_blank" rel="noopener noreferrer">claimRefund</a><a class="aetheron-live-banner__button" href="https://basescan.org/address/0xe0A3B6368312dFd3E7E76202e673f895f8235A3d#code" target="_blank" rel="noopener noreferrer">BaseScan</a><a class="aetheron-live-banner__button" href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer">Token</a></div></section>
       <section id="aethDexWidget" class="aeth-market-status" aria-labelledby="dexWidgetTitle">
 
     <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px">
@@ -590,7 +603,7 @@
   <script src="dashboard-starfield.js?v=1.4.3" defer></script>
   <script src="sw-init.js?v=1.4.7" defer></script>
   <script src="dom-bindings.js?v=1.4.2" defer></script>
-  <script src="global-announcements.js?v=1.4.7" defer="defer"></script>
+  <script src="global-announcements.js?v=1.4.8" defer></script>
   <script type="module" src="index-dom-overrides.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
