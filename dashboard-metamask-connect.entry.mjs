@@ -69,13 +69,27 @@ class MultichainProviderAdapter {
         return nextAccounts;
       }
       case 'eth_chainId': {
-        return this.chainId;
+        const actualChainId = await this.client.invokeMethod({
+          scope: BASE_SCOPE,
+          request: { method: 'eth_chainId', params: [] },
+        });
+        if (typeof actualChainId !== 'string' || !/^0x[0-9a-f]+$/i.test(actualChainId)) {
+          throw new Error('Unable to verify the connected wallet network.');
+        }
+        this.syncChainId(actualChainId);
+        return actualChainId;
       }
       case 'wallet_switchEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
-        if (!nextChainId || nextChainId === BASE_CHAIN_ID) {
-          this.syncChainId(BASE_CHAIN_ID);
-          this.emit('chainChanged', this.chainId);
+        if (nextChainId === BASE_CHAIN_ID) {
+          await this.client.invokeMethod({
+            scope: BASE_SCOPE,
+            request: { method: 'wallet_switchEthereumChain', params: [{ chainId: BASE_CHAIN_ID }] },
+          });
+          const actualChainId = await this.request({ method: 'eth_chainId' });
+          if (actualChainId !== BASE_CHAIN_ID) {
+            throw new Error('Wallet network switch to Base Mainnet was not confirmed.');
+          }
           return null;
         }
 
@@ -86,8 +100,10 @@ class MultichainProviderAdapter {
       case 'wallet_addEthereumChain': {
         const nextChainId = params[0] && params[0].chainId;
         if (nextChainId === BASE_CHAIN_ID) {
-          this.syncChainId(BASE_CHAIN_ID);
-          this.emit('chainChanged', this.chainId);
+          await this.client.invokeMethod({
+            scope: BASE_SCOPE,
+            request: { method: 'wallet_addEthereumChain', params },
+          });
           return null;
         }
 
