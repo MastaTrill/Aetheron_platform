@@ -176,12 +176,20 @@ async function connectMetaMask() {
   const accounts = await window.ethereum.request({
     method: 'eth_requestAccounts',
   });
+  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  if (String(chainId).toLowerCase() !== '0x2105' || !accounts?.[0]) {
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    showWalletMessage('Switch to Base Mainnet (8453) and reconnect before using wallet features.', 'warning');
+    return { connected: false, reason: 'wallet_not_on_base' };
+  }
   setWalletState(accounts[0], walletType, walletProvider);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
     walletType,
   });
+  return { connected: true, account: walletAccount, chainId: '0x2105' };
 }
 
 async function connectWalletConnect(options = {}) {
@@ -243,24 +251,28 @@ async function connectWalletConnect(options = {}) {
       provider: wcProvider,
     });
 
-    const currentAccount =
-      window.localStorage?.getItem('aetheron_connected') ||
-      connectedAccount ||
-      wcProvider.accounts?.[0] ||
-      null;
-
-    setWalletState(
-      currentAccount,
-      'WalletConnect',
-      createInjectedProvider(wcProvider),
-    );
-    syncLegacyDashboard(currentAccount);
+    // The canonical connector is authoritative. Never infer success from
+    // cached accounts or WalletConnect session metadata after a 4001 rejection.
+    if (result?.connected !== true || !result.account || result.chainId !== '0x2105') {
+      setWalletState(null, null, null);
+      syncLegacyDashboard(null);
+      return { connected: false, reason: result?.reason || 'connection_unverified' };
+    }
+    setWalletState(result.account, 'WalletConnect', createInjectedProvider(wcProvider));
+    syncLegacyDashboard(result.account);
     return result;
   }
 
   const providerInstance = createInjectedProvider(wcProvider);
   const accounts = wcProvider?.accounts || [];
-  setWalletState(accounts[0] || null, 'WalletConnect', providerInstance);
+  const chainId = await wcProvider.request({ method: 'eth_chainId' });
+  if (String(chainId).toLowerCase() !== '0x2105' || !accounts[0]) {
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    showWalletMessage('WalletConnect requires Base Mainnet (8453).', 'warning');
+    return { connected: false, reason: 'wallet_not_on_base' };
+  }
+  setWalletState(accounts[0], 'WalletConnect', providerInstance);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
