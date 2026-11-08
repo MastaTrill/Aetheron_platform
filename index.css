@@ -2090,3 +2090,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Mobile launch-status containment: prevent oversized status cards and actions from widening the viewport. */
+@media (max-width: 600px) {
+  html, body { max-width: 100%; overflow-x: clip; }
+  main, section, .container, .card, .stat-card { min-width: 0; max-width: 100%; box-sizing: border-box; }
+  .card, .stat-card { overflow-wrap: anywhere; }
+  .card a, .card button, .stat-card a, .stat-card button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .card img, .stat-card img { max-width: 100%; height: auto; }
+}
