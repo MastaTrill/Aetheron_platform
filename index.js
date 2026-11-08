@@ -771,7 +771,7 @@ async function connectWallet(options = {}) {
     if (!wallet) {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
-        return;
+        return { connected: false, reason: 'wallet_unavailable' };
     }
 
     try {
@@ -836,16 +836,20 @@ async function connectWallet(options = {}) {
         hideProgress();
         
         showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        return { connected: true, account, chainId: BASE_CHAIN_ID };
 
     } catch (error) {
         console.error('Error connecting:', error);
         hideProgress();
+        // Refuse stale connected state after cancellation, RPC errors or wrong chain.
+        await disconnectWallet();
         if (error?.code === 4001) {
             showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
-            return;
+            return { connected: false, reason: 'rejected' };
         }
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        return { connected: false, reason: 'error' };
     }
 }
 
