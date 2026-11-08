@@ -11,7 +11,7 @@ let connectCount = 0;
 let disconnectCount = 0;
 const callbacks = new Map();
 const client = {
-  async connect(scopes) { assert.deepEqual(scopes, ['eip155:8453']); connectCount++; accounts = ['0x1111111111111111111111111111111111111111']; },
+  async connect(scopes) { assert.equal(Array.from(scopes).join(','), 'eip155:8453'); connectCount++; accounts = ['0x1111111111111111111111111111111111111111']; },
   async disconnect() { disconnectCount++; accounts = []; },
   async invokeMethod({scope, request}) {
     assert.equal(scope, 'eip155:8453');
