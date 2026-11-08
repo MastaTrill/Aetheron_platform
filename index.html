@@ -241,6 +241,22 @@
         white-space: nowrap;
       }
     }
+    /* Keep the mobile Connect Wallet control reachable even with many nav links.
+       The page is intentionally scroll-locked while the menu is open; the menu
+       itself must scroll rather than extending off-screen. */
+    @media (max-width: 640px) {
+      #navLinks.nav-links.active {
+        max-height: calc(100dvh - 7.5rem) !important;
+        overflow-y: auto !important;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+      }
+      #navLinks.nav-links.active #connectBtn {
+        min-height: 46px;
+      }
+    }
   </style>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.3">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
