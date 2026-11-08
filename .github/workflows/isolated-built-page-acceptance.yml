@@ -49,6 +49,24 @@ jobs:
           "$chrome" --headless --no-sandbox --disable-gpu --hide-scrollbars --disable-dev-shm-usage --window-size=390,844 --screenshot=acceptance/home-mobile.png http://127.0.0.1:8765/
           test -s acceptance/home-desktop.png
           test -s acceptance/home-mobile.png
+      - name: Automated mobile accessibility and performance audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory dist > acceptance/audit-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8766/ -o /dev/null && break || sleep 1; done
+          npx --yes lighthouse@12 http://127.0.0.1:8766/ --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --only-categories=accessibility,performance,best-practices --output=json --output-path=acceptance/lighthouse-mobile.json --quiet
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const report=JSON.parse(fs.readFileSync("acceptance/lighthouse-mobile.json","utf8"));
+            const summary=Object.fromEntries(Object.entries(report.categories).map(([name,item])=>[name,Math.round(item.score*100)]));
+            fs.writeFileSync("acceptance/lighthouse-scores.json",JSON.stringify(summary,null,2));
+            console.log("Lighthouse mobile scores:",summary);
+            const failures=Object.values(report.audits).filter(x=>x.score!==null&&x.score<1&&x.details?.type==="table"&&x.id?.includes("contrast"));
+            for(const f of failures) console.log("Contrast audit:",f.id,f.score);
+          '
       - name: Save isolated visual evidence
         if: always()
         uses: actions/upload-artifact@v4
