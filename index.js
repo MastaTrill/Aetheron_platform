@@ -149,10 +149,9 @@ window.addEventListener('load', async () => {
     // Initialize progressive features
     initProgressBar();
     
-    // Add animation classes
-    document.querySelectorAll('.stat-card, .feature-card, .card').forEach((el, i) => {
-        setTimeout(() => el.classList.add('fade-in'), i * 100);
-    });
+    // Avoid staggered first-load animations that can move the homepage
+    // while Lighthouse and mobile users are reading the launch status.
+    // Hover/focus transitions remain available through CSS.
 });
 
 // Set default values to avoid stuck "Loading..." states
