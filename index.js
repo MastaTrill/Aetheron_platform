@@ -330,7 +330,7 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet();
+                    await connectWallet({ provider: wallet, silent: true });
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
