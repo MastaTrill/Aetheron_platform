@@ -171,6 +171,76 @@
       .features-section > h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
       .feature-card { min-width: 0; }
     }
+    /* Visible, keyboard-accessible menu bars independent of delayed icon-font CSS. */
+    #hamburger.hamburger { display: none !important; }
+    @media (max-width: 640px) {
+      #hamburger.hamburger {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        width: 44px;
+        height: 44px;
+        padding: 8px !important;
+        flex: 0 0 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 231, 255, .28);
+        background: rgba(20, 35, 75, .93);
+        color: #e5faff;
+      }
+      #hamburger.hamburger > span {
+        display: block !important;
+        flex: 0 0 2px;
+        width: 21px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: 1;
+      }
+      /* Keep update actions visible while avoiding a half-screen fixed overlay. */
+      body > #globalAnnouncementSlot.global-announcement-slot .global-announcement {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: .5rem !important;
+        padding: .55rem .65rem !important;
+        align-items: center;
+        box-shadow: 0 -8px 28px rgba(0, 0, 0, .3);
+      }
+      body > #globalAnnouncementSlot .global-announcement-content {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+      body > #globalAnnouncementSlot .global-announcement-title {
+        font-size: .77rem !important;
+        line-height: 1.2;
+        max-height: 2.4em;
+        overflow: hidden;
+      }
+      body > #globalAnnouncementSlot .global-announcement-text {
+        font-size: .7rem !important;
+        line-height: 1.2;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      body > #globalAnnouncementSlot .global-announcement-actions {
+        flex: 0 0 auto;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: .3rem !important;
+      }
+      body > #globalAnnouncementSlot .global-announcement-actions .btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-height: 40px;
+        padding: .42rem .5rem !important;
+        font-size: .75rem;
+        white-space: nowrap;
+      }
+    }
   </style>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.3">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
