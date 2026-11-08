@@ -2,14 +2,7 @@ const BASESCAN_TOKEN_URL = 'https://basescan.org/token/0xecf7E17faE148C01E1b5008
 const LAUNCH_STATUS_URL = 'presale.html';
 
 function injectDexWidget() {
-  if (document.getElementById('aethDexWidget')) return;
-
-  const container = document.querySelector('.container');
-  if (!container) return;
-
-  // Market status is present in the initial HTML to avoid content layout shift.
-  if (document.getElementById('aethDexWidget')) return;
-
+  // Market-status markup is rendered in index.html to prevent layout shifts.
 }
 
 function updateDexWidget() {
