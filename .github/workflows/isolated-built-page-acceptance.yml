@@ -66,6 +66,14 @@ jobs:
             console.log("Lighthouse mobile scores:",summary);
             const failures=Object.values(report.audits).filter(x=>x.score!==null&&x.score<1&&x.details?.type==="table"&&x.id?.includes("contrast"));
             for(const f of failures) console.log("Contrast audit:",f.id,f.score);
+            const cls=report.audits["cumulative-layout-shift"]?.numericValue;
+            const tbt=report.audits["total-blocking-time"]?.numericValue;
+            const gate={performance:summary.performance,accessibility:summary.accessibility,cls,tbt,limits:{performanceMin:55,accessibilityMin:95,clsMax:0.2,tbtMaxMs:800}};
+            fs.writeFileSync("acceptance/lighthouse-regression-gate.json",JSON.stringify(gate,null,2));
+            if(summary.performance<55||summary.accessibility<95||!Number.isFinite(cls)||cls>0.2||!Number.isFinite(tbt)||tbt>800){
+              console.error("Mobile Lighthouse regression gate failed",gate);
+              process.exitCode=1;
+            }
           '
       - name: Save isolated visual evidence
         if: always()
