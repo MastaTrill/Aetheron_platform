@@ -134,6 +134,33 @@
       color: rgba(110, 231, 255, 0.95) !important;
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
     }
+
+    /* Mobile visual-acceptance repair: never use dark-on-dark text on glass panels. */
+    .features-section > h2, .hero-presale-cta h3,
+    .hero-panel-title, .hero-panel-label, .hero-panel-value,
+    .hero-panel-status, .feature-card h3,
+    .hero-copy h1, .hero-copy p {
+      color: #f2f8ff;
+    }
+    .hero-panel-label { color: #c2deef; }
+    .features-section > h2 { color: #e9f8ff; line-height: 1.2; }
+    .hero-panel-status { color: #b7ffe4; }
+    .hero-presale-cta p, .feature-card p { color: #d6e3f2; }
+    .hero .hero-panel-card, .hero-presale-cta {
+      background-color: rgba(15, 28, 52, .88);
+    }
+    .hero .quick-action-btn:not(.live-indicator) {
+      color: #e4eaff;
+      text-decoration-color: currentColor;
+    }
+    @media (max-width: 680px) {
+      .hero-panel-grid { gap: .7rem; }
+      .hero-panel-card { min-width: 0; padding: 1rem; }
+      .hero-panel-label { font-size: .8rem; line-height: 1.45; }
+      .hero-panel-value { font-size: 1rem; line-height: 1.45; }
+      .features-section > h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+      .feature-card { min-width: 0; }
+    }
   </style>
   <noscript>
     <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
