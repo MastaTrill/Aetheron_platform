@@ -1,0 +1,29 @@
+name: Public Launch Copy Gate
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'public-launch-claims.test.mjs'
+      - '.github/workflows/public-launch-copy-gate.yml'
+      - 'package.json'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'public-launch-claims.test.mjs'
+      - '.github/workflows/public-launch-copy-gate.yml'
+      - 'package.json'
+
+jobs:
+  verify-public-copy:
+    name: Truthful AETH launch disclosures
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify no unsupported staking or market claims
+        run: node --test public-launch-claims.test.mjs
