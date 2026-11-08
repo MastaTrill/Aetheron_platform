@@ -241,6 +241,23 @@
         white-space: nowrap;
       }
     }
+    /* The legacy body > * positioning rule gives main and nav equal stacking
+       levels, allowing later sale panels to paint over an open mobile menu.
+       Raise the entire nav stacking context, not just the inner menu. */
+    @media (max-width: 640px) {
+      body > nav.navbar {
+        position: sticky !important;
+        top: 0;
+        z-index: 1002 !important;
+        isolation: isolate;
+        overflow: visible !important;
+      }
+      body > nav.navbar .navbar-content { overflow: visible !important; }
+      body > nav.navbar #navLinks.nav-links.active {
+        z-index: 1003 !important;
+        background: rgba(5, 12, 28, .99) !important;
+      }
+    }
     /* Keep the mobile Connect Wallet control reachable even with many nav links.
        The page is intentionally scroll-locked while the menu is open; the menu
        itself must scroll rather than extending off-screen. */
