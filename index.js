@@ -330,7 +330,7 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet();
+                    await connectWallet({ provider: wallet, silent: true });
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -735,6 +735,35 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
+async let walletEventsProvider = null;
+function bindWalletChangeEvents(wallet) {
+    if (walletEventsProvider === wallet || typeof wallet?.on !== 'function') return;
+    if (walletEventsProvider?.removeListener) {
+        walletEventsProvider.removeListener('accountsChanged', onWalletAccountsChanged);
+        walletEventsProvider.removeListener('chainChanged', onWalletChainChanged);
+    }
+    walletEventsProvider = wallet;
+    wallet.on('accountsChanged', onWalletAccountsChanged);
+    wallet.on('chainChanged', onWalletChainChanged);
+}
+function onWalletAccountsChanged(accounts) {
+    if (!accounts?.length) {
+        disconnectWallet();
+        return;
+    }
+    if (account?.toLowerCase() !== accounts[0].toLowerCase()) {
+        connectWallet({ provider: walletEventsProvider, silent: true });
+    }
+}
+function onWalletChainChanged(chainId) {
+    if (String(chainId).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
+        disconnectWallet();
+        showToast('Wrong network', 'Switch to Base Mainnet (8453) to continue.', 'info');
+    } else {
+        connectWallet({ provider: walletEventsProvider, silent: true });
+    }
+}
+
 async function connectWallet(options = {}) {
     const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
@@ -746,13 +775,21 @@ async function connectWallet(options = {}) {
 
     try {
         provider = new ethers.providers.Web3Provider(wallet, 'any');
-        await wallet.request({ method: 'eth_requestAccounts' });
+        const accounts = await wallet.request({ method: options?.silent ? 'eth_accounts' : 'eth_requestAccounts' });
+        if (!accounts?.length) return;
+        bindWalletChangeEvents(wallet);
         signer = provider.getSigner();
         account = await signer.getAddress();
 
-        // Switch to Base network
+        // Never prompt for a network switch during passive reconnection.
+        const currentChain = await wallet.request({ method: 'eth_chainId' });
+        if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
+            showToast('Wrong network', 'Switch to Base Mainnet (8453) before connecting.', 'info');
+            return;
+        }
+        // Switch to Base network only when a user explicitly connects.
         try {
-            await wallet.request({
+            if (String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) await wallet.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: BASE_CHAIN_ID }],
             });
@@ -771,9 +808,15 @@ async function connectWallet(options = {}) {
                         }],
                     });
                 } catch (addError) {
-                    console.error('Error adding Base network:', addError);
+                    throw addError;
                 }
+            } else {
+                throw switchError;
             }
+        }
+        const connectedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
+            throw new Error('Please switch your wallet to Base Mainnet before continuing.');
         }
 
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
@@ -803,6 +846,11 @@ async function connectWallet(options = {}) {
 
     } catch (error) {
         console.error('Error connecting:', error);
+        if (error?.code === 4001) {
+            hideProgress();
+            showToast('Connection cancelled', 'No wallet connection was approved.', 'info');
+            return;
+        }
         hideProgress();
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
