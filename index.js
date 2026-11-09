@@ -53,6 +53,7 @@ const _MAX_RECONNECT_ATTEMPTS = 5;
 const _APP_VERSION = '1.4.3';
 
 let walletConnectInProgress = false;
+let walletManualDisconnect = false;
 let _detectionAttempts = 0;
 const _maxAttempts = 5;
 
@@ -376,7 +377,7 @@ async function detectWalletWithRetry() {
             try {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
-                if (accounts.length > 0 && !account && !walletConnectInProgress) {
+                if (accounts.length > 0 && !account && !walletConnectInProgress && !walletManualDisconnect) {
                     await connectWallet();
                 }
             } catch (error) {
@@ -906,14 +907,24 @@ async function connectWallet(options = {}) {
 
         displayWalletConnected(account);
 
-        // Load user data
-        showProgress();
-        await updateStats();
-        await loadUserStakes();
-        await loadTransactionHistory();
-        hideProgress();
-        
+        // Wallet authorization is complete. Do not keep the connection lock
+        // or mark it failed if slower optional read-only data requests time out.
         showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        const connectedAccount = account;
+        showProgress();
+        void Promise.allSettled([
+            updateStats(),
+            loadUserStakes(),
+            loadTransactionHistory()
+        ]).then((results) => {
+            for (const result of results) {
+                if (result.status === 'rejected') {
+                    console.warn('Optional wallet dashboard read failed:', result.reason?.message || result.reason);
+                }
+            }
+        }).finally(() => {
+            if (account === connectedAccount) hideProgress();
+        });
 
     } catch (error) {
         if (error?.code !== 4001) console.error('Error connecting:', error);
@@ -937,6 +948,7 @@ async function connectWallet(options = {}) {
 
 // Disconnect wallet function
 async function disconnectWallet() {
+    walletManualDisconnect = true;
     account = null;
     signer = null;
     provider = null;
@@ -944,6 +956,7 @@ async function disconnectWallet() {
     stakingContract = null;
     
     displayWalletDisconnected();
+    hideProgress();
     
     // Remove user stakes container if exists
     const stakesContainer = document.getElementById('userStakesContainer');
