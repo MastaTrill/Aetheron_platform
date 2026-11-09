@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+for(const name of ['qa-network-switch.html','qa-network-switch.js','qa-network-switch.css']) assert.ok(readFileSync(new URL('./'+name,import.meta.url),'utf8').length>100, name + ' must be present');
+const html=readFileSync(new URL('./qa-network-switch.html',import.meta.url),'utf8');
+const script=readFileSync(new URL('./qa-network-switch.js',import.meta.url),'utf8');
+assert.match(html,/noindex, nofollow/);
+assert.match(html,/Switch to Ethereum/);
+assert.match(html,/Restore Base Mainnet/);
+assert.match(script,/wallet_switchEthereumChain/);
+assert.match(script,/eth_chainId/);
+assert.match(script,/const expectedOrigin = 'https:\/\/mastatrill.github.io'/);
+assert.match(script,/const BASE = '0x2105'/);
+assert.match(script,/const ETHEREUM = '0x1'/);
+assert.doesNotMatch(script,/['"](?:eth_requestAccounts|eth_sendTransaction|personal_sign|eth_sign|eth_signTypedData|wallet_sendCalls|wallet_watchAsset|eth_sendRawTransaction)['"]/);
+assert.doesNotMatch(script,/\.request\(\s*\{\s*method\s*:\s*[^'"]/);
+console.log('QA-only network probe restricted to chain reading and reversible network switching');
