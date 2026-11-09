@@ -111,6 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initConnectButton() {
     const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn && disconnectBtn.dataset.walletBound !== 'true') {
+        disconnectBtn.dataset.walletBound = 'true';
+        disconnectBtn.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            await disconnectWallet();
+        });
+    }
     if (!connectBtn || connectBtn.dataset.walletBound === 'true') {
         return;
     }
@@ -543,6 +552,8 @@ function displayWalletConnected(address) {
         status.textContent = 'Connected to Base Mainnet: ' + address.slice(0, 6) + '…' + address.slice(-4);
         status.hidden = false;
     }
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn) disconnectBtn.hidden = false;
     document.getElementById('walletConnected')?.classList.remove('hidden');
     document.getElementById('walletNotConnected')?.classList.add('hidden');
     const addressEl = document.getElementById('walletAddress');
@@ -564,6 +575,8 @@ function displayWalletDisconnected() {
         status.textContent = '';
         status.hidden = true;
     }
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn) disconnectBtn.hidden = true;
     document.getElementById('walletConnected')?.classList.add('hidden');
     document.getElementById('walletNotConnected')?.classList.remove('hidden');
     document.getElementById('txConnected')?.classList.add('hidden');
@@ -921,6 +934,7 @@ async function connectWallet(options = {}) {
 async function disconnectWallet() {
     account = null;
     signer = null;
+    provider = null;
     aethContract = null;
     stakingContract = null;
     
