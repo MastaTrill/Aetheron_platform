@@ -286,6 +286,12 @@
       color: #d9fdff;
       background: rgba(7,23,45,.95);
     }
+    /* Keep fixed announcements clear of the opened mobile navigation. */
+    @media (max-width: 640px) {
+      body:has(#navLinks.active) > #globalAnnouncementSlot.global-announcement-slot {
+        display: none !important;
+      }
+    }
     #disconnectWalletBtn[hidden] { display: none !important; }
     #disconnectWalletBtn:not([hidden]) {
       display: inline-flex;
