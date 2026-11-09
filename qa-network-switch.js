@@ -66,6 +66,22 @@
   if (ethereumProvider && typeof ethereumProvider.on === 'function') {
     ethereumProvider.on('chainChanged', () => { read().catch(() => {}); });
   }
-  read().then(() => display('Ready. No network switch has been requested.'))
-    .catch(error => display('Unable to read network: ' + (error.message || 'Unknown error')));
+  // MetaMask Mobile may inject the provider shortly after document ready.
+  // Retry read-only detection without requesting accounts or changing chains.
+  const initialRead = async () => {
+    for (let i = 0; i < 8; i++) {
+      try {
+        await read();
+        display('Ready. No network switch has been requested.');
+        return;
+      } catch (error) {
+        if (i === 7) {
+          display('Unable to read network: ' + (error.message || 'Unknown error') + '. Select Check network to retry.');
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+    }
+  };
+  initialRead();
 })();
