@@ -1,0 +1,12 @@
+:root { color-scheme: dark; font-family: system-ui,-apple-system,Segoe UI,sans-serif; background: #0a1020; color: #f0f5ff; }
+body { margin: 0; padding: 24px 16px; } main { margin: 0 auto; max-width: 660px; }
+h1 { font-size: clamp(1.55rem,5vw,2.2rem); margin: 8px 0 20px; }
+p { line-height: 1.5; }
+.eyebrow { color: #b7c7ed; font-weight: 700; letter-spacing: .12em; font-size: .8rem; }
+.actions { display: flex; flex-direction: column; gap: 12px; margin: 28px 0; }
+button,a { box-sizing: border-box; border: 1px solid #8ca9e2; border-radius: 12px; background:#162642; color:#f9fbff; text-align: center; font:inherit; font-weight:650; padding:16px 18px; min-height:52px; }
+button:focus-visible,a:focus-visible { outline: 3px solid #fbcc7d; outline-offset:3px; }
+button:disabled { opacity:.45; }
+a { text-decoration:none; }
+.notice { padding: 16px; border: 1px solid #758bb5; border-radius: 12px; }
+output { overflow-wrap:anywhere; }
