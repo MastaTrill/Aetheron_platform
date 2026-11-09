@@ -274,6 +274,18 @@
         min-height: 46px;
       }
     }
+    #walletConnectionStatus:not([hidden]) {
+      display: inline-block;
+      max-width: min(100%, 280px);
+      overflow-wrap: anywhere;
+      font-size: .78rem;
+      line-height: 1.35;
+      padding: .5rem .65rem;
+      border: 1px solid rgba(110,231,255,.27);
+      border-radius: .6rem;
+      color: #d9fdff;
+      background: rgba(7,23,45,.95);
+    }
   </style>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.3">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
@@ -314,6 +326,7 @@
             class="fas fa-gem"></i> NFT </a><a href="token-info.html" class="nav-link"><i
             class="fas fa-info-circle"></i> Token Info </a><a href="#staking" class="nav-link">Staking</a> <button
           id="connectBtn" class="btn btn-primary" type="button"><i class="fas fa-wallet"></i> Connect Wallet</button>
+        <span id="walletConnectionStatus" role="status" aria-live="polite" hidden></span>
         <span class="nav-status-pill"><span class="nav-status-dot" aria-hidden="true"></span> V1 on Base - V2 pending</div>
       </div>
     </div>
