@@ -52,6 +52,7 @@ let _reconnectAttempts = 0;
 const _MAX_RECONNECT_ATTEMPTS = 5;
 const _APP_VERSION = '1.4.3';
 
+let walletConnectInProgress = false;
 let _detectionAttempts = 0;
 const _maxAttempts = 5;
 
@@ -375,7 +376,7 @@ async function detectWalletWithRetry() {
             try {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
-                if (accounts.length > 0) {
+                if (accounts.length > 0 && !account && !walletConnectInProgress) {
                     await connectWallet();
                 }
             } catch (error) {
@@ -848,6 +849,7 @@ async function updateStakingStats() {
 
 // Connect wallet function
 async function connectWallet(options = {}) {
+    if (walletConnectInProgress) return;
     const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
     if (!wallet) {
@@ -856,6 +858,7 @@ async function connectWallet(options = {}) {
         return;
     }
 
+    walletConnectInProgress = true;
     try {
         await ensureEthersReady();
         provider = new ethers.providers.Web3Provider(wallet, 'any');
@@ -927,6 +930,8 @@ async function connectWallet(options = {}) {
             showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
             showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
         }
+    } finally {
+        walletConnectInProgress = false;
     }
 }
 
