@@ -508,6 +508,68 @@ async function stakeTokens(poolId) {
     }
 }
 
+// Show wallet feedback even when the generic shared UI module is unavailable.
+function showToast(title, message, type = 'info') {
+    const combined = [title, message].filter(Boolean).join(': ');
+    if (typeof window.aetheronPlatform?.showToast === 'function') {
+        window.aetheronPlatform.showToast(combined, type);
+        return;
+    }
+    let notice = document.getElementById('aetheronWalletNotice');
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'aetheronWalletNotice';
+        notice.setAttribute('role', 'status');
+        notice.setAttribute('aria-live', 'polite');
+        notice.className = 'toast toast-wallet';
+        document.body.appendChild(notice);
+    }
+    notice.textContent = combined;
+    notice.hidden = false;
+    if (showToast.dismissTimer) clearTimeout(showToast.dismissTimer);
+    showToast.dismissTimer = setTimeout(() => { notice.hidden = true; }, 5000);
+}
+
+function displayWalletConnected(address) {
+    const btn = document.getElementById('connectBtn');
+    if (btn) {
+        btn.textContent = address.slice(0, 6) + '…' + address.slice(-4);
+        btn.title = 'Wallet connected on Base Mainnet. Select to manage your connection.';
+        btn.setAttribute('aria-label', 'Connected wallet ' + address.slice(0, 6) + '…' + address.slice(-4) + ' on Base Mainnet');
+        btn.classList.add('connected');
+    }
+    const status = document.getElementById('walletConnectionStatus');
+    if (status) {
+        status.textContent = 'Connected to Base Mainnet: ' + address.slice(0, 6) + '…' + address.slice(-4);
+        status.hidden = false;
+    }
+    document.getElementById('walletConnected')?.classList.remove('hidden');
+    document.getElementById('walletNotConnected')?.classList.add('hidden');
+    const addressEl = document.getElementById('walletAddress');
+    if (addressEl) addressEl.textContent = address.slice(0, 6) + '...' + address.slice(-4);
+    document.getElementById('txNotConnected')?.classList.add('hidden');
+    document.getElementById('txConnected')?.classList.remove('hidden');
+}
+
+function displayWalletDisconnected() {
+    const btn = document.getElementById('connectBtn');
+    if (btn) {
+        btn.textContent = 'Connect Wallet';
+        btn.title = 'Connect wallet on Base Mainnet';
+        btn.setAttribute('aria-label', 'Connect Wallet');
+        btn.classList.remove('connected');
+    }
+    const status = document.getElementById('walletConnectionStatus');
+    if (status) {
+        status.textContent = '';
+        status.hidden = true;
+    }
+    document.getElementById('walletConnected')?.classList.add('hidden');
+    document.getElementById('walletNotConnected')?.classList.remove('hidden');
+    document.getElementById('txConnected')?.classList.add('hidden');
+    document.getElementById('txNotConnected')?.classList.remove('hidden');
+}
+
 // Helper function to show alerts
 function showAlert(message, type, alertId) {
     const alertEl = document.getElementById(alertId);
@@ -788,30 +850,36 @@ async function connectWallet(options = {}) {
         signer = provider.getSigner();
         account = await signer.getAddress();
 
-        // Switch to Base network
-        try {
-            await wallet.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: BASE_CHAIN_ID }],
-            });
-        } catch (switchError) {
-            // This error code indicates that the chain has not been added to MetaMask
-            if (switchError.code === 4902) {
-                try {
-                    await wallet.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: BASE_CHAIN_ID,
-                            chainName: 'Base Mainnet',
-                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                            rpcUrls: BASE_RPC_URLS,
-                            blockExplorerUrls: ['https://basescan.org/']
-                        }],
-                    });
-                } catch (addError) {
-                    console.error('Error adding Base network:', addError);
-                }
+        // Confirm the actual wallet chain before showing any connected/Base status.
+        // Rejecting a network change is never treated as successful connection.
+        const initialChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(initialChain).toLowerCase() !== BASE_CHAIN_ID) {
+            try {
+                await wallet.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: BASE_CHAIN_ID }],
+                });
+            } catch (switchError) {
+                if (switchError.code !== 4902) throw switchError;
+                await wallet.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: BASE_CHAIN_ID,
+                        chainName: 'Base Mainnet',
+                        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                        rpcUrls: BASE_RPC_URLS,
+                        blockExplorerUrls: ['https://basescan.org/']
+                    }],
+                });
+                await wallet.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: BASE_CHAIN_ID }],
+                });
             }
+        }
+        const confirmedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
+            throw new Error('Wallet is not on Base Mainnet (chain ID 8453)');
         }
 
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
@@ -820,15 +888,7 @@ async function connectWallet(options = {}) {
         console.log('\u2705 Wallet connected! Address:', account);
         console.log('\ud83d\udd17 Contracts initialized with wallet signer');
 
-        document.getElementById('connectBtn').textContent = 'Connected ✓';
-        document.getElementById('connectBtn').classList.add('connected');
-        document.getElementById('walletConnected').classList.remove('hidden');
-        document.getElementById('walletNotConnected').classList.add('hidden');
-        document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
-
-        // Update transaction history UI
-        document.getElementById('txNotConnected').classList.add('hidden');
-        document.getElementById('txConnected').classList.remove('hidden');
+        displayWalletConnected(account);
 
         // Load user data
         showProgress();
@@ -840,10 +900,20 @@ async function connectWallet(options = {}) {
         showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
 
     } catch (error) {
-        console.error('Error connecting:', error);
+        if (error?.code !== 4001) console.error('Error connecting:', error);
+        account = null;
+        signer = null;
+        provider = null;
+        aethContract = null;
+        stakingContract = null;
+        displayWalletDisconnected();
         hideProgress();
-        showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
-        showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        if (error?.code === 4001) {
+            showToast('Connection cancelled', 'No account was connected', 'info');
+        } else {
+            showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
+            showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        }
     }
 }
 
@@ -854,12 +924,7 @@ async function disconnectWallet() {
     aethContract = null;
     stakingContract = null;
     
-    document.getElementById('connectBtn').textContent = 'Connect Wallet';
-    document.getElementById('connectBtn').classList.remove('connected');
-    document.getElementById('walletConnected').classList.add('hidden');
-    document.getElementById('walletNotConnected').classList.remove('hidden');
-    document.getElementById('txConnected').classList.add('hidden');
-    document.getElementById('txNotConnected').classList.remove('hidden');
+    displayWalletDisconnected();
     
     // Remove user stakes container if exists
     const stakesContainer = document.getElementById('userStakesContainer');
