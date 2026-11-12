@@ -292,6 +292,8 @@ class AetheronDashboard {
     this.currentSection = 'dashboard';
     this.walletAccount = null;
     this.referralCode = this.generateReferralCode();
+    this.realTimeUpdateIntervals = [];
+    this.liveStatsUpdateInFlight = false;
     
     // Initialize all setup methods
     this.bindWalletBridge();
@@ -1133,16 +1135,30 @@ class AetheronDashboard {
   }
 
   startRealTimeUpdates() {
+    if (this.realTimeUpdateIntervals.length > 0) {
+      return;
+    }
+
+    const isDocumentHidden = () => document.visibilityState === 'hidden';
+
     // Update dashboard data every 30 seconds
-    setInterval(() => {
+    this.realTimeUpdateIntervals.push(setInterval(() => {
+      if (isDocumentHidden()) {
+        return;
+      }
+
       this.updateLiveStats();
       this.checkTradingMilestones();
-    }, 30000);
+    }, 30000));
 
     // Update community stats every 5 minutes
-    setInterval(() => {
+    this.realTimeUpdateIntervals.push(setInterval(() => {
+      if (isDocumentHidden()) {
+        return;
+      }
+
       this.updateCommunityStats();
-    }, 300000);
+    }, 300000));
   }
 
   simulateTrade() {
@@ -1322,47 +1338,60 @@ class AetheronDashboard {
   }
 
   async updateLiveStats() {
-    const quickStatsSpinner = document.getElementById('quickStatsLoading');
-    if (quickStatsSpinner) quickStatsSpinner.style.display = 'flex';
-    // Update live trading stats
-    const priceElement = document.getElementById('live-price');
-    const volumeElement = document.getElementById('live-volume');
-    const holdersElement = document.getElementById('live-holders');
-    if (priceElement) {
-      try {
-        // Fetch real price from DexScreener API using the pair address
-        const response = await fetch(
-          'https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D'
-        );
-        const data = await response.json();
+    if (this.liveStatsUpdateInFlight) {
+      return;
+    }
 
-        if (data && data.pairs && data.pairs[0]) {
-          const price = parseFloat(data.pairs[0].priceUsd);
-          priceElement.textContent = `$${price.toFixed(6)}`;
-          console.log(`📊 Real price updated: $${price.toFixed(6)}`);
-        } else {
+    this.liveStatsUpdateInFlight = true;
+    let quickStatsSpinner = null;
+    try {
+      quickStatsSpinner = document.getElementById('quickStatsLoading');
+      if (quickStatsSpinner) quickStatsSpinner.style.display = 'flex';
+
+      // Update live trading stats
+      const priceElement = document.getElementById('live-price');
+      const volumeElement = document.getElementById('live-volume');
+      const holdersElement = document.getElementById('live-holders');
+      if (priceElement) {
+        try {
+          // Fetch real price from DexScreener API using the pair address
+          const response = await fetch(
+            'https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D'
+          );
+          const data = await response.json();
+
+          if (data && data.pairs && data.pairs[0]) {
+            const price = parseFloat(data.pairs[0].priceUsd);
+            priceElement.textContent = `$${price.toFixed(6)}`;
+            console.log(`📊 Real price updated: $${price.toFixed(6)}`);
+          } else {
+            // Fallback to mock price if API fails
+            const mockPrice = (0.0001 + Math.random() * 0.0002).toFixed(6);
+            priceElement.textContent = `$${mockPrice}`;
+            console.log(`📊 Mock price (API failed): $${mockPrice}`);
+          }
+        } catch (error) {
           // Fallback to mock price if API fails
           const mockPrice = (0.0001 + Math.random() * 0.0002).toFixed(6);
           priceElement.textContent = `$${mockPrice}`;
-          console.log(`📊 Mock price (API failed): $${mockPrice}`);
+          console.log(`📊 Mock price (API error): $${mockPrice}`, error);
         }
-      } catch (error) {
-        // Fallback to mock price if API fails
-        const mockPrice = (0.0001 + Math.random() * 0.0002).toFixed(6);
-        priceElement.textContent = `$${mockPrice}`;
-        console.log(`📊 Mock price (API error): $${mockPrice}`, error);
       }
-    }
 
-    if (volumeElement) {
-      volumeElement.textContent = `$${this.tradingVolume.toFixed(0)}`;
-    }
+      if (volumeElement) {
+        volumeElement.textContent = `$${this.tradingVolume.toFixed(0)}`;
+      }
 
-    if (holdersElement) {
-      holdersElement.textContent = String(this.communityStats.totalHolders || 0);
+      if (holdersElement) {
+        holdersElement.textContent = String(this.communityStats.totalHolders || 0);
+      }
+    } finally {
+      this.liveStatsUpdateInFlight = false;
+      // Hide quick stats spinner after data loads
+      setTimeout(() => {
+        if (quickStatsSpinner) quickStatsSpinner.style.display = 'none';
+      }, 800);
     }
-    // Hide quick stats spinner after data loads
-    setTimeout(() => { if (quickStatsSpinner) quickStatsSpinner.style.display = 'none'; }, 800);
   }
 
   checkTradingMilestones() {

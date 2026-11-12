@@ -50,38 +50,266 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <!-- Google Tag Manager/Analytics removed for strict CSP compliance -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
-  <script src="vercel-analytics.js?v=1.0.0" defer></script>
+  <!-- Ethers loads on idle or immediately when a wallet action needs it. -->
   <script src="index.js?v=1.4.9" defer></script>
-  <script src="monitor.js?v=1.4.2" defer></script>
-  <script src="marketing-launch.js?v=1.4.2" defer></script>
   <script src="shared-utils.js?v=1.4.4" defer></script>
-  <script src="charts.js?v=1.4.3" defer></script>
-  <link rel="stylesheet" href="critical.css?v=1.4.3">
-  <link rel="stylesheet" href="index.css?v=1.4.3">
-  <link rel="preload" href="shared-styles.css?v=1.4.3" as="style">
-  <link rel="preload" href="mobile-optimization.css?v=1.4.3" as="style">
-  <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
-  <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
+  <!-- Same four style layers in original cascade order, delivered as one blocking request. -->
+  <link rel="stylesheet" href="homepage-core.css?v=1.4.10">
   <style>
+    /* Editorial-quality visual hierarchy, responsive touch targets, and keyboard focus. */
+    :root { color-scheme: dark; }
+    .hero { position: relative; isolation: isolate; }
+    .hero::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      inset: -2rem -1rem auto; height: min(42rem, 90vh);
+      background: radial-gradient(ellipse at 75% 15%, rgba(52,211,235,.13), transparent 55%),
+                  radial-gradient(ellipse at 15% 45%, rgba(99,102,241,.11), transparent 60%);
+      filter: blur(12px);
+    }
+    .hero-kicker { letter-spacing: .12em; text-transform: uppercase; font-weight: 750; }
+    .hero-copy > h1 { letter-spacing: -.045em; text-wrap: balance; }
+    .hero-copy > p { max-width: 63ch; line-height: 1.75; }
+    .hero-panel, .hero-presale-cta {
+      box-shadow: 0 20px 60px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
+    }
+    .hero-panel-card { transition: border-color .2s ease, transform .2s ease; }
+    .hero-panel-card:hover { transform: translateY(-2px); border-color: rgba(110,231,255,.32); }
+    .quick-actions { align-items: stretch; }
+    .quick-action-btn:not(.live-indicator), .primary-btn { min-height: 46px; transition: transform .18s ease, box-shadow .18s ease; }
+    .quick-action-btn:not(.live-indicator):hover, .primary-btn:hover { transform: translateY(-2px); }
+    :is(a, button, [role="button"]):focus-visible { outline: 3px solid #7cecff !important; outline-offset: 3px; }
+    .hero-panel-value { word-break: normal; overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero { padding-top: clamp(1rem, 4vw, 2rem); }
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); line-height: 1.08; }
+      .hero-copy > p { font-size: 1rem; }
+      .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .hero-tag { max-width: 100%; }
+      .hero-panel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-panel-card-wide { grid-column: 1 / -1; }
+      .hero-presale-cta { margin-top: 1rem !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-panel-card, .quick-action-btn, .primary-btn { transition: none !important; }
+      .hero-panel-card:hover, .quick-action-btn:hover, .primary-btn:hover { transform: none !important; }
+    }
+    /* Keep the launch announcement readable without hiding the mobile homepage. */
+    .global-announcement { box-sizing: border-box; }
+    .global-announcement-content { min-width: 0; }
+    .global-announcement-actions { display: flex; gap: .5rem; align-items: center; }
+    .global-announcement-actions .btn { min-height: 40px; }
+    @media (max-width: 680px) {
+      .global-announcement { padding: .7rem 1rem !important; }
+      .global-announcement-content { max-width: 100%; }
+      .global-announcement-title { font-size: .9rem; }
+      .global-announcement-text { font-size: .8rem; line-height: 1.35; }
+      .global-announcement-actions { flex-direction: row; flex-wrap: wrap; }
+      .global-announcement-actions .btn { width: auto; flex: 1 1 auto; padding: .55rem .75rem; }
+    }
+    /* Launch-status clarity and mobile-first homepage refinement. */
+    .hero-copy > h1 { max-width: 18ch; line-height: 1.1; text-wrap: balance; }
+    .hero-copy > p { max-width: 68ch; line-height: 1.65; }
+    .hero-copy .quick-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
+    .hero-copy .quick-action-btn { min-height: 44px; overflow-wrap: anywhere; }
+    .hero-copy .live-indicator { font-weight: 650; }
+    .hero-presale-cta { box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+    .hero-panel-value { overflow-wrap: anywhere; }
+    @media (max-width: 680px) {
+      .hero-copy > h1 { font-size: clamp(2rem, 9vw, 3.25rem); }
+      .hero-copy .quick-actions { display: grid; grid-template-columns: minmax(0,1fr); }
+      .hero-copy .quick-action-btn { width: 100%; justify-content: center; }
+      .hero-presale-cta { padding: 1.1rem !important; }
+    }
     #priceValue, #marketCapValue, #stakedValue, #holdersValue {
       color: rgba(110, 231, 255, 0.95) !important;
       text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
     }
+
+    /* Stable banner styling is available before first paint. */
+    
+      .aetheron-live-banner{display:grid;grid-template-columns:1.15fr 2fr auto;gap:16px;align-items:center;margin:20px auto;padding:18px;border-radius:20px;border:1px solid rgba(251,191,36,.4);background:linear-gradient(135deg,rgba(7,24,39,.96),rgba(46,20,101,.84));box-shadow:0 22px 50px rgba(0,0,0,.28);color:#fff}
+      .aetheron-live-banner__status{display:flex;flex-direction:column;gap:7px}.aetheron-live-banner__eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.7)}
+      .aetheron-live-banner__headline{display:flex;align-items:center;gap:10px;font-size:1.14rem;font-weight:800}.aetheron-live-banner__dot{width:11px;height:11px;border-radius:50%;background:#f59e0b;box-shadow:0 0 18px rgba(245,158,11,.8)}
+      .aetheron-live-banner__meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.aetheron-live-banner__metric{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 12px}
+      .aetheron-live-banner__metric-label{font-size:.7rem;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.aetheron-live-banner__metric-value{font-size:.95rem;font-weight:800}
+      .aetheron-live-banner__actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.aetheron-live-banner__button{display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);font-weight:700}.aetheron-live-banner__button--primary{background:linear-gradient(135deg,#b45309,#92400e)}
+      @media(max-width:960px){.aetheron-live-banner{grid-template-columns:1fr}.aetheron-live-banner__meta{grid-template-columns:repeat(2,1fr)}.aetheron-live-banner__actions{justify-content:flex-start}}
+    
+    /* Reserve announcement space before hydration, avoiding page-wide movement. */
+    /* Beat the legacy body > *:not(#starfield-canvas) positional selector (ID specificity). */
+    body > #globalAnnouncementSlot.global-announcement-slot { position: fixed; inset: auto 0 0; z-index: 900; pointer-events: none; }\n    .global-announcement-slot > * { pointer-events: auto; }
+    .global-announcement-slot:has(.global-announcement) { min-height: 0; }
+    /* Render the market-status block in initial HTML to avoid late layout insertion. */
+    .aeth-market-status { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(15,28,52,.94); border: 1px solid rgba(155,211,255,.2); color: #e8f5ff; }
+    .aeth-market-status h2, .aeth-market-status strong { color: #f3fbff; }
+    .aeth-market-status #dexStatus { color: #d0e6f5; opacity: 1 !important; }
+    .aeth-market-status .btn { color: #e8f5ff; }
+    /* Mobile visual-acceptance repair: never use dark-on-dark text on glass panels. */
+    .features-section > h2, .hero-presale-cta h3,
+    .hero-panel-title, .hero-panel-label, .hero-panel-value,
+    .hero-panel-status, .feature-card h3,
+    .hero-copy h1, .hero-copy p {
+      color: #f2f8ff;
+    }
+    .hero-panel-label { color: #c2deef; }
+    .features-section > h2 { color: #e9f8ff; line-height: 1.2; }
+    .hero-panel-status { color: #b7ffe4; }
+    .hero-presale-cta p, .feature-card p { color: #d6e3f2; }
+    .hero .hero-panel-card, .hero-presale-cta {
+      background-color: rgba(15, 28, 52, .88);
+    }
+    .hero .quick-action-btn:not(.live-indicator) {
+      color: #e4eaff;
+      text-decoration-color: currentColor;
+    }
+    @media (max-width: 680px) {
+      .hero-panel-grid { gap: .7rem; }
+      .hero-panel-card { min-width: 0; padding: 1rem; }
+      .hero-panel-label { font-size: .8rem; line-height: 1.45; }
+      .hero-panel-value { font-size: 1rem; line-height: 1.45; }
+      .features-section > h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+      .feature-card { min-width: 0; }
+    }
+    /* Visible, keyboard-accessible menu bars independent of delayed icon-font CSS. */
+    #hamburger.hamburger { display: none !important; }
+    @media (max-width: 640px) {
+      #hamburger.hamburger {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        width: 44px;
+        height: 44px;
+        padding: 8px !important;
+        flex: 0 0 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 231, 255, .28);
+        background: rgba(20, 35, 75, .93);
+        color: #e5faff;
+      }
+      #hamburger.hamburger > span {
+        display: block !important;
+        flex: 0 0 2px;
+        width: 21px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: 1;
+      }
+      /* Keep update actions visible while avoiding a half-screen fixed overlay. */
+      body > #globalAnnouncementSlot.global-announcement-slot .global-announcement {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: .5rem !important;
+        padding: .55rem .65rem !important;
+        align-items: center;
+        box-shadow: 0 -8px 28px rgba(0, 0, 0, .3);
+      }
+      body > #globalAnnouncementSlot .global-announcement-content {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+      body > #globalAnnouncementSlot .global-announcement-title {
+        font-size: .77rem !important;
+        line-height: 1.2;
+        max-height: 2.4em;
+        overflow: hidden;
+      }
+      body > #globalAnnouncementSlot .global-announcement-text {
+        font-size: .7rem !important;
+        line-height: 1.2;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      body > #globalAnnouncementSlot .global-announcement-actions {
+        flex: 0 0 auto;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: .3rem !important;
+      }
+      body > #globalAnnouncementSlot .global-announcement-actions .btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-height: 40px;
+        padding: .42rem .5rem !important;
+        font-size: .75rem;
+        white-space: nowrap;
+      }
+    }
+    /* The legacy body > * positioning rule gives main and nav equal stacking
+       levels, allowing later sale panels to paint over an open mobile menu.
+       Raise the entire nav stacking context, not just the inner menu. */
+    @media (max-width: 640px) {
+      body > nav.navbar {
+        position: sticky !important;
+        top: 0;
+        z-index: 1002 !important;
+        isolation: isolate;
+        overflow: visible !important;
+      }
+      body > nav.navbar .navbar-content { overflow: visible !important; }
+      body > nav.navbar #navLinks.nav-links.active {
+        z-index: 1003 !important;
+        background: rgba(5, 12, 28, .99) !important;
+      }
+    }
+    /* Keep the mobile Connect Wallet control reachable even with many nav links.
+       The page is intentionally scroll-locked while the menu is open; the menu
+       itself must scroll rather than extending off-screen. */
+    @media (max-width: 640px) {
+      #navLinks.nav-links.active {
+        max-height: calc(100dvh - 7.5rem) !important;
+        overflow-y: auto !important;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+      }
+      #navLinks.nav-links.active #connectBtn {
+        min-height: 46px;
+      }
+    }
+    #walletConnectionStatus:not([hidden]) {
+      display: inline-block;
+      max-width: min(100%, 280px);
+      overflow-wrap: anywhere;
+      font-size: .78rem;
+      line-height: 1.35;
+      padding: .5rem .65rem;
+      border: 1px solid rgba(110,231,255,.27);
+      border-radius: .6rem;
+      color: #d9fdff;
+      background: rgba(7,23,45,.95);
+    }
+    /* Keep fixed announcements clear of the opened mobile navigation. */
+    @media (max-width: 640px) {
+      body:has(#navLinks.active) > #globalAnnouncementSlot.global-announcement-slot {
+        display: none !important;
+      }
+    }
+    #disconnectWalletBtn[hidden] { display: none !important; }
+    #disconnectWalletBtn:not([hidden]) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      font-size: .85rem;
+    }
   </style>
-  <noscript>
-    <link rel="stylesheet" href="shared-styles.css?v=1.4.3">
-    <link rel="stylesheet" href="mobile-optimization.css?v=1.4.3">
-  </noscript>
   <link rel="stylesheet" href="shared-mobile-polish.css?v=1.4.3">
   <!-- Coinbase Commerce widget removed for strict CSP compliance -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"
-    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
 </head>
 
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="globalAnnouncementSlot" class="global-announcement-slot" aria-live="off"></div>
   <canvas id="starfield-canvas" tabindex="-1" aria-hidden="true"></canvas>
   <!-- Starfield canvas added at top for background visibility -->
   <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Page loading progress"></div>
@@ -90,7 +318,12 @@
   <nav class="navbar" role="navigation" aria-label="Primary">
     <div class="navbar-content"><button class="hamburger" id="hamburger" aria-label="Toggle navigation menu"
         aria-expanded="false" type="button"><span></span> <span></span> <span></span></button>
-      <div class="logo"><span class="logo-mark"><i class="fas fa-rocket" aria-hidden="true"></i></span> <span
+      <div class="logo"><span class="logo-mark"><svg class="logo-rocket" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2 2 0 0 0-2.91-.09z"/>
+          <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6.05 11A22 22 0 0 1 12 15z"/>
+          <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+          <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+        </svg></span> <span
           class="logo-text-wrap"><span class="logo-text">Aetheron Platform</span><span class="logo-caption">Base DeFi Command</span></span></div>
       <div class="nav-links" id="navLinks"><a href="dashboard-enhanced.html" class="nav-link">Dashboard</a> <a
           href="analytics-dashboard.html" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics </a><a
@@ -107,22 +340,64 @@
             class="fas fa-gem"></i> NFT </a><a href="token-info.html" class="nav-link"><i
             class="fas fa-info-circle"></i> Token Info </a><a href="#staking" class="nav-link">Staking</a> <button
           id="connectBtn" class="btn btn-primary" type="button"><i class="fas fa-wallet"></i> Connect Wallet</button>
+        <button id="disconnectWalletBtn" class="btn btn-outline" type="button" hidden aria-label="Disconnect wallet from this page">Disconnect</button>
+        <span id="walletConnectionStatus" role="status" aria-live="polite" hidden></span>
         <span class="nav-status-pill"><span class="nav-status-dot" aria-hidden="true"></span> V1 on Base - V2 pending</div>
       </div>
     </div>
   </nav>
   <main id="main-content" role="main">
     <div class="container">
+      <section id="aetheronLiveTradingBanner" class="aetheron-live-banner" aria-label="Verified Base presale status">
+      <div class="aetheron-live-banner__status"><div class="aetheron-live-banner__eyebrow">Sale status</div><div class="aetheron-live-banner__headline"><span class="aetheron-live-banner__dot"></span><span>BASE PRESALE ENDED</span></div><div class="aetheron-live-banner__eyebrow">Soft cap missed. Purchases closed. Refunds via claimRefund().</div></div>
+      <div class="aetheron-live-banner__meta">
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Raised</div><div class="aetheron-live-banner__metric-value">0.0049 ETH</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Soft cap</div><div class="aetheron-live-banner__metric-value">5 ETH missed</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Network</div><div class="aetheron-live-banner__metric-value">Base Mainnet</div></div>
+        <div class="aetheron-live-banner__metric"><div class="aetheron-live-banner__metric-label">Purchases</div><div class="aetheron-live-banner__metric-value">Closed</div></div>
+      </div>
+      <div class="aetheron-live-banner__actions"><a class="aetheron-live-banner__button aetheron-live-banner__button--primary" href="https://basescan.org/address/0xe0A3B6368312dFd3E7E76202e673f895f8235A3d#writeContract" target="_blank" rel="noopener noreferrer">claimRefund</a><a class="aetheron-live-banner__button" href="https://basescan.org/address/0xe0A3B6368312dFd3E7E76202e673f895f8235A3d#code" target="_blank" rel="noopener noreferrer">BaseScan</a><a class="aetheron-live-banner__button" href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer">Token</a></div></section>
+      <section id="aethDexWidget" class="aeth-market-status" aria-labelledby="dexWidgetTitle">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <h2 id="dexWidgetTitle" style="margin:0 0 4px">AETH Market Status</h2>
+        <div id="dexStatus" role="status" aria-live="polite" style="font-size:.9rem;opacity:.82">
+          No canonical Base DEX pool is live. Public purchases and market-price claims remain disabled.
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="presale.html" class="btn btn-outline" aria-label="Review verified AETH Base launch status">
+          <i class="fas fa-shield-alt" aria-hidden="true"></i> Launch Status
+        </a>
+        <a href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Verify the AETH token on BaseScan">
+          <i class="fas fa-external-link-alt" aria-hidden="true"></i> BaseScan
+        </a>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+      <div>Network<br><strong>Base Mainnet</strong></div>
+      <div>Canonical Liquidity<br><strong>Not live</strong></div>
+      <div>Purchases<br><strong>Closed</strong></div>
+      <div>Price Feed<br><strong>Not published</strong></div>
+    </div>
+  
+</section>
       <div class="hero">
         <div class="hero-grid">
           <div class="hero-copy">
-            <div class="hero-kicker">AETH Signal Core</div>
-            <h1>Welcome to Aetheron</h1>
-            <p>AETH V1 is deployed on Base. V2 is prepared but not deployed. No canonical Base liquidity pool is live; use this site for verified status and planning tools.</p>
+            <div class="hero-kicker">AETH · Base Mainnet · Launch status</div>
+            <h1>Aetheron. Built for what comes next.</h1>
+            <p>Explore the Aetheron ecosystem on Base. Verify the deployed AETH token, review launch readiness, and use platform tools—with clear distinctions between what is live and what is planned.</p>
+            <div class="card" role="status" aria-label="AETH public trading availability" style="padding:1rem 1.2rem;margin:1.1rem 0;border:1px solid rgba(245,158,11,.45);border-radius:14px;background:rgba(245,158,11,.07);">
+              <strong style="display:block;margin-bottom:.4rem;">AETH is deployed — public buying is not open</strong>
+              <p style="margin:0 0 .6rem;">The V1 token is verifiable on Base Mainnet, but no official Base liquidity pool or authorized public purchase route is live. Trading enabled in the contract does not mean a market is available.</p>
+              <a href="https://basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e" target="_blank" rel="noopener noreferrer" style="font-weight:600;">Verify the official AETH contract on BaseScan</a>
+            </div>
             <div class="hero-tags">
               <div class="hero-tag"><i class="fas fa-satellite" aria-hidden="true"></i> On-chain status</div>
               <div class="hero-tag"><i class="fas fa-layer-group" aria-hidden="true"></i> Launch safeguards</div>
-              <div class="hero-tag"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet ready</div>
+              <div class="hero-tag"><i class="fas fa-shield-halved" aria-hidden="true"></i> Verify before connecting</div>
             </div>
             <div id="networkAlert" class="alert alert-error hidden">⚠️ Please switch to Base Mainnet (Chain ID: 8453)
             </div>
@@ -148,7 +423,7 @@
            <div class="hero-panel">
             <div class="hero-panel-header">
               <div class="hero-panel-title"><i class="fas fa-wave-square" aria-hidden="true"></i> Command Deck</div>
-              <div class="hero-panel-status">Online</div>
+              <div class="hero-panel-status">Market not launched</div>
             </div>
             <div class="hero-panel-grid">
               <div class="hero-panel-card">
@@ -172,11 +447,13 @@
         </div>
       </div>
       <div class="features-section">
-        <h2>Complete DeFi Ecosystem</h2>
+        <h2>AETH Tools & Previews</h2>
+        <p>These tools include prototypes and planning previews. Public staking, canonical DEX trading, guaranteed rewards and live NFT trading are not available or verified.</p>
+
         <div class="features-grid"><a href="social-trading/index.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-users"></i></div>
             <h3>Social Trading</h3>
-            <p>Connect with traders, share signals, and compete in trading competitions</p>
+            <p>Explore a social-trading preview. No live copy-trading or competitions are verified.</p>
           </a><a href="yield-aggregator/index.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-coins"></i></div>
             <h3>Yield Aggregator</h3>
@@ -188,7 +465,7 @@
           </a><a href="staking-calculator.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-calculator"></i></div>
             <h3>Staking Calculator</h3>
-            <p>Calculate potential rewards, project earnings, and optimize your staking strategy</p>
+            <p>Compare illustrative staking scenarios. Public deposits, rewards, and withdrawals are not live.</p>
           </a><a href="nft-integration/index.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-gem"></i></div>
             <h3>NFT Marketplace</h3>
@@ -196,11 +473,11 @@
           </a><a href="analytics/index.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
             <h3>Analytics Dashboard</h3>
-            <p>Track performance, analyze trends, and make data-driven decisions</p>
+            <p>Explore sample analytics and planning charts. Verify on-chain metrics independently.</p>
           </a><a href="dashboard-enhanced.html" class="feature-card">
             <div class="feature-icon"><i class="fas fa-tachometer-alt"></i></div>
             <h3>Enhanced Dashboard</h3>
-            <p>Comprehensive portfolio management with advanced trading tools</p>
+            <p>Explore portfolio and dashboard previews. This page does not enable trading execution.</p>
           </a><a href="#staking" class="feature-card">
             <div class="feature-icon"><i class="fas fa-lock"></i></div>
             <h3>Staking Planner</h3>
@@ -360,7 +637,9 @@
             <h3>Can I unstake early?</h3><i class="fas fa-chevron-down faq-toggle" id="faq-toggle-4"></i>
           </div>
           <div class="faq-answer" id="faq-answer-4">
-            <p>Staking is not currently available as a verified live service on this website. Do not deposit tokens or rely on projected rewards. Lock periods, emergency withdrawal behavior, and reward eligibility must be verified against a deployed contract before use.</p>
+            <p>Public AETH staking is not active. There is currently no verified Base staking deployment, lock period, reward schedule, or public unstaking and emergency-withdrawal feature to use.</p>
+            <p>The staking calculator is illustrative only. Do not transfer tokens to any staking address based on projected rewards. Any future withdrawal terms will be published only after a verified deployment and explicit launch announcement.</p>
+
           </div>
         </div>
         <div class="faq-item">
@@ -385,7 +664,8 @@
           <div class="newsletter-copy">
             <div class="section-kicker">Signal Feed</div>
             <h2><i class="fas fa-satellite-dish" aria-hidden="true"></i> Stay Updated</h2>
-            <p>Get notified about governance votes, new features, ecosystem milestones, and important project
+            <p>Get notified about governance votes, new features, verified launch-status changes, and important ecosystem
+
               updates.</p>
             <div class="notification-options"><label><input type="checkbox" checked="checked"> Governance Votes</label>
               <label><input type="checkbox" checked="checked"> New Features</label> <label><input type="checkbox"
@@ -412,13 +692,14 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo"><i class="fas fa-atom" aria-hidden="true"></i> <span>Aetheron Platform</span></div>
-          <p>🚀 DeFi tooling on Base with staking, analytics, and live ecosystem tracking in one control
+          <p>🚀 Explore Base token status, analytics, and illustrative staking tools in one control
             center.</p>
         </div>
         <div class="footer-status">
           <div class="footer-chip"><i class="fas fa-circle-nodes" aria-hidden="true"></i> Base Mainnet</div>
-          <div class="footer-chip"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet Ready</div>
-          <div class="footer-chip"><i class="fas fa-chart-line" aria-hidden="true"></i> Research &amp; Metrics</div>
+          <div class="footer-chip"><i class="fas fa-shield-halved" aria-hidden="true"></i> Wallet Connection Optional</div>
+          <div class="footer-chip"><i class="fas fa-chart-line" aria-hidden="true"></i> Verified Metrics</div>
+
         </div>
         <div class="footer-nav">
           <a href="dashboard-enhanced.html" class="footer-link">Dashboard</a>
@@ -465,10 +746,10 @@
     </div>
   </div><button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode" type="button"><i
       class="fas fa-moon" id="themeIcon"></i></button>
-  <script src="dashboard-starfield.js?v=1.4.2" defer></script>
+  <script src="dashboard-starfield.js?v=1.4.3" defer></script>
   <script src="sw-init.js?v=1.4.7" defer></script>
   <script src="dom-bindings.js?v=1.4.2" defer></script>
-  <script src="global-announcements.js?v=1.4.7" defer="defer"></script>
+  <script src="global-announcements.js?v=1.4.8" defer></script>
   <script type="module" src="index-dom-overrides.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {

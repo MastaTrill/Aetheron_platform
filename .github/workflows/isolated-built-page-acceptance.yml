@@ -1,0 +1,85 @@
+name: Aetheron Isolated Built-Page Acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'index.css'
+      - 'mobile-optimization.css'
+      - 'dashboard*.html'
+      - 'dashboard*.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/isolated-built-page-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  built-page-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Render built homepage in headless Chrome (desktop and mobile)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p acceptance
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory dist > acceptance/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8765/ -o acceptance/homepage.html && break || sleep 1; done
+          test -s acceptance/homepage.html
+          grep -q 'public buying is not open' acceptance/homepage.html
+          grep -q 'basescan.org/token/0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e' acceptance/homepage.html
+          for page in presale.html dashboard.html dashboard-enhanced.html token-info.html; do
+            curl -fsS "http://127.0.0.1:8765/$page" -o /dev/null
+          done
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          "$chrome" --headless --no-sandbox --disable-gpu --hide-scrollbars --disable-dev-shm-usage --window-size=1440,900 --screenshot=acceptance/home-desktop.png http://127.0.0.1:8765/ 
+          "$chrome" --headless --no-sandbox --disable-gpu --hide-scrollbars --disable-dev-shm-usage --window-size=390,844 --screenshot=acceptance/home-mobile.png http://127.0.0.1:8765/
+          test -s acceptance/home-desktop.png
+          test -s acceptance/home-mobile.png
+      - name: Automated mobile accessibility and performance audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory dist > acceptance/audit-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8766/ -o /dev/null && break || sleep 1; done
+          npx --yes lighthouse@12 http://127.0.0.1:8766/ --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --only-categories=accessibility,performance,best-practices --output=json --output-path=acceptance/lighthouse-mobile.json --quiet
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const report=JSON.parse(fs.readFileSync("acceptance/lighthouse-mobile.json","utf8"));
+            const summary=Object.fromEntries(Object.entries(report.categories).map(([name,item])=>[name,Math.round(item.score*100)]));
+            fs.writeFileSync("acceptance/lighthouse-scores.json",JSON.stringify(summary,null,2));
+            console.log("Lighthouse mobile scores:",summary);
+            const failures=Object.values(report.audits).filter(x=>x.score!==null&&x.score<1&&x.details?.type==="table"&&x.id?.includes("contrast"));
+            for(const f of failures) console.log("Contrast audit:",f.id,f.score);
+            const cls=report.audits["cumulative-layout-shift"]?.numericValue;
+            const tbt=report.audits["total-blocking-time"]?.numericValue;
+            const gate={performance:summary.performance,accessibility:summary.accessibility,cls,tbt,limits:{performanceMin:55,accessibilityMin:95,clsMax:0.2,tbtMaxMs:800}};
+            fs.writeFileSync("acceptance/lighthouse-regression-gate.json",JSON.stringify(gate,null,2));
+            if(summary.performance<55||summary.accessibility<95||!Number.isFinite(cls)||cls>0.2||!Number.isFinite(tbt)||tbt>800){
+              console.error("Mobile Lighthouse regression gate failed",gate);
+              process.exitCode=1;
+            }
+          '
+      - name: Save isolated visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetheron-built-page-evidence
+          path: acceptance/
+          if-no-files-found: warn
+          retention-days: 7

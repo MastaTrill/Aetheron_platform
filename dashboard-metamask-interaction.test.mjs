@@ -1,0 +1,78 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+
+const source = readFileSync(new URL('./dashboard-metamask-connect.entry.mjs', import.meta.url), 'utf8')
+  .replace(/^import .*;\s*/m, '')
+  .replace(/initializeBridge\(\);\s*$/, 'globalThis.__initializeBridge = initializeBridge; globalThis.__Adapter = MultichainProviderAdapter;');
+
+let accounts = [];
+let connectCount = 0;
+let disconnectCount = 0;
+const callbacks = new Map();
+const client = {
+  async connect(scopes) { assert.equal(Array.from(scopes).join(','), 'eip155:8453'); connectCount++; accounts = ['0x1111111111111111111111111111111111111111']; },
+  async disconnect() { disconnectCount++; accounts = []; },
+  async invokeMethod({scope, request}) {
+    assert.equal(scope, 'eip155:8453');
+    if (request.method === 'eth_accounts') return accounts;
+    if (request.method === 'eth_chainId') return '0x2105';
+    if (request.method === 'wallet_switchEthereumChain') return null;
+    if (request.method === 'wallet_addEthereumChain') return null;
+    throw new Error('Unexpected RPC request: ' + request.method);
+  },
+  on(event, cb) { callbacks.set(event, cb); },
+};
+const events = [];
+const window = {
+  location: {origin:'https://mastatrill.github.io', href:'https://mastatrill.github.io/aetheron-wallet-preview/'},
+  dispatchEvent(event) { events.push(event.type); },
+};
+const context = vm.createContext({
+  window, URL, console, CustomEvent: class {constructor(type, options) {this.type=type;this.detail=options?.detail;}},
+  createMultichainClient: async (config) => {
+    assert.equal(config.api.supportedNetworks['eip155:8453'], 'https://mainnet.base.org');
+    return client;
+  },
+});
+vm.runInContext(source, context, {filename:'dashboard-metamask-connect.entry.mjs'});
+await context.__initializeBridge();
+const bridge = window.AetheronMetaMaskMultichain;
+assert.equal(bridge.isReady(), true);
+const provider = bridge.getProvider();
+assert.deepEqual(Array.from(await provider.request({method:'eth_accounts'})), []);
+assert.equal(await provider.request({method:'eth_chainId'}), '0x2105');
+await bridge.connect({forceRequest:true});
+assert.equal(connectCount, 1);
+assert.equal(provider.selectedAddress, accounts[0]);
+await bridge.connect();
+assert.equal(connectCount, 1, 'Reconnect with an existing account must not reprompt');
+let accountEvents = 0;
+provider.on('accountsChanged', () => accountEvents++);
+callbacks.get('metamask_accountsChanged')(['0x2222222222222222222222222222222222222222']);
+assert.equal(provider.selectedAddress, '0x2222222222222222222222222222222222222222');
+assert.equal(accountEvents, 1);
+await assert.rejects(provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x89'}]}), /Base Mainnet only/);
+await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2105'}]});
+await bridge.disconnect();
+assert.equal(disconnectCount, 1);
+assert.equal(provider.selectedAddress, null);
+assert.ok(events.includes('aetheron:metamask-connect-ready'));
+// A rejected connection request must leave the page signed out, without
+// implicitly retrying or asking for a signature/transaction.
+client.connect = async () => {
+  const rejection = new Error('User rejected the connection request');
+  rejection.code = 4001;
+  throw rejection;
+};
+await assert.rejects(bridge.connect({forceRequest:true}), (error) => error.code === 4001);
+assert.equal(provider.selectedAddress, null, 'Cancelled request must not mark a wallet connected');
+assert.deepEqual(Array.from(await provider.request({method:'eth_accounts'})), []);
+let chainEvents = 0;
+provider.on('chainChanged', () => chainEvents++);
+callbacks.get('metamask_chainChanged')({chainId:'0x89'});
+assert.equal(provider.chainId, '0x89', 'Wrong-network events must be observable by the UI');
+callbacks.get('metamask_chainChanged')({chainId:'0x2105'});
+assert.equal(provider.chainId, '0x2105', 'Returning to Base must update the displayed network');
+assert.equal(chainEvents, 2);
+console.log('Mocked MetaMask connection, cancellation, reconnection, network events, network rejection and disconnect passed');

@@ -1,5 +1,5 @@
 // index.js - Extracted from index.html inline <script>
-// All logic is preserved. Attach this file in index.html after ethers.js and chart.js
+// Homepage uses lazy ethers loading; wallet interactions load the library on demand.
 
 // Contract Addresses - UPDATED for Base Mainnet
 const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e";
@@ -55,6 +55,31 @@ const _APP_VERSION = '1.4.3';
 let _detectionAttempts = 0;
 const _maxAttempts = 5;
 
+// The homepage's status, navigation and wallet chooser do not need the ethers
+// bundle at first paint. Load it when chain stats enter view or on wallet action.
+// Reuse one promise to avoid concurrent duplicate loads and preserve ordering.
+let ethersLoadingPromise;
+function ensureEthersReady() {
+    if (window.ethers?.providers?.Web3Provider) return Promise.resolve(window.ethers);
+    if (ethersLoadingPromise) return ethersLoadingPromise;
+    ethersLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.onload = () => {
+            if (window.ethers?.providers?.Web3Provider) resolve(window.ethers);
+            else reject(new Error('Ethers loaded without the expected wallet API'));
+        };
+        script.onerror = () => reject(new Error('Unable to load the wallet library'));
+        document.head.appendChild(script);
+    }).catch((error) => {
+        ethersLoadingPromise = null;
+        throw error;
+    });
+    return ethersLoadingPromise;
+}
+
 // Initialize read-only provider for live data
 function initReadOnlyProvider() {
     // Try multiple RPC endpoints for reliability
@@ -86,6 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initConnectButton() {
     const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn && disconnectBtn.dataset.walletBound !== 'true') {
+        disconnectBtn.dataset.walletBound = 'true';
+        disconnectBtn.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            await disconnectWallet();
+        });
+    }
     if (!connectBtn || connectBtn.dataset.walletBound === 'true') {
         return;
     }
@@ -111,26 +145,39 @@ window.addEventListener('load', async () => {
     // Keep the connect wallet button bound even with late-loading scripts
     initConnectButton();
     
-    // Initialize read-only provider first for live data
-    const readOnlyContracts = initReadOnlyProvider();
-    if (readOnlyContracts) {
-        // Use read-only contracts initially for stats
-        if (!aethContract) aethContract = readOnlyContracts.aethContract;
-        if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
-        console.log('✅ Using RPC:', readOnlyContracts.rpcUrl);
+    // Preserve immediate navigation, wallet discovery and touch controls.
+    // Read-only RPC data is secondary to the published launch-status notice.
+    const startReadOnlyData = async () => {
+        try {
+            await ensureEthersReady();
+            const readOnlyContracts = initReadOnlyProvider();
+            if (readOnlyContracts) {
+                if (!aethContract) aethContract = readOnlyContracts.aethContract;
+                if (!stakingContract) stakingContract = readOnlyContracts.stakingContract;
+                await updateStats();
+                initializeWebSocket();
+                setInterval(updateStats, 30000);
+            }
+        } catch (error) {
+            console.warn('Read-only chain data unavailable; published status remains visible:', error.message);
+        }
+    };
+    // Public launch information is available in HTML before any chain request.
+    // Initialize optional chain stats only when their section approaches view,
+    // rather than consuming main-thread time while the visitor reads the hero.
+    const statsSection = document.querySelector('.stats-grid');
+    if (statsSection && 'IntersectionObserver' in window) {
+        const statsObserver = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+                statsObserver.disconnect();
+                void startReadOnlyData();
+            }
+        }, { rootMargin: '200px 0px' });
+        statsObserver.observe(statsSection);
     } else {
-        console.warn('⚠️ Running without blockchain connection - showing defaults only');
+        window.addEventListener('scroll', () => { void startReadOnlyData(); }, { once: true, passive: true });
     }
-    
-    // Start updating stats immediately with live blockchain data
-    await updateStats();
-    
-    // Initialize WebSocket for real-time updates
-    initializeWebSocket();
-    
-    // Fallback polling for blockchain data every 30 seconds
-    setInterval(updateStats, 30000);
-    
+
     // Then check for wallet
     detectWalletWithRetry();
     window.addEventListener('ethereum#initialized', handleEthereumInit, { once: true });
@@ -149,10 +196,9 @@ window.addEventListener('load', async () => {
     // Initialize progressive features
     initProgressBar();
     
-    // Add animation classes
-    document.querySelectorAll('.stat-card, .feature-card, .card').forEach((el, i) => {
-        setTimeout(() => el.classList.add('fade-in'), i * 100);
-    });
+    // Avoid staggered first-load animations that can move the homepage
+    // while Lighthouse and mobile users are reading the launch status.
+    // Hover/focus transitions remain available through CSS.
 });
 
 // Set default values to avoid stuck "Loading..." states
@@ -330,7 +376,9 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet({ provider: wallet, silent: true });
+                    // Existing permission does not authorize a new connection prompt.
+                    await checkWalletStatus();
+
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -469,6 +517,72 @@ async function stakeTokens(poolId) {
         stakeBtn.disabled = false;
         stakeBtn.innerHTML = originalText;
     }
+}
+
+// Show wallet feedback even when the generic shared UI module is unavailable.
+function showToast(title, message, type = 'info') {
+    const combined = [title, message].filter(Boolean).join(': ');
+    if (typeof window.aetheronPlatform?.showToast === 'function') {
+        window.aetheronPlatform.showToast(combined, type);
+        return;
+    }
+    let notice = document.getElementById('aetheronWalletNotice');
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'aetheronWalletNotice';
+        notice.setAttribute('role', 'status');
+        notice.setAttribute('aria-live', 'polite');
+        notice.className = 'toast toast-wallet';
+        document.body.appendChild(notice);
+    }
+    notice.textContent = combined;
+    notice.hidden = false;
+    if (showToast.dismissTimer) clearTimeout(showToast.dismissTimer);
+    showToast.dismissTimer = setTimeout(() => { notice.hidden = true; }, 5000);
+}
+
+function displayWalletConnected(address) {
+    const btn = document.getElementById('connectBtn');
+    if (btn) {
+        btn.textContent = address.slice(0, 6) + '…' + address.slice(-4);
+        btn.title = 'Wallet connected on Base Mainnet. Select to manage your connection.';
+        btn.setAttribute('aria-label', 'Connected wallet ' + address.slice(0, 6) + '…' + address.slice(-4) + ' on Base Mainnet');
+        btn.classList.add('connected');
+    }
+    const status = document.getElementById('walletConnectionStatus');
+    if (status) {
+        status.textContent = 'Connected to Base Mainnet: ' + address.slice(0, 6) + '…' + address.slice(-4);
+        status.hidden = false;
+    }
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn) disconnectBtn.hidden = false;
+    document.getElementById('walletConnected')?.classList.remove('hidden');
+    document.getElementById('walletNotConnected')?.classList.add('hidden');
+    const addressEl = document.getElementById('walletAddress');
+    if (addressEl) addressEl.textContent = address.slice(0, 6) + '...' + address.slice(-4);
+    document.getElementById('txNotConnected')?.classList.add('hidden');
+    document.getElementById('txConnected')?.classList.remove('hidden');
+}
+
+function displayWalletDisconnected() {
+    const btn = document.getElementById('connectBtn');
+    if (btn) {
+        btn.textContent = 'Connect Wallet';
+        btn.title = 'Connect wallet on Base Mainnet';
+        btn.setAttribute('aria-label', 'Connect Wallet');
+        btn.classList.remove('connected');
+    }
+    const status = document.getElementById('walletConnectionStatus');
+    if (status) {
+        status.textContent = '';
+        status.hidden = true;
+    }
+    const disconnectBtn = document.getElementById('disconnectWalletBtn');
+    if (disconnectBtn) disconnectBtn.hidden = true;
+    document.getElementById('walletConnected')?.classList.add('hidden');
+    document.getElementById('walletNotConnected')?.classList.remove('hidden');
+    document.getElementById('txConnected')?.classList.add('hidden');
+    document.getElementById('txNotConnected')?.classList.remove('hidden');
 }
 
 // Helper function to show alerts
@@ -735,33 +849,33 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
-async let walletEventsProvider = null;
-function bindWalletChangeEvents(wallet) {
-    if (walletEventsProvider === wallet || typeof wallet?.on !== 'function') return;
-    if (walletEventsProvider?.removeListener) {
-        walletEventsProvider.removeListener('accountsChanged', onWalletAccountsChanged);
-        walletEventsProvider.removeListener('chainChanged', onWalletChainChanged);
-    }
-    walletEventsProvider = wallet;
-    wallet.on('accountsChanged', onWalletAccountsChanged);
-    wallet.on('chainChanged', onWalletChainChanged);
-}
-function onWalletAccountsChanged(accounts) {
-    if (!accounts?.length) {
-        disconnectWallet();
-        return;
-    }
-    if (account?.toLowerCase() !== accounts[0].toLowerCase()) {
-        connectWallet({ provider: walletEventsProvider, silent: true });
-    }
-}
-function onWalletChainChanged(chainId) {
-    if (String(chainId).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-        disconnectWallet();
-        showToast('Wrong network', 'Switch to Base Mainnet (8453) to continue.', 'info');
-    } else {
-        connectWallet({ provider: walletEventsProvider, silent: true });
-    }
+
+// Track wallet account and network changes without requesting new permissions.
+let observedWallet = null;
+function bindWalletEvents(wallet) {
+    if (!wallet?.on || observedWallet === wallet) return;
+    observedWallet = wallet;
+    wallet.on('accountsChanged', (accounts) => {
+        if (!Array.isArray(accounts) || !accounts.length) {
+            disconnectWallet();
+            return;
+        }
+        // Never retain a signer or account from a different selected address.
+        if (account && accounts[0].toLowerCase() !== account.toLowerCase()) {
+            disconnectWallet();
+            showToast('Account changed', 'Reconnect to use the selected account.', 'info');
+        }
+    });
+    wallet.on('chainChanged', (chainId) => {
+        if (String(chainId).toLowerCase() !== BASE_CHAIN_ID) {
+            disconnectWallet();
+            showToast('Unsupported network', 'Switch to Base Mainnet (8453) and reconnect.', 'info');
+        } else if (account) {
+            // Revalidate the selected account after network changes.
+            disconnectWallet();
+            showToast('Network changed', 'Reconnect to verify your wallet.', 'info');
+        }
+    });
 }
 
 async function connectWallet(options = {}) {
@@ -770,26 +884,19 @@ async function connectWallet(options = {}) {
     if (!wallet) {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
-        return;
+        return { connected: false, reason: 'wallet_unavailable' };
     }
 
     try {
+        bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
-        const accounts = await wallet.request({ method: options?.silent ? 'eth_accounts' : 'eth_requestAccounts' });
-        if (!accounts?.length) return;
-        bindWalletChangeEvents(wallet);
+        await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
-        account = await signer.getAddress();
+        const selectedAccount = await signer.getAddress();
 
-        // Never prompt for a network switch during passive reconnection.
-        const currentChain = await wallet.request({ method: 'eth_chainId' });
-        if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-            showToast('Wrong network', 'Switch to Base Mainnet (8453) before connecting.', 'info');
-            return;
-        }
-        // Switch to Base network only when a user explicitly connects.
+        // Switch to Base network
         try {
-            if (String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) await wallet.request({
+            await wallet.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: BASE_CHAIN_ID }],
             });
@@ -808,17 +915,16 @@ async function connectWallet(options = {}) {
                         }],
                     });
                 } catch (addError) {
-                    throw addError;
+                    console.error('Error adding Base network:', addError);
                 }
-            } else {
-                throw switchError;
             }
         }
-        const connectedChain = await wallet.request({ method: 'eth_chainId' });
-        if (String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-            throw new Error('Please switch your wallet to Base Mainnet before continuing.');
-        }
 
+        const confirmedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
+            throw new Error('Unsupported network. Switch to Base Mainnet (8453) to continue.');
+        }
+        account = selectedAccount;
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
         
@@ -843,17 +949,20 @@ async function connectWallet(options = {}) {
         hideProgress();
         
         showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        return { connected: true, account, chainId: BASE_CHAIN_ID };
 
     } catch (error) {
         console.error('Error connecting:', error);
-        if (error?.code === 4001) {
-            hideProgress();
-            showToast('Connection cancelled', 'No wallet connection was approved.', 'info');
-            return;
-        }
         hideProgress();
+        // Refuse stale connected state after cancellation, RPC errors or wrong chain.
+        await disconnectWallet();
+        if (error?.code === 4001) {
+            showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
+            return { connected: false, reason: 'rejected' };
+        }
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        return { connected: false, reason: 'error' };
     }
 }
 
