@@ -1,6 +1,7 @@
 name: Dashboard Source Safety
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'index.html'
