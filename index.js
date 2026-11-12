@@ -52,8 +52,6 @@ let _reconnectAttempts = 0;
 const _MAX_RECONNECT_ATTEMPTS = 5;
 const _APP_VERSION = '1.4.3';
 
-let walletConnectInProgress = false;
-let walletManualDisconnect = false;
 let _detectionAttempts = 0;
 const _maxAttempts = 5;
 
@@ -377,8 +375,10 @@ async function detectWalletWithRetry() {
             try {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
-                if (accounts.length > 0 && !account && !walletConnectInProgress && !walletManualDisconnect) {
-                    await connectWallet();
+                if (accounts.length > 0) {
+                    // Existing permission does not authorize a new connection prompt.
+                    await checkWalletStatus();
+
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -849,114 +849,136 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
+
+// Track wallet account and network changes without requesting new permissions.
+let observedWallet = null;
+function bindWalletEvents(wallet) {
+    if (!wallet?.on || observedWallet === wallet) return;
+    observedWallet = wallet;
+    wallet.on('accountsChanged', (accounts) => {
+        if (!Array.isArray(accounts) || !accounts.length) {
+            disconnectWallet();
+            return;
+        }
+        // Never retain a signer or account from a different selected address.
+        if (account && accounts[0].toLowerCase() !== account.toLowerCase()) {
+            disconnectWallet();
+            showToast('Account changed', 'Reconnect to use the selected account.', 'info');
+        }
+    });
+    wallet.on('chainChanged', (chainId) => {
+        if (String(chainId).toLowerCase() !== BASE_CHAIN_ID) {
+            disconnectWallet();
+            showToast('Unsupported network', 'Switch to Base Mainnet (8453) and reconnect.', 'info');
+        } else if (account) {
+            // Revalidate the selected account after network changes.
+            disconnectWallet();
+            showToast('Network changed', 'Reconnect to verify your wallet.', 'info');
+        }
+    });
+}
+
 async function connectWallet(options = {}) {
-    if (walletConnectInProgress) return;
     const wallet = options?.provider || resolveInjectedProvider(options?.walletType || '');
 
     if (!wallet) {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
-        return;
+        return { connected: false, reason: 'wallet_unavailable' };
     }
 
-    walletConnectInProgress = true;
     try {
-        await ensureEthersReady();
+        bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
         await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
-        account = await signer.getAddress();
+        const selectedAccount = await signer.getAddress();
 
-        // Confirm the actual wallet chain before showing any connected/Base status.
-        // Rejecting a network change is never treated as successful connection.
-        const initialChain = await wallet.request({ method: 'eth_chainId' });
-        if (String(initialChain).toLowerCase() !== BASE_CHAIN_ID) {
-            try {
-                await wallet.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: BASE_CHAIN_ID }],
-                });
-            } catch (switchError) {
-                if (switchError.code !== 4902) throw switchError;
-                await wallet.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: BASE_CHAIN_ID,
-                        chainName: 'Base Mainnet',
-                        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                        rpcUrls: BASE_RPC_URLS,
-                        blockExplorerUrls: ['https://basescan.org/']
-                    }],
-                });
-                await wallet.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: BASE_CHAIN_ID }],
-                });
+        // Switch to Base network
+        try {
+            await wallet.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: BASE_CHAIN_ID }],
+            });
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if (switchError.code === 4902) {
+                try {
+                    await wallet.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: BASE_CHAIN_ID,
+                            chainName: 'Base Mainnet',
+                            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                            rpcUrls: BASE_RPC_URLS,
+                            blockExplorerUrls: ['https://basescan.org/']
+                        }],
+                    });
+                } catch (addError) {
+                    console.error('Error adding Base network:', addError);
+                }
             }
         }
+
         const confirmedChain = await wallet.request({ method: 'eth_chainId' });
         if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
-            throw new Error('Wallet is not on Base Mainnet (chain ID 8453)');
+            throw new Error('Unsupported network. Switch to Base Mainnet (8453) to continue.');
         }
-
+        account = selectedAccount;
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
         
         console.log('\u2705 Wallet connected! Address:', account);
         console.log('\ud83d\udd17 Contracts initialized with wallet signer');
 
-        displayWalletConnected(account);
+        document.getElementById('connectBtn').textContent = 'Connected ✓';
+        document.getElementById('connectBtn').classList.add('connected');
+        document.getElementById('walletConnected').classList.remove('hidden');
+        document.getElementById('walletNotConnected').classList.add('hidden');
+        document.getElementById('walletAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
 
-        // Wallet authorization is complete. Do not keep the connection lock
-        // or mark it failed if slower optional read-only data requests time out.
-        showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
-        const connectedAccount = account;
+        // Update transaction history UI
+        document.getElementById('txNotConnected').classList.add('hidden');
+        document.getElementById('txConnected').classList.remove('hidden');
+
+        // Load user data
         showProgress();
-        void Promise.allSettled([
-            updateStats(),
-            loadUserStakes(),
-            loadTransactionHistory()
-        ]).then((results) => {
-            for (const result of results) {
-                if (result.status === 'rejected') {
-                    console.warn('Optional wallet dashboard read failed:', result.reason?.message || result.reason);
-                }
-            }
-        }).finally(() => {
-            if (account === connectedAccount) hideProgress();
-        });
+        await updateStats();
+        await loadUserStakes();
+        await loadTransactionHistory();
+        hideProgress();
+        
+        showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        return { connected: true, account, chainId: BASE_CHAIN_ID };
 
     } catch (error) {
-        if (error?.code !== 4001) console.error('Error connecting:', error);
-        account = null;
-        signer = null;
-        provider = null;
-        aethContract = null;
-        stakingContract = null;
-        displayWalletDisconnected();
+        console.error('Error connecting:', error);
         hideProgress();
+        // Refuse stale connected state after cancellation, RPC errors or wrong chain.
+        await disconnectWallet();
         if (error?.code === 4001) {
-            showToast('Connection cancelled', 'No account was connected', 'info');
-        } else {
-            showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
-            showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+            showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
+            return { connected: false, reason: 'rejected' };
         }
-    } finally {
-        walletConnectInProgress = false;
+        showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
+        showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        return { connected: false, reason: 'error' };
     }
 }
 
 // Disconnect wallet function
 async function disconnectWallet() {
-    walletManualDisconnect = true;
     account = null;
     signer = null;
-    provider = null;
     aethContract = null;
     stakingContract = null;
     
-    displayWalletDisconnected();
-    hideProgress();
+    document.getElementById('connectBtn').textContent = 'Connect Wallet';
+    document.getElementById('connectBtn').classList.remove('connected');
+    document.getElementById('walletConnected').classList.add('hidden');
+    document.getElementById('walletNotConnected').classList.remove('hidden');
+    document.getElementById('txConnected').classList.add('hidden');
+    document.getElementById('txNotConnected').classList.remove('hidden');
     
     // Remove user stakes container if exists
     const stakesContainer = document.getElementById('userStakesContainer');

@@ -2273,6 +2273,32 @@ body.no-scroll {
   text-shadow: 0 0 22px rgba(110, 231, 255, 0.16) !important;
 }
 
+
+/* Launch polish: consistent touch targets, accessible focus, calmer motion. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid #6ee7ff;
+  outline-offset: 3px;
+}
+.feature-card {
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+}
+@media (max-width: 600px) {
+  .navbar a, .navbar button { min-height: 44px; }
+  .feature-card { min-width: 0; overflow-wrap: anywhere; }
+  .btn, button { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* END index.css */
 
 /* BEGIN shared-styles.css */
