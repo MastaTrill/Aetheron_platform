@@ -489,7 +489,7 @@ async function connectWallet(request = false) {
       );
       openWalletChooser();
     }
-    return;
+    return { connected: false, reason: 'no_provider' };
   }
 
   if (
@@ -500,7 +500,7 @@ async function connectWallet(request = false) {
     if (!auto) {
       showToast('Wallet libraries are still loading. Please try again.', { type: 'error' });
     }
-    return;
+    return { connected: false, reason: 'libraries_loading' };
   }
 
   let retries = 0;
@@ -561,6 +561,9 @@ async function connectWallet(request = false) {
     dispatchWalletEvent('aetheron:wallet-disconnected');
   }
   showGlobalLoading(false);
+  return success
+    ? { connected: true, account, chainId: BASE_CHAIN_ID }
+    : { connected: false, reason: 'connection_failed' };
 }
 
 window.connectWallet = connectWallet;

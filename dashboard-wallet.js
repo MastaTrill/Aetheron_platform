@@ -13,7 +13,8 @@ let wcProvider = null;
 let walletBindingsInitialized = false;
 
 // 1inch aggregator API endpoint (Polygon)
-const AGGREGATOR_API = 'https://api.1inch.io/v5.0/137';
+// Legacy Polygon swap functionality is quarantined from the Base wallet experience.
+const AGGREGATOR_API = null;
 
 // UI Elements
 const walletConnectBtn = document.getElementById('walletConnectBtn');
@@ -125,10 +126,10 @@ async function getWalletConnectProvider() {
       'eth_signTypedData',
     ],
     metadata: getWalletConnectMetadata(),
-    optionalChains: [137],
+    optionalChains: [8453],
     projectId,
     rpcMap: {
-      137: `https://rpc.walletconnect.com?chainId=eip155:137&projectId=${projectId}`,
+      8453: `https://rpc.walletconnect.com?chainId=eip155:8453&projectId=${projectId}`,
     },
     showQrModal: true,
   });
@@ -175,12 +176,20 @@ async function connectMetaMask() {
   const accounts = await window.ethereum.request({
     method: 'eth_requestAccounts',
   });
+  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  if (String(chainId).toLowerCase() !== '0x2105' || !accounts?.[0]) {
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    showWalletMessage('Switch to Base Mainnet (8453) and reconnect before using wallet features.', 'warning');
+    return { connected: false, reason: 'wallet_not_on_base' };
+  }
   setWalletState(accounts[0], walletType, walletProvider);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
     walletType,
   });
+  return { connected: true, account: walletAccount, chainId: '0x2105' };
 }
 
 async function connectWalletConnect(options = {}) {
@@ -242,24 +251,28 @@ async function connectWalletConnect(options = {}) {
       provider: wcProvider,
     });
 
-    const currentAccount =
-      window.localStorage?.getItem('aetheron_connected') ||
-      connectedAccount ||
-      wcProvider.accounts?.[0] ||
-      null;
-
-    setWalletState(
-      currentAccount,
-      'WalletConnect',
-      createInjectedProvider(wcProvider),
-    );
-    syncLegacyDashboard(currentAccount);
+    // The canonical connector is authoritative. Never infer success from
+    // cached accounts or WalletConnect session metadata after a 4001 rejection.
+    if (result?.connected !== true || !result.account || result.chainId !== '0x2105') {
+      setWalletState(null, null, null);
+      syncLegacyDashboard(null);
+      return { connected: false, reason: result?.reason || 'connection_unverified' };
+    }
+    setWalletState(result.account, 'WalletConnect', createInjectedProvider(wcProvider));
+    syncLegacyDashboard(result.account);
     return result;
   }
 
   const providerInstance = createInjectedProvider(wcProvider);
   const accounts = wcProvider?.accounts || [];
-  setWalletState(accounts[0] || null, 'WalletConnect', providerInstance);
+  const chainId = await wcProvider.request({ method: 'eth_chainId' });
+  if (String(chainId).toLowerCase() !== '0x2105' || !accounts[0]) {
+    setWalletState(null, null, null);
+    syncLegacyDashboard(null);
+    showWalletMessage('WalletConnect requires Base Mainnet (8453).', 'warning');
+    return { connected: false, reason: 'wallet_not_on_base' };
+  }
+  setWalletState(accounts[0], 'WalletConnect', providerInstance);
   syncLegacyDashboard(walletAccount);
   dispatchWalletEvent('aetheron:wallet-connected', {
     account: walletAccount,
@@ -302,6 +315,7 @@ window.addEventListener('aetheron:wallet-disconnected', () => {
 
 // --- DEX Aggregator Swap (1inch) ---
 async function swapTokens(fromToken, toToken, amount) {
+  throw new Error('Legacy Polygon swaps are disabled. No Base trading is authorized.');
   if (!walletProvider || !walletAccount) {
     alert('Connect a wallet first.');
     return;

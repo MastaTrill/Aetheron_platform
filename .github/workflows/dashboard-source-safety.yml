@@ -1,6 +1,7 @@
 name: Dashboard Source Safety
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'index.html'
@@ -13,6 +14,8 @@ on:
       - 'dashboard.js'
       - 'dashboard-enhanced.js'
       - 'dashboard-enhanced.html'
+      - 'dashboard-main.js'
+      - 'dashboard-wallet.js'
       - 'dashboard.source-safety.test.mjs'
       - 'production-backend-base.test.mjs'
       - 'operational-script-base-safety.test.mjs'
@@ -48,6 +51,12 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             backend/package-lock.json
+
+      - name: Syntax-check shipped JavaScript
+        run: |
+          for f in index.js index-dom-overrides.js dashboard.js dashboard-enhanced.js dashboard-main.js dashboard-wallet.js presale-config.js presale-readiness.js update-wallets.js vercel-analytics.entry.mjs; do
+            node --check "$f"
+          done
 
       - name: Install root dependencies
         run: npm ci
