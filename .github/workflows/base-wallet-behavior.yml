@@ -18,6 +18,9 @@ on:
       - 'tests/base-wallet-certification.test.mjs'
       - 'tests/wallet-event-behavior.test.mjs'
       - '.github/workflows/base-wallet-behavior.yml'
+permissions:
+  contents: read
+
 jobs:
   mock-eip1193:
     name: Base account, rejection and network events
