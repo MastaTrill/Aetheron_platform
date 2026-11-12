@@ -54,7 +54,7 @@ console.log('Public launch-gate regression checks passed.');
 // Wallet connection invariants: no signature/transaction on connect, no unsolicited reconnect prompts.
 assert(indexJs.includes("options?.silent ? 'eth_accounts' : 'eth_requestAccounts'"), 'passive reconnect must not request account permission');
 assert(indexJs.includes("if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase())"), 'passive reconnect must not prompt network switching');
-assert(indexJs.includes("wallet.on('accountsChanged', onWalletAccountsChanged)"), 'wallet must respond to account changes');
-assert(indexJs.includes("wallet.on('chainChanged', onWalletChainChanged)"), 'wallet must respond to network changes');
+assert(indexJs.includes("wallet.on('accountsChanged', (accounts) => {"), 'wallet must respond to account changes');
+assert(indexJs.includes("wallet.on('chainChanged', (chainId) => {"), 'wallet must respond to network changes');
 assert(indexJs.includes("error?.code === 4001"), 'wallet cancellation must be handled');
 assert(indexJs.includes("String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()"), 'wallet connection must verify Base chain');
