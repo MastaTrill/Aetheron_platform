@@ -50,11 +50,29 @@ function renderChartInstance(key, chartEl, config) {
     return null;
   }
 
-  if (window[key] && typeof window[key].destroy === 'function') {
-    window[key].destroy();
+  const existingChart = window[key];
+  const existingCanvas = existingChart?.canvas || existingChart?.ctx?.canvas;
+  const existingType = existingChart?.config?.type || existingChart?.type;
+
+  if (
+    existingChart &&
+    existingCanvas === chartEl &&
+    existingType === config.type &&
+    existingChart.data &&
+    typeof existingChart.update === 'function'
+  ) {
+    existingChart.data.labels = config.data.labels;
+    existingChart.data.datasets = config.data.datasets;
+    existingChart.options = config.options;
+    existingChart.update();
+    return existingChart;
   }
 
-  window[key] = new Chart(chartEl, config);
+  if (existingChart && typeof existingChart.destroy === 'function') {
+    existingChart.destroy();
+  }
+
+  window[key] = new window.Chart(chartEl, config);
   return window[key];
 }
 
@@ -294,6 +312,10 @@ class AetheronDashboard {
     this.referralCode = this.generateReferralCode();
     this.realTimeUpdateIntervals = [];
     this.liveStatsUpdateInFlight = false;
+    this.dashboardElementCache = new Map();
+    this.renderedTxHistorySignature = null;
+    this.renderedTradingRewardsSignature = null;
+    this.renderedAchievementsSignature = null;
     
     // Initialize all setup methods
     this.bindWalletBridge();
@@ -311,6 +333,25 @@ class AetheronDashboard {
     this.showNotification(message, type);
   }
 
+  getDashboardElement(id, selector = null) {
+    const cacheKey = selector ? `${id}:${selector}` : id;
+    const cached = this.dashboardElementCache.get(cacheKey);
+    if (cached && cached.isConnected !== false) {
+      return cached;
+    }
+
+    const parent = selector ? this.getDashboardElement(id) : null;
+    const element = selector
+      ? parent?.querySelector(selector) || null
+      : document.getElementById(id);
+    if (element) {
+      this.dashboardElementCache.set(cacheKey, element);
+    } else {
+      this.dashboardElementCache.delete(cacheKey);
+    }
+    return element;
+  }
+
   // Transaction history demo data (replace with real API integration)
   getTxHistory() {
     return JSON.parse(localStorage.getItem('aetheron-tx-history') || '[]');
@@ -321,11 +362,9 @@ class AetheronDashboard {
   }
 
   renderTxHistory() {
-    const tableBody = document
-      .getElementById('txHistoryTable')
-      ?.querySelector('tbody');
-    const type = document.getElementById('txTypeFilter')?.value || 'all';
-    const date = document.getElementById('txDateFilter')?.value || '';
+    const tableBody = this.getDashboardElement('txHistoryTable', 'tbody');
+    const type = this.getDashboardElement('txTypeFilter')?.value || 'all';
+    const date = this.getDashboardElement('txDateFilter')?.value || '';
 
     if (!tableBody) return;
 
@@ -333,9 +372,18 @@ class AetheronDashboard {
     if (type !== 'all') txs = txs.filter((tx) => tx.type === type);
     if (date) txs = txs.filter((tx) => String(tx.date || '').startsWith(date));
 
+    const signature = JSON.stringify(txs);
+    if (
+      signature === this.renderedTxHistorySignature &&
+      tableBody.childNodes.length > 0
+    ) {
+      return;
+    }
+
     clearNode(tableBody);
     if (!txs.length) {
       renderTableMessageRow(tableBody, 'No transactions found.', 5);
+      this.renderedTxHistorySignature = signature;
       return;
     }
 
@@ -348,6 +396,7 @@ class AetheronDashboard {
       });
       tableBody.appendChild(row);
     });
+    this.renderedTxHistorySignature = signature;
   }
 
   exportTxCsv() {
@@ -1174,9 +1223,9 @@ class AetheronDashboard {
   }
 
   updateTradingRewards() {
-    const progressBar = document.getElementById('volume-progress');
-    const progressText = document.getElementById('volume-text');
-    const rewardsList = document.getElementById('trading-rewards');
+    const progressBar = this.getDashboardElement('volume-progress');
+    const progressText = this.getDashboardElement('volume-text');
+    const rewardsList = this.getDashboardElement('trading-rewards');
 
     if (progressBar && progressText) {
       const progress =
@@ -1186,6 +1235,19 @@ class AetheronDashboard {
     }
 
     if (rewardsList) {
+      const signature = JSON.stringify(
+        this.tradingRewards.rewards.map((reward) => ({
+          ...reward,
+          unlocked: this.tradingRewards.currentProgress >= reward.threshold,
+        })),
+      );
+      if (
+        signature === this.renderedTradingRewardsSignature &&
+        rewardsList.childNodes.length > 0
+      ) {
+        return;
+      }
+
       clearNode(rewardsList);
       this.tradingRewards.rewards.forEach((reward) => {
         const li = document.createElement('li');
@@ -1200,6 +1262,7 @@ class AetheronDashboard {
         );
         rewardsList.appendChild(li);
       });
+      this.renderedTradingRewardsSignature = signature;
     }
   }
 
@@ -1273,7 +1336,7 @@ class AetheronDashboard {
 
   updateCommunityDisplay() {
     Object.keys(this.communityStats).forEach((key) => {
-      const element = document.getElementById(`${key}-count`);
+      const element = this.getDashboardElement(`${key}-count`);
       if (element) {
         element.textContent = this.communityStats[key].toLocaleString();
       }
@@ -1312,8 +1375,16 @@ class AetheronDashboard {
   }
 
   updateAchievements() {
-    const achievementsList = document.getElementById('achievements-list');
+    const achievementsList = this.getDashboardElement('achievements-list');
     if (!achievementsList) return;
+
+    const signature = JSON.stringify(this.achievements);
+    if (
+      signature === this.renderedAchievementsSignature &&
+      achievementsList.childNodes.length > 0
+    ) {
+      return;
+    }
 
     clearNode(achievementsList);
     this.achievements.forEach((achievement) => {
@@ -1335,6 +1406,7 @@ class AetheronDashboard {
       li.append(icon, info);
       achievementsList.appendChild(li);
     });
+    this.renderedAchievementsSignature = signature;
   }
 
   async updateLiveStats() {
@@ -1345,13 +1417,13 @@ class AetheronDashboard {
     this.liveStatsUpdateInFlight = true;
     let quickStatsSpinner = null;
     try {
-      quickStatsSpinner = document.getElementById('quickStatsLoading');
+      quickStatsSpinner = this.getDashboardElement('quickStatsLoading');
       if (quickStatsSpinner) quickStatsSpinner.style.display = 'flex';
 
       // Update live trading stats
-      const priceElement = document.getElementById('live-price');
-      const volumeElement = document.getElementById('live-volume');
-      const holdersElement = document.getElementById('live-holders');
+      const priceElement = this.getDashboardElement('live-price');
+      const volumeElement = this.getDashboardElement('live-volume');
+      const holdersElement = this.getDashboardElement('live-holders');
       if (priceElement) {
         try {
           // Fetch real price from DexScreener API using the pair address
