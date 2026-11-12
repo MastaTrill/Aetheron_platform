@@ -8,5 +8,17 @@
   "devDependencies": {
     "jest": "^30.0.0",
     "jsdom": "^29.0.0"
+  },
+  "overrides": {
+    "minimatch@>=7 <11.0.1": "11.0.8",
+    "jest-config": {
+      "glob": "14.0.5"
+    },
+    "jest-runtime": {
+      "glob": "14.0.5"
+    },
+    "@jest/reporters": {
+      "glob": "14.0.5"
+    }
   }
 }

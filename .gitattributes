@@ -1,1 +1,6 @@
 CNAME text eol=lf
+critical.css text eol=lf
+index.css text eol=lf
+shared-styles.css text eol=lf
+mobile-optimization.css text eol=lf
+homepage-core.css text eol=lf
