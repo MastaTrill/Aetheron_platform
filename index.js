@@ -735,7 +735,7 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
-async let walletEventsProvider = null;
+let walletEventsProvider = null;
 function bindWalletChangeEvents(wallet) {
     if (walletEventsProvider === wallet || typeof wallet?.on !== 'function') return;
     if (walletEventsProvider?.removeListener) {
