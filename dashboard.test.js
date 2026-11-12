@@ -511,3 +511,137 @@ describe('Dashboard polling lifecycle', () => {
     expect(priceElement.textContent).toBe('$0.654321');
   });
 });
+
+describe('Dashboard rendering lifecycle', () => {
+  test('memoizes unchanged transaction, reward, and achievement rows', () => {
+    const { window, document, localStorage, context } = createDashboardContext(`
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <table id="txHistoryTable"><tbody></tbody></table>
+          <select id="txTypeFilter"><option value="all">All</option></select>
+          <input id="txDateFilter" />
+          <div id="volume-progress"></div>
+          <span id="volume-text"></span>
+          <ul id="trading-rewards"></ul>
+          <ul id="achievements-list"></ul>
+        </body>
+      </html>
+    `);
+    context.setInterval = jest.fn();
+    context.setTimeout = jest.fn();
+
+    runScript(context, 'dashboard.js');
+    const dashboard = window.dashboard;
+
+    localStorage.setItem(
+      'aetheron-tx-history',
+      JSON.stringify([
+        {
+          date: '2026-11-12',
+          type: 'stake',
+          amount: '10',
+          token: 'AETH',
+          status: 'confirmed',
+        },
+      ]),
+    );
+    dashboard.renderTxHistory();
+    const transactionRow = document.querySelector('#txHistoryTable tbody tr');
+    dashboard.renderTxHistory();
+    expect(document.querySelector('#txHistoryTable tbody tr')).toBe(transactionRow);
+
+    const rewardRow = document.querySelector('#trading-rewards li');
+    dashboard.tradingRewards.currentProgress = 10;
+    dashboard.updateTradingRewards();
+    expect(document.querySelector('#trading-rewards li')).toBe(rewardRow);
+
+    const achievementRow = document.querySelector('#achievements-list li');
+    dashboard.updateAchievements();
+    expect(document.querySelector('#achievements-list li')).toBe(achievementRow);
+
+    dashboard.tradingRewards.currentProgress = 100;
+    dashboard.updateTradingRewards();
+    expect(document.querySelector('#trading-rewards li')).not.toBe(rewardRow);
+  });
+
+  test('refreshes cached dashboard elements after a node is replaced', () => {
+    const { window, document, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body><span id="cached-target">old</span></body></html>',
+    );
+    context.setInterval = jest.fn();
+    context.setTimeout = jest.fn();
+    const getElementById = jest.spyOn(document, 'getElementById');
+
+    runScript(context, 'dashboard.js');
+
+    const dashboard = window.dashboard;
+    getElementById.mockClear();
+    const original = dashboard.getDashboardElement('cached-target');
+    expect(dashboard.getDashboardElement('cached-target')).toBe(original);
+    expect(getElementById).toHaveBeenCalledTimes(1);
+
+    original.remove();
+    const replacement = document.createElement('span');
+    replacement.id = 'cached-target';
+    document.body.appendChild(replacement);
+
+    expect(dashboard.getDashboardElement('cached-target')).toBe(replacement);
+    expect(getElementById).toHaveBeenCalledTimes(2);
+  });
+
+  test('updates an existing chart instance when canvas and type are unchanged', () => {
+    const { window, document, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body><canvas id="chart"></canvas></body></html>',
+    );
+    context.setInterval = jest.fn();
+    context.setTimeout = jest.fn();
+    const canvas = document.getElementById('chart');
+    const charts = [];
+    context.Chart = jest.fn((chartCanvas, config) => {
+      const chart = {
+        canvas: chartCanvas,
+        config: { type: config.type },
+        data: config.data,
+        options: config.options,
+        update: jest.fn(),
+        destroy: jest.fn(),
+      };
+      charts.push(chart);
+      return chart;
+    });
+    window.Chart = context.Chart;
+
+    runScript(context, 'dashboard.js');
+
+    const firstConfig = {
+      type: 'line',
+      data: { labels: ['first'], datasets: [{ data: [1] }] },
+      options: { responsive: true },
+    };
+    const first = context.renderChartInstance('testChart', canvas, firstConfig);
+    const nextConfig = {
+      type: 'line',
+      data: { labels: ['next'], datasets: [{ data: [2] }] },
+      options: { responsive: false },
+    };
+    const updated = context.renderChartInstance('testChart', canvas, nextConfig);
+
+    expect(updated).toBe(first);
+    expect(context.Chart).toHaveBeenCalledTimes(1);
+    expect(first.update).toHaveBeenCalledTimes(1);
+    expect(first.destroy).not.toHaveBeenCalled();
+    expect(first.data.labels).toEqual(['next']);
+    expect(first.options).toEqual({ responsive: false });
+
+    const replacementCanvas = document.createElement('canvas');
+    const replacement = context.renderChartInstance(
+      'testChart',
+      replacementCanvas,
+      nextConfig,
+    );
+    expect(replacement).not.toBe(first);
+    expect(first.destroy).toHaveBeenCalledTimes(1);
+    expect(charts).toHaveLength(2);
+  });
+});
