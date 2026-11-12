@@ -15,6 +15,9 @@ on:
       - '.github/workflows/public-launch-copy-gate.yml'
       - 'package.json'
 
+permissions:
+  contents: read
+
 jobs:
   verify-public-copy:
     name: Truthful AETH launch disclosures
