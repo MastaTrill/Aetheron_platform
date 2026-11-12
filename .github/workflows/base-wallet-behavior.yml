@@ -1,0 +1,32 @@
+name: Base Wallet Behavior Gate
+
+on:
+  pull_request:
+    paths:
+      - 'index.js'
+      - 'dashboard-wallet.js'
+      - 'portfolio-init.js'
+      - 'tests/base-wallet-certification.test.mjs'
+      - 'tests/wallet-event-behavior.test.mjs'
+      - '.github/workflows/base-wallet-behavior.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.js'
+      - 'dashboard-wallet.js'
+      - 'portfolio-init.js'
+      - 'tests/base-wallet-certification.test.mjs'
+      - 'tests/wallet-event-behavior.test.mjs'
+      - '.github/workflows/base-wallet-behavior.yml'
+jobs:
+  mock-eip1193:
+    name: Base account, rejection and network events
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run static and actual mock-provider wallet behavior checks
+        run: node --test tests/base-wallet-certification.test.mjs tests/wallet-event-behavior.test.mjs

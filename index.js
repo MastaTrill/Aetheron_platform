@@ -330,7 +330,8 @@ async function detectWalletWithRetry() {
                 const wallet = resolveInjectedProvider();
                 const accounts = wallet ? await wallet.request({ method: 'eth_accounts' }) : [];
                 if (accounts.length > 0) {
-                    await connectWallet({ provider: wallet, silent: true });
+                    // Existing permission does not authorize a new connection prompt.
+                    await checkWalletStatus();
                 }
             } catch (error) {
                 console.log('Could not check existing accounts:', error);
@@ -735,33 +736,33 @@ async function updateStakingStats() {
 }
 
 // Connect wallet function
-let walletEventsProvider = null;
-function bindWalletChangeEvents(wallet) {
-    if (walletEventsProvider === wallet || typeof wallet?.on !== 'function') return;
-    if (walletEventsProvider?.removeListener) {
-        walletEventsProvider.removeListener('accountsChanged', onWalletAccountsChanged);
-        walletEventsProvider.removeListener('chainChanged', onWalletChainChanged);
-    }
-    walletEventsProvider = wallet;
-    wallet.on('accountsChanged', onWalletAccountsChanged);
-    wallet.on('chainChanged', onWalletChainChanged);
-}
-function onWalletAccountsChanged(accounts) {
-    if (!accounts?.length) {
-        disconnectWallet();
-        return;
-    }
-    if (account?.toLowerCase() !== accounts[0].toLowerCase()) {
-        connectWallet({ provider: walletEventsProvider, silent: true });
-    }
-}
-function onWalletChainChanged(chainId) {
-    if (String(chainId).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-        disconnectWallet();
-        showToast('Wrong network', 'Switch to Base Mainnet (8453) to continue.', 'info');
-    } else {
-        connectWallet({ provider: walletEventsProvider, silent: true });
-    }
+
+// Track wallet account and network changes without requesting new permissions.
+let observedWallet = null;
+function bindWalletEvents(wallet) {
+    if (!wallet?.on || observedWallet === wallet) return;
+    observedWallet = wallet;
+    wallet.on('accountsChanged', (accounts) => {
+        if (!Array.isArray(accounts) || !accounts.length) {
+            disconnectWallet();
+            return;
+        }
+        // Never retain a signer or account from a different selected address.
+        if (account && accounts[0].toLowerCase() !== account.toLowerCase()) {
+            disconnectWallet();
+            showToast('Account changed', 'Reconnect to use the selected account.', 'info');
+        }
+    });
+    wallet.on('chainChanged', (chainId) => {
+        if (String(chainId).toLowerCase() !== BASE_CHAIN_ID) {
+            disconnectWallet();
+            showToast('Unsupported network', 'Switch to Base Mainnet (8453) and reconnect.', 'info');
+        } else if (account) {
+            // Revalidate the selected account after network changes.
+            disconnectWallet();
+            showToast('Network changed', 'Reconnect to verify your wallet.', 'info');
+        }
+    });
 }
 
 async function connectWallet(options = {}) {
@@ -770,26 +771,19 @@ async function connectWallet(options = {}) {
     if (!wallet) {
         alert('No Ethereum wallet detected! Please:\n1. Install MetaMask or Coinbase Wallet\n2. Refresh this page\n3. Make sure you\'re using a compatible browser');
         window.open('https://metamask.io/download/', '_blank');
-        return;
+        return { connected: false, reason: 'wallet_unavailable' };
     }
 
     try {
+        bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
-        const accounts = await wallet.request({ method: options?.silent ? 'eth_accounts' : 'eth_requestAccounts' });
-        if (!accounts?.length) return;
-        bindWalletChangeEvents(wallet);
+        await wallet.request({ method: 'eth_requestAccounts' });
         signer = provider.getSigner();
-        account = await signer.getAddress();
+        const selectedAccount = await signer.getAddress();
 
-        // Never prompt for a network switch during passive reconnection.
-        const currentChain = await wallet.request({ method: 'eth_chainId' });
-        if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-            showToast('Wrong network', 'Switch to Base Mainnet (8453) before connecting.', 'info');
-            return;
-        }
-        // Switch to Base network only when a user explicitly connects.
+        // Switch to Base network
         try {
-            if (String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) await wallet.request({
+            await wallet.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: BASE_CHAIN_ID }],
             });
@@ -808,17 +802,16 @@ async function connectWallet(options = {}) {
                         }],
                     });
                 } catch (addError) {
-                    throw addError;
+                    console.error('Error adding Base network:', addError);
                 }
-            } else {
-                throw switchError;
             }
         }
-        const connectedChain = await wallet.request({ method: 'eth_chainId' });
-        if (String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
-            throw new Error('Please switch your wallet to Base Mainnet before continuing.');
-        }
 
+        const confirmedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(confirmedChain).toLowerCase() !== BASE_CHAIN_ID) {
+            throw new Error('Unsupported network. Switch to Base Mainnet (8453) to continue.');
+        }
+        account = selectedAccount;
         aethContract = new ethers.Contract(AETH_ADDRESS, AETH_ABI, signer);
         stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
         
@@ -843,17 +836,20 @@ async function connectWallet(options = {}) {
         hideProgress();
         
         showToast('Connected!', `${getWalletName(wallet)} ${account.slice(0, 6)}...${account.slice(-4)} connected`, 'success');
+        return { connected: true, account, chainId: BASE_CHAIN_ID };
 
     } catch (error) {
         console.error('Error connecting:', error);
-        if (error?.code === 4001) {
-            hideProgress();
-            showToast('Connection cancelled', 'No wallet connection was approved.', 'info');
-            return;
-        }
         hideProgress();
+        // Refuse stale connected state after cancellation, RPC errors or wrong chain.
+        await disconnectWallet();
+        if (error?.code === 4001) {
+            showToast('Connection cancelled', 'No wallet permissions or transactions were granted.', 'info');
+            return { connected: false, reason: 'rejected' };
+        }
         showToast('Connection Failed', error.message || 'Failed to connect wallet', 'error');
         showAlert('Failed to connect: ' + error.message, 'error', 'stakingAlert');
+        return { connected: false, reason: 'error' };
     }
 }
 
