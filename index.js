@@ -1,6 +1,8 @@
 // index.js - Extracted from index.html inline <script>
 // All logic is preserved. Attach this file in index.html after ethers.js and chart.js
 
+const { cache, onDomReady } = window.AetheronDashboardCore;
+
 // Contract Addresses - UPDATED for Base Mainnet
 const AETH_ADDRESS = window.AETHERON_PRESALE_CONFIG?.aethTokenAddress || "0xecf7E17faE148C01E1b5008A31Dfd2d1B6608E4e";
 const STAKING_ADDRESS = "0x896D9d37A67B0bBf81dde0005975DA7850FFa638";
@@ -79,7 +81,7 @@ function initReadOnlyProvider() {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+onDomReady('index-dom-ready', () => {
     initConnectButton();
     setDefaultValues();
 });
@@ -1570,48 +1572,6 @@ function hideProgress() {
 }
 
 // ============================================================================
-// Data Caching System
-// ============================================================================
-
-const cache = {
-    set(key, value, ttl = 60000) { // Default 1 minute TTL
-        const item = {
-            value,
-            expiry: Date.now() + ttl
-        };
-        try {
-            localStorage.setItem(`aeth_cache_${key}`, JSON.stringify(item));
-        } catch (e) {
-            console.warn('Cache storage failed:', e);
-        }
-    },
-    
-    get(key) {
-        try {
-            const itemStr = localStorage.getItem(`aeth_cache_${key}`);
-            if (!itemStr) return null;
-            
-            const item = JSON.parse(itemStr);
-            if (Date.now() > item.expiry) {
-                localStorage.removeItem(`aeth_cache_${key}`);
-                return null;
-            }
-            return item.value;
-        } catch (e) {
-            return null;
-        }
-    },
-    
-    clear() {
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('aeth_cache_')) {
-                localStorage.removeItem(key);
-            }
-        });
-    }
-};
-
-// ============================================================================
 // User Stakes Dashboard
 // ============================================================================
 
@@ -1910,4 +1870,3 @@ function displayTransactions(transactions) {
         </div>
     `).join('');
 }
-

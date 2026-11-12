@@ -645,3 +645,69 @@ describe('Dashboard rendering lifecycle', () => {
     expect(charts).toHaveLength(2);
   });
 });
+
+describe('Dashboard shared core', () => {
+  test('runs DOM-ready callbacks once and handles scripts loaded after readiness', () => {
+    const { window, document, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body></body></html>',
+      { readyState: 'loading' },
+    );
+    const addEventListener = jest.spyOn(document, 'addEventListener');
+
+    runScript(context, 'dashboard-core.js');
+
+    const callback = jest.fn();
+    window.AetheronDashboardCore.onDomReady('test-init', callback);
+    window.AetheronDashboardCore.onDomReady('test-init', jest.fn());
+    expect(addEventListener).toHaveBeenCalledTimes(1);
+    expect(addEventListener).toHaveBeenCalledWith(
+      'DOMContentLoaded',
+      callback,
+      { once: true },
+    );
+
+    document.dispatchEvent(new window.Event('DOMContentLoaded'));
+    expect(callback).toHaveBeenCalledTimes(1);
+    window.AetheronDashboardCore.onDomReady('test-init', jest.fn());
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      value: 'complete',
+    });
+    const lateCallback = jest.fn();
+    window.AetheronDashboardCore.onDomReady('late-init', lateCallback);
+    expect(lateCallback).toHaveBeenCalledTimes(1);
+  });
+
+  test('preserves cache expiry behavior and loads before the shipped app entry', () => {
+    const { window, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body></body></html>',
+    );
+
+    runScript(context, 'dashboard-core.js');
+
+    const { cache } = window.AetheronDashboardCore;
+    cache.set('transaction-history', ['entry']);
+    expect(cache.get('transaction-history')).toEqual(['entry']);
+    window.localStorage.setItem(
+      'aeth_cache_transaction-history',
+      JSON.stringify({ value: ['entry'], expiry: 0 }),
+    );
+    expect(cache.get('transaction-history')).toBeNull();
+    expect(window.localStorage.removeItem).toHaveBeenCalledWith(
+      'aeth_cache_transaction-history',
+    );
+
+    const indexHtml = fs.readFileSync(
+      path.join(__dirname, 'index.html'),
+      'utf8',
+    );
+    expect(indexHtml.indexOf('dashboard-core.js')).toBeLessThan(
+      indexHtml.indexOf('index.js?v='),
+    );
+    expect(fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8')).toContain(
+      'window.AetheronDashboardCore',
+    );
+  });
+});

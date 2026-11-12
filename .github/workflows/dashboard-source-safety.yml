@@ -6,6 +6,7 @@ on:
     paths:
       - 'index.html'
       - 'index.js'
+      - 'dashboard-core.js'
       - 'index-dom-overrides.js'
       - 'public-launch-gate.test.cjs'
       - 'presale-config.js'
@@ -54,7 +55,7 @@ jobs:
 
       - name: Syntax-check shipped JavaScript
         run: |
-          for f in index.js index-dom-overrides.js dashboard.js dashboard-enhanced.js dashboard-main.js dashboard-wallet.js presale-config.js presale-readiness.js update-wallets.js vercel-analytics.entry.mjs; do
+          for f in index.js dashboard-core.js index-dom-overrides.js dashboard.js dashboard-enhanced.js dashboard-main.js dashboard-wallet.js presale-config.js presale-readiness.js update-wallets.js vercel-analytics.entry.mjs; do
             node --check "$f"
           done
 
