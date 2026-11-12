@@ -9,7 +9,7 @@ test('launch copy does not imply staking or canonical DEX trading is live', () =
   assert.match(html, /Public staking, canonical DEX trading, guaranteed rewards and live NFT trading are not available or verified/);
   assert.match(html, /No canonical Base liquidity pool exists/);
   assert.match(html, /Do not send funds/);
-  assert.match(html, /Can I unstake early\?[\s\S]{0,600}Staking is not currently available/);
+  assert.match(html, /Can I unstake early\?[\s\S]{0,600}Public AETH staking is not active/);
   assert.doesNotMatch(html, /After Lock Period: Free unstaking|Before Lock Period: Use "Emergency Withdraw"/);
 });
 
