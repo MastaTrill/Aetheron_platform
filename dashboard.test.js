@@ -411,3 +411,103 @@ describe('Dashboard wallet wiring', () => {
     expect(window.showToast).toHaveBeenCalled();
   });
 });
+
+describe('Dashboard polling lifecycle', () => {
+  test('starts polling once and skips timer work while the document is hidden', () => {
+    const { window, document, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body></body></html>',
+    );
+    const intervals = [];
+    context.setInterval = jest.fn((callback, delay) => {
+      const handle = { callback, delay };
+      intervals.push(handle);
+      return handle;
+    });
+    context.setTimeout = jest.fn();
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'hidden',
+    });
+
+    runScript(context, 'dashboard.js');
+
+    const dashboard = window.dashboard;
+    const updateLiveStats = jest
+      .spyOn(dashboard, 'updateLiveStats')
+      .mockResolvedValue(undefined);
+    const updateCommunityStats = jest
+      .spyOn(dashboard, 'updateCommunityStats')
+      .mockImplementation(() => {});
+    const checkTradingMilestones = jest
+      .spyOn(dashboard, 'checkTradingMilestones')
+      .mockImplementation(() => {});
+
+    dashboard.startRealTimeUpdates();
+    expect(intervals).toHaveLength(2);
+    expect(intervals.map(({ delay }) => delay)).toEqual([30000, 300000]);
+
+    intervals[0].callback();
+    intervals[1].callback();
+    expect(updateLiveStats).not.toHaveBeenCalled();
+    expect(updateCommunityStats).not.toHaveBeenCalled();
+    expect(checkTradingMilestones).not.toHaveBeenCalled();
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'visible',
+    });
+    intervals[0].callback();
+    intervals[1].callback();
+    expect(updateLiveStats).toHaveBeenCalledTimes(1);
+    expect(updateCommunityStats).toHaveBeenCalledTimes(1);
+    expect(checkTradingMilestones).toHaveBeenCalledTimes(1);
+    expect(context.setInterval).toHaveBeenCalledTimes(2);
+  });
+
+  test('allows only one live-stat request at a time', async () => {
+    const { window, document, context } = createDashboardContext(
+      '<!DOCTYPE html><html><body></body></html>',
+    );
+    let resolveFetch;
+    context.setInterval = jest.fn();
+    context.fetch = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+    context.setTimeout = jest.fn();
+
+    runScript(context, 'dashboard.js');
+
+    for (const id of ['live-price', 'live-volume', 'live-holders']) {
+      const element = document.createElement('span');
+      element.id = id;
+      document.body.appendChild(element);
+    }
+
+    const priceElement = document.getElementById('live-price');
+    const dashboard = window.dashboard;
+    dashboard.communityStats = { totalHolders: 12 };
+
+    const firstUpdate = dashboard.updateLiveStats();
+    const overlappingUpdate = dashboard.updateLiveStats();
+    expect(context.fetch).toHaveBeenCalledTimes(1);
+
+    resolveFetch({
+      json: async () => ({ pairs: [{ priceUsd: '0.123456' }] }),
+    });
+    await Promise.all([firstUpdate, overlappingUpdate]);
+
+    expect(priceElement.textContent).toBe('$0.123456');
+    expect(dashboard.liveStatsUpdateInFlight).toBe(false);
+
+    const subsequentUpdate = dashboard.updateLiveStats();
+    expect(context.fetch).toHaveBeenCalledTimes(2);
+    resolveFetch({
+      json: async () => ({ pairs: [{ priceUsd: '0.654321' }] }),
+    });
+    await subsequentUpdate;
+    expect(priceElement.textContent).toBe('$0.654321');
+  });
+});
