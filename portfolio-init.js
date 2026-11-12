@@ -26,14 +26,13 @@ async function connectWallet() {
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     userAddress = await signer.getAddress();
-    if ((await provider.getNetwork()).chainId !== 137) {
-      alert('Please switch to Polygon Mainnet (Chain ID: 8453)');
+    if ((await provider.getNetwork()).chainId !== 8453) {
+      alert('Please switch to Base Mainnet (Chain ID: 8453)');
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x89' }],
+          params: [{ chainId: '0x2105' }],
         });
-        location.reload();
         return;
       } catch (t) {
         console.error('Failed to switch network:', t);
@@ -55,15 +54,8 @@ async function connectWallet() {
   }
 }
 async function fetchAethPrice() {
-  try {
-    const t = await fetch(
-      'https://api.dexscreener.com/latest/dex/pairs/polygon/0xd57c5E33ebDC1b565F99d06809debbf86142705D',
-    );
-    const e = await t.json();
-    if (e.pair && e.pair.priceUsd) aethPrice = parseFloat(e.pair.priceUsd);
-  } catch (t) {
-    console.log('Failed to fetch price, using default:', t);
-  }
+  // No verified Base liquidity or price oracle; do not show fabricated USD values.
+  aethPrice = 0;
 }
 async function loadPortfolioData() {
   try {

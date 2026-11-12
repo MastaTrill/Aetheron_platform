@@ -59,7 +59,17 @@
     "undici": "^7.24.0",
     "uuid": "^11.1.1",
     "body-parser": "^2.3.0",
-    "qs": "^6.16.0",
+    "qs": "^6.17.1",
+    "minimatch@>=7 <11.0.1": "11.0.8",
+    "jest-config": {
+      "glob": "14.0.5"
+    },
+    "jest-runtime": {
+      "glob": "14.0.5"
+    },
+    "@jest/reporters": {
+      "glob": "14.0.5"
+    },
     "protobufjs": "^7.6.5"
   },
   "dependencies": {

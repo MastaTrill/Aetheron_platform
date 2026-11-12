@@ -247,7 +247,7 @@ describe('Dashboard wallet wiring', () => {
           description: 'Aetheron Platform Dashboard',
           name: 'Aetheron Platform',
         }),
-        optionalChains: [137],
+        optionalChains: [8453],
         projectId: 'test-project-id',
         showQrModal: true,
       }),
