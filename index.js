@@ -777,13 +777,20 @@ async function connectWallet(options = {}) {
     try {
         bindWalletEvents(wallet);
         provider = new ethers.providers.Web3Provider(wallet, 'any');
-        await wallet.request({ method: 'eth_requestAccounts' });
+        const accounts = await wallet.request({ method: options?.silent ? 'eth_accounts' : 'eth_requestAccounts' });
+        if (!accounts?.length) return;
         signer = provider.getSigner();
         const selectedAccount = await signer.getAddress();
 
-        // Switch to Base network
+        // Never prompt for a network switch during passive reconnection.
+        const currentChain = await wallet.request({ method: 'eth_chainId' });
+        if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
+            showToast('Wrong network', 'Switch to Base Mainnet (8453) before connecting.', 'info');
+            return;
+        }
+        // Switch to Base network only when a user explicitly connects.
         try {
-            await wallet.request({
+            if (String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) await wallet.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: BASE_CHAIN_ID }],
             });
@@ -802,9 +809,15 @@ async function connectWallet(options = {}) {
                         }],
                     });
                 } catch (addError) {
-                    console.error('Error adding Base network:', addError);
+                    throw addError;
                 }
+            } else {
+                throw switchError;
             }
+        }
+        const connectedChain = await wallet.request({ method: 'eth_chainId' });
+        if (String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()) {
+            throw new Error('Please switch your wallet to Base Mainnet before continuing.');
         }
 
         const confirmedChain = await wallet.request({ method: 'eth_chainId' });
@@ -840,6 +853,11 @@ async function connectWallet(options = {}) {
 
     } catch (error) {
         console.error('Error connecting:', error);
+        if (error?.code === 4001) {
+            hideProgress();
+            showToast('Connection cancelled', 'No wallet connection was approved.', 'info');
+            return;
+        }
         hideProgress();
         // Refuse stale connected state after cancellation, RPC errors or wrong chain.
         await disconnectWallet();
