@@ -5,8 +5,8 @@ class AetheronPlatform {
   constructor() {
     this.currentUser = null;
     this.isConnected = false;
-    this.userBalance = 0;
-    this.userBalanceUSD = 0;
+    this.userBalance = null;
+    this.userBalanceUSD = null;
     this.priceData = null;
 
     this.init();
@@ -105,8 +105,8 @@ class AetheronPlatform {
   disconnectWallet() {
     this.currentUser = null;
     this.isConnected = false;
-    this.userBalance = 0;
-    this.userBalanceUSD = 0;
+    this.userBalance = null;
+    this.userBalanceUSD = null;
     this.updateUI();
     this.showToast('Wallet disconnected', 'info');
   }
@@ -129,28 +129,18 @@ class AetheronPlatform {
 
   async loadUserData() {
     if (!this.isConnected || !this.currentUser) return;
-
-    try {
-      this.userBalance = Math.random() * 1000;
-      this.userBalanceUSD = this.userBalance * (this.priceData?.price || 0.0001);
-      this.updateUI();
-    } catch (error) {
-      console.error('Error loading user data:', error);
-    }
+    // No verified account balance source is provided by this legacy utility.
+    // Do not substitute random balance/valuation data for on-chain reads.
+    this.userBalance = null;
+    this.userBalanceUSD = null;
+    this.updateUI();
   }
 
   async loadPriceData() {
-    try {
-      this.priceData = {
-        price: 0.0001234,
-        marketCap: 1234567,
-        change24h: 5.67,
-        liquidity: 890123,
-      };
-      this.updatePriceDisplays();
-    } catch (error) {
-      console.error('Error loading price data:', error);
-    }
+    // Market pricing is only published from a verified canonical source.
+    // No canonical AETH liquidity pool is live; never manufacture price,
+    // market cap, change or liquidity in a shared UI helper.
+    this.priceData = null;
   }
 
   updateWalletButton(btn) {
@@ -171,12 +161,12 @@ class AetheronPlatform {
 
     const balanceElements = document.querySelectorAll('#userBalance, .user-balance');
     balanceElements.forEach((el) => {
-      el.textContent = this.userBalance.toFixed(2);
+      el.textContent = Number.isFinite(this.userBalance) ? this.userBalance.toFixed(2) : 'N/A';
     });
 
     const usdElements = document.querySelectorAll('#userBalanceUSD, .user-balance-usd');
     usdElements.forEach((el) => {
-      el.textContent = `$${this.userBalanceUSD.toFixed(2)} USD`;
+      el.textContent = Number.isFinite(this.userBalanceUSD) ? `${this.userBalanceUSD.toFixed(2)} USD` : 'N/A';
     });
 
     const connectedSections = document.querySelectorAll('#walletConnected, .wallet-connected');

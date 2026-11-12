@@ -142,7 +142,9 @@ function initGlobalAnnouncements() {
 
   document.addEventListener('DOMContentLoaded', () => {
     enforceDashboardBranding();
-    document.body.prepend(banner);
+    const slot = document.getElementById('globalAnnouncementSlot');
+    if (slot) slot.appendChild(banner);
+    else document.body.prepend(banner);
     document.body.appendChild(toastContainer);
     registerAnnouncementDismiss();
     hydrateAnnouncements();

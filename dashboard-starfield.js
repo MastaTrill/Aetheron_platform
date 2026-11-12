@@ -4,6 +4,11 @@
 document.addEventListener('DOMContentLoaded', function () {
   const canvas = document.getElementById('starfield-canvas');
   if (!canvas) return;
+  // Avoid continuous decorative canvas work on phones and reduced-motion devices.
+  if (window.matchMedia('(max-width: 680px), (prefers-reduced-motion: reduce)').matches) {
+    canvas.style.display = 'none';
+    return;
+  }
   const ctx = canvas.getContext('2d');
   let width = window.innerWidth;
   let height = window.innerHeight;
