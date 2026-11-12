@@ -8,5 +8,9 @@
   "devDependencies": {
     "jest": "^30.0.0",
     "jsdom": "^29.0.0"
+  },
+  "overrides": {
+    "minimatch@>=7 <11.0.1": "11.0.8",
+    "glob@10": "14.0.5"
   }
 }
