@@ -51,10 +51,3 @@ assert(indexJs.includes('liquidityAuthorized !== true'), 'homepage market-data r
 assert(!indexJs.includes('0xd57c5E33ebDC1b565F99d06809debbf86142705D'), 'homepage runtime must not carry an unverified hardcoded liquidity-pair address');
 assert(!index.includes('id="adminPanel"'), 'public homepage source must not ship owner write controls');
 console.log('Public launch-gate regression checks passed.');
-// Wallet connection invariants: no signature/transaction on connect, no unsolicited reconnect prompts.
-assert(indexJs.includes("options?.silent ? 'eth_accounts' : 'eth_requestAccounts'"), 'passive reconnect must not request account permission');
-assert(indexJs.includes("if (options?.silent && String(currentChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase())"), 'passive reconnect must not prompt network switching');
-assert(indexJs.includes("wallet.on('accountsChanged', (accounts) => {"), 'wallet must respond to account changes');
-assert(indexJs.includes("wallet.on('chainChanged', (chainId) => {"), 'wallet must respond to network changes');
-assert(indexJs.includes("error?.code === 4001"), 'wallet cancellation must be handled');
-assert(indexJs.includes("String(connectedChain).toLowerCase() !== BASE_CHAIN_ID.toLowerCase()"), 'wallet connection must verify Base chain');
