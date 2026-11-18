@@ -2,11 +2,18 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const source = fs.readFileSync(new URL('./dashboard.js', import.meta.url), 'utf8');
+const sentinelSource = fs.readFileSync(new URL('./sentinel-integration.js', import.meta.url), 'utf8');
 
 assert.doesNotMatch(
   source,
   /\.innerHTML\s*=/,
   'dashboard.js must not assign HTML strings through innerHTML',
+);
+
+assert.doesNotMatch(
+  sentinelSource,
+  /\.innerHTML\s*=/,
+  'sentinel-integration.js must not assign HTML strings through innerHTML',
 );
 
 assert.doesNotMatch(

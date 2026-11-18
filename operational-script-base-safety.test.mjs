@@ -8,6 +8,7 @@ function read(path) {
 
 const forbiddenLegacy = /POLYGON_RPC_URL|polygon-rpc\.com|polygonscan\.com|0xAb5ae0D8f569d7c2B27574319b864a5bA6F9671e|ethers\.providers|ethers\.utils/i;
 const activePaths = [
+  'sentinel-integration.js',
   'update-wallets.js',
   'backend/push-notify-wallets.js',
   'smart-contract/hardhat.config.js',

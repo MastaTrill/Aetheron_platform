@@ -88,6 +88,24 @@
     },
     {
       "project": "Sentinel L3",
+      "contract": "Sentinel",
+      "network": "Base Sepolia",
+      "chainId": 84532,
+      "address": "0x71C95911E9a5D330f4D621842EC243EE1343292e",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron:aetheron-contracts/deployments/addresses.json"
+    },
+    {
+      "project": "Sentinel L3",
+      "contract": "L3Relay",
+      "network": "Base Sepolia",
+      "chainId": 84532,
+      "address": "0x94099942864EA81cCF197E9D71ac53310b1468D8",
+      "status": "testnet",
+      "source": "MastaTrill/Aetheron:aetheron-contracts/deployments/addresses.json"
+    },
+    {
+      "project": "Sentinel L3",
       "contract": "Release Core",
       "network": "Base Sepolia",
       "chainId": 84532,
